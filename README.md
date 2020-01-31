@@ -34,7 +34,7 @@ Weiteres:
 - CrashRpt (siehe http://crashrpt.sourceforge.net/)
 
 ## Bauen:
-- in VisualStudio 2008 F7 drücken
+- in VisualStudio 2008 rechte Maustaste auf das Subprojekt 'EasyCash', als Startprojekt auswählen und dann F7 drücken
 
 ## Verpacken:
 - InnoSetup herunterladen ( http://www.jrsoftware.org/isdl.php )
