@@ -1,0 +1,9 @@
+; EasyCTX.def : Declares the module parameters.
+
+LIBRARY      "EASYCTX.OCX"
+
+EXPORTS
+	DllCanUnloadNow     PRIVATE
+	DllGetClassObject   PRIVATE
+	DllRegisterServer   PRIVATE
+	DllUnregisterServer PRIVATE

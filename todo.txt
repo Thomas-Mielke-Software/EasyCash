@@ -1,0 +1,1694 @@
+=============================================
+VERSIONSHISTORIE (= BEREITS UMGESETZTE TODOs)
+WEITER UNTEN SIND NOCH NICHT UMGESETZTE TODOs
+=============================================
+
+v1.5 Darstellungsfehler bei negativen Pfennigsummen behoben
+v1.5 Horizontale und vertikale Formulardruck-Anpassung
+v1.5 E/Ü-Konten sind jetzt über 'Einstellungen' individuell anpassbar
+v1.5 Fensterpositionen werden gemerkt
+v1.6 österr./schweizer MwSt-Sätze/Währungskürzel
+v1.6 Beträge über 200.000 DM erzeugen keinen Überlauf mehr
+v1.7 Eingabe der Buchungs-Presets überarbeitet
+v1.7 Fenster-Scrolling überarbeitet
+v1.7 Journal-Fenster wird nach dem Start maximiert angezeigt
+v1.7 Automatische Konten-Zuweisung im Buchen-Dialog funktioniert jetzt auch über Preset-Nummer
+v1.7 Laufende Buchungsnummern für Einnahmen repariert
+v1.7 Laufende Buchungsnummern sind jetzt änderbar
+v1.7 Ansichten sortiert nach Datum (wie bisher) und Konten
+v1.8 Optional ist die E/Ü-Rechnung jetzt auch mit Netto-Beträgen 
+     plus extra UST/VST-Konten möglich
+v1.8 Information zur Eingabe der Steuernummer...
+v1.8 Tooltab bei Buchungsjournal-Ansicht
+v1.8 Seitenansicht überarbeitet
+v1.8 letzte Seitennummer im Konten-Journal wurde nicht gerdruckt
+v1.8 Konten werden bei Export nun berücksichtigen
+v1.8 Beim Ausdruck wird jetzt ein Lochrand gelassen. Zusätzlich 
+     ist jetzt eine Markierung für den Locher vorhanden und das
+	 Ganze wurde optisch aufgewertet.
+v1.8 Druck besser konfigurierbar
+v1.8 Oft nachgefragt, jetzt endlich eingebaut: Journaldruck
+     nach Datum (von/bis)
+v1.8 Seitennummer wurde manchmal überdruckt beim Konten-Journal
+v1.8 Pulldownmenü bei der Buchungsbeschreibung vergrößert
+v1.8 Die Buchungsbeschreibung wird nicht mehr abgehackt, sondern
+     größenmäßig angepaßt
+v1.8 Für Druck bzw. Bildschirm sind jetzt Schriftarten wählbar
+v1.8 Die Nettobeträge werden ab jetzt 'richtig' gerundet (vorher 
+     wurden sie lediglich abgerundet). Achtung: damit kann sich 
+     ein alter Jahresabschluß um Pfennigbeträge verändern! Deshalb 
+     ggf. alte Daten nochmal mit einer alten Version ausdrucken.
+v1.8 Der schweizer MWSt-Satz von 7,5% wird nun angenommen.
+v1.9 Export repariert
+v1.9 Dokumentation überarbeitet
+v1.9 Plugin-Schnitstelle und Saldo-DLL-Beispiel
+v1.9 Datumseingabe beim Buchen optimiert
+v1.9 Kosmetik bei Neue-Buchungsperiode-Dialog
+v1.10 Bugfix: Einnahmen-Konto wird jetzt mit exportiert
+v1.10 Kosmetik im Druckauswahl-Dialog
+v1.10 Buchung: Cursor springt jetzt vom Währungsfeld ins Beschrei-
+      bungsfeld,wenn zwei Ziffern nach dem Komma eingegeben wurden
+v1.10 Anpassungen für das UmSt-Voranmeldungsformular 2001
+v1.10 Feld 'andere Steuersätze' werden UmSt-Voranmeldungsformulardruck jetzt gefüllt
+v1.10 horiz. Feineinstellung beim UmSt-Voranmeldungsdruck für 2. Seite separat
+v1.10 Aufforderung zum Wenden des Blatts beim UmSt-Voranmeldungsdruck
+v1.10 Bugfix: Bei der Seitenansicht der UStVA wurden beide Seiten übereinandergelegt
+v1.10 Alle DM-Beträge können auf Euro umgerechnet werden. 
+v1.10 Währungsrechner im Buchen-Dialog
+v1.10 MWSt-Sätze sind jetzt frei konfigurierbar
+v1.10a Bugfix: In Feld 'andere Steuersätze' werden beim UmSt-Voranmeldungsformulardruck
+       auch Umsätze zu 0% aufsummiert.
+v1.11 Buchungen zum Ändern/Löschen (rechte Maustaste!) werden jetzt im Journal selektiert dargestellt.
+v1.11 Löschen von Buchungen und Konten erfolgt jetzt mit Abfrage
+v1.11 Bugfix: Buchungen mit in den Einstellungen bereits gelöschten Konten werden 
+      jetzt im Journal-nach-Konten richtig dargestellt.
+v1.11 Werden für eine Jahr mehrere Buchungsdateien erzeugt, bekommen die Dateinamen 
+      Erweiterungen wie "Jahr2001-1.eca", um versehentliches Überschreiben von 
+      Buchungsdaten zu verhindern.
+v1.11 Die Drucker-Bedienungsanweisungen bei der UmSt-Voranmeldung werden in der Seitenansicht nicht mehr angezeigt.
+v1.11 Das Formular wird beim UmSt-Voranmeldungsdruck jetzt mit ausgedruckt (vorerst nur BRD).
+v1.11 Zu Experimentierzwecken habe ich die Eingabe von Steuersätzen mit 100 % zugelassen. (Ich bitte um Erfahrungsberichte!)
+v1.11 Konten mit Null-Umsätzen werden in der Einnahmen/Überschussrechnung nicht länger aufgeführt.
+v1.11 Optionale Einstellung für 'Journaldruck nach Konten': Seitenumbruch vor jedem Konto.
+v1.11 Bugfix: Nachkommastellen bei MWSt-Sätzen aus Presets werden nicht mehr abgeschnitten.
+v1.12 Radio-Buttons beim UmSt-Vor-Druck/Quartalsauswahl
+v1.12 bei Dauerbuchungen können jetzt auch Buchungstext-Preset angegeben werden
+v1.12 Bugfix: Wurden zuvor Journal oder USVA gedruckt, kam es beim Druck der E/Ü-Rechnung oder UmSt-Erklärung zu mehrfachen ausdrucken.
+v1.12 E/Ü-Rechnung sowie UmSt-Erklärung ist auf vielfachen Wunsch jetzt auch über einen Datumsfilter ausdruckbar
+v1.12 Privat/Betriebsausgaben-Split
+v1.12 Auf mehrfachen Wunsch sind die Überschriften beim Ausdruck des Journals nicht mehr farbig.
+v1.12 Mehrfach wurde auch der Wunsch geäußert, negative Beträge (z.B. für Stornos, Rotumsätze udgl.) verbuchen zu können. Das ist jetzt möglich, aber noch nicht 100%ig getestet. Benutzung auf eigene Gefahr. Erfahrungsberichte erwünscht.      
+v1.12 Datums-Check beim Drucken verbessert (31. bei einem Monat mit 30 Tagen wird verhindert).
+v1.12 Der Saldo des aktuellen Jahres wird in der Statusleiste rechts unten eingeblendet.
+v1.12 Im Journal und den anderen Ausdrucken werden Beträge jetzt mit Tausenderpunkt angegeben.
+v1.12 Im Info-Fenster können jetzt Prioritäten für die vielen Erweiterungsvorschläge gesetzt werden, ich ich bis jetzt noch nicht berücksichtigen konnte.
+v1.12a Salden-Berechnung korrigiert
+v1.12a Tausenderpunkt auch im MWSt-Betrag im Journal
+v1.12a Saldobereich in der Statusleiste vergrößert
+v1.12b Bugfix bei Eingabe Privat-Split-Sätze
+v1.12b Kontoverbindung geändert
+v1.13  Seitenumbruch zwischen Einnahmen und Ausgaben beim Formular-Druck
+v1.13  Umsatzsteuervorauszahlungen bzw. Erstattungsansprüche werden beim Voranmeldungsdruck gemerkt und in der Umsatzsteuererklärung als Vorauszahlungssoll aufgerechnet.
+v1.13  'Tipp des Tages' Funktion
+v1.13  Bildschirm- und Druckerschriftgröße sind jetzt veränderbar
+v1.13  Sanduhr beim Speichern der Einstellungen (kann unter Windows 2000 ein paar Sekunden dauern)
+v1.14  Doku überarbeitet
+v1.14  aktuelles UmSt-Voranmeldungs-Formular eingebaut
+v1.15  'Buchungsdatum belassen' Option eingebaut
+v1.15  Bugfix: Absturz beim Wählen des Hilfe-Menüs, ohne dass eine Buchungsdatei geöffnet war
+v1.15  Scrollen repariert und Scrollrad-Unterstützung eingebaut
+v1.15  Bugfix: Wenn nachträglich bei 'Buchung ändern' der Privat-Split benutzt wurde stützte das Programm ab
+v1.15  Buchen-Dialog: Die Felder Datum, Betrag, UmSt und Beschreibungstext werden jetzt beim Wechsel zw. Einnahmen und Ausgaben nicht mehr gelöscht
+v1.15  Per 'checkbox' im Druck-Dialog kann jetzt der Druck der UmSt-Voranmeldungsformulars unterbunden werden, so dass das Originalformular des Finanzamts verwendet werden kann.
+v1.15  Einbau des UmSt-Voranmeldungsformulars 2003
+v1.15a Im Druckmenü muss man nun immer erst dezidiert auswählen, was man ausgedruckt haben möchte
+v1.16  Journal-Hintergrundfarbe an die Systemfarbe angepasst
+v1.16  eigene Spalte für die Belegnummer
+v1.16  laufende Buchungsnummern werden jetzt mit vorangestelltem 'E' oder 'A' und nachfolgender 4-stelliger Nummer generiert und in das Belegnummernfeld geschrieben
+v1.16  Beim Ändern von Einnahmen zu Ausgaben änderte sich die laufende Nummer nicht entsprechend
+v1.16  '&'-Zeichen werden im Journal jetzt richtig dargestellt
+v1.16  die Kontennamen in den Einstellungen lassen sich nun direkt ändern 
+v1.16  Im Kopf des Ausdrucks der EÜ-Rechnung wird jetzt auch die Steuernummer angeben
+v1.16  verschiedene Rechtschreibkorrekturen
+v1.16  Selektion beim Ändern und Löschen mit rechter Maustaste jetzt sichtbar
+v1.16  Ändern von Buchungen jetzt auch mit Doppelklick im Journalfenster
+v1.16  Optional Ganzjahres- Halbjahres und monatsgenaue AfA möglich
+v1.16  laufende Buchungsnummer wird nur dann erhöht, wenn sie im Belegnummern-Feld unverändert bleibt
+v1.16  Buchungsjahr ist nun über Einstellungen->Allgemein änderbar (für den Fall, dass beim Neu-Anlegen versehentlich ein falsches Buchungsjahr angegeben wurde)
+v1.16  hinter EINNAHMEN bzw. AUSGABEN im Jounalfenster auf dem Bildschirm wird nun das Buchungsjahr mit angegeben
+v1.16  es gibt nun eine zeitlich passende Meldung mit Hinweis zur Jahreswechsel-Funktion
+v1.16  bei der Änderung des Landes wird angeboten die der nationalen Gesetzgebung entsprechende AfA-Genauigkeit einzustellen
+v1.16  Beim UmSt-Voranm.-Druck: Hinweis wie Voranmeldungszeitraum geändert werden kann in den Dialog aufgenommen
+v1.16  Das Drucken von einzelnen Konten ist nun möglich
+v1.16  weitere Felder (41, 48, 62) in der UmSt-Voranm. werden berücksichtigt
+v1.17  CSV-Export: Spalten angepasst, so dass Einnahmen- und Ausgaben-Dateien optisch besser zueinander passen (Belegnummer in die 2. Spalte, AfA-Infos bei Ausgaben zum Schluss)
+v1.17  Versionsinformation wurde im Dokument nicht korrekt gehandhabt (hat keine Auswirkungen auf die Stabilität der aktuellen Programmversion)
+v1.17  Den Kontennamen "Steuerfreie Umsätze" und "Einfuhrumsatzsteuer" kann links nun noch ein Zusatz zugefügt werden (z.B. DATEV-Kontonummer)
+
+v1.18:  
+Die Bemessungsgrundlage bei der Umsatzsteuervoranmeldung wird jetzt vom vollen Euro-Betrag berechnet.
+Die Textfarbe und entspr. die Fensterhintergrundfarbe werden nun aus den Windows-Einstellungen übernommen.
+Die Zeilenbreite im Journal wird nun dynamisch an die Fensterbreite angepasst. 
+MWSt und Belegnummernspalten im Journal werden nur dann angezeigt, wenn entsprechend relevante Buchungen gemacht wurden. 
+Schon ausgeführte Dauerbuchungen können jetzt nachträglich geändert und nochmal ausgeführt werden, indem das 'Ausgeführt Bis'-Datum zurückgesetzt wird. Die alten Buchungseinträge im Journal müssen allerdings von Hand gelöscht werden. Ich hoffe, damit wird der Mechanismus transparenter.
+Dauerbuchungen sind jetzt auch in 2-monatlichen Intervallen möglich.
+Die Eingabe von Buchungspresets mit einer AfA-Dauer von 0 Jahren wird jetzt unterbunden.
+Einen Fehler beseitigt, der in seltenen Fällen für einen Absturz beim Aufruf der Dauerbuchungen verantwortlich war.
+Die Anrechnung der festgesetzten Sondervorauszahlung für Dauerfristverlängerung (Feld 39) im deutschen USt-Voranmeldungsformular bzw. Sonstige Berichtigungen (Feld 90) im österreischischen Formular wird jetzt berücksichtigt.
+Feld 43 Der USt-Voranmeldung (Weitere Steuerfreie Umsätze mit Vorsteuerabzug) wird jetzt unterstützt.
+Steuerfreie Umsätze ohne Vorsteuerabzug wurden bei der Anlage UR der Einkommensteuererklärung vergessen.
+Knopf für die Seitenansicht in der Werkzeugleiste.
+Es gibt zwei weitere Nummernkreise für Buchungsnummern. Aktivierbar durch Drücken von 'B' oder 'K' im Belegnummernfeld.
+
+v1.19:
+Verschiedene Rechtschreibkorrekturen.
+Bugfix: Druckjustierung war beim USt-Voranmeldungs-Druck ungenau.
+Bugfix: AfA-Genauigkeit wurde nur beim Wechsel des Landes für das aktuelle Dokument übernommen.
+Meldungstexte verständlicher gemacht.
+In der deutschen UST-Voranmeldung wurde seit dem letzten Update die Steuer korrekter Weise von dem abgerundeten Umsatz berechnet, allerdings stimmte die Berechnung für Österreich nicht mehr. Ist jetzt länder-sensitiv.
+Bugfix: Bei AfA-Buchungen mit anderem als dem voreingestellten Default-Steuersatz wird ersterer nicht korrekt übernommen und der Restwert wird verfälscht. Eine manuelle Korrektur des Restwerts bei bestehenden Folgejahr-AfAs ist ggf. notwendig.
+Für AfA-Folgejahbuchungen ist jetzt das Verändern wieder erlauben -- allerdings nicht ohne den Hinweis, dass das auf eigene Verantwortung geschieht.
+Außerdem ist der Restwert jetzt ab der 2. AfA-Rate sichtbar und veränderbar.
+Problem mit Umsatzsteuervoranmeldungsdruck behoben (2. Seite wurde manchmal nicht gedruckt bzw. 1. Seite wurde von ihr überdruckt)
+
+v1.20 Pre-Release zu v1.21
+
+v1.21 ActiveX Plugin Schnittstelle
+
+v1.22:
+Ich habe mal das Privat-Split etwas umgebaut. 
+Jetzt werden außerdem, wie es das Finanzamt gern möchte, Einnahmenbuchungen erzeugt mit dem entspr. Privat-Satz. In den Einstellungen kann man jetzt die Einnahmen-Konten wählen, auf die der Privatanteil gebucht wird. Der %-Satz wurde vom Betriebsanteil auf den Privatanteil umgestellt. Wenn der Privat-Split Knopf gedrückt wird beim Ändern einer Buchung wird beim Abschluss geschaut, ob eine korrespondierende Buchung bereits existiert. Die Buchungen bilden beim Erzeugen sozusagen eine Familie. 
+Das Programm erlaubt nun zwei Nachkommastellen bei den Split-Sätzen. 
+Es ist außerdem eine Spalte 'UST-Split' hinzugekommen. Damit kann man stufenlos wählen, wie viel Vorsteuer in der Gegenbuchung auf der Einnahmen-Seite abgezogen werden.
+Betrifft Bugtracker-Berichte #156 #87 #198 #241 # 248 und #289.
+
+Bugfix: Scrollbalken funktionierte bei sehr vielen Buchungen nicht korrekt. Die von Microsoft vorgeschlagene Lösung für das Problem schließt aber Windows 95/98/ME nicht ein. Benutzer dieser Betriebssysteme müssen den neu eingebauten Filter benutzen, um an alle Buchungen heran zu kommen (s.u.).
+Betrifft Bugtracker-Berichte #232 und #287
+
+Bugfix: Probleme beim Druck des Umsatzsteuervoranmeldungs-Formulars. Seiten wurden doppelt bzw. garnicht gedruckt.
+Betrifft Bugtracker-Berichte #89 #223 #240 und #273
+
+Plugin-Manager mit Auto-Updater hinzugefügt.
+
+Journal lässt sich jetzt nach Konto und Monat filtern.
+
+ Es ist jetzt nicht mehr möglich, dass sich das Haupt- oder Buchungsfenster nach Verkleinerung der Bildschirmauflösung im nicht sichtbaren Bereich des Bildschirms öffnet.
+
+für v1.30: 
+Bugfix: Ab einem Betrag über 10000 (oder unter -10000) wechselt EC&T in die ungenauere und langsamere aber für große Beträge besser geeignetere Fließkommaarithmetik. In dem Codeteil wird fälschlicherweise mit 0,005 statt mit 0,5 Cent kaufmännisch gerundet.
+Cursor nach Umschalten der Buchungsart (Einnahmen <-> Ausgaben) z.B. mit Alt-E oder Alt-A springt jetzt in das Datumsfeld bzw. Betragsfeld (je nach der Einstellung 'Cursor ins Betragsfeld').
+Bei der Beschreibung in den Dauerbuchungen ist es jetzt möglich Platzhalter einzusetzen: $M (zweistelliger Monat, ggf. mit füherender 0) $m (Monat) $q (Quartal) $h (Halbjahr) $J (Jahr vierstellig) $j (Jahr zweistellig) und $2 (Nummer des 2-Monatszeitraums)
+Bei Dauerbuchungen kann jetzt auch das Belegnummernfeld vorgegeben werden, mit den gleichen Platzhaltern wie beim Beschreibungsfeld.
+UST-Voranmeldungsformular für 2007
+EÜR-Formular für 2006
+Bugfix: Die Konten-Spaltenüberschrift bei Einstellungen->E/Ü-Konten hat sich nicht korrekt geändert, wenn man auf Ausgaben umgeschaltet hat.
+
+v1.31:
+Bugfix: Bei Neuinstallationen wurden keine Konten gemäß des EÜR-Formulars erzeugt.
+Feature: EÜR-Felder für reine UST und VST -- Reine UST- und VST-Beträge, wie sie z.B. bei innergem. Erwerben oder Leistungen anfallen, können nun den Feldern 1140 und 1185 zugewiesen werden. Rechts im Formular, außerhalb des Druckbereichs, erscheinen die Summen, die explizit den entspr. Konten zugewiesen wurden und nicht implizit aus den anderen Einnahmen- bzw. Ausgaben-Konen berechnet wurden.
+Unschönheit behoben: Konten in der Freestyle-EÜR werden nun nach dem 72. Zeichen abgekürzt, um nicht mit dem Betrag zusammen zu stoßen.
+
+v1.35:
+Beim Buchung-Ändern wird das Konto nun nicht mehr zurückgesetzt, wenn es nicht offiziell in den Einstellungen existierte.
+Die Zeilen im Journal sind nun abwechselnd weiß und hellgrau unterlegt. (Bugtracker-Featurevorschlag 0000188)
+Kosmetischer Bugfix beim Plugin-Manager (Icons wurden ab dem 5. Listeneintrag nicht korrekt angezeigt)
+Suchfunktion: Mit STRG-F bekommt man jetzt zur Journalansicht eine Eingabebox für Suchbegriffe, die in der Beleg- und Beschreibungsspalte gesucht werden. Genaue Beschreibung der Funktion siehe hier: https://www.easyct.de/readarticle.php?article_id=24
+Erste Version mit neuem Umsatzsteuervoranmeldungsformular.
+
+v1.36:
+Der CSV-Export hat jetzt Datei-Speichern-Unter Dialoge.
+Bugfix: Beim neuen Umsatzsteuervoranmeldungsformular unter dem Menüpunkt Formulare wurde nur der erste Monat bei quartalsweiser Anmeldung zusammengerechnet.
+Das neue Umsatzsteuervoranmeldungsformular ist nun frei zur Benutzung als Beta-Version für das ganze Jahr 2008 zu benutzen und enthält jetzt weitere Felder für Auslandslieferungen bzw. -leistungen (§13b).
+Beim Journaldruck wurde oben und links noch etwas mehr Platz gelassen (Lochrand, Optik).
+
+v1.37
+DokumentCtrl -- LoescheBuchung: Return Type VT_I4 ersetzt durch VT_EMPTY (void)
+Beim Löschen/Ändern von Buchungen mit Maus-Rechtsklick wird nun die betroffene Buchung im Journal eindeutig markiert.
+Neben CTRL-F und ESC für das Ein- und Ausblenden des Suchfeldes funktionieren jetzt auch die Pfeiltasten, um zu weiteren Vorkommen des Suchtextes zu springen.
+Die AfA-Genauigkeit ist jetzt für jede Buchung einzeln änderbar, um die deutsche 'AfA-Pool' Regelung elegant zu unterstützen.
+Wird auf ein Konto mit Namen 'VST-Beträge separat' gebucht, erscheinen die Beträge im Journal in der VST-Spalte und an entspr. Stelle in der Freestyle-EÜR sowie UST-Erklärungsvorlage. Das Konto sollte mit den entsp. VST-Formularfeldern verknüpft sein.
+---
+EÜR Formular für 2008 mit den neuen Feldern 1137, 1138 und 1188 eingepflegt.
+Das neue Umsatzsteuervoranmeldungsformular gibt für 7% und 19% MWSt nicht mehr die centgenauen Beträge der einzelnen Buchungen wieder, sondern berechnet die Steuer direkt aus der Bemessungsgrundlage.
+Praktischen Knopf 'Feldname -> Kontoname' im Konto-erstellen Dialog eingefügt.
+Weitere Verbesserungen in der Verarbeitung der Formulare.
+
+v1.38-1.40 versch. Bugfixes
+
+v1.41
+Beim Update über den Plugin-Manager wird das Datei-Caching des Internet-Explorer nun ausgeschaltet, so dass gewährleistet ist, dass auch tatsächlich die aktuelle Datei heruntergeladen wird.
+Bugfix: Bei 100 Ausgaben-Konten hatte die Liste in den Einstellungen->E/Ü-Konten gestreikt.
+Feld 96 in der UVA wird nun mit der ID 96 unterstützt, und nicht mehr mit der ID 1494. Analog Feld 98 und ID 1495. Bitte in den Einstellungen ändern! Außerdem entfallen die Felder 1489 und 1493 ersatzlos.
+Unterstützung des Felds 39 (Sondervorauszahlung für Dauerfristverlängerung). Die Sondervorauszahlung für das aktuelle Jahr kann unter Einstellungen/Allgemein eingetragen werden und wird im letzten Voranmeldungszeitraum im UST-Voranmeldungsformular automatisch berücksichtigt.
+Dezimalkomma und Tausendergruppentrenner werden nun aus der Windows-Systemsteuerung gelesen (für die schweizer Benutzer, die den Dezimalpunkt und das Tausendertrenner-Hochkomma verwenden).
+Nullwerte werden jetzt normalerweise nicht mehr in Formularen angezeigt. (Ausnahme: Feld 83 in der UVA)
+Bei den Formularen die Funktion 'Felder Anzeigen' eingebaut, zu erreichen über rechte Maustaste im Formular (eher für mich, um den Überblick zu behalten).
+
+v1.42
+Beim Jahreswechsel wird beim Speichern-Dialog jetzt derselbe Verzeichnispfad vorgegeben in dem schon die Datei des alten Jahres gespeichert war und es wird abgefragt, ob Die Datei mit dem neuen Buchungsjahr gleich geöffnet werden soll.
+Kosmetischer Bugfix: Die Abschreibungsgenauigkeit pro Buchung (GWG-Pool) wurde beim Jahreswechsel nicht mit übernommen, stattdessen wieder der Default-Wert 'entspr. Einstellungen' gesetzt. Allerdings hat das keinen Effekt auf die Zahlen, weil ab der 2. Jahresrate nur noch stumpf der Restwert heruntergezählt wird, bis er bei null ist.
+Das Programm sollte sich nun weniger zickig verhalten, wenn neue Dokumente erzeugt wurden, die aber nie gespeichert wurden (z.B. um eine Funktion zu testen). Früher kam dann immer die Eingabe des Buchungsjahrs & Währung.
+Der Währungs-Konvertierungsdialog bei Datei->Neu ist nun auch endlich raus. Das Währungskürzel wird nun aus den Daten der Systemsteuerung vorgegeben.
+Der Zusatz "(einschl. Umsatzsteuer)" bei der Freestyle-EÜR entfernt, wenn tatsächlich alles mit 0% MWSt gebucht wurde.
+Die Freestyle-EÜR sollte jetzt auch mehrseitig korrekt drucken.
+Im UST-Voranmeldungsformular habe ich die experimentellen Felder 1489, 1493, 1495, 1195, 1094, 1494, 2052, 1473 und 1484 nun entfernt. Felder 74 und 85 wurden korrekterweise in Einnahmen-Felder verwandelt. Das automatische Rausrechnen der MWSt. z.B. bei innergem. Erwerben führte doch zu viel Komplexität. In Zukunft gilt die Regel: Wer ein Einnahmen-Konto der UStVA explizit nutzt, das nichts mit den implizit berechneten Steuern der Umsätze der Felder 81, 86 und 35 zu tun hat, (z.B. innergem. Erwerbe, Feld 89), muss Netto- und Steuer-Betrag mit 0% auf die jeweiligen Felder verbuchen (z.B. bei innergem. Erwerben den Netto-Anteil auf das Ausgaben Konto, das mit Feld 89 verknüpft ist, und den Steuer-Anteil auf ein Einnahmen-Konto, das mit Feld 1189 verknüpft ist). Bei den Ausgaben-Feldern 52, 73 und 84 kann man, um sich eine Buchung zu sparen, die Vorsteuer in der Ausgaben-Buchung implizit angeben. Dazu ein Beispiel, weil ich immer wieder merke, dass das falsch verbucht wird. Beispiel eBay-Gebühren (O-Ton eBay: "Da die Dienstleistung von eBay von außerhalb Deutschlands erbracht wird, können Gewerbetreibende in der Regel nicht, wie sonst üblich, die auf eBay-Gebühren bezahlte Mehrwertsteuer als Vorsteuer geltend machen. Wenn Sie ein Gewerbe betreiben, lassen Sie sich deshalb von eBay Nettorechnungen ausstellen. Weitere Informationen hier: http://pages.ebay.de/help/account/vat-business.html"):
+100 EUR von der eBay Netto-Rechnung, dort 19% draufrechnen, also brutto 119 EUR verbuchen mit 19% als Ausgaben auf ein mit Feld 52 verknüpftes Konto; dann über eine 2. Buchung die 'imaginär ausgewiesenen' 19 EUR UST auf ein mit Feld 53 verknüpftes Konto verbuchen (selbstverständlich dabei 0% einstellen). Mehr dazu in diesem Thread: https://www.easyct.de/fusion_forum/viewthread.php?forum_id=5&thread_id=922
+
+1.43: 
+Bug entfernt, der dazu führte, dass beim Buchen keine negativen Beträge eingegeben werden konnten. (https://www.easyct.de/tracker/view.php?id=587)
+
+1.44:
+
+1.45
+Mandantenfähigkeit
+'Feldzuweisung löschen' Knopf im Konto ändern Dialog (Einstellungen->E/Ü-Konten)
+Vista-Virtualisierung umgangen (Plugin-Mangager funktioniert jetzt ohne 'Zugriff verwehrt' Meldung).
+Kleiner Bugfix: Wenn man im Journal nach Konten Modus war und dann unter Menü->Ansicht->Jornal nur für ein Ausgabenkonto wählte, wurden die nicht dargestellt.
+Für Österreich funktioniert jetzt die Initialisierung der Konten mit den Feldern der Anlage E1a.
+Hinweis bei Einstellungen->Privatsplit hinzugefügt.
+VST Separat wurde unter Menü->Datei->Seitenansicht->Einnahmen-Überschussrechnung in die VST gerechnet und angezeigt aber nicht in die Summe.
+
+v1.46
+Tipps-Datei wurde nicht im richtigen Verzeichnis gesucht.
+Die Dateiliste im Datei-Menü wird jetzt korrekt aufgebaut.
+Bei ungültigem Datenverzeichnis wird jetzt angeboten, das Verzeichnis erneut auszuwählen.
+
+v1.47
+Der Test, ob die zu öffnende Datei sich im korrekten Datenverzeichnis für den Mandanten befindet, wird jetzt groß/kleinschreibungs-unsensitiv gemacht.
+Die Formulardefinitionsdatei uva.ini des alten Formularsystems wurde im Datenverzeichnis gesucht!
+Dateiname wurde im Nicht-Mandanten-Modus nicht mehr im Fenstertitel angezeigt.
+Das Datenverzeichnis ist nun per Menüpunkt nachträglich änderbar
+
+v1.48
+Kritischer Bugfix: Wenn nach dem Jahreswechsel (Menüpunkt unter Datei) die Frage "Soll das neue Buchungsjahr jetzt gleich geöffnet werden?" kommt, wurde die neu angelegte Datei (Jahr2010) in die geöffnete Datei (Jahr2009) eingelesen. Die Jahreszahl wird z.B. dabei erhöht. Wird jetzt auf speichern gedrückt, hat man die Buchungsdaten 2009 mit der internen Jahreszahl 2010 gespeichert. Das kann in dem Einstellungen (unter Allgemein) wieder korrigiert werden, aber es kann auch passieren, dass Ausgaben-Belege dabei verschwinden. Ein Abgleich mit dem Backup ist deshalb in jedem Fall sinnvoll. (Bugtracker-Bericht #0000672)
+Kleinerer Bugfix: Es kam zu einem Überlauf im Formular-Code ab etwas über 200.000 € Umsatz pro Monat/Quartal (was intern in Cent als Festkommazahl repräsentiert wurde und dann auch noch mit 100 multipliziert wurde. Dabei kam es zur Überschreitung der mit 32bit darstellbaren 2.1 Mrd. Ich habe die Summen-Berechnungen im Formular jetzt auf 64bit umgestellt. Das sollte bis zur nächsten Inflation reichen. (Bugtracker-Bericht #0000671)
+Kleinerer Bugfix: Wird das Dokument geschlossen, wurde der Saldo unten in der Status-Leiste nicht auf '0,00' zurückgesetzt. (Bugtracker-Bericht #0000271)
+
+v1.49
+Neue Features Betriebe und Bestandskonten eingebaut.
+Kleinerer Bugfix: Beim Neuanlegen von Buchungsdateien bzw. manuellem Verändern der Dateinamen wurden diese Dateien zwar korrekt im Menü angezeigt, die Dateinamen aber intern nicht verändert, so dass man die richtige Buchungsdateien über den Schnellstart im Dateimenü ggf. erst beim nächsten Starten öffnen konnte. (Bugtracker Bericht #0000675)
+Kleinerer Bugfix: Beim Ändern des Landes unter Einstellungen->pers. Daten wurde beim Umschalten des Landes noch die alten 16% MWSt für Deutschland vorgegeben.
+Bugfix: Im EÜR-Formular 2008 wurde Feld 142 (Wege zwischen Wohnung und Betriebsstätte) zu 140 addiert, statt es zu subtrahieren.
+Bugfix: Bei Einstellung eines Dezimalpunkts statt eines Dezimalkommas in der Windows-Systemsteuerung wurden Nullwerte im Elster-Export angezeigt, die eigentlich ausgeblendet werden mussten.
+Bei der Einstellung des Bildschirm- und Druckerschriftart kann jetzt auch der Schriftstil (fett oder kursiv) geändert werden.
+Das Layout des Journals ist jetzt verbessert, so dass auch Querdruck möglich ist (einzustellen bei Menü->Datei->Druckereinrichtung).
+Den Druck-Code habe ich generell mal aufgeräumt. Vielleicht hilft das bei Abstürzen beim Druck, die vereinzelt berichtet wurden.
+
+v1.50
+4 Bugfixes:
+- Die Bilddateien für das alte UStVA-Formular über Druckmenü werden jetzt wieder angezeigt bzw. mitgedruckt.
+- Manchmal gab es während des Updatens per Plugin-Manager den Fehler "Zugriffsverletzung während des Zugriffs auf C:\ProgrammData\EasyCash&Tax\download\install.bat"
+- Die Überlappung von Datum und Belegnummer bzw. Beschreibungstext beim Druck des Journals wurde behoben.
+- die Unternehmensart wurde manchmal nicht korrekt in das EÜR-Formular eingetragen.
+
+v1.51
+- Neutrale Konten werden nun auch in der E/Ü-Rechnung ignoriert.
+- Bei der Bestandskonten-Ansicht überlappte das Icon manchmal die Konten-Überschrift.
+- Hinweis im 'Neues Konto' bzw. 'Konto ändern' Dialog aktualisiert
+- Beim Jahreswechsel wird der Belegnummer von AfAs die Jahreszahl des alten Jahres mit Schrägstrich angehängt, so dass bei automatischer Belegnummernvergabe keine doppelten Belegnummern mehr auftreten.
+- Tooltip zeigt in den Einstellungen -> E/Ü-Konten jetzt den kompletten Konten- bzw. Feldnamen an, wenn man mit der Maus über einen Eintrag fährt.
+- In der Statusleiste wird jetzt neben dem Brutto-Saldo auch der Netto-Saldo angezeigt.
+- Der Saldo in der Statusleiste wird bei eingeschaltetem Monatsfilter jetzt auch nur für den entspr. Monat angezeigt.
+- Außerdem werden neutrale Konten (die mit '/' anfangen) nicht mehr im Saldo in der Statusleiste berücksichtigt.
+
+v1.52
+- Bugfix: Feldzuweisungen werden jetzt korrekt gespeichert
+
+v1.53
+- Freestyle-EÜR (über den Druckauswahl-Dialog) ist jetzt nach Betrieben getrennt.
+- Bestandskonten sind jetzt über den den Druckauswahl-Dialog verfügbar.
+- Bei der Bestandskontenansicht ist jetzt der Monatsfilter (Ansicht-Menü) funktional, entsprechend der Datumsfilter beim Bestandskonten-Druck.
+- Schnellerer Bildschirmaufbau vor Allem bei sehr vielen Buchungen. Insbesondere der Darstellungscode nach Datum wurde optimiert: Mit eingeschaltetem Monatsfilter ist die Darstellung jetzt sehr viel schneller.
+- Bei Versagen der Schriftgrößenberechnung (Windows 98) wird jetzt festverdrahtet eine 16-Punkt-Schrift eingestellt.
+- Beim Ändern eines Mandantenverzeichnisses wird jetzt das aktuelle Verzeichnis vorgegeben, nicht mehr nur 'Eigene Dateien'.
+- Nach der Aktivierung der Mandantenfunktion mit der Icon-Auswahl kommt jetzt automatisch der Auswahldialog zum Anlegen weiterer Mandanten.
+- Betriebe und Bestandskonten werden jetzt mit exportiert
+- CSV-Export überarbeitet
+- 2 Bugfixes bei Mandanten
+- UStVA-Hintergrundgrafiken jetzt mit 11er Prefixes bei Voranmeldungszeitraum
+- Tastatur-Shortcuts beim Buchen für die ersten drei Betriebe und Bestandskonten (ALT-1 bis ALT-6) für Betriebe und Bestandskonten beim Buchen eingebaut
+-->RC1: Bug bei Ansicht nach Bestandskonto wenn Monatsfilter aktiv und eine fortgeschrittene Abschreibung in den übersprungenen Buchungen enthalten ist
+-->RC1: Belegnummer und Beschreibung werden jetzt in die Sortierreihenfolge einbezogen für den Fall, dass das Datum gleich ist
+-->RC2: Beim Export wird bei den Ausgaben nun zusätzlich der Netto-Abschreibungswert im laufenden Jahr mit exportiert
+-->RC2: "VST-Beträge separat" wurden im Journal nicht korrekt zum Brutto-Gesamtbetrag gerechnet
+
+v1.54
+- querformatige Fromulare (Österreich)
+- Horizontales Scrollen ist nun möglich, wenn ein Formular von der der Breite her nicht in das Fenster passt.
+- kleines Backup in OnFileJahreswechsel() eingebaut
+Feld 68: Steuerpflichtige Umsätze, für die der Leistungsempfänger die Steuer nach §13b Abs. 5 Satz 1 l.V.m. Abs. 2 Nr. 10 UStG schuldet
+Felder 78 und 79: Lieferung von Mobilfunkgeräten und integrierten Schaltkreisen
+
+v1.55
+- Vor dem Anlegen des Datenverzeichnisses kommt jetzt ein instruktiver Dialog mit einer Beispiel-Verzeichnisstruktur (identisch mit www.easyct.de -> Doku -> Anleitung -> Einführung und Installation).
+- Beim USt-Erklärungsformular werden die Vorauszahlungen jetzt korrekt zusammengerechnet (Quartal 4 wurde doppelt, statt Quartal 1, gerechnet).
+- Außerdem wurde dort die USt aus Zeile 98 (Zwischensumme) nicht mehr in der Aufrechnung berücksichtigt und stattdessen die abziehbaren Vorsteuerbeträge aus Zeile 99 als USt eingesetzt. Das ist jetzt behoben.
+- In den Dauerbuchungen gibt es jetzt einen neuen Platzhalter '$#', der die laufende Buchungsnummer z.B. 'A0001' einfügt und hochzählt.
+- Im USt-Voranm. Formular war Feld 1193 "Innergem. Erwerbe zu 7% (Steuer-Anteil)" bisher fehlerhafterweise ein Ausgabenfeld und kein Einnahmenfeld.
+- Die implizite Backup-Funktion des Jahreswechsels ist jetzt auch separat aufrufbar über Menüpunkt im Datei-Menü und Toolbar.
+
+v1.56
+- Das Einsortieren der Einnahmen-Anteile beim Privat-Split funktioniert jetzt wieder korrekt. Den Fehler hatte ich im Zuge der Schnelligkeits-Optimierungen der v1.53 eingebaut.
+- Betriebe und Bestandskonten sind jetzt auch in den Dauerbuchungen verfügbar
+- Die letzten beiden Seiten des österreichischen U30-Formulars fehlten in der v1.55 Release.
+
+v1.57
+- Bugfix:Es gab beim Ändern des Buchungsdatums der letzten Buchung einen Absturz.
+
+v1.58
+- Formulare für 2013
+- Bugfix: Bei Split-Buchungen wurde die Einnahmen-Buchung falsch einsortiert. Den Fehler hatte ich im Zuge der Schnelligkeits-Optimierungen der v1.53 eingebaut.
+- Bugfix: Wenn ohne MWSt. gebucht wurde (also immer 0%) wurden in der Bestandskontenansicht die Brutto-Beträge nicht angezeit.
+- Totgeschaltet: Die Buchungsnummernprefixe B und K erzeugen nun keine laufenden Buchungsnummern für Bank und Kasse mehr. Die Funktion ist durch die Bestandskontenfunktion obsolet geworden und es gab Beschwerden deswegen, weil bei Buchungsnummern, die mit B oder K begannen, der Fokus nach Eingabe des Buchstaben sofort ins nächste Dialogfeld sprang.
+- Performance: Wenn als Datenverzeichnis ein Netzwerkpfad in UNC Nomenklatur (\\Computername\Freigabename\Unterverzeichnis) angegeben wurde, sollte das Starten des Programms und vor allem das Speichern der Einstellungen wesentlich schneller gehen.
+- Feature: 36 neue Bestandskonten-Icons von zuvor noch nicht vertretenen Banken (Dank an Herbert für die Mühe!)
+- Modernisierung: Daten wie die Registriernummer, Mandanten und das Datenverzeichnis werden jetzt in der System-Registrierung gespeichert. Diese Informationen können über zwei neue Datei-Menüpunkte nun auf einfache Weise gesichert bzw. bei einer Neuinstallation des Betreibssystems wieder hergestellt werden. Die Speicherung der globalen Einstellungen soll Problemen mit Vista und späteren Windows-Versionen begegnen, deren virtuelle Dateisystem-Schicht manchmal dafür sorgte, dass diese Daten verloren gingen.
+- Bugfix: in der v1.57 waren Komponenten enthalten, die für ein paar Betriebssysteminstallationen problematisch waren. Bei der Installation führte das manchmal zu dem Fehler "DLL/OCX konnte nicht registriert werden". Bei der großen Masse der Nutzer trat der Fehler nicht auf, weil die entspr. Bibliotheken bei aktuelleren Windows-Versionen schon vorinstalliert sind.
+
+v1.59
+- Bei Eingabe des Registriercodes wurde dieser nicht korrekt in der Windows-Registry gespeichert.
+- Registrierungsinformationen werden beim regulären Backup eines Buchungsjahres nun mitgesichert.
+
+v1.60
+- Auf vielfachen Wunsch ist jetzt eine Bearbeitungsmöglichkeit für Umsatzsteuervorauszahlungen im Buchen-Menüpunkt vorhanden.
+- Möglichkeit, eine bestehenden Buchung zu kopieren (über rechte Maustaste im Journal)
+- Nach einigen Protesten habe ich mich jetzt doch entschlossen die Buchungsnummernprefixe für Bank und Kasse wieder einzubauen. Sie müssen jetzt aber extra (wie 'E' und 'A') mit einem Häkchen in den Einstellungen aktiviert werden.
+- In der veralteten Funktion unter Datei -> Seitenansicht -> Umsatzsteuererklärung wurden die neutralen Konten mit bei 0% USt aufgeführt. Die USt-Erklärung im Formulare-Menüpunkt ist davon nicht betroffen gewesen.
+- In der Anlage UR des Formulars zur USt-Erklärung gab es einen Fehler, der dazu führte, dass in Zeile 10 neben Feld 793 kein Betrag erschien.
+- Feld 1255 "Ergebnisanteile aus Beteiligungen an Personengesellschaften" als neues Einnahmenfeld hinzugefügt. Die Zwischensumme stand irrtümlich hier und wurde in die nächste Zeile 68 verschoben.
+- Beim Import mit dem CSV-Plugin kam es zu Fehlern bei der Sortierung.
+- Der 7%-ige Steuersatz der Innergemeinschaftliche Erwerbe (Feld 1193) tauchte nicht auf dem Formular für Umsatzsteuererklärung 2012 auf (1193 war irrtümlicherweise als Ausgaben-Feld definiert; Bugtracker #0000893).
+- In Abschnitt C der Anlage UR 2012 waren einige Zeilen verrutscht.
+- Bei veränderter System-Schriftgröße und Verwendung entweder der Betriebe- oder der Bestandskonten-Funktion wurde die Auswahlliste im Buchen-Dialog nicht komplett angezeigt.
+- Umsatzsteuervoranmeldung im Druckmenü totgeschaltet.
+- Beseitigung eines obskuren und sich selten manifestierenden Problems bei der Darstellung der Plugin-Werkzeugleiste
+- weitere 21 Bestandskonten-Icons hinzugefügt (Dank an Hermann Held)
+
+v1.61
+- Bugfix für gelöschte Belegnummer beim Ändern von Buchungen
+- horizontales Scrollen im Buchungstextfeld des Buchen-Dialogs erlaubt. 
+
+v1.62
+- Buchungstextfeld war auf 100 Zeichen beschränkt.
+- Formular-Kontextmenü war in v1.60 kaputt geangen. Veränderungen an Formularen sind jetzt wieder möglich.
+- Beim Journaldruck eines abweichenden Buchungsjahrs (angabe eine Von-Datums, das nach dem Bis-Datum liegt) wurden Buchungen, die auf den letzten Tag fielen, nicht mit ausgedruckt.
+
+v1.63:
+- Noch zu keinem Konto zugewiesene Buchungen wurden im Kontenfilter (Ansicht-Menü) nicht korrekt berücksichtigt.
+
+v1.64:
+- Beim Ändern der USt-Vorauszahlungen (Buchen-Menü) wurde das Dokument nicht als geändert markiert, so dass ohne manuelles Speichern des Dokuments die Änderungen verloren gehen konnten.
+- Journaldarstellung beschleunigt, Druckfehler gesucht
+- neues Feld Rechtsform in den Einstellungen->pers.Daten
+- unter Ansicht->Journal nur für Betrieb können neben der Unternehmensart jetzt auch für jeden Betrieb eine eigene Rechtsform und Betriebssteuernummer angegeben werden.
+neue Felder in der EÜR:
+1221: Übernachtungs- und Reisekosten bei Geschäftsreisen des Steuerpflichtigen
+1222: Miete/Leasing für bewegliche Wirtschaftsgüter
+1223: Beiträge, Gebühren, Abgaben und Versicherungen
+1224: Werbekosten
+140: abgeschafft
+1144: Leasingkosten für Kraftfahrzeuge
+1145: Steuern, Versicherungen und Maut für Kraftfahrzeuge
+1146: Sonstige tatsächliche Fahrtkosten ohne AfA und Zinsen
+1147: Fahrtkosten für nicht zum Betriebsvermögen gehörende Fahrzeuge
+
+v1.65:
+Elster-Export funktionierte nicht mehr mit v1.64 (ECTIFace.dll von v1.63 genommen)
+
+v1.66:
+Schriftgröße in der Journalansicht genauer abgestimmt, Sondervorauszahlung ergänzt in USt-Erkl.
+
+v1.67:
+- IBAN in der Registrierungsmeldung korrigiert (benutze aber noch alte ECTIFace, deshalb erscheint noch die alte IBAN in der Release)
+- Im Plugin-Manager wird jetzt beim Download der Warte-Cursor angezeigt und der Download-Button deaktiviert um ein doppeltes Drücken zu verhindern.
+- Handling der Suchfunktion vereinfacht: Strg-F öffnet nun jederzeit die Such-Werkzeugleister. Nach Eingabe des Suchbegriffs kann mit Strg-F (oder F3) vorwärts weitergesucht werden. Strg-R (oder Shift-F3) sucht rückwärts.
+- Weitere Strg-Tastaturkürzel sind für das Buchen-Menü verfügbar, z.B. öffnet Strg-E den Einnahmen-Buchen-Dialog.
+- Im Journalfenster kann jetzt mit den Pfeiltasten, Bildlauftasten sowie Pos 1 und Ende navigiert werden.
+- Österreichisches Formular E1a: Feld 9230 ist jetzt an der richtigen Position.
+
+v2.0:
+- Ribbon-Benztzeroberfläche
+- Modernisierung der Softwarebibliotheken (z.B. wegen Jahr-2038-Problem)
+- Bugfix: Änderungen des Vorgegebenen Pfads bei Registrierungsinformationen wiederherstellen und speichern wurden ignoriert
+- Bugfix: Das Programm musste nach Eingabe des Registriercodes erst einmal geschlossen und wieder geöffnet werden, damit der Registrierungs-Check, der alle 20 Buchungen läuft, entschärft wird. 
+
+v2.1: 
+Bugfixes: 'Falscher Parameter' beim Drucken und 'nicht unterstützten Vorgang' bei Datenverzeichnis-Auswahl behoben\nv2.0: Major release, u.a. mit neuer Ribbon-Benutzeroberfläche
+
+v2.2: 
+Bugfixes: Journaldruck funktionierte nicht und 'nicht unterstützten Vorgang' bei weiteren Verzeichnisauswahldialogen behoben
+
+v2.3: 
+Bugfix: In 2.2 war das Programm nicht mehr XP-kompatibel ("Einsprungpunkt SHCreateItemFromParsingName nicht gefunden")
+
+v2.4: 
+Bugfix: 'nicht unterstützten Vorgang' beim Mandanten anlegen, Crash-Bericht-System eingebaut
+
+v2.5:
+- Nach Datei->Neu wird das Dokument nicht mehr als 'geändert' markiert und kann ohne 'Datei Speichern' Dialog geschlossen werden. (In der Vergangenheit ist es immer wieder Nutzern passiert, dass sie die versehentlich neu angelegte Datei mid dem Dateinamen einer bereits existierenden Buchungsdatei gespeichert haben und letztere überschrieben.)
+- Bugfix: Default-Aktion für den Formulare-Knopf hat bei monatlicher Voranmeldung das Quartals-Formular gezeigt und umgekehrt.
+- Abdeckung durch Crash-Bericht-System erweitert
+
+v2.6: 
+Bugfix: Wenn Datenverzeichnis nicht existierte gab es einen Absturz beim Verzeichnisauswahl-Dialog
+
+v2.7:
+Bugfix: Möglichen Absturz bei der Darstellung des Plugin-Menüs abgefangen
+
+v2.8: 
+weitere Fehlereindämmung im Zusammenhang mit der Schnellzugriffsleiste
+
+v2.9: 
+Unterstützung der alten Plugin-Architektur (für Kassenbuch-Plugin) -- siehe auch im Forum
+ 
+v2.10:
+Bugfix: Bei Benutzung der Betriebe-Funktion wurde der erste Betrieb im Druckauswahl-Dialog für die Freestyle-Einnahmen-Überschussrechnung ignoriert und stattdessen eine EÜR über alle Betriebe ausgegeben.
+Bugfix: Es gab einen Absturz, wenn die Suchfunktion bei aktivem Filter (z.B. Monat) genutzt wurde.
+Die Druck-Seitenansicht hat nun auch ein Ribbon-Menü.
+Rechnungen nach §19 1a werden in den österreichischen Formularen jetzt unterstützt. (Zuvor muss natürlich vom Nutzer ein neu erstelltes Konto mit den Formularfeldern verknüpft werden.)
+'Speichern unter' Menüpunkt ergänzt im Applikationsmenü
+ 
+v2.11:
+Bugfix: Icons wahren im Plugin-Manager verschoben
+Bugfix: bei den österreichischen Formularen hatte sich ein Fehler eingeschlichen, der dazu führte, dass die meisten Felder nicht angezeigt wurden.
+Bugfix: Querformatsdruck Layout
+Bugfixes: verschiedene kleinere bisher unentdeckte Bugs durch Codeanalysesoftware entdeckt und behoben.
+...
+
+v2.12:
+Bugfix: Die Generierung eines neuen Kontenrahmens aus dem aktuellen EÜR- bzw. E1a-Formular bei fehlender easyct.ini-Datei schlug fehl.
+Bugfix: Absturz bei mehr als 100 verschiedenen Bestandskonten in den Buchungen.
+Pflege: Druckauswahldialog aufgeräumt.
+Feature: Betriebe-Filter in Druckauswahldialog ist jetzt nicht mehr auf die E/Ü-Rechnung beschränkt
+Bugfix: Zahlungen an das Finanzamt werden jetzt im Brutto- und Netto-Saldo in der Statusleiste unten nicht mehr berücksichtigt. In den Einstellungen unter E/Ü-Konten können dafür Konten angegeben werden. Wer einfach nur den Saldo wie in der Freestyle-EÜR haben will (also einen Brutto-Saldo, der durch die Finanzamts-Zahlungen quasi re-nettoisiert wurde) kann die Konten für die Finanzamtszahlungen dort abwählen.
+Bugfixes: Weitere Codeanalysesoftware eingesetzt, um Code-Schwachstellen abzudichten.
+Bugfix: österreichische U-Formulare (Finanzamts-Zahlungen)
+
+v2.13:
+Es wird jetzt beim Aufruf von Plugins auf das Vorhandensein und die korrekte Registrierung von EasyCTX.dll geprüft, um "Dialog Fenster kann nicht erzeugt werden" Meldungen bei Pluginaufrufen zu vermeiden.
+Meldung in PluginManager eingebaut, wenn Lesezugriff auf existierende Setup-Dateien von Plugins in C:\ProgramData\EasyCash&Tax\download nicht funktionierte.
+Hinweis in PluginManager eingebaut, dass Komponenten mit 'kein Update nötig' angezeigt werden, wenn der Updatevorgang abgebrochen wird.
+SDK Bug behoben: http://blogs.msdn.com/b/windowssdk/archive/2008/06/30/winsdk-bug-notification-sdk-config-tool-appears-to-work-but-fails.aspx
+ 
+v2.14: Abstürze nach Plugin-Aufrufen, die Daten in EC&T erzeugten (vor Allem CSV-Import und Fahrtenbuch), beseitigt: AfxOleInit() in InitInstance() war zu viel!
+
+v2.15:
+- Dauerfristverlängerung wird jetzt bei der Formular-Knopf-Hauptfunktion (aktuelle Voranmeldung anzeigen) berücksichtigt, wenn in den Einstellungen (Allgemein/Dokument) eine Sondervorauszahlung hinterlegt ist 
+- Buchstabendreher bei Betriebe-Filter Tooltip korrigiert.
+- Fehler beim Druck behoben (z.B. nicht gedruckte erste Seite mit dem Acrobat PDF-Drucker)
+
+v2.16
+- auf Groß-/Kleinschreibung geachtet beim Speichern der Datei easyct.ini (wichtig nur für Linux-Systeme, die EC&T unter Wine laufen lassen)
+- Möglichen Fehler bei 'Speichern unter' Dialog behoben // e->Delete(); gelöscht
+- Das USt.-Metaformular im Druckmenü druckte manchmal eine Leerseite. Außerdem werden jetzt die Vorauszahlungsbeträge berücksichtigt.
+- Nach der Eingabe einer neuen Buchung wird im Journal dorthin gescrollt und die Buchung wird farblich hervorgehoben.
+- manuelle Download-Option für Plugins im Plugin-Manager
+
+v2.17
+- Der Fokus geh nach der Benutzung des Formelrechners im Buchen-Dialog auf die Beschreibung
+- Das U30 Formular Jänner (Österreich) zeigte "für den Zeitraum 02 2015"
+- Mögliche Behebung eines selten auftretenden Absturzes beim Updaten im Plugin-Manager
+- graue Zeilenhinterlegungen im Journal ein bisschen deutlicher gemacht, weil sie auf manchen Monitoren kaum zu sehen war
+- Quartale in den 'Monats'-Filter mit aufgenommen
+- Die Rechtsform wurde im EÜR-Formular 2014 nicht angezeigt.
+
+v2.18
+- Wenn nur ein einziger Betrieb angelegt war, kam es zu Fehldarstellungen, wenn der Formular-Knopf betätigt wurde, um das aktuelle USt-Voranmeldungsformular anzuzueigen. (Bugtracker Bericht #1037)
+- Bei Quartals-Filter wurde der Saldo im Statusbereich rechts unten immer mit 0,00 angegeben.
+- Zeilenmarkierung bei Klick auf eine Zeile.
+- CaptionBar Meldung wird angezeigt, wenn EÜR 2015 angezeigt wird und Beträge auf Konten mit als 'veraltet' markierte Felder gebucht wurden.
+- CaptionBar Meldung wird angezeigt, wenn es Konflikte zwischen monatlichen und quartalsmäßigen USt-Zahlungen gibt
+- CaptionBar Meldung wird angezeigt, wenn Buchungen ohne Betrieb-Zuweisung da sind (und Betriebe angelegt sind)
+- CaptionBar Meldung wird angezeigt, wenn Buchungen ohne Bestandskonto-Zuweisung da sind (und Bestandskonten angelegt sind)
+
+v2.19???
+
+v2.20
+Bugfix Journalansicht: Buchungsmarkierung im Journal (durch einfachen Klick) berücksichtigte die Scrollposition nicht.
+Bugfix Dauerbuchungen: Die Zuweisungen zu Betrieb und Bestandskonten wurden zwar gespeichert und in der erzeugten Buchung auch benutzt, beim Ändern der Dauerbuchung wurde die Auswahl in den Drop-Down-Listen aber nicht wiederhergestellt. 
+Bugfix Druck: Absturzursache beim Formulardruck behoben
+Feature Formularansicht: Mit der rechten Maustaste ist jetzt die Funktion 'Feldwert in die Zwischenablage kopieren' verfügbar.
+Feature Formularansicht: In der Statusleiste wird angezeigt mit welchen Konten ein Feld verknüpft ist, wenn man mit der Maus drüber fährt.
+Feature Textsuche: Die Suche ist auf mehrfachen Nutzerwunsch jetzt auch nach dem Betrag möglich.
+Feature Warnhinweis: Eine Meldung im caption bar erscheint, wenn das Buchungsjahr des Dokuments nicht mit dem der Buchungen übereinstimmt.
+Feature Datensicherung: Es gibt nun drei verschiedene Datensicherungsoptionen im Applikationsmenü, um das Backup komfortabler zu machen.
+Feature Datensicherung: In regelmäßigen Abständen wird nach dem Speichern ein Datensicherungsoptionen-Dialog angezeigt.
+Feature Warnhinweis: Wenn eine Buchungsdatei nicht im Datenverzeichnis gespeichert wird, gibt es jetzt eine Warnmeldung.
+Verhalten beim Speichern geändert: Das Datenverzeichnis wird jetzt nur noch bei 'Speichern unter' vorgegeben, nicht mehr bei 'Speichern', so dass man sicherer mit mehreren Versionen eines Buchungsjahrs hantieren kann.
+
+v2.21=v2.22
+
+...???
+
+v2.23
+- Bug bei Mandanten: Beim neu erstellen kam manchmal immer nur wieder der Mandantenauswahl-Dialog statt des Icon-Auswaldialogs.
+- Feature bei Mandanten: Wird EC&T über eine .eca-Datei gestartet, versucht EC&T den Mandanten anhand des Dateipfads zu erraten.
+- veraltete Konten werden beim Erststart nicht mehr aus dem aktuellen EÜR-Formular mitgeneriert
+- Groß/-Kleinschreibungsproblem beim Vergleich des Pfads, was eine überflüssige Warnmeldung beim Speichern behoben zur Folge hatte
+
+v2.24
+- Bugfix: Neue Datei anlegen statt Öffnen der zuletzt benutzten Datei beim Programmstart bereinigt.
+- Bugfix-Versuch: Bei zwei Nutzern wurden Beschreibung und Belegspalten im Journal kurioser Weise leicht schief angezeigt.
+
+v2.25
+- Beschreibung bei den Dauerbuchungen akzeptiert jetzt mehr Zeichen
+- Das Symbol für den Privat-Split in der Buchen-Maske ist jetzt farbig
+
+v2.26...???
+
+v2.27
+Filter-Umschalter für Zeitraum ging auf Quartal, nicht Monat
+Hinweis bei Formelrechner ergänzt
+teilweise Datenrekonstruktion bei physisch beschädigten Buchungsdateien
+Zoom-Funktion für Journal- und Formularansicht
+Geschwindigkeitsoptimierung bei der Darstellung von Formularen
+
+v2.29
+Unten links in der Statusleiste steht jetzt bei Programmstart 'Bereit' statt 'Initialisiere'.
+Optimierung: Die Betriebe- und Bestandskontenlisten im Buchen-Dialog werden bei mehr als zwei Einträgen intelligenter dargestellt.
+Feature: Es ist jetzt möglich im Buchen-Dialog das aktuelle Abschreibungsjahr anzugeben, so dass man laufende AfAs nachträglich erfassen kann, z.B. wenn man einmal aus Versehen ein neues Jahr statt der Jahreswechsel-Funktion mit der 'Neu'-Funktion angefangen hat.
+Bugfix: Schriften im Journal wurden evtl. zu groß und überlappend dargestellt, wenn die Schriftgröße in den Einstellungen zu hoch eingestellt war.
+Neue E-Mail-Adresse und https- statt http-Links im Programm.
+Felder 52, 53, 68, 78, 79 der deutschen USt-Voranmeldung fallen weg.
+
+v2.30
+Deutsche Formulare:
+Die im USt-Erklärungsformular § 13 b UStG betreffenden Felder 871, 872, 844 und 845 (die den USt-Vornanm.-Feldern 52, 53, 78, 79 entsprechen) wurden entfernt und diesbezügliche Beträge sind wohl nun unter 'andere Leistungen' in den Feldern 877 und 878 (respektive USt-Vornanm.-Felder 84 und 85) unterzubringen.
+Die Änderungen beim EÜR-Formular sind etwas umfangreicher:
+Feld 1190 (Betriebsausgabenpauschale) fällt weg und wird anscheinend durch Feld 1195 ersetzt (Betriebsausgabenpauschale für bestimmte Berufsgruppen).
+Feld 1191 (Sachliche Bebauungskostenpauschale/Betriebsausgabenpauschale für Land- und Forstwirte) wird aufgedröselt in die Felder 1126 (Richtbeträge für Betriebsausgaben im Weinbau) und Pauschale Betriebsausgaben in der Forstwirtschaft (siehe Anlage LuF des EÜR-Formulars).
+Felder 1217 und 1218, die sich auf bedingt abziehbare Gewerbesteuer beziehen, sind ebenfalls herausgefallen.
+Felder 1240-1242 sind neu, die steuerfreie Einnahmen abdecken, wie etwa Trainer im Verein, die einen Freibetrag von 2.400 € bekommen. Entsprechend gibt es die Neue Felder 1243-1245 sind für Betriebsausgaben, die sich auf diese bereits steuerfreien Einnahmen beziehen und deshalb nicht abgezogen werden dürfen.
+Neue Felder 1261-1263 betreffen bereits berücksichtigte Beträge, für die Teilfreistellungen nach InvStG oder das Teileinkünfteverfahren bzw. § 8b KStG gelten.
+Weitere neue Felder sind:
+- Feld 1225 "Erhaltungsaufwendungen"
+- Feld 1228 "Laufende EDV-Kosten"
+- Feld 1229 "Arbeitsmittel"
+- Feld 1226 "Kosten für Abfallbeseitigung und Entsorgung"
+- Feld 1227 "Kosten für Verpackung und Transport"
+
+Österreichische Formulare:
+- neues Feld in U1/U30 unterstützt: "Einfuhrumsatzsteuer §12 Abs 1 Z 2 lit. a"
+- es gibt eine zusätzliche, für Kleinunternehmer*innen reduzierte Version des Formulars E1a
+(danke Killy!)
+
+Neue Features:
+- Wenn durch Anklicken einer Buchung eine Markierung aktiv ist, wird diese jetzt beim Scrollen, Blättern oder bei Pos1/Ende mitbewegt.
+- Mit dem Drücken der Enter-Taste, während eine Buchung markiert ist, wird diese Buchung geöffnet. Auf diese Weise kann man sich sehr schnell durch mehrere Buchungen durcharbeiten. (Schließen des Buchen-Dialogs mit der Esc-Taste.)
+- ein vierter MwSt.-Satz (wegen des Bedarfs in Österreich und Schweiz)
+- Aus Anlass der Erhöhung der Umsatzobergrenze für Kleingewerbetreibende (bisher 17.500 €, jetzt, ab Steuerjahr 2019, 22.000 €) habe ich das MWSt-Feld beim Buchen per Checkbox optional gemacht.
+- Auf vielfachen Wunsch habe ich beim Druck des Journals den Namen, die Steuernummer und das Anfertigungsdatum als zweite Zeile unter der Überschrift mit aufgenommen.
+
+Bugfixes:
+- Bei Bildschirm- oder Auflösungswechsel konnte der Dauerbuchungs-Dialog außerhalb des sichtbaren Bereichs geöffnet werden und war deshalb unzugänglich.
+- Machte man während einer Formularanzeige einen Doppelklick darin, öffnet sich die Eingabemaske für die Buchungsänderung des zuvor angezeiten Journals. 
+
+
+
+=============================================================
+AB HIER UNSORTIERTE FEATURE-WÜNSCHE UND HINWEISE VON NUTZERN
+WEITER UNTEN IST BEREITS NACH FUNKTIONALER KATEGORIE SORTIERT
+BUGTRACKER-EINTRÄGE SIND HIER NICHT NOCH EINMAL AUFGEFÜHRT
+=============================================================
+
+
+>>>>>>>>>>>>>> ELSTER-PLUGIN -- Finanzamtssuche-Knopf fixen!!!!! <<<<<<<<<<<<<<<<<
+
+
+1. Splittbuchungen:
+Bei unseren Buchungen kommt es immer wieder vor, dass mit einer Abrechnung/Kontobuchung mehrere Rechnungen gemeinsam bezahlt werden oder eingenommene Teilnehmerbeiträge direkt mit Auslagenabrechnungen verrechnet und die Differenz ausbezahlt wird.
+Aktuell müssen wir solche Buchungen händisch mit einzelnen Buchungsnummern versehen und einzeln als Einnahmen und Ausgaben verbuchen.
+Hier möchten wir anregen, dass innerhalb eines Buchungsposten die Möglichkeit zu bieten, diese zu splitten und in einzelne Unterposten mit jeweiliger Kategoriezuordnung zu ermöglichen.
+
+2. Jahresübergreifende Druckmöglichkeit:
+Gerade innerhalb unserer Jugendgruppen entsprechen oft die Kassen nicht dem Kalenderjahr, sondern orientieren sich an der Legislaturperiode des Kassenwartes der Jugend. Dieses beginnt und endet oft im November/Dezember eines Jahres.
+Daher wäre es schön, wenn man hier auch Jahresübergreifend drucken könnte.
+
+3. Deaktivierung von nicht benötigten Feldern:
+Da in vielen kleinen Kassen keine Mwst gebucht wird und auch keine Abschreibung erfolgt, möchten wir auch anregen, dass man in den Einstellungen des Programms vielleicht die Möglichkeit schafft, diese Felder zu deaktivieren.
+
+
+> Nur bei der Einnahmen-Ausgaben-Rechnung steht auf der ersten
+> Seite das Unternehmen vermerkt. Wäre es ev. möglich auf jeder einzelnen
+> Seite eines jeden (Konten-)Ausdruckes quasi in der Kopf- oder Fußzeile
+> den Namen des Unternehmens/Betriebes samt Buchungsjahr mit ausdrucken zu
+> lassen?
+Gegenwärtig geht das noch nicht, nein.
+
+> Und beim Kontenausdruck wäre es ev. hilfreicher, wenn nicht nur Anfangs
+> „Einnahmen“ bzw. „Ausgaben“ steht sondern bei jedem Ausdruck eines
+> Einzelkontos in der Kopf- oder Fußzeile vermerkt wird ob es sich bei
+> diesem Einzelkontoausdruck um ein Einnahmen- oder Ausgaben-Konto handelt.
+Sinnvoller Punkt.
+
+Ich hatte eben beim Testen einen seltsamen Effekt: Ein Kontenname wurde als Spaltenüberschrift dargestellt, wo normalerweise "Konten für Betriebsausgaben steht". Ich konnte es aber nicht reproduzieren.
+Kann es sein, dass das bei Dir auch passiert ist und Du die Spaltenüberschrift versucht hast anzuwählen? Das einzige Problem ist: Die ist ganz oben, nicht ganz unten...
+--> Henning Bruttel <henning.bruttel@gmx.de>
+
+Aber es war wohl ein Fehler für die Nachfrage, ob als Datenverzeichnis wirklich das Programmverzeichnis 
+benutzt werden soll, eine Meldungs-Box mit "nicht noch einmal Fragen" Häkchen zu benutzen. Das werde ich 
+bei nächster Gelegenheit mal ändern!
+
+Ich habe eine Option geplant, die nach Updates guckt, wenn das Programm eine bestimmte, 
+in den Einstellungen wählbare Zeit nicht mehr nachgesehen hat. Dann wollte ich eine 
+Nachricht zwischen Ribbon-Menü und Dokumentfenster einblenden mit der Option den 
+Plugin-Manager zu öffnen und das Update durchzuführen.
+
+Hmm, Ich überlege eine Möglichkeit zu schaffen hilfreiche Hinweise so einzublenden, dass es nicht stört. 
+Das könnte ich natürlich machen, wenn das Jahr des Formulars nicht mit dem des Dokuments übereinstimmt...
+Am 16.10.2014 16:44, schrieb DSFotos.de:> Hallo, naja....wir haben Mitte Oktober 2014....und oben rechts steht fett
+> 2013....das hat bei mir dazu geführt, dass ich 2014'er Umsätze an das
+> Finanzamt für 2013 gemeldet habe...
+
+=-=-=-=->> OnShowPopup() für dynamische Menüs: http://stackoverflow.com/questions/25728752/how-do-i-create-a-dynamic-menu-for-a-ribbon-button
+
+!!!CNeuesKonto::OnOK() testen mit Feld 66 Verknüpfung!!!
+
+VS 2008 Feature Pack Samples, die relevant sind:
+================================================
+- NewControls, u.a. CommandButton
+- StatusBarDemo
+- TabControl
+- WordPad, wegen TasksPane
+- VisualStudioDemo
+- TasksPane
+- WorkSpaceToolbar, ??
+- Slider (im Toolbar)
+- RibbonGadgets, alle Ribbon-Controls demonstriert, Output-Bereich
+- DlgToolTips und ToolTipDemo, ToolTips für jedes Dialog-Control!
+- SetPaneSize, enthält eine Dialog-Pane!
+- TabbedView, für die verschiedenen Journal-Ansichten!
+- StateCollection, verschiedene Layout-Profile speichern und laden (CWinAppEx::Load/SaveState)
+- ToolbarDateTimePicker, ?? 
+
+// Update -> vorhandene Installation checken!
+> Aus irgendeinem Grund, scheint mir, hat EC&T beim Update die Information verloren, wo das Datenverzeichnis liegt und dachte, es wäre eine Neuinstallation, weshalb es auch die neue Datei generiert hat. Ist bei der Installation des Updates irgendetwas auffälliges gewesen? Haben Sie ein anderes als das voreingestellte Verzeichnis gewählt? Oder lag die alte Installation woanders?
+> Auf jeden Fall ist es unglücklich gelaufen. Ich werde mal sehen, ob ich eine Option einbaue, nach dem Update, wenn kein Datenverzeichnis gefunden wird, nach einem zu suchen oder bei Neuinstallation eines zu wählen. Außerdem könnte ich schauen, ob Buchungen in der Datei vorhanden sind und nur dann den Speichern-Unter-Dialog anzuzeigen.
+> Das hilft Ihnen jetzt sicher nicht direkt weiter. Ich bin aber dankbar für die genaue Schilderung, womit ich das Programmverhalten den Nutzererwartungen besser anpassen kann. Insofern war es jetzt nicht ganz umsonst. Vielleicht ist Ihnen das ein kleiner Trost.
+Hmm, ja, der Plugin-Manager orientiert sich nicht am tatsächlich
+installieren, sondern am Heruntergeladenen. Sonst mal unter
+www.easyct.de -> Downloads -> Plugins manuell das Elster-Plugin v2.0
+herunterladen und installieren. Sollte ich mal ändern oder einen Hiweis am Plugin-Manager anbringen!
+
+Zusätzliches Freitext-Feld beim Buchen:
+tm: So etwas würde ich unbedingt optional machen, um die Maske nicht mit zu viel Ballast zu füllen. 
+Wer das Feld nicht benötigt, für den bedeutet es einen zusätzlichen Druck auf die Tab-Taste um 
+da durch zu kommen. Ich habe mir schon einmal überlegt, ob ich nicht eine neue Art Plugin schaffen 
+soll, die zusätzliche Felder für die Buchung vorsieht. Z.B. eines, mit dem man Anhänge and 
+Buchungen anheften könnte. Für Umsatzsteuerbefreite sollte vielleicht auch mal das MWSt.-Feld 
+ausgeblendet werden...
+
+On 23.10.2010 15:25, EasyCT.de Kontaktformular wrote:
+
+> Mir persönlich ist auch an der EÜR gelegen, das die Formulare nicht wirklich übersichtlich sind.
+> Früher habe ich mit MS Money gearbeitet. Da konnte ich mir die Gewinnermittlung als Matrix ausgeben lassen.
+> Pro Zeile eine Kategorie, pro Spalte einen "ausgewählten Betrieb" + eine Spalte für die Summe über die "ausgewählten Betriebe". Eventuell ist das ja so umsetzbar.
+Das ist eine gute Idee, aber da müsste ich am Layout-System etwas aufwändiger was machen, da man theoretisch beliebig viele Betriebe anlegen kann.
+
+
+Das mit dem Standardbetrieb ist eine gute Idee. Ja, die Freestyle-EÜR muss ich auch umstellen, dass sie filtert, wenn man Ansicht nur nach Betrieb wählt. Wie gesagt: Ist noch nicht 100%ig alles -- aber ich wollte erstmal eine Release machen mit dem, was ich bis jetzt habe...
+
+
+--> !!!!! Danke für die Infos! Ich habe da bisher auf die Virtualisierungsschicht vertraut und darauf, dass der Benutzer auf 'seine' Ini im 'Windows-Verzeichnis' auch Zugriff hat. 
+Dann muss ich die wohl mal nach C:\users\<Username>\AppData verschieben. Roaming oder Local, was würdest Du sagen? Ja ich tu mir etwas schwer mit diesen ganzen neuen Microsoft-Moden. 
+die letzte Scrollposition speichern
+
+
+
+--> !!! Bestandskonten und Betriebe unique machen!
+
+
+VOTE Top 10:
+#####Auto-complete bei Buchungs-Beschreibung
+#####Hilfefunktion über F1
+#####Beim Ausdrucken des Konten-Journals Wiederholung des Kopfes nach Seitenwechsel
+#####Reisekostenmodul
+
+
+
+###########30
+Mehr Platz für die
+Beschreibung wäre auch manchmal ganz gut, und eine gleichbleibende Schriftgröße.
+
+#############
+!!!!
+Die Eingabe des Prozentsatzes bei Splitbuchungen geht leider nur über Mausklick.
+Vielleicht wäre die Einrichtung eines Shortcuts möglich. Ansonsten ist das
+
+#################
+- Vergrösserung des Einstellsungsfensters smit der MAus möglich machen
+(weil ich soo viele Konten bzw. Buchung-Presets  habe und dann sooo viel
+scrollen muss)
+
+
+#####19
+ich fände es klasse, wenn evtl. ein Persönliche Info/Kontorahmen/Split-Export
+möglich wäre oder Transportdateien geschrieben werden könnten, die sowohl
+Buchungsdaten als auch Kontenrahmen enthalten.
+
+######45
+> > Es würde viel schneller gehen, wenn die Eingabemaske auch z.B 10 Buchungen
+> > für ein Konto auf einmal ausführen könnte und ich alle 10 Beträge eingeben
+> > kann und dann einmal nur auf bestätigen klicken muss.
+> 
+> Hmm, interessant. Wie machen Sie das mit den Belegnummern? Bzw. was sind das
+> für Buchungen?
+Ich gebe immer nur die Beträge ein, nach Geldeingang, alles die gleichen Waren /
+Konto DVD Filme. Die Belegnummern werden ja dann vom Programm immer automatisch
+erhöht.
+
+#########30
+statt fließender Schriftgrößen im Buchungstext besser ein- und 
+zweizeilig (halbe Schriftgröße) anbieten, ist übersichtlicher.
+
+#######46
+> Das Finanzamt forderte von mir die Umsatzsteuererkärung für 2002 an.habe dann mit ihrem Steuerprogramm dann den Ausdruck gemacht,leider war 
+> dies lediglich ein formloser Ausdruck,dadurch hatte das Finanzamt diese Erklärung nicht anerkannt.Ich muß die Erklärung auf ein Formblatt vom 
+> Finanzamt durchführen.Warum ist dies nicht möglich mit ihren Steuerprogramm.
+Aber ich könnte den Hinweis mitdrucken, dass die Zahlen in das Originalformular umgetragen werden müssen.
+
+########47
+Hilfreich ware es aber , wenn eine Suchfunktion vorhanden waere, die es
+ermoeglicht bestimmte Buchungen aufzufinden, die z.B. einen bestimmte String
+(wie z.B. den Namen) im Buchungstitel enthalten. Ich koennte mir vorstellen,
+dass das am einfachsten ueber eine entsprechende Filterfunktion zu realisieren
+waere, die dann ja auch vielleicht eine Grundlage fuer statistische
+Feststellungen aller Art boete (z.B. alle Buchungen, die an eine bestimmte Firma
+gehen usw.).
+
+##########48
+man könnte in den Buchungs-Presets auch auch Privat-Split (def. 0%)
+miterfassen, um z.B. die für HomeOffice anfallenden Kosten sofort auch
+splitten zu lassen.
+
+
+Pte.
+###5  Beim Ausdrucken des Konten-Journals Wiederholung des Kopfes nach
+   Seitenwechsel
+###5  Eine eigene Spalte für die Belegnummer reservieren
+###7  Reisekostenmodul
+###6  Auto-complete bei Buchungs-Beschreibung
+###5  editierbare Kopf-/Fußzeile für die Ausdrucke
+
+########50
+> die Anzahl der MwSt.-Sätze sollte erhöht werden. Die drei Vorhandenen reichen nicht aus, wenn ich Einkäufe innerhalb der EU 
+> tätige. Da muß ich die Umsatzsteuer-Sätze des entsprechenden Landes bezahlen und buchen. (Umsatzsteuer-Voranmeldung Zeile 
+> 39)
+> Können Sie hier Abhilfe schaffen? Bitte informieren Sie mich!
+Hallo!
+Das sollte nicht so der große Aufwand sein. Ich habe es auf die ToDo-Liste gesetzt.
+
+
+###########
+Einzig die Möglichkeit der Eingabe von Ansparabschreibungen habe ich
+schmerzlich vermisst. Aus unserer Sicht wäre es ein grosser Gewinn für das
+Programm, wenn sie diese Funktionalität bei einer der nächsten Versionen
+einbauen könnten.
+
+
+#In die Finanzamtssysteme lassen sich die CSV-Dateien (Comma Separated Value)
+#einspeisen. Das ist genau das, was man bekommt, wenn man unter Datei->Export 
+#geht. Die würde ich jedenfalls mit auf die Jahresabschlussdiskette tun.
+#->
+#Hmm, eigentlich müsste das Programm beim Jahresabschluss einen kleinen Hinweis 
+#zur Datensicherung bringen. (Gleich notiert!)
+
+#######51
+> mir ist aufgefallen, dass sich EasyCash&Tax mehrmals gleichzeitig starten
+> lässt. Schön wäre eine Überprüfung ob das Programm bereits läuft, wenn man
+> es startet. Ansonsten kann es bei 2 gestarteten Versionen schnell zum
+> Verlust von Daten kommen, da sich beide Instanzen gegenseitig überschreiben beim
+> beenden...
+Richtiger Einwurf. Sobald ich eine richtige Mandantenfähigkeit eingebaut habe, wird das abgestellt.
+
+####### bei 000006 untergebracht
+Kann man noch eine echte "Druckvorschau" (wie sie Kuschmierz in seiner Re 2 gestaltet hat) einbauen?
+
+###Weitere Verbesserungsvorschläge:
+###- Buchungen werden beim Anklicken markiert
+###- In den Buchungen kann gesucht werden
+
+#Kreditkartenkonten mit Umbuchungsfunktion.
+#Sinn:
+#Erfassungsbuchung unter Tagesdatum der Ausgabe und Steuerrelevante
+#Umbuchung,  wenn Belastung im Kontoauszug erfolgt.
+
+#######
+Ansonsten noch ein Vorschlag für eine künftige Verbesserung: im Laufe des Jahres
+werden die Buchungslisten (E/A) recht unübersichtlich lang; deshalb fände ich
+eine Anzeige-Option gut - ähnlich wie beim Drucken, wo man den Zeitraum
+auswählen kann; außerdem wäre es schön, die Listenanzeige entweder von alt nach
+neu oder von neu nach alt sortieren bzw. anzeigen zu lassen.
+
+#####
+> Als Negativpunkt empfinde ich die Betragseingabe. Ich arbeite mit der Währung " Sfr" und finde es schade, dass ich die Nachkommaeingabe mittels 
+> Komma und nicht Punkttaste machen kann.
+Ich werde die entspr. Zeichen mal aus dem Betriebssystem beziehen, um die länderspezifischen Zeichen zu benutzen.
+
+_______________________________
+Menüsystem und Hauptfenster
+###- Beenden - bitte das "e" unterstreichen,
+#- in der Box "Buchung wirklich löschen" könnte der Text wiederholt
+#  werden, damit man sicher ist, daß auch die richtige Buchung
+#  gelöscht wird
+#- die Buchungsliste kann man nicht mit den Pfeiltasten rollen. In
+#  der Liste könnte mit dem Pfeiltasten ein Balken zu verschieben
+#  sein, dann Ändern/Löschen durch Funktionstasten bzw. "del"
+#- rechte Maustaste zusätzlich belegen: Buchung kopieren (falls man
+#  mehrfach das gleiche ober ähnliches gekauft hat). Die Kopie
+#  könnte im Eingabe-Formular erscheinen.
+
+########45
+> Wäre es möglich einzubauen, dass Buchungen gesplittet werden können - also 
+> ein Beleg in einem Arbeitsgang auf mehrere Konten gebucht wird.
+Habe ich einmal notiert. Solche Vorschläge müssen erfahrungsgemäß reifen, 
+bevor ich es wage, mich daran zu setzen.
+
+#########
+> Oder kann man die Spalte mit der Belegnummer irgendwie wieder rauswerfen,
+> damit der Text lesbarer bleibt (weil eigentlich brauche ich die nicht - oder
+> muss man jetzt "von Rechts wegen" so buchen??).
+Das war ein häufig genannter Wunsch. Aber die Journalanzeige muss ich sowieso 
+noch einmal überarbeiten. Z.B. wollte ich die MWSt-Angaben und Netto-Betrag 
+sowieso mal rauswerfen für Leute, die nicht USt-pflichtig sind. Ich habs mir 
+jedenfalls notiert!
+
+#########57
+Kontenrahmen
+- das Programm merkt nicht, wenn ein Konto doppelt eingetragen wird
+- beim Löschen von Konten fehlt die Abfrage "wirklich löschen?"
+- da könnte z.B. "Literatur" stehn; und dann könnte 7% vorausgewählt
+  sein bzw., es müßte zu jedem Ausgabekonto ein MWStSatz ...
+#- Geldgegenkonto
+- müssen die Konten nicht auch eine Nummer haben?
+
+########
+> 1) Wenn eine Ust-Voranmeldung enfällt (Kleinunternehmerregelung, d.h wir führen auch keine Mwst beim Verkauf ab) kann 
+> dies im Tool entsprechend abgebildet werden, indem man die Ausgaben immer komplett (d.h incl. Einfuhrumsatzsteuer 
+> und Zoll) unter 0% Mwst verbucht? Diese Variante sollte eigentlich möglich sein.
+Ja, ich plane eine vereinfachte Darstellung ohne MWSt. Vorerst kann aber für die Eingabe helfen, dass Sie unter pers. Einstellungen die Sätze auf 0 ändern.
+#######58
+> 2) Ist für eine zukünftige Version vorgesehen einen Währungsumrechner zu implementieren? Wir beziehen in erster Linie 
+> Ware aus Brasilien. In der Buchung muss diese dann zum tagesaktuellen Tauschkurs aufgeführt werden.
+Ich plane, den DM->Euro Knopf entsprechend umzubauen, ja.
+
+######59
+> 1) ist es möglich, die Programmeinstellung so zu verändern, das im Eingabefeld unter "Konto in E/Ü-Rechn." 
+> alle individuell eingegebenen Konten erscheinen und nicht nur die ersten zehn, oder alternativ durch Eingabe 
+> der ersten buchstaben der Kto.-bezeichnung der Cursorbalken automatisch auf das entsprechende Kto springt ? 
+Grundsätzlich eine gute Idee, gehört aber nicht zum Standard-Verhalten dieser Microsoft Komponente, sondern 
+müsste ich selbst programmieren, was etwas Aufwand ist.
+
+######
+> 2.)    BUCHUNGEN eingeben:
+>         Das Datum kann ja nur als Zahl eingegeben werden.
+Werde ich mal Machen, ja ist sinnvoll.
+
+#Buchungserfassung
+#- eigentlich könnte sich die Listbox "Konten" die zuletzt getroffene
+#  Auswahl merken
+#- im Feld Betrag alpha-Eingaben sperren
+#- praktisch wäre m.E., mit diesem Formular durch bereis erfaßte
+#  Buchungen blättern zu können.
+
+###########
+Dauerbuchungen
+- eigentlich wäre es ganz nett, wenn die Dauerbuchungen in der Liste
+  irgendwie hervorgehoben würden
+- und wenn man später noch weitere Dauerbuchungen hinzufügt und nur
+  diese ausführen will?
+  -> scheint das nicht erneut zu machen
+  => nö - wenn im Zeitraum keine Buchung auszuführen ist (weil man sich
+     beim Datum vertippt hat), sollte ein Hinweis kommen
+- eigentlich könnte sich das Programm auch merken, welche Buchungen DB
+  sind, so daß man die Beträge im nachhinein noch ändern kann
+
+
+Nutzen bzw. Funktion
+- Voranmeldungszeitraum : Jährlich fehlt
+- eigentlich sind 3 Felder nötig: Lieferant, Was, Beleg (z.B."SP04.24")
+- ein Bemerkungsfeld wäre auch nicht übel; daß müßte in der Liste unter
+  dem Buchungstext in einer eigenen Zeile erscheinen und zwar nur dann,
+  wenn es ausgefüllt worden ist
+- die Summen sollten auch für die Bruttowerte gebildet werden; z.B. wenn
+  man die Mieteinnahmen berechnet und keine MWSt erhebt
+- die Berücksichtigung den "betrieblichen Anteils" ist Blödsinn. Ich
+  buche alle Ausgeben voll, rechne nach der Summe dieses Kontos den
+  Eigenanteil aus und buche den als Einnahme, z.B. "KFZ-Eigennutzung".
+  Das könnte automatisch erfolgen; die Eigennutzung muß dann noch gemäß
+  dem MWSt-Satz gesplittet werden.
+* In den letzten Jahren habe ich mit den Programm von Gandtke&Schubert
+  gebucht und nun den Eindruck gewonnen, daß es mit EasyCash&Tax
+  schneller geht. Das GSEAR ist für klein-Bedarf überdimensioniert. 'ne
+  Schnittstelle zwischen beiden wäre jedoch ganz nett, dann könnte man
+  mit EASY erfassen und mit GSEAR drucken.
+
+Programmierung
+- das Ini-File wird anscheinend immer aus dem Programmverzeichnis
+  gelesen; auch, wenn ein anderes Verzeichnis als aktuell eingestellt
+  worden ist. Da in dem Ini-File auch die Anschrift und Steuernummer
+  gespeichert ist, gibt es leichte Probleme, wenn man für mehrere ~~~
+  die Steuererklärung machen will.
+- Import? => Plugin, geklärt.
+- Kopplung zum Windows-Taschenrechner und Daten übergeben
+
+
+Darstellungen
+auf BS
+- Spaltenbreiten der Buchungsliste einstellbar (die Fontmethode ist auch
+  ganz nett ...)
+
+Druckvorschau
+#########- das Blättern in der Seitenansicht sollte auch per Pfeiltasten gehen
+
+Ausgabe auf Drucker
+- das für die Druckerauswahl ein 2. Formular erscheint ...
+- Vorgabe eines Seitenumbruches sollte möglich sein
+- Druck Überschußrechnung: Name wird abgeschnitten
+- das Datum des Ausdrucks und der Name der Datei könnten auch draufstehen
+- wird die Steuernummer irgendwo ausgedruckt?
+- die vertikale V. funktioniert anscheinend nicht, die Ausdrucke
+  (Blatt 1 des Journals) kann man übereinanderlegen, ohne daß sich
+  was ändert (Epson SQ-870)
+  der Text "Seite ..." steht genau auf der Trennperforation
+
+
+ich hätte mal einen kleinen Tipp für das Programm. Ich benutze das Programm 
+schon seit 2 Jahren, bin freiberuflich und ärgere mich immer wieder wenn ich 
+einen Betrag nachsuchen will, den ich vor Monaten gebucht habe und ihn nicht 
+wiederfinde. Gibt es denn nicht die Möglichkeit wenn man 30 % von eine Ausgabe 
+bucht denn vollen Betrag auch in die  Tabelle mit aufzunehmen ? Denn wenn man 
+immer wieder hoch rechnen muss, wie hoch die Ausgabe war, ist es sehr umständlich.
+
+
+Ich wollte Dich nur bitten das Fenster zum erstellen der "Konten" doch etwas
+grösser zu gestallten oder ein "Maximize" ein zu bauen, da ich so echt mit einem
+Zettel arbeiten muß damit ich mir alles merken kann.
+> 2. sollte bei allen Buchungen das vorangegangene Konto und die vorangegangene
+> Bemerkung als Vorschlag eingeblendet sein, da man oft Stapelbuchungen macht (z.
+> alle Tankrechungen eines Monats) 
+Da ich den wunsch oft höre, mich selbst aber irritieren würde wenn der Buchungstext 
+der letzten Buchung erhalten bleibt, werde ich das Feature als konfigurierbar in die 
+ToDo-Liste aufnehmen.
+
+
+> ich habe mein EasyCash soeben freigeschaltet und beim Ausdruck der Einnahmen / 
+> Überschussrechnung festgestellt, dass die Steuernummer nicht 
+> mitgedruckt wird.
+>  
+> Was kann man denn da tun?
+Ich hatte als Vorlage die E/Ü-Rechnung aus meinem Steuerbuch. Da war keine 
+Steuernummer aufgeführt. Aber ich habe schon häufiger den Wunsch vernommen, 
+Name, Adresse und St.-Nr. dort aufgeführt zu haben. Ich habs auf jeden Fall 
+mal auf die Liste gesetzt.
+
+
+> GAnz
+> prima wäre es, wenn man die Felder mit ENTER anstelle von TAB bedienen
+> könnte, der Focus also immer zum nächsten Feld springt, und wenn alle
+> durch sind dann auf den Button zum eintragen (wieder mit Enter).
+Wegen Nummernblock - verstehe schon... ist alles andere als Windows-Konform, 
+aber mal sehen...
+
+
+Registrierungsaufforderung
+- der im Info-Fenster angegebene Link läßt sich nicht kopieren
+- bei Info anstelle von "OK" besser "Schließen"
+- das Programm erkennt nur die Anzahl der Buchungen in der gerade
+  bearbeiteten Liste
+- die Erinnerung alle 20 Buchungen ist Unsinn; so schnell hat sich der
+  Anwender noch keine Meinung gebildet. Ich würde die Aufforderung in
+  die Druckfunktion nehmen
+- daß das Programm kostenlos sein soll leuchtet mir nicht ein. Ein
+  gutes Programm muß gepflegt werden, und das erfordert nunmal ~~~.
+  Nimm doch 1/1000 des berechneten Überschusses, also bei 20000 Euro
+  Überschuß 20 Euro Gebühr. Weniger als 4 Euro lohnt sich nicht zu
+erhebenen,
+  und wenn der Anwender Verlust gemacht hat, ist es eben kostenlos.
+  Statt dessen kannst Du ja eine Ansichtskarte verlangen. Das Programm
+  wäre dann bis zu einem Überschuß von ### registriert, und wenn sich
+  man im folgenden Jahr mehr verdient hat, dann muß er eben noch was
+  schicken.
+____________________________________
+
+
+Eine weitere gute Erweiterung wäre sicherlich, wenn die Dauerbuchungen automatisch 
+ausgeführt werden und man nicht noch selber dafür sorgen muss. Zumindestens bei den 
+Ausgaben, die z.B. per Lastschrift abgehoben werden sollte man die Möglichkeit haben, 
+dass es automatisch funktioniert. 
+!!! GUTE IDEE !!!
+
+Das merkwürdige Aufsummieren hat historische Gründe. Ich dachte einmal, dass auch 
+irgendwie der reale 'Geldfluss' im Sinne eines Kassenbuchs abgebildet werden müsste 
+und dieser ist ja im ersten Jahr der Abschreibung zu 100%. Inzwischen ist mir einiges 
+klarer geworden und ich werde das zusammen mit einer Aufstellung des Anlagevermögens 
+demnächst einmal sinnvoller zusammenrechnen.
+
+! ! !
+Split-Buchung bei beschränkt absetzbarer VST (z.B. KFZ-Kosten, Bewirtungskosten)
+Historie-Liste zur schnellen Reproduktion der letzten 10 Buchungstexte 
+Suchfunktion nach Belegnummer, Datum oder im Buchungstext
+editierbare Kopf-/Fußzeile für die Ausdrucke 
+Laufende Buchungsnummern benutzerdefiniert machen (z.B. E01, A00001, 003)
+
+Wenn die letzte Buchung (bzw. Zusammenfassung) am unteren Bildschirmrand
+steht und dann weitere Buchungen hinzukommen, verschwinden die
+Zusammenfassung bzw. neuen Buchungen im nicht sichtbaren Bereich. Hier wäre ein
+automatisches Scrollen für Neubuchungen aus meiner Sicht eine nützliche
+Verbesserung.
++
+#da ist mir noch was aufgefallen:
+#Wenn ich aus der Seitenansicht was drucken will, (Einnahme-Überschuss-RG),
+#springt die Radio-Markierung immer auf den 1. Punkt (Journal) zurück.
+#+
+#Das ist sicher nicht ok?
+#+
+#Ich glaube auch, dafür plädiert zu haben, die ganze Voransicht/Drucken mal zu
+#überarbeiten - bzw einfacher zu machen: - immer über Drucken (CTRL-P) und dann
+#hier nach der Auswahl: ok= Drucken oder separater Button = Ansicht
+#+
+Gibt es von ECA eine Schnittstelle oder ein Exportformat nach DATEV?
+(Beim engebauten Export würde ich gerne noch einen Pfad angeben können...)
+
+Ich habe das Glück, Provisionseinkünfte aus dem EG-Ausland zu
+bekommen mit 0% Ust. Diese Beträge müssen in das Feld 43 des Vorsteuer
+Formulares eingetragen werden. Das muß ich händisch nachtrage. Die
+Berechnung ist OK.
+
+>> Der Privatsplit lässt aber nur ganzzahlige Prozentwerte zu.
+>> Gibt es bei dieser Einschränkung es eine Möglichkeit für mich,
+>> den Privatplit zu nutzen, oder sollte ich besser meinen
+>> Taschenrechner wieder rauskramen?
+
+Kleiner Verbesserungshinweis: Es wäre gut, wenn es auch eine Ansicht und
+nicht nur Druck für die Überschussrechnung gäbe.
+Es sollten mehr Hilfeerläuterungen eingebaut werden, z. B. wie füllt man
+die Buchungs-Presets aus. Auch die Split-Funktion ist unklar. Ich habe
+einen Privatanteil fürs Telefon eingegeben, aber in der Berechnung
+verändert sich nichts.
+
+Leider ist mir möglicherweise ein Fehler bei der Berechnung der Umsatzsteuervoranmeldung 
+aufgefallen. Bei dieser wird in Zeile 51 (Steuerpflichtige Umsätze zu 16%) von dem Betrag 
+der Bemessungsgrundlage die Steuer von 16% aus dem Betrag mit Nachkommastelle gebildet 
+und nicht von den vollen Euros. Wie ich weiß, wird aber bei allen anderen gängigen 
+Steuerprogrammen dieses nicht gemacht und auch die Software der Finanzämter prüft hier 
+auf volle Euros. Wandele ich hier auf einem Holzpfad oder ist das möglicherweise wirklich 
+ein kleiner Bug?
+
+Von einem User erhielt ich den Hinweis, daß nach Änderung der E-Konten
+diese nicht in meinem Prg. erscheinen, jedoch nach Neustart EC&T.
+-> Bitte INI nach Änderung der Einnahmekonten aktualisieren
+
+Möglichkeit der alphabetischen Sortierung der
+einzelnen Beschreibungen für die Ausgaben/Einnahmen
+
+Außerdem könnten beim Buchen mehr Konten zur Anzeige gelangen, da ich oft mit dem Pfeil nach unten wandern muß.
+Beim Buchen sollte das letzte Konto solange als Vorwahl stehen bleiben, bis eine neue Eingabe erfolgt.
+Bei der Beschreibung sollte man vor der # einen Text einfügen können, der auch als Vorwahl immer stehen bleibt, bis Änderung erfolgte.(Ich schreibe da immer meine Bankkonten rein.)
+Sonst ist alles prima und Programm macht viel Freude.
+Ach so-habe noch was. Es sollte die Möglichkeit bestehen, nicht nur die ganzen Konten auszudrucken, sondern auch eine Auswahl davon !
+
+#Die Auswahl von Journaldruck/Abschlüsse wird nicht übernommen, wenn man 
+#auf der Seitenansicht den Button "Drucken" verwendet, muss die Auswahl 
+#erneut erfolgen bzw. wird immer die erste Auswahl als Standard gesetzt, 
+#in diesem Fall "Buchungskonto (nach Datum".
+tm: mir ist klar, dass das in der jetzigen Form nicht besonders elegant ist.
+
+Wenn ich für einen Schweizer Kunden arbeite (oder Lichtenstein), so muss ich für meine Einnahmen 
+von dort keine Steuer einfordern.
+Beim Verbuchen klappt soweit auch alles einwandfrei, aber wenn ich die Umsatzsteuer-Voranmeldung
+drucke, so werden diese Einnahmen nirgens aufgeführt! ... obwohl mein Steuerberater meint, sie
+gehören in die Zeile "FETT 43" bzw. 48 ...
+
+Buchen-Knopf -- tm: Du bist nicht der Erste, der sich über den Knopf beschwert. Hätte ihn schon mal ausgewechselt, 
+wenn mir etwas sinnigeres über den Weg gelaufen wäre. Den Zettel-Spicker meinst Du? Vielleicht 
+keine schlechte Idee...
+
+Da Ihr Programm gerade für Kleingewerbetreibende interessant ist, wäre es
+gut, wenn in den Einstellungen eine Option für die Umsatzsteuerbefreiung zu
+finden wäre. Man müsste dann nicht bei jeder Buchung den Steuersatz festlegen
+und in der EÜR würde nicht der Vermerk "(einschließlich Umsatzsteuer)"
+auftauchen, der das Finanzamt vermuten lassen könnte, dass trotz Befreiung
+Umsatzsteuer in Rechnung gestellt wurde.
++
+Wenn dann noch das Anlageverzeichnis mit dem Programm erstellt werden
+könnte, wäre die Sache perfekt.
+
+> Könnte das nicht direkt in
+> die Einstellungsoptionen übernommen werden?
+Ja, das ist in der Tat sinnvoll. Ich hatte vor, eine 
+checkbox in den Druckauswahldialog einzubauen.
+
+Wenn ich einen Eintrag löschen will und ihn mit der rechten Maustaste anklicke, 
+dann erscheint er nicht markiert, so daß es mir schonmal passiert ist, daß ich 
+den falschen Eintrag gelöscht habe. Kann man vielleicht in das Dialogfeld 
+"Eintrag löschen" anzeigen, welcher Eintrag genau gelöscht wird? 
+
+> - Selektierung: wäre es möglich, die Buchungsposten im Journal generell
+> selektierbar zu machen, dh. nicht erst nachdem man "Buchung ändern" ausgewählt
+> hat, sondern z.B. auch mit der linken Maustaste? So als "Marker-Funktion"
+> sozusagen? Evtl. auch mit Copy&Paste?
+Notiert.
+
+>vielen Dank für das Update Ihres tollen Programms,
+>leider hat's in der neuen Version trotz Ankündigung
+>nicht zur "Knickhilfe" gereicht.
+>Vielleicht kommts ja 2003...
+Habs noch einmal ganz oben notiert. Ist eigentlich wirklich 
+kein so großer Aufwand, zwei striche zu malen...
+
+- Umsätze gemäß §4 UStG in Zeile 25 (Nr. 48) eintragen (kann eine derartige
+Option eingebaut werden?). - Sonstige Umsätze mit 0% USt in Zeile 30 (Nr. 35)
+eintragen
+
+> Was Sie meinen, ist eine Auflistung der Einkünfte (E/A-Rechnung). Die
+> Einkommenssteuer wird u.a. bemessen an den Einkünften minus diverser
+> Abminderungsfaktoren, wie eben z.B. Versicherungsbeiträge. Interessant fände
+> ich, sich die zukünftige Bemessung der Vorsteuer auszurechnen. Das geht bis
+> jetzt nur händisch.
+Ich kenne mich im Österreichischen Einkommensteuern nicht so gut aus. In Deutschland wir diese 
+Berechnung Einkünfte minus Versicherungen, Werbungskosten usw. in der Einkommensteuererklärung gemacht.
+EkSt-Modul?
+###> Ich meinte, dass es angenehm wäre z.B. bei den eingenommenen Honoraren nach
+###> Auftraggeber aufzulisten, das Seitenlayout beim Ausdruck selbst zu definieren...
+###Ja, das mit dem Seitenlayout scheint vielen Leuten recht wichtig zu sein... mal sehen.
+
+
+> Vielleicht ein Vorschlag das mann die einzelenen Posten extra
+> abrufen kann.z.b.Tontäger für ganze Jahr das geht leider nicht.Du kannst mich
+> auch Anrufen unter 089521366 dan kann ich dir das besser erklären.
+kann mir schon vorstellen, was Du meinst. Eine zweite Kategorie neben den virtuellen Konten, 
+nach der man Umsätze/Gewinne filtern kann, richtig?
+
+Leider kann ich den Saldo in der Statusleiste nicht ganz lesen.
+Möglicherweise bedingt durch die Bildschirmschriftart meines IBM Notebooks.
+Durch die Auflösung von 1600x1280 muss ich die werksseitig eingestellte
+Schriftart lassen. Tahoma, Größe 11. (Bild) Mail vom 14.Okt.2001
+
+Druckfunktion für Kontenrahmen.
+
+Schriftgröße 
+
+> Ich verwende einen HP 990CXI der über eine Duplexeinheit verügt. Wenn man das in
+> den Einstellungen angeben könnte, dass man einen Drucker mit Duplexer hat, kann
+> man sich beim Ausdruck der Umsaztzsteuervoranmeldung den einen Klick aufs OK
+> ersparen, weil der Drucker die Seite von selbst wendet. - Ist aber nicht
+> wichtig.
+Habe ich als Änderungswunsch aufgenommen. Evtl. als Option in den Einstellungen.
+
+>  Desweiteren würde ab Seite 2 beim Ausdruck ein kleiner oberer Freiraum 
+>  dem optischen Eindruck gut tun. 
+
+> vielleich währe es von vorteil,die anzahl der mehrwertsteuersätze zu erhöhen,da
+> es z.B. bei uns in österreich neben 0%,10% und 20% Ust. auch 14% für best.
+> lebensmittel und getränkeumsätze (1.6-31.12.2000) sowie 12% bei weinlieferungen
+> im rahmen des erzeugerbetriebes gibt.
+Habe ich notiert.
+
+ich könnte mir die Datumseingabe noch eleganter vorstellen, ( kleiner Monat
+popup zum blättern und direkt auf den Tag klicken) und das Datum bleibt solange
+erhalten bis das eingabefenster erneut geoffnet wird.
+
+> Was immer noch irritiert (ich berichtete) ist der Hinweis zum
+> Formulareinzug.
+> Ich schlage vor:
+> "Wollen Sie auf Original-Formularen ausdrucken oder die EasyCash-Vorlage
+> benutzen?"
+> Und nur bei "Original-Formularen" auf die Positioniererei (Verschiebung....
+> "Duch Variation der beiden Werte...") eingehen. Egal: wer weiß, daß er das alles
+> ignorieren kann, der kann damit gut leben.
+
+Du hast schon Recht. Habe ich mir notiert.
+
+> Spielst du bei einem Versionsupgrade eine neues HTML-Helpfile ein?
+> Es sieht so aus, als ob ich immer noch das HTML-file der Vorversion
+> (Vor-Vorversion??) habe.
+> Eine kleiner Hinweis im Helpfile auf die behandelte Versionsnummer würde
+> hier schon mal Klarheit schaffen.
+
+Tja, aus Faulheit erneuer ich die Doku im Durchschnitt nur alle zwei releases, 
+wenn nicht massive Änderungen hineinkommen müssen. Aber es kann in der Tat nicht 
+schaden, einen Stand (v1.XX) zu erwähnen.
+
+> P01 - Die Anweisungen beim Druck zur Vorsteueranmeldung, die eingelegt und
+> gewendet werden soll, sind wohl überholt, da ja das gesamte Original-Formular
+> des Finanzamts in einem Rutsch (ohne Wendemöglichkeit) auf 2 Seiten ausgedruckt
+> wird. Zwischenstopp zum Wenden wäre trotzdem sinnvoll.
+Ist in der 1.12, meine ich, behoben. Ich werde in Zukunft zur Wahl stellen, ob das 
+Formular mitgedruckt werden soll, oder ob in ein Formular vom Finanzamt gedruckt wird.
+
+> P02 - Wie werden Beträge verbucht, die nicht 16, 7, oder 0% ausmachen, bzw. wie
+> kann man Vorsteuer/MwSt-Beträge in DM oder Euro betragsmäßig eingeben? 
+Im Moment noch garnicht, aber ich werde demnächst etwas vorsehen, womit man pure MWSt-Beträge eingeben kann.
+
+#> P04 - Seitenansichtssymbol wäre wünschenswert. Bei Anwahl der Seitenansicht
+#> sollte auch das Fenster diese Beschriftung tragen um die Verwechslung mit der
+#> Druckauswahl und den gleichen Funktionen besser unterscheiden zu können.
+#Guter Punkt.
+
+> Ich vermisse eine Hilfefunktion. - Habe die Html-Datei
+> nachträglich im Verzeichnis entdeckt!
+Oh, war mir nicht bewusst, dass es nicht offensichtlich ist, dass es eine Doku gibt. 
+
+> P07 - Zur Orientierung und evtl. späterer Suchfunktion wäre ein sep. Feld für
+> die Beleg-Nrn. sinnvoll.
+Das ist auch ein häufig genannter Wunsch, um den ich wohl nicht herumkomme...
+
+Anregung : 
+Unter "Einstellungen einen Pfad angeben, welcher beim Dialog "Datei öffnen"
+verwendet wird. Sonst erscheint immer "C:\Eigene Dateien".
+
+Meine Strategie ist eigentlich die, eine Schnittstelle bereitzustellen, so dass 
+bereits bestehende gute Programme sich an ECT anstöpseln können, um nicht ständig 
+das Rad neu zu erfinden. Zur Zeit bin ich mit einigen Autoren von Fahrtenbuchprogrammen 
+in Verhandlung. Aber auch Fakturas, Kassenbücher, Überweisungsbelegdrucker und -- warum 
+nicht? -- Online-Banking Programme können so verknüpft werden.
+
+> Da ich es nicht ausprobiert habe ... jetzt schon, es wird nicht nochmal
+> umgerechnet, kann daher deaktiviert werden, oder!?
+Den Knopf werde ich wohl recyceln für einen generellen Umrechner
+
+mal wieder ein Tip zum Basteln: Wäre es möglich, das man die
+Hauptseite mit der Rolle der Maus rauf und runter rollen kann? Ewt.
+sogar Fensterübergreifend (also wenn man in nem eingabefenster ist)
+
+
+#*!4. Bei Ausdrucken müßte bei Seitenwechsel innerhalb eines Kontos etc. der
+Kopf auf der neuen Seite wiederholt werden.
+
+#*noch mehr Konten
+# Darstellung auf dem Bildschirm ist zu klein. Bei langen Buchungstexten 
+#kann man die Schrift kaum noch lesen. Dies stört besonders, da die Hälfte 
+#des Bildschirms bei hoher Auflösung leer ist.
+
+#######64
+*2. Der Ausdruck als komplettes Formular für die Quartalsanmmeldung ist ganz
+nett, aber nicht jeder will es so. Ich auch nicht, da ich die Formulare sowieso
+hier habe. (Da ich es für richtig und WICHTIG halte, Formulare, die ich
+unterschreibe, auch manuell auszufüllen, reichen mir ein paar Zahlen auf Papier.
+Dann ist man auch gehalten, zu kontrollieren, was man unterschreibt....)
+  Mir fehlt eine eine simple Text-Liste pro Quartal mit den Zeilennummern des
+  Formulars und den Zahlen, die für mich gelten! (Analog zur
+  Einnahme/Überschußrechnung - Wär das nix?)
+Für die paar Zahlen muss ich nicht auf den Ausdruck warten.
+
+###*4. Eine Buchung in Dauerbuchungen übernehmen oder lernen wäre nicht schlecht...
+###*5. Rechte Maustaste "Buchung kopieren" wär klasse...
+  (Vor allem, wenn man Buchungen als Dauerbuchungen nachtragen will oder muss.)
+###*6. Bei der E/Ü-Liste fehlt das Erstelllungsdatum.
+###  So weiss man nicht, wann sie in Laufe des Jahres gemcht worden ist.
+
+#*1) Die Spalte "Beschreibung" in der Rubrik "Einnahmen" ist leider sehr schmal
+#geraten, wenn 
+#    ich dort längere Texte unterbringe wird die Schriftgröße automatisch bis zur
+#    Unleserlichkeit verkleinert. Gibt es eine Möglichkeit, die Spalte zu
+#    verbreitern (z.B. über einen Eintrag in den Einstellungen?) Genug Platz auf
+#    den Bildschirmen ist ja meistens.
+*2) Falls ich nicht der einzige bin, der so etwas benötigt: Ist eine eigene
+Spalte "Belegnummer"
+     (Bei Einnahmen z.B. für die eigene Rechnungsnummer) machbar?
+#*3) Sicherlich eine größere Sache, aber gut zu dem Programm passen würde eine
+#Funktion 
+#    "Fahrtenbuch". Ein Fahrtenbuch führt ja wahrscheinlich fast jeder
+#    Selbstständige, und Ihre Software könnte die erfaßten Kilometer dann
+#    automatisch verbuchen für die Einnahme/Überschußrechnung
+
+#*1) Füge doch bitte einen Knopf neben dem Druckersymbol für die
+#Druckvorschau ein. Ich benötige öfter die Gewinn/Verlust-Rechnung 
+###67 3) Sortierreihenfolge der Buchungspresets, ähnlich wie bei E/A-Konten
+
+*Leider bringtF1 keine Hilfefunktion.
+*Drucken von Einzelkonten (nur 1 Konto)
+Anzeige des Buchungskonto im Journal und im Gesamtausdruck(?) :-( ????
+*Nachrücken des Journales beim Buchen, so das immer die aktuelle Zeile erscheint
+Letztes Buchungskonto stehen lassen, so daß nur Enter oder F-Taste gedrückt werden muß :-( 
+*Eine F-Taste als Wiederholungstaste der letzten Eingabe
+
+
+
+>>>1) autocompletion bei den Beträgen und Beschreibungen
+Sinn: Bei unserer Abizeitung sind die Anzeigenpreise halt immer
+wieder die gleichen und auch die Beschreibung fängt immer mit
+Anzeige
+an.<<<
+# *-> Evtl. könnte man die Presets um einen Buchungsbetrag erweitern?
+>>>noch ein Verbesserungsvorschlag:
+*Im Hauptfenster sind alle Buchungen aufgelistet. Wenn mir dort ein
+Fehler auffällt, muß ich erst einen Rechtsklick machen und dort auf
+ändern gehen. Einfacher wäre nach einem Doppelklick auf einen Posten
+gleich das Editierfenster zu öffnen.<<<
+-> Notiert.
+
+
+====================================================================================
+AB HIER SIND DIE FEATURE-WÜNSCHE SCHON MAL NACH KATEGORIE SORTIERT (STAND 31.1.2020)
+====================================================================================
+
+
+Reisekostenmodul
+----------------
+
+Meine Beratertätigkeit ist mit vielen Reisen verbunden.
+Reisekostenabrechnungen sind ein wesentlicher Anteil an meinem Buchungen.
+Die Integration eines entsprechenden Reisekostenmoduls, der nach deutschem
+Finanzgebaren relativ trickreich ist, wäre aus meiner Sicht wünschenswert.
+Sie kennen das ja sicher zu Genüge; privateigenes Auto für die Firma
+genutzt, Firmenauto genutzt, Hotel und Verpflegungsabrechnungen nach
+tatsächlichem oder pauschaliertem Aufwand und dies zum Verdruß der
+Beteiligten noch unterschiedlich, je nachdem ob sie Firmeninhaber oder
+Angestellter sind. Aus all dem gesetzlichen Wirrwar muß nämlich auch eine
+Umsatzsteuer berechnet werden !!!
+
+
+Journalansicht
+--------------
+
+> was noch nett wäre: zwei scrollknöpfe unter der rechten scrolleiste, mit denen
+> man jeweils zu den enden der einzellnen konten springen kann (wie in excel zu
+> den einzellnen tabellen) Du verstehst was ich meine ????
+tm: Ja. Notiert.
+
+
+Journalausdruck
+---------------
+
+Beim Ausdruck der Einnahmen - Ausgaben Listen wäre es sehr sinnvoll wenn auf
+jeder Seite obenin der ersten Zeile der Name und das Druckdatum aufscheinen
+würde: 
+
+Beim derzeitigen Ausdruck wird auf der  2. bzw. 3 Seite ganz oben
+schon die  erste Zeile bedruckt, was optisch nicht sehr schön ist. Wie kann man
+das ändern ?
+
+Man müßte im Bericht auch nach den einzelnen MwSt.-Sätzen (7%, 16% o.ä.)
+filtern lassen können. Das benötigt nämlich das Steuerbüro.
+
+Schriftgröße optional fixieren und dann abschneiden oder in zweite Zeile umbrechen
+
+*vielen dank für die nachfrage. im prinzip würde es eigentlich schon 
+langen wenn man in kopf und fusszeile ein freies feld hätte, in dass 
+man eintragen kann, was man möchte. 
+ich drucke z.b. fürs finanzamt die einnahmen-überschuss-rechnung 
+aus. dabei würde ich aber gerne im kopf auch die 
+firmensteuernummer und den sachbearbeiter angeben. dazu wäre 
+aber kein vorgefertigtes feld nötig.
+
+wenn man da jetzt noch frei eingeben könnte, was im kopf des 
+einnahmen-überschuss-ausdrucks steht, wärs für mich perfekt.
+
+*Wichtig wäre mir auch die Aufführung der Gesamtsummen im 
+Buchungsjournal nach Konten, also die Gesamtsumme der 
+einzelnen Buchungskonten, was bisher ja nur im Buchungsjournal 
+nach Datum möglich ist.
+
+*Wünschenswert wäre auch eine weiteregehende 
+Konfigurationsmöglichkeit des Ausdruck-Layouts. Ich denke hier an 
+die Möglichkeit der klareren Strukturierung des Textes durch 
+Verwendung von Fett und Normalschrift, sowie durch 
+Grauschattierungen, z.B. der Zwischensummen.
+
+*Sollte es dazu kommen, würde es mich freuen, wenn Sie die Ausdrucke mit
+einer editierbaren Kopf-/Fußzeile versehen würden.
+
+
+Formulardruck
+-------------
+
+Punkte für "ältere Formulare hinzufügen" und "wo bekomme ich die neueren Formulare her?"
+mit Link zum Formular-Archiv auf www.easyct.de und einem Hinweis zum voraussichtlichen 
+Veröffentlichungsdatum der neuen Formulare und dem Plugin-Manager.
+
+
+Zahlungsverwaltung
+------------------
+
+- Vielleicht ein Feld "bezahlt ja/nein" einarbeiten; dann wäre es möglich z.B.
+  eine Offene-Posten-Liste zu erzeugen bzw. die Umsatzsteuer bei der
+  Ist-Versteuerung zu ermitteln
+
+*Was ich zur Zeit noch vermisse, ist die Möglichkeit Offene Posten zu
+verwalten, sprich Rechnungen schon einzugeben, die allerdings noch nicht bezahlt
+sind. Vielleicht besteht die Möglichkeit, dieses zu integrieren. Weiter so...
+
+es wäre vielleicht noch ganz schön wenn man bei den Dauerbuchungen ein Flag für bereits 
+gebucht oder ähnliches einführen würde. Das würde es ermöglichen eventuell gelöschte 
+Dauerbuchungen in der Abrechnung durch erneutes ausführen aller Dauerbuchungen wieder 
+hinzuzufügen. So muß leider immer die Dauerbuchung gelöscht und neu angelegt werden 
+bevor man sie mittels des Buttons alle Dauerbuchungen ausführen wieder buchen kann.
+
+Jahreswechsel
+-------------
+
+-beim fenster zum jahreswechsel ist bei meiner auflösung (1024x786) die
+schrift in der mitte teilweise abgeschnitten
+
+
+Buchungen ändern
+----------------
+
+-weil jegliche hilfe fehlt, habe ich erst ziemlich nach einer möglichkeit
+suchen müssen, buchungen zu ändern; eher durch zufall habe ich auf die
+rechte maustaste geklickt und es so gefunden. das sollte irgendwo deutlich
+stehen!
+
+Wegen der jüngsten (2019) GoBD-Verschärfungen muss mittelfristig eine 
+"Festschreiben"-Funktion her.
+
+zusätzlich zu den Icons Buchen und STOP noch einen einfügen:
+letzte/vorige Buchung ändern....
+Dann kann man zu schnelles Enter noch mal korrigieren.. :-)))
+
+
+Hilfe-Funktion
+--------------
+
+Programm finde ich gut und werde es einsetzen. Vielleicht für Dummies wie
+mich unter F1-Taste jeweils noch eine Hilfe einbauen.
+
+
+Statistiken
+-----------
+
+der absolute wert von Einnahme - Ausgaben. das man so auf einem blick 
+sehen kann wieviel diesen monat denn schon gelaufen ist und wieviel kapital 
+noch da ist.
+
+Ein monatlich verdichteter Bericht wäre gut. (gesamt und nach Konten)
+
+Monats-/Jahresstatistik, Jahresvergleich, Proporz
+
+*2. Wie sieht es aus mit ein paar Statistischen Werten wie durschn. monatl.
+Einnahmen/Ausgaben oder einer anschaulichen Grafik!
+
+Im Journal fehlt mir eine kleine Statistik:
+*Rohgewinn pro Quartal (Monat)
+*Rohgewinn im Jahr
+
+Extrapolation der Einnahmen/Ausgaben für das ganze Jahr in das Statistik-Modul.
+
+*was ich noch toll finden würde wäre, wenn man für jedes konto und einen
+gewissen zeitraum (monat/jahr)
+ein budget planen könnte und dieses dann auf einem diagramm sieht.
+vielleicht sogar im vergleich zu den
+derzeitigen ausgaben. dann könnte man auf einen blick sehen, ob man das
+budget einhält oder darüber/darunter ist.
+
+
+Freestyle-EÜR
+-------------
+
+Übergeordnete Konten:
+Absolut überragend wäre auch die Möglichkeiten z.B. für eine GbR, wie
+ich eine habe, das man für zwei Gesellschafter, a und b etc., die
+Buchungen vornehmen kann.
+D.H. man könnte später sehen, wer hat was eingeschossen, wer hat was
+verdient, um so auch bei der E/Ü-Rechnung Gesamt die Aufteilung der
+Person a und b sehen zu können.
+So mache ich dies auch derzeit, damit weiß ich und mein Partner immer
+wer was an USt. zahlen muß.
+UND:
+> Ich habe bisher MSMoney genutzt, das diese Möglichkeit der Differenzierung über
+> "Geschäftsbereiche" bietet. 
+tm: Ich hatte bereits eine ähnliche Anfrage. Es ging darum, einzelne Gesellschafter 
+    einer GbR auseinanderzuhalten. Ich werde mir das mal notieren.
+
+- Bei der Ausgabe der E-Ü-Rechnung sollten Konten 
+gegebenfalls mit Untergliederung angezeigt werden: Reisekosten,
+Personalaufwand, Wareneinkauf etc.
+
+Alle Positionen könnten doch sichtbar durchnummeriert sein! Die
+Nummerierung sollte allerdings von jedem selbst übernommen werden können!
+
+*Als Anregung: Ich fände es praktisch, wenn
+man eine einfache Kontenhierarchie einrichten könnte. Also die Zusammenfassung
+bestimmter Konten zu einer Kontengruppe.
+
+
+Einstellungen
+-------------
+
+Wenn es etwas zu bekritteln gibt dann beim Benutzerinterface: Beim Löschen
+oder Hinzufügen von Konten sind die plus und minus buttons grau. Im ersten
+Moment dachte ich es geht nicht da grau=inaktiv. Ich wollte auch eine
+Änderungsmöglichkeit der Kontennamen aber dann habe ich entdeckt dass sie sehr
+einfach in der .ini Datei änderbar sind. Die drei linken Buttons (Speichern,
+Öffnen...) finde ich auch nicht sehr schön. Hier würde ich die großen,
+eindeutigen Wordicons vorziehen.
+
+Im Journal kann ich die rechte Mausataste zum Ändern nutzen, in den
+Einstellungen (ini..) gehts über die +,- >,<, Buttons, aber nicht re. Maustaste.
+Mein Vorschlag:
+Die "oben/unten Verschieber" senkrecht anordnen und den Rest über rechte
+Maustaste machen: - Ändern    (fehlt) - Neu - Löschen   (Löschen bitte mit
+Nachfrage :-)) - finden    (fehlt, Text für Stichwort eingeben)
+- - -
+Nach Änderungen in den Einstellungen geht der "Übernehmen" Knopf nicht an.
+
+*Wie wäre es, wenn bei den Einstellungen der Persönlichen Daten auch das Feld "Telefon" auftauchen würde?
+
+> Hier noch eine verbesserung. Die eingetragenen Daten im Feld "Beschreibung"
+> werden nicht gespeichert. Version 1.8b
+tm: Du meinst bei den Einstellungen die Buchungs-Presets, richtig? 
+    Ist ein bißchen Tricky. Das muß ich wirklich nocht verbessern. 
+    Aber es geht! Du mußt nur vorher einen eintrag in der Listbox anwählen.
+
+Ich klicke auf [Ansicht] [Einstellungen] (oder auf das Werkzeugsymbol) und
+es öffnet sich ein neues Fenster.
+Neben der Checkbox "Es wird täglich gebucht" befinden sich die besagtun
+Button [Bildschirmschrift] und [Druckerschrift].
+Jetzt ist es egal welchen der beiden Button ich auswähle es kommt ein neues
+Fenster zur Einstellung der Schriftart. Diese Schrift kann ich zwar neu
+auswählen (ändern) aber diese Änderung kann weder mit [OK] noch mit [Übernehmen]
+zugeiwesen werden. Windows NT!!
+Unter NT habe ich nur ein deaktiviertes [Übernehmen] auf dem ersten neuen
+Fenster.
+Zudem fällt mir auf, dass ein [OK] oder [Abbrechen] ([Übernehmen] ist ja
+leider deaktiviert) auf diesem Fenster zu einer auffälligen zeitlichen
+Verzögerung des Programmablaufes führt. D.h., dass es ca. 2-4 Sek. dauert
+bis man wieder mit dem Programm arbeiten kann (vielleicht ist das die
+"Speicherphase"?).
+
+Vielleicht könnte man die Buchungspresets ( Einnahmen und Ausgaben) 
+genauso umsortierbar machen wie die Konten ??
+
+Buchen
+------
+
+auto-compete bei Buchungs-Beschreibung
+
+1. Bei den Buchungen müßte auch der Beschreibungstext der Buchungen automatisch
+in der Liste gespeichert werden. Diese Liste müßte sich auch z.B. über die linke
+Maustaste editieren lassen.
+
+Das Programm ist super. Als Anregung w=E4re eine Eingabe der Betr=E4ge =
+wahlweise incl. oder excl. Steuer sinnvoll, dann kann ich Rechnungen mit =
+Nettobetr=E4gen als Einzelpositionen ohne Taschenrechner auf =
+unterschiuedliche Konten einfacher splitten.
+Die Erste meinte ich: man gibt Netto ein und (die eingestellte) MwSt. wird
+berechnet, eingetragen, addiert, etc. Man würde praktisch einstellen
+können, ob man die Buchungen per Brutto oder per Netto einträgt.
+--> Kompositbuchung?
+
+> Übrigens, bei Eingabe von Monat 2 bis 9 könnte das Programm gleich zum nächsten
+> Feld springen.
+tm: Hm. Ob das nicht doch zuviel des Guten ist? Ich überlegs mir.
+
+Save-Button für Buchungspresets im Buchen Dialog
+
+Etwas gewöhnungsbedürftig ist nur das die Belegnummer nach der Beschreibung folgt,macht aber nix.
+
+*Ich fände es sinnvoll das Datum "aufzuteilen": in Belegdatum und
+Buchungsdatum. Dabei würde das Belegdatum rein zur Information dienen, das
+Buchungsdatum wäre für die Zuordnung in ein bestimmtes Quartal oder Monat
+(z.B. für UVA) verantwortlich.
+Dadurch würde die das Wiederfinden der Belege einfacher, da auf diesen ja
+nur das Belegdatum zu finden ist.
+Des weiteren würde ich mich über ein Feld zur Eingabe der Belegnummer (10
+Stellen alphanumerisch) freuen.
+-
+
+Dann könnte eine Sache die Arbeit erleichtern:
+Bei Änderungen im Journal könnte ein "Nächste"-Knopf dazu genutzt werden, die
+aktuelle Buchung zu sichern und die (zeitlich) nächste Buchung aufzulegen. Jetzt
+ist dort Schluß.
+
+Ich würde mir nur wünschen, daß es noch ein
+Eingabefeld gäbe, wo ich die Art des Beleges (z.B. Rechnung,
+Provisionsabrechnung, Quittung usw.) und Eines wo man  die Belegnummer
+(z.B. Rechnungsnummer oder Abrechnungsnummer) eintragen kann.
+
+- Ein Feld für zusätzliche Bemerkungen wäre schön
+
+an den Icons "Blitz" und "Stop"
+störe ich mich. Irgendwie passen die nicht, finde ich. Mal nicht so schwer
+wichten, da pers. Geschmack. - das mit den Buchungspresets ("Keditorennummern")
+wollte ich noch vorschlagen, ist aber schon implementiert. Um es zu kapieren,
+habe ich aber erst mal die Anleitung mehrfach durchsuchen müssen - trotzdem
+Klasse! (Meine ersten 50 Buchungen waren eben noch richtig Tipparbeit).
+
+Eine Historie im Buchungstext wär auch nicht schlecht. Eventuell die letzten 10 Buchungen?
+
+*> > habe gerade festgestellt wie ich löschen kann: rechte Maustaste
+> Das scheint ein allgemeines Problem zu sein... wie sollte man darauf
+> hinweisen?
+in dem Sie vielleicht in der headline unter <Buchen> die beiden Funktionen
+("Buchung ändern"; "Buchung löschen") , die auf der rechten Maustaste liegen
+zusätzlich aufnehmen. ev mit einem Verweis auf "Kontext-Menue". Oder einen
+kleinen Hilfetext ablegen mit den wichtigsten Funktionen zu Nachschauen.
+
+*Wäre schön wenn ich in verschiedenen Währungen in einem Ein/Ausgabenblock
+verbuchen könnte
+Und es von selber in der Kurswährung umbucht die ich schlussendlich
+brauche.
+Beispiel: Ich habe Lieferungen von diversen Firmen im Ausland
+Die einen kommen aus England, andere aus der Schweiz, wieder andere aus
+Deutschland.
+Ich möchte sie im gleichen Konto verbuchen können und auch gleichzeitig die
+Kursumrechnung haben
+z.B. £ in SFR., EÜR in SFR, etc.
+gibt es da eine Lösung.....
+ansonst Anregung für neue Version
+
+Außerdem sollte man auch netto Preise eingeben können 
+
+Dauerbuchungen
+--------------
+
+Dauerbuchungen wöchentlich.
+
+Außerdem sollte bei den Dauerbuchungen noch Häufigkeit "wöchentlich" eingefügt werden.
+
+
+automatische Belegnummernvergabe
+--------------------------------
+
+Ich habe es heute ein wenig getestet. Was mich am meisten stört ist die
+Nummernverwaltung. Vorschlag:
+1.)
+Bei den Einstellungen komplett Vorgeben lassen, was davorgesetzt wird. z.B. R01/
+und dann die Nummer dahinter, oder wenn Du schon änderst ev mit Platzhalter #,
+welches Du dann durch die laufende Nummmer ersetzt. Idealerweise würd jedes #
+für eine Zahl stehen. Also R01### würde ersetzt durch R01001, R01002,...
+Softwaretechnisch ist das denke ich nicht allzu schwer zu realisieren und eine
+Top-Sache. Ich habe bisher auch noch eine 3. Nummer verwendet B# für Belege,
+aufgrund von Kontoauszügen (DA, LA o.ä. wo ich keine eigene Rechnung habe). Die
+Nummer hat dann die Konummer bekommen. 
+2.)
+Bei der Verwendung der Belegnummer wäre es gut entweder Nummer Voranstellen (mit jeweils gleicher Länge) d.h. Cursor im
+Eingabefeld hinter Nummer oder Nummer hinten lassen, aber dann bei Anzeige, Ausdruck in eine eingen
+Spalte. Ist dann einfach übersichtlicher.	
+
+ich habe mir nun schon die 2.Version von Easy Cash runtergeladen und finde
+das Programm eigentlich sehr gut. Das einzige was mich wirklich stört: Die
+lfd. Buchungsnummern kann man nicht Benutzerdefiniert, d.h. für Einnahmen
+z.B. E1 oder 01, für Ausgaben A1 oder 1.  Falls das irgendwie machbar ist,
+wäre das super.
+
+optional Eine Nummer für beide: E sowie A
+
+
+Split- bzw. Komposit-Buchungen:
+-------------------------------
+#- Wiederholungsbuchungen wären auch noch nett, aber nicht unbedingt nötig. Habe
+#z. B. öfter 10 ähnliche Buchungen hintereinander, nur mit verschiedenen
+#Beträgen.
+
+Splitbuchungen sollten möglich sein
+
+
+Verschiedenes
+--------------
+
+-im menue datei öffnet drucken und seitenvorschau dasselbe fenster, was erst
+verwirrt, bis man dann die seitenvorschau in der USt-voranmeldung findet
+Es wäre gut, auch ohne einen Ausdruck machen zu müssen, die Zahlen
+einer USt-Voranmeldung, Einnahmen-Überschußrechnung etc. ohne viel
+Drumherum angezeigt zu bekommen. Bei einer Einnahmen-Überschuß
+rechnung vielleicht auch gleich die Anzeige des monatl. Einkommens
+(/12).
+
+automatische Generierung von Buchungen für USt-Zahlungen oder -Erstattungen
+--> Zahlungsmodul?
+
+Passwortschutz der ECT-Datei
+

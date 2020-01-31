@@ -1,0 +1,14 @@
+ 
+// Commands (ID_* and IDM_*) 
+// Prompts (IDP_*) 
+// Resources (IDR_*) 
+// Dialogs (IDD_*) 
+HIDD_ABOUTBOX_DOKUMENT                  0x20001
+HIDD_ABOUTBOX_EINSTELLUNG               0x20002
+HIDD_ABOUTBOX_BUCHUNG                   0x20003
+HIDD_PROPPAGE_DOKUMENT                  0x200C8
+HIDD_PROPPAGE_EINSTELLUNG               0x200C9
+HIDD_PROPPAGE_BUCHUNG                   0x200CA
+HIDD_ABOUTBOX_FORMULAR                  0x200CB
+HIDD_PROPPAGE_FORMULAR                  0x200CC
+// Frame Controls (IDW_*) 

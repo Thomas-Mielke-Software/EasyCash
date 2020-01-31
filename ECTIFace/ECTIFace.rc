@@ -1,0 +1,270 @@
+// Microsoft Visual C++ generated resource script.
+//
+#include "resource.h"
+
+#define APSTUDIO_READONLY_SYMBOLS
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 2 resource.
+//
+#include "afxres.h"
+
+/////////////////////////////////////////////////////////////////////////////
+#undef APSTUDIO_READONLY_SYMBOLS
+
+/////////////////////////////////////////////////////////////////////////////
+// German (Germany) resources
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_DEU)
+#ifdef _WIN32
+LANGUAGE LANG_GERMAN, SUBLANG_GERMAN
+#pragma code_page(1252)
+#endif //_WIN32
+
+#ifdef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// TEXTINCLUDE
+//
+
+1 TEXTINCLUDE 
+BEGIN
+    "resource.h\0"
+END
+
+2 TEXTINCLUDE 
+BEGIN
+    "#include ""afxres.h""\r\n"
+    "\0"
+END
+
+3 TEXTINCLUDE 
+BEGIN
+    "#define _AFX_NO_SPLITTER_RESOURCES\r\n"
+    "#define _AFX_NO_OLE_RESOURCES\r\n"
+    "#define _AFX_NO_TRACKER_RESOURCES\r\n"
+    "#define _AFX_NO_PROPERTY_RESOURCES\r\n"
+    "\r\n"
+    "#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_DEU)\r\n"
+    "#ifdef _WIN32\r\n"
+    "LANGUAGE 9, 1\r\n"
+    "#pragma code_page(1252)\r\n"
+    "#endif\r\n"
+    "#include ""res\\ECTIFace.rc2""  // non-Microsoft Visual C++ edited resources\r\n"
+    "#include ""l.deu\\afxres.rc""          // Standard components\r\n"
+    "#endif\0"
+END
+
+#endif    // APSTUDIO_INVOKED
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Dialog
+//
+
+IDD_BUCHUNGSJAHR_WAEHLEN DIALOGEX 0, 0, 209, 160
+STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Buchungsjahr wählen"
+FONT 8, "MS Sans Serif", 0, 0, 0x0
+BEGIN
+    LTEXT           "Für welches Jahr sollen die Buchungen erfolgen?\r\n(Bitte das Jahr vierstellig angeben: z.B. 2014)",IDC_STATIC,7,101,163,19
+    EDITTEXT        IDC_JAHR,175,101,27,12,ES_AUTOHSCROLL
+    LTEXT           "Währungskürzel (z.B. EUR, SFR)",IDC_STATIC,9,122,158,8
+    EDITTEXT        IDC_WAEHRUNG,175,122,27,12,ES_AUTOHSCROLL
+    DEFPUSHBUTTON   "OK",IDOK,95,139,50,14
+    PUSHBUTTON      "Abbrechen",IDCANCEL,152,139,50,14
+    LTEXT           "Hinweis: Wenn bereits eine Jahres-Buchungsdatei (JahrXXXX.eca) für das vorausgehende Jahr existiert, ist es empfehlenswert 'Jahreswechsel' im Applikationsmenü (links oben) zu nutzen, weil dann AfAs und Dauerbuchungen ins neue Jahr übernommen werden.",IDC_STATIC,7,7,195,48
+    LTEXT           "Dazu muss zunächst die bestehende Buchungsdatei geöffnet werden. Wählen Sie dafür jetzt einfach Abbrechen und dann im Applikationsmenü die existierende Buchungsdatei in der Liste der zuletzt geöffneten Dateien oder gehen Sie über 'Datei öffnen'.",IDC_STATIC,7,55,195,42
+END
+
+IDD_KONVERTIERUNG DIALOG  0, 0, 313, 213
+STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION
+CAPTION "Währungskonvertierung"
+FONT 8, "MS Sans Serif"
+BEGIN
+    LTEXT           "Zur Konvertierung in Euro bestätigen sie bitte die Währung, die Ihren momentanen Buchungsdaten entspricht:",IDC_TEXT1,7,7,149,26
+    CONTROL         "bereits Euro (keine Konvertierung)",IDC_WAEHRUNG_AUSWAHL,
+                    "Button",BS_AUTORADIOBUTTON | WS_GROUP,7,38,143,10
+    CONTROL         "Deutsche Mark",IDC_WAEHRUNG_AUSWAHL2,"Button",BS_AUTORADIOBUTTON,7,50,143,10
+    CONTROL         "Belgische/Luxemburgische Franc",IDC_WAEHRUNG_AUSWAHL3,
+                    "Button",BS_AUTORADIOBUTTON,7,62,143,10
+    CONTROL         "Spanische Peseten",IDC_WAEHRUNG_AUSWAHL4,"Button",BS_AUTORADIOBUTTON,7,74,143,10
+    CONTROL         "Französische Franc",IDC_WAEHRUNG_AUSWAHL5,"Button",BS_AUTORADIOBUTTON,7,86,143,10
+    CONTROL         "Irische Pfund",IDC_WAEHRUNG_AUSWAHL6,"Button",BS_AUTORADIOBUTTON,7,98,143,10
+    CONTROL         "Italienische Lire",IDC_WAEHRUNG_AUSWAHL7,"Button",BS_AUTORADIOBUTTON,7,110,143,10
+    CONTROL         "Holländische Gulden",IDC_WAEHRUNG_AUSWAHL8,"Button",BS_AUTORADIOBUTTON,7,122,143,10
+    CONTROL         "Österreichische Schilling",IDC_WAEHRUNG_AUSWAHL9,"Button",BS_AUTORADIOBUTTON,7,134,143,10
+    CONTROL         "Portugisische Escudo",IDC_WAEHRUNG_AUSWAHL10,"Button",BS_AUTORADIOBUTTON,7,146,143,10
+    CONTROL         "Finnische Mark",IDC_WAEHRUNG_AUSWAHL11,"Button",BS_AUTORADIOBUTTON,7,158,143,10
+    CONTROL         "andere (keine Konvertierung)",IDC_WAEHRUNG_AUSWAHL12,
+                    "Button",BS_AUTORADIOBUTTON,7,170,110,10
+    CONTROL         "Jetzt in Euro konvertieren",IDC_KONVERTIEREN1,"Button",BS_AUTORADIOBUTTON | WS_DISABLED | WS_GROUP,165,50,116,10
+    CONTROL         "Erst 2002 in Euro konvertieren",IDC_KONVERTIEREN2,
+                    "Button",BS_AUTORADIOBUTTON | WS_DISABLED,165,62,141,10
+    LTEXT           "Kürzel:",IDC_STATIC,20,183,23,8
+    EDITTEXT        IDC_WAEHRUNGSKUERZEL,46,181,28,12,ES_AUTOHSCROLL | WS_DISABLED
+    DEFPUSHBUTTON   "OK",IDOK,247,174,50,14
+END
+
+IDD_AFA_GENAUIGKEIT DIALOG  0, 0, 331, 109
+STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "AfA Genauigkeit"
+FONT 8, "MS Sans Serif"
+BEGIN
+    LTEXT           "Die AfA-Genauigkeit legt fest, wie Groß die Abschreibung eines Anlagegegenstands im ersten Buchungsjahr ist, in dem er angeschafft wurde. ",IDC_STATIC,7,7,317,17
+    LTEXT           "AfA wird",IDC_STATIC,7,28,317,8
+    CONTROL         "immer mit einer &ganzen Jahresrate im ersten Buchungsjahr abschreiben",IDC_AFA1,
+                    "Button",BS_AUTORADIOBUTTON | WS_GROUP,7,41,317,10
+    CONTROL         "mit einer &halben Jahresrate abschreiben, wenn in der 2. Hälfte des Buchungsjahres angeschafft",IDC_AFA2,
+                    "Button",BS_AUTORADIOBUTTON,7,56,315,10
+    CONTROL         "mit &monatsgenauem Wert abgeschrieben (Pflicht in der BRD seit 1.1.2004)",IDC_AFA3,
+                    "Button",BS_AUTORADIOBUTTON,7,71,317,10
+    DEFPUSHBUTTON   "OK",IDOK,219,87,50,14,WS_GROUP
+    PUSHBUTTON      "Cancel",IDCANCEL,274,87,50,14
+END
+
+IDD_DATENSICHERUNGSOPTIONEN DIALOGEX 0, 0, 316, 182
+STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION
+CAPTION "Datensicherungsoptionen"
+FONT 8, "MS Shell Dlg", 400, 0, 0x1
+BEGIN
+    PUSHBUTTON      "Abbrechen",IDCANCEL,259,161,50,14
+    LTEXT           "Nachfrageintervall:",IDC_STATIC,7,156,66,8
+    LTEXT           "wöchentlich",IDC_INTERVALL,75,156,149,19
+    PUSHBUTTON      "jetzt keine Datensicherung machen (Termin überspringen)",IDC_KEINE2,7,7,302,25
+    PUSHBUTTON      "Datensicherung auf der internen Festplatte",IDC_INTERN2,7,37,302,25
+    PUSHBUTTON      "Datensicherung auf externem Laufwerk oder USB-Stick",IDC_EXTERN2,7,67,302,25
+    PUSHBUTTON      "Datensicherung auf CD-r oder DVD-r machen",IDC_DISK2,7,97,302,25
+    PUSHBUTTON      "Nachfrage-Wartezeit ändern",IDC_ZEIT2,7,127,302,25
+    CONTROL         "jetzt keine Datensicherung machen (Termin überspringen)",IDC_KEINE,
+                    "Button",BS_COMMANDLINK | WS_TABSTOP,7,7,302,25
+    CONTROL         "Datensicherung auf der internen Festplatte",IDC_INTERN,
+                    "Button",BS_COMMANDLINK | WS_TABSTOP,7,37,302,25
+    CONTROL         "Datensicherung auf externem Laufwerk oder USB-Stick",IDC_EXTERN,
+                    "Button",BS_COMMANDLINK | WS_TABSTOP,7,67,302,25
+    CONTROL         "Datensicherung auf CD-r oder DVD-r machen",IDC_DISK,
+                    "Button",BS_COMMANDLINK | WS_TABSTOP,7,97,302,25
+    CONTROL         "Nachfrage-Wartezeit ändern",IDC_ZEIT,"Button",BS_COMMANDLINK | WS_TABSTOP,7,127,302,25
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// DESIGNINFO
+//
+
+#ifdef APSTUDIO_INVOKED
+GUIDELINES DESIGNINFO 
+BEGIN
+    IDD_BUCHUNGSJAHR_WAEHLEN, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 202
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 153
+    END
+
+    IDD_KONVERTIERUNG, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 306
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 206
+    END
+
+    IDD_AFA_GENAUIGKEIT, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 324
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 102
+    END
+
+    IDD_DATENSICHERUNGSOPTIONEN, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 309
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 175
+    END
+END
+#endif    // APSTUDIO_INVOKED
+
+#endif    // German (Germany) resources
+/////////////////////////////////////////////////////////////////////////////
+
+
+/////////////////////////////////////////////////////////////////////////////
+// English (U.S.) resources
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENU)
+#ifdef _WIN32
+LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
+#pragma code_page(1252)
+#endif //_WIN32
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Version
+//
+
+VS_VERSION_INFO VERSIONINFO
+ FILEVERSION 2,29,0,1
+ PRODUCTVERSION 2,29,0,1
+ FILEFLAGSMASK 0x3fL
+#ifdef _DEBUG
+ FILEFLAGS 0x1L
+#else
+ FILEFLAGS 0x0L
+#endif
+ FILEOS 0x4L
+ FILETYPE 0x2L
+ FILESUBTYPE 0x0L
+BEGIN
+    BLOCK "StringFileInfo"
+    BEGIN
+        BLOCK "080004b0"
+        BEGIN
+            VALUE "CompanyName", "Thomas Mielke Softwareentwicklung"
+            VALUE "FileDescription", "ECTIFACE DLL"
+            VALUE "FileVersion", "2, 29, 0, 1"
+            VALUE "InternalName", "ECTIFACE"
+            VALUE "LegalCopyright", "© 1998-2019 Thomas Mielke Softwareentwicklung"
+            VALUE "OriginalFilename", "ECTIFACE.DLL"
+            VALUE "ProductName", "ECTIFACE Dynamic Link Library"
+            VALUE "ProductVersion", "2, 29, 0, 1"
+        END
+    END
+    BLOCK "VarFileInfo"
+    BEGIN
+        VALUE "Translation", 0x800, 1200
+    END
+END
+
+#endif    // English (U.S.) resources
+/////////////////////////////////////////////////////////////////////////////
+
+
+
+#ifndef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 3 resource.
+//
+#define _AFX_NO_SPLITTER_RESOURCES
+#define _AFX_NO_OLE_RESOURCES
+#define _AFX_NO_TRACKER_RESOURCES
+#define _AFX_NO_PROPERTY_RESOURCES
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_DEU)
+#ifdef _WIN32
+LANGUAGE 9, 1
+#pragma code_page(1252)
+#endif
+#include "res\ECTIFace.rc2"  // non-Microsoft Visual C++ edited resources
+#include "l.deu\afxres.rc"          // Standard components
+#endif
+/////////////////////////////////////////////////////////////////////////////
+#endif    // not APSTUDIO_INVOKED
+

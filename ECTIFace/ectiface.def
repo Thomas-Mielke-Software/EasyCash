@@ -1,0 +1,8 @@
+; ECTIFace.def : Declares the module parameters for the DLL.
+
+LIBRARY      "ECTIFACE"
+
+EXPORTS
+	shareware												@1
+	ExtensionDLLs											@2
+

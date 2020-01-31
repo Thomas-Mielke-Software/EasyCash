@@ -1,0 +1,281 @@
+// EasyCTX.odl : type library source for ActiveX Control project.
+//
+// Diese Datei ist Bestandteil von EasyCash&Tax, der freien EÜR-Fibu
+//
+// Copyleft (GPLv3) 2020  Thomas Mielke
+// 
+// Dies ist freie Software; Sie dürfen sie unter den Bedingungen der 
+// GNU General Public License, wie von der Free Software Foundation 
+// veröffentlicht, weiterverteilen und/oder modifizieren; entweder gemäß 
+// Version 3 der Lizenz oder (nach Ihrer Option) jeder späteren Version.
+//
+// Diese Software wird in der Hoffnung weiterverbreitet, dass sie nützlich 
+// sein wird, jedoch OHNE IRGENDEINE GARANTIE, auch ohne die implizierte 
+// Garantie der MARKTREIFE oder der VERWENDBARKEIT FÜR EINEN BESTIMMTEN ZWECK.
+// Mehr Details finden Sie in der GNU Lesser General Public License.
+//
+// Sie sollten eine Kopie der GNU General Public License Version 3 zusammen mit 
+// dieser Software erhalten haben; falls nicht, schreiben Sie an die Free 
+// Software Foundation, Inc., 51 Franklin St, 5th Floor, Boston, MA 02110, USA. 
+
+// This file will be processed by the Make Type Library (mktyplib) tool to
+// produce the type library (EasyCTX.tlb) that will become a resource in
+// EasyCTX.ocx.
+
+#include <olectl.h>
+#include <idispids.h>
+
+[ uuid(D235EEC4-D7DB-404E-85DB-0642FAAAD74D), version(1.0),
+  helpfile("EasyCTX.hlp"),
+  helpstring("EasyCTX ActiveX Control module"),
+  control ]
+library EASYCTXLib
+{
+	importlib(STDOLE_TLB);
+	importlib(STDTYPE_TLB);
+
+	//  Primary dispatch interface for CDokumentCtrl
+
+	[ uuid(0874CEC1-2DF3-415A-AEC9-BE6CA1C19F02),
+	  helpstring("Dispatch interface for Dokument Control"), hidden ]
+	dispinterface _DDokument
+	{
+		properties:
+			// NOTE - ClassWizard will maintain property information here.
+			//    Use extreme caution when editing this section.
+			//{{AFX_ODL_PROP(CDokumentCtrl)
+			[id(1)] long ID;
+			[id(2)] short Jahr;
+			[id(3)] long LaufendeBuchungsnummerEinnahmen;
+			[id(4)] long LaufendeBuchungsnummerAusgaben;
+			[id(5)] BSTR Waehrung;
+			[id(6)] long AbschreibungGenauigkeit;
+			[id(7)] long LaufendeBuchungsnummerBank;
+			[id(8)] long LaufendeBuchungsnummerKasse;
+			//}}AFX_ODL_PROP
+
+		methods:
+			// NOTE - ClassWizard will maintain method information here.
+			//    Use extreme caution when editing this section.
+			//{{AFX_ODL_METHOD(CDokumentCtrl)
+			[id(9)] long FindeErsteEinnahmenBuchung();
+			[id(10)] long FindeErsteAusgabenBuchung();
+			[id(11)] long FindeNaechsteBuchung(long BuchungID);
+			[id(12)] long NeueEinnahmenbuchungEinfuegen();
+			[id(13)] long NeueAusgabenbuchungEinfuegen();
+			[id(14)] void Sortieren();
+			[id(15)] void LoescheBuchung(long BuchungID);
+			[id(16)] CURRENCY HoleEinnahmenSumme();
+			[id(17)] CURRENCY HoleAusgabenSumme();
+			[id(18)] long HoleDokumentVersion();
+			[id(19)] BSTR HoleBenutzerdefWert(BSTR PluginName, BSTR SchluesselName);
+			[id(20)] void SpeichereBenutzerdefWert(BSTR PluginName, BSTR SchluesselName, BSTR Wert);
+			//}}AFX_ODL_METHOD
+
+			[id(DISPID_ABOUTBOX)] void AboutBox();
+	};
+
+	//  Event dispatch interface for CDokumentCtrl
+
+	[ uuid(BD5B39D5-30D3-4AD8-96A3-C47DF19A4DFE),
+	  helpstring("Event interface for Dokument Control") ]
+	dispinterface _DDokumentEvents
+	{
+		properties:
+			//  Event interface has no properties
+
+		methods:
+			// NOTE - ClassWizard will maintain event information here.
+			//    Use extreme caution when editing this section.
+			//{{AFX_ODL_EVENT(CDokumentCtrl)
+			//}}AFX_ODL_EVENT
+	};
+
+	//  Class information for CDokumentCtrl
+
+	[ uuid(ED09076F-B744-47A1-8D60-F9EF093F19F0),
+	  helpstring("Dokument Control"), control ]
+	coclass Dokument
+	{
+		[default] dispinterface _DDokument;
+		[default, source] dispinterface _DDokumentEvents;
+	};
+
+	//  Primary dispatch interface for CEinstellungCtrl
+
+	[ uuid(8BDFADF1-8317-4EBA-88BB-E5BC1290DD72),
+	  helpstring("Dispatch interface for Einstellung Control"), hidden ]
+	dispinterface _DEinstellung
+	{
+		properties:
+			// NOTE - ClassWizard will maintain property information here.
+			//    Use extreme caution when editing this section.
+			//{{AFX_ODL_PROP(CEinstellungCtrl)
+			//}}AFX_ODL_PROP
+
+		methods:
+			// NOTE - ClassWizard will maintain method information here.
+			//    Use extreme caution when editing this section.
+			//{{AFX_ODL_METHOD(CEinstellungCtrl)
+			[id(1)] BSTR HoleEinstellung(BSTR ID);
+			[id(2)] void SpeichereEinstellung(BSTR ID, BSTR Wert);
+			//}}AFX_ODL_METHOD
+
+			[id(DISPID_ABOUTBOX)] void AboutBox();
+	};
+
+	//  Event dispatch interface for CEinstellungCtrl
+
+	[ uuid(9910463D-5929-4E27-8368-4CC0932ACF62),
+	  helpstring("Event interface for Einstellung Control") ]
+	dispinterface _DEinstellungEvents
+	{
+		properties:
+			//  Event interface has no properties
+
+		methods:
+			// NOTE - ClassWizard will maintain event information here.
+			//    Use extreme caution when editing this section.
+			//{{AFX_ODL_EVENT(CEinstellungCtrl)
+			//}}AFX_ODL_EVENT
+	};
+
+	//  Class information for CEinstellungCtrl
+
+	[ uuid(DFA091A6-D040-444F-800A-656BEA3361C3),
+	  helpstring("Einstellung Control"), control ]
+	coclass Einstellung
+	{
+		[default] dispinterface _DEinstellung;
+		[default, source] dispinterface _DEinstellungEvents;
+	};
+
+	//  Primary dispatch interface for CFormularCtrl
+
+	[ uuid(8BDFADF1-8317-4EBA-88BB-E5BC1290DD74),
+	  helpstring("Dispatch interface for Formular Control"), hidden ]
+	dispinterface _DFormular
+	{
+		properties:
+			// NOTE - ClassWizard will maintain property information here.
+			//    Use extreme caution when editing this section.
+			//{{AFX_ODL_PROP(CFormularCtrl)
+			//}}AFX_ODL_PROP
+
+		methods:
+			// NOTE - ClassWizard will maintain method information here.
+			//    Use extreme caution when editing this section.
+			//{{AFX_ODL_METHOD(CFormularCtrl)
+			[id(1)] void SetzeDokumentID(long ID);
+			[id(2)] BSTR HoleFormularnamen(long Index, BSTR Filter);
+			[id(3)] BSTR HoleFormularpfad(long Index);
+			[id(4)] long HoleFormularanzahl();
+			[id(5)] void WaehleFormular(BSTR Formular);
+			[id(6)] long HoleFeldanzahl();
+			[id(7)] long HoleFeldIDUeberIndex(long Index);
+			[id(8)] BSTR HoleFeldwertUeberIndex(long Index);
+			[id(9)] BSTR HoleFeldwertUeberID(long FeldID);
+			[id(10)] BSTR HoleFeldbeschreibungUeberID(long FeldID);
+			[id(11)] long HoleVoranmeldungszeitraum();
+			//}}AFX_ODL_METHOD
+
+			[id(DISPID_ABOUTBOX)] void AboutBox();
+	};
+
+	//  Event dispatch interface for CFormularCtrl
+
+	[ uuid(9910463D-5929-4E27-8368-4CC0932ACF64),
+	  helpstring("Event interface for Formular Control") ]
+	dispinterface _DFormularEvents
+	{
+		properties:
+			//  Event interface has no properties
+
+		methods:
+			// NOTE - ClassWizard will maintain event information here.
+			//    Use extreme caution when editing this section.
+			//{{AFX_ODL_EVENT(CFormularCtrl)
+			//}}AFX_ODL_EVENT
+	};
+
+	//  Class information for CFormularCtrl
+
+	[ uuid(DFA091A6-D040-444F-800A-656BEA3361C4),
+	  helpstring("Formular Control"), control ]
+	coclass Formular
+	{
+		[default] dispinterface _DFormular;
+		[default, source] dispinterface _DFormularEvents;
+	};
+
+	//  Primary dispatch interface for CBuchungCtrl
+
+	[ uuid(A0D24962-B111-4E4A-8649-589FD6845772),
+	  helpstring("Dispatch interface for Buchung Control"), hidden ]
+	dispinterface _DBuchung
+	{
+		properties:
+			// NOTE - ClassWizard will maintain property information here.
+			//    Use extreme caution when editing this section.
+			//{{AFX_ODL_PROP(CBuchungCtrl)
+			[id(0)] long _ID;
+			[id(1)] long ID;
+			[id(2)] CURRENCY Betrag;
+			[id(3)] double MWSt;
+			[id(4)] short AbschreibungNr;
+			[id(5)] short AbschreibungJahre;
+			[id(6)] BSTR Beschreibung;
+			[id(7)] DATE Datum;
+			[id(8)] BSTR Konto;
+			[id(9)] BSTR Belegnummer;
+			[id(10)] CURRENCY AbschreibungRestwert;
+			[id(11)] boolean AbschreibungDegressiv;
+			[id(12)] double AbschreibungSatz;
+			[id(17)] long AbschreibungGenauigkeit;
+			[id(18)] BSTR Betrieb;
+			[id(19)] BSTR Bestandskonto;
+			//}}AFX_ODL_PROP
+
+		methods:
+			// NOTE - ClassWizard will maintain method information here.
+			//    Use extreme caution when editing this section.
+			//{{AFX_ODL_METHOD(CBuchungCtrl)
+			[id(13)] CURRENCY HoleNetto();
+			[id(14)] CURRENCY HoleBuchungsjahrNetto(long dokID);
+			[id(15)] BSTR HoleBenutzerdefWert(BSTR PluginName, BSTR SchluesselName);
+			[id(16)] void SpeichereBenutzerdefWert(BSTR PluginName, BSTR SchluesselName, BSTR Wert);
+			//}}AFX_ODL_METHOD
+
+			[id(DISPID_ABOUTBOX)] void AboutBox();
+	};
+
+	//  Event dispatch interface for CBuchungCtrl
+
+	[ uuid(4B052FCF-4F4C-4DF0-9F54-7CA852C3E9BE),
+	  helpstring("Event interface for Buchung Control") ]
+	dispinterface _DBuchungEvents
+	{
+		properties:
+			//  Event interface has no properties
+
+		methods:
+			// NOTE - ClassWizard will maintain event information here.
+			//    Use extreme caution when editing this section.
+			//{{AFX_ODL_EVENT(CBuchungCtrl)
+			//}}AFX_ODL_EVENT
+	};
+
+	//  Class information for CBuchungCtrl
+
+	[ uuid(3BC20630-93BA-47B2-82D1-820C7F1986A1),
+	  helpstring("Buchung Control"), control ]
+	coclass Buchung
+	{
+		[default] dispinterface _DBuchung;
+		[default, source] dispinterface _DBuchungEvents;
+	};
+
+
+	//{{AFX_APPEND_ODL}}
+	//}}AFX_APPEND_ODL}}
+};

@@ -1,0 +1,1881 @@
+// Microsoft Visual C++ generated resource script.
+//
+#include "resource.h"
+
+#define APSTUDIO_READONLY_SYMBOLS
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 2 resource.
+//
+#include "afxres.h"
+
+/////////////////////////////////////////////////////////////////////////////
+#undef APSTUDIO_READONLY_SYMBOLS
+
+/////////////////////////////////////////////////////////////////////////////
+// German (Germany) resources
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_DEU)
+#ifdef _WIN32
+LANGUAGE LANG_GERMAN, SUBLANG_GERMAN
+#pragma code_page(1252)
+#endif //_WIN32
+
+#ifdef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// TEXTINCLUDE
+//
+
+1 TEXTINCLUDE 
+BEGIN
+    "resource.h\0"
+END
+
+2 TEXTINCLUDE 
+BEGIN
+    "#include ""afxres.h""\r\n"
+    "\0"
+END
+
+3 TEXTINCLUDE 
+BEGIN
+    "#define _AFX_NO_SPLITTER_RESOURCES\r\n"
+    "#define _AFX_NO_OLE_RESOURCES\r\n"
+    "#define _AFX_NO_TRACKER_RESOURCES\r\n"
+    "#define _AFX_NO_PROPERTY_RESOURCES\r\n"
+    "\r\n"
+    "#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_DEU)\r\n"
+    "#ifdef _WIN32\r\n"
+    "LANGUAGE 7, 1\r\n"
+    "#pragma code_page(1252)\r\n"
+    "#endif\r\n"
+    "#include ""res\\EasyCash.rc2""  // non-Microsoft Visual C++ edited resources\r\n"
+    "#include ""l.deu\\afxres.rc""          // Standard components\r\n"
+    "#include ""l.deu\\afxprint.rc""        // printing/print preview resources\r\n"
+    "#if !defined(_AFXDLL)\r\n"
+    "#include ""afxprint.rc""               // printing/print preview resources\r\n"
+    "#include ""afxribbon.rc""              // MFC ribbon and control bar resources\r\n"
+    "#endif\r\n"
+    "#endif\0"
+END
+
+#endif    // APSTUDIO_INVOKED
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Icon
+//
+
+// Icon with lowest ID value placed first to ensure application icon
+// remains consistent on all systems.
+IDR_MAINFRAME           ICON                    "res\\EasyCash.ico"
+IDR_EASYCATYPE          ICON                    "res\\EasyCashDoc.ico"
+IDI_FACE1               ICON                    "RES\\FACE01.ICO"
+IDI_FACE2               ICON                    "RES\\FACE02.ICO"
+IDI_FACE3               ICON                    "RES\\FACE03.ICO"
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Bitmap
+//
+
+IDR_MAINFRAME           BITMAP                  "res\\Toolbar.bmp"
+IDB_BUTTON1             BITMAP                  "res\\button1.bmp"
+IDB_STOP                BITMAP                  "res\\stop.bmp"
+IDB_SPIKE               BITMAP                  "res\\spike.bmp"
+IDB_31STER              BITMAP                  "res\\31ster.bmp"
+IDB_31STER_AUSHUEHREN   BITMAP                  "res\\bmp31ste.bmp"
+IDB_31STER_AUSFUEHREN_GROSS BITMAP                  "res\\bmp00001.bmp"
+IDB_INFOSIGN            BITMAP                  "res\\infosign.bmp"
+IDB_SPIKE_PLUS          BITMAP                  "res\\spike1.bmp"
+IDB_SPIKE_MINUS         BITMAP                  "res\\spike2.bmp"
+IDB_CLOCK               BITMAP                  "res\\clock.bmp"
+IDB_SPANNER             BITMAP                  "res\\spanner.bmp"
+IDB_UP                  BITMAP                  "res\\button2.bmp"
+IDB_DOWN                BITMAP                  "res\\button3.bmp"
+IDB_PLUS                BITMAP                  "res\\button4.bmp"
+IDB_MINUS               BITMAP                  "res\\button5.bmp"
+IDB_PIE                 BITMAP                  "RES\\pie.bmp"
+IDB_LIGHTBULB           BITMAP                  "res\\litebulb.bmp"
+IDB_AENDERN             BITMAP                  "RES\\button6.bmp"
+IDR_PLUGIN              BITMAP                  "res\\plugin.bmp"
+IDB_PLUGIN_PLATZHALTER  BITMAP                  "RES\\plugin_platzhalter.bmp"
+IDB_EASYCASH            BITMAP                  "RES\\easycash.bmp"
+IDB_RECHNER             BITMAP                  "RES\\Rechner.bmp"
+IDR_FIND                BITMAP                  "res\\find.bmp"
+IDB_ICONS               BITMAP                  "RES\\icons.bmp"
+IDB_HICOLOR_TOOLBAR     BITMAP                  "RES\\toolbar_hicolor.bmp"
+IDB_HICOLOR_TOOLBAR_DISABLED BITMAP                  "RES\\toolbar_hicolor_disabled.bmp"
+IDB_HICOLOR_TOOLBAR_HOT BITMAP                  "RES\\toolbar_hicolor_hot.bmp"
+IDB_ICONS_BESTANDSKONTEN BITMAP                  "RES\\icons_bestandskonten.bmp"
+IDB_DATENVERZEICHNIS    BITMAP                  "RES\\datenverzeichnis.bmp"
+IDB_TOOLBAR_16          BITMAP                  "RES\\toolbar_hicolor_16.bmp"
+IDB_TOOLBAR_32          BITMAP                  "RES\\toolbar_hicolor_32.bmp"
+IDB_BIG_ICON_CHECKMARK  BITMAP                  "RES\\big_icon_checkmark.bmp"
+IDB_TOOLBAR_EINSTELLUNGEN_32 BITMAP                  "RES\\toolbar_einstellungen_32.bmp"
+IDB_TOOLBAR_EINSTELLUNGEN_16 BITMAP                  "RES\\toolbar_einstellungen_16.bmp"
+IDB_EASYCASH_32         BITMAP                  "RES\\EasyCash32x32.bmp"
+IDB_INFO                BITMAP                  "RES\\info.bmp"
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Toolbar
+//
+
+IDR_MAINFRAME TOOLBAR  32, 32
+BEGIN
+    BUTTON      ID_FILE_NEW
+    BUTTON      ID_FILE_OPEN
+    BUTTON      ID_FILE_SAVE
+    BUTTON      ID_FILE_BACKUP
+    BUTTON      ID_FILE_MANDANTEN
+    SEPARATOR
+    BUTTON      ID_EDIT_EINNAHME_BUCHEN
+    BUTTON      ID_EDIT_AUSGABE_BUCHEN
+    BUTTON      ID_EDIT_DAUERBUCHUNGEN_EINGEBEN
+    BUTTON      ID_EDIT_DAUERBUCHUNGEN_AUSFUEHREN
+    SEPARATOR
+    BUTTON      ID_FILE_PRINT2
+    BUTTON      ID_FILE_PRINT_PREVIEW
+    SEPARATOR
+    BUTTON      ID_VIEW_JOURNAL_SWITCH
+    BUTTON      ID_VIEW_OPTIONS
+    SEPARATOR
+    BUTTON      ID_APP_ABOUT
+END
+
+IDR_PLUGIN TOOLBAR  32, 32
+BEGIN
+    BUTTON      ID_FILE_PLUGINMANAGER
+END
+
+IDR_FIND TOOLBAR  16, 15
+BEGIN
+    BUTTON      ID_BUTTON32822
+    SEPARATOR
+    BUTTON      ID_NEXT
+    BUTTON      ID_PREV
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Menu
+//
+
+IDR_MAINFRAME MENU 
+BEGIN
+    POPUP "&Datei"
+    BEGIN
+        MENUITEM "&Neu\tStrg+N",                ID_FILE_NEW
+        MENUITEM "Ö&ffnen...\tStrg+O",          ID_FILE_OPEN
+        MENUITEM "&Mandanten...",               ID_FILE_MANDANTEN
+        MENUITEM SEPARATOR
+        MENUITEM "Druckerein&richtung...",      ID_FILE_PRINT_SETUP
+        MENUITEM SEPARATOR
+        MENUITEM "Registrierungsinformationen &wiederherstellen...", ID_FILE_REGISTRIERUNGSINFORMATIONEN_WIEDERHERSTELLEN
+        MENUITEM "Registrierungsinformationen &sichern...", ID_FILE_REGISTRIERUNGSINFORMATIONEN_SICHERN
+        MENUITEM "&Plugin Manager",             ID_FILE_PLUGINMANAGER
+        MENUITEM SEPARATOR
+        MENUITEM "Letzte Datei",                ID_CMD_CUSTOM_MRU, GRAYED
+        MENUITEM "Öffne &Datenverzeichnis mit Explorer", ID_FILE_OEFFNE_DATENVERZEICHNIS
+        MENUITEM "&Wähle neues Datenverzeichnis aus", ID_FILE_WAEHLE_DATENVERZEICHNIS
+        MENUITEM SEPARATOR
+        MENUITEM "Be&enden",                    ID_APP_EXIT
+    END
+    POPUP "&Ansicht"
+    BEGIN
+        MENUITEM "&Symbolleiste",               ID_VIEW_TOOLBAR
+        MENUITEM "&Pluginleiste",               ID_VIEW_PLUGINTOOLBAR
+        MENUITEM "S&tatusleiste",               ID_VIEW_STATUS_BAR
+        MENUITEM SEPARATOR
+        MENUITEM "&Einstellungen",              ID_VIEW_OPTIONS
+        MENUITEM SEPARATOR
+        MENUITEM "Blue Theme",                  ID_VIEW_APPLOOK_2007
+        MENUITEM "Black Theme",                 ID_VIEW_APPLOOK_2007_1
+        MENUITEM "Silver Theme",                ID_VIEW_APPLOOK_2007_2
+        MENUITEM "Aqua Theme",                  ID_VIEW_APPLOOK_2007_3
+    END
+    POPUP "&Hilfe"
+    BEGIN
+        MENUITEM "Inf&o über EasyCash...",      ID_APP_ABOUT
+    END
+END
+
+IDR_EASYCATYPE MENU 
+BEGIN
+    POPUP "&Datei"
+    BEGIN
+        MENUITEM "&Neu\tStrg+N",                ID_FILE_NEW
+        MENUITEM "Ö&ffnen...\tStrg+O",          ID_FILE_OPEN
+        MENUITEM "&Schließen",                  ID_FILE_EXPORT
+        MENUITEM "S&peichern\tStrg+S",          ID_FILE_SAVE
+        MENUITEM "Speichern &unter...",         ID_FILE_SAVE_AS
+        MENUITEM SEPARATOR
+        MENUITEM "E&xport",                     ID_FILE_EXPORT
+        MENUITEM "&Jahreswechsel",              ID_FILE_JAHRESWECHSEL
+        MENUITEM "Datensicherung in &Unterverzeichnis", ID_FILE_BACKUP_SUBFOLDER
+        MENUITEM "Datensicherung auf externes &Laufwerk", ID_FILE_BACKUP_EXTERNAL
+        MENUITEM "Datens&icherung auf CD/DVD",  ID_FILE_BACKUP
+        MENUITEM SEPARATOR
+        MENUITEM "&Drucken...\tStrg+P",         ID_FILE_PRINT2
+        MENUITEM "Sei&tenansicht",              ID_FILE_PRINT_PREVIEW
+        MENUITEM "Druckerein&richtung...",      ID_FILE_PRINT_SETUP
+        MENUITEM SEPARATOR
+        MENUITEM "Registrierungsinformationen &wiederherstellen...", ID_FILE_REGISTRIERUNGSINFORMATIONEN_WIEDERHERSTELLEN
+        MENUITEM "Registrierungsinformationen &sichern...", ID_FILE_REGISTRIERUNGSINFORMATIONEN_SICHERN
+        MENUITEM "&Plugin Manager",             ID_FILE_PLUGINMANAGER
+        MENUITEM SEPARATOR
+        MENUITEM "Letzte Datei",                ID_CMD_CUSTOM_MRU
+        MENUITEM "Öffne &Datenverzeichnis mit Explorer", ID_FILE_OEFFNE_DATENVERZEICHNIS
+        MENUITEM "&Wähle neues Datenverzeichnis aus", ID_FILE_WAEHLE_DATENVERZEICHNIS
+        MENUITEM SEPARATOR
+        MENUITEM "Be&enden",                    ID_APP_EXIT
+    END
+    POPUP "&Buchen"
+    BEGIN
+        MENUITEM "&Einnahme buchen\tStrg + E",  ID_EDIT_EINNAHME_BUCHEN
+        MENUITEM "&Ausgabe buchen\tStrg + A",   ID_EDIT_AUSGABE_BUCHEN
+        MENUITEM SEPARATOR
+        MENUITEM "&Dauerbuchungen eingeben",    ID_EDIT_DAUERBUCHUNGEN_EINGEBEN
+        MENUITEM "Dauerbuchungen a&usführen\tStrg + D", ID_EDIT_DAUERBUCHUNGEN_AUSFUEHREN
+        MENUITEM SEPARATOR
+        MENUITEM "Umsatz&steuer-Vorauszahlungen\tStrg + U", ID_EDIT_UMSATZSTEUERVORAUSZAHLUNGEN
+    END
+    POPUP "&Ansicht"
+    BEGIN
+        MENUITEM "Journal nach &Datum",         ID_VIEW_JOURNAL_DATUM
+        MENUITEM "Journal nach &Konten",        ID_VIEW_JOURNAL_KONTEN
+        MENUITEM "Journal nach Best&andskonten", ID_VIEW_JOURNAL_BESTKONTEN
+        MENUITEM SEPARATOR
+        MENUITEM "Filtere &aktuellen Monat",    ID_VIEW_JOURNAL_MONAT
+        POPUP "Filter auf &Monat"
+        BEGIN
+            MENUITEM "<alle Monate>",               ID_VIEW_JOURNAL_MONATE_ALLE
+            MENUITEM "Januar",                      ID_VIEW_JOURNAL_MONATE_JANUAR
+            MENUITEM "Februar",                     ID_VIEW_JOURNAL_MONATE_FEBRUAR
+            MENUITEM "März",                        ID_VIEW_JOURNAL_MONATE_MAERZ
+            MENUITEM "April",                       ID_VIEW_JOURNAL_MONATE_APRIL
+            MENUITEM "Mai",                         ID_VIEW_JOURNAL_MONATE_MAI
+            MENUITEM "Juni",                        ID_VIEW_JOURNAL_MONATE_JUNI
+            MENUITEM "Juli",                        ID_VIEW_JOURNAL_MONATE_JULI
+            MENUITEM "August",                      ID_VIEW_JOURNAL_MONATE_AUGUST
+            MENUITEM "September",                   ID_VIEW_JOURNAL_MONATE_SEPTEMBER
+            MENUITEM "Oktober",                     ID_VIEW_JOURNAL_MONATE_OKTOBER
+            MENUITEM "November",                    ID_VIEW_JOURNAL_MONATE_NOVEMBER
+            MENUITEM "Dezember",                    ID_VIEW_JOURNAL_MONATE_DEZEMBER
+            MENUITEM "1. Quartal",                  ID_VIEW_JOURNAL_MONATE_QUARTAL1
+            MENUITEM "2. Quartal",                  ID_VIEW_JOURNAL_MONATE_QUARTAL2
+            MENUITEM "3. Quartal",                  ID_VIEW_JOURNAL_MONATE_QUARTAL3
+            MENUITEM "4. Quartal",                  ID_VIEW_JOURNAL_MONATE_QUARTAL4
+        END
+        MENUITEM "Filter auf &nächstes Konto",  ID_VIEW_JOURNAL_KONTO
+        POPUP "Filter auf Ko&nto"
+        BEGIN
+            MENUITEM "Dummy",                       IDC_DUMMY
+        END
+        MENUITEM "Filter auf &Betrieb...",      ID_VIEW_JOURNAL_BETRIEB
+        MENUITEM "Filter auf Bestandskont&o...", ID_VIEW_JOURNAL_BESTANDSKONTO
+        MENUITEM SEPARATOR
+        MENUITEM "&Zoom",                       ID_VIEW_ZOOM_SWITCH
+        MENUITEM SEPARATOR
+        MENUITEM "&Finden in Beleg/Beschreibung", ID_VIEW_FINDTOOLBAR
+        MENUITEM "Suche &vorwärts\tStrg + F",   ID_NEXT
+        MENUITEM "Suche &rückwärts\tStrg + R",  ID_PREV
+        MENUITEM SEPARATOR
+        MENUITEM "&Symbolleiste",               ID_VIEW_TOOLBAR
+        MENUITEM "&Pluginleiste",               ID_VIEW_PLUGINTOOLBAR
+        MENUITEM "S&tatusleiste",               ID_VIEW_STATUS_BAR
+        MENUITEM SEPARATOR
+        MENUITEM "&Einstellungen",              ID_VIEW_OPTIONS
+        MENUITEM SEPARATOR
+        MENUITEM "Blue Theme",                  ID_VIEW_APPLOOK_2007
+        MENUITEM "Black Theme",                 ID_VIEW_APPLOOK_2007_1
+        MENUITEM "Silver Theme",                ID_VIEW_APPLOOK_2007_2
+        MENUITEM "Aqua Theme",                  ID_VIEW_APPLOOK_2007_3
+    END
+    POPUP "For&mulare"
+    BEGIN
+        MENUITEM "<neues Formular erzeugen>",   ID_FORMULAR_NEU
+    END
+    POPUP "&Fenster"
+    BEGIN
+        MENUITEM "Neues &Fenster",              ID_WINDOW_NEW
+        MENUITEM "Über&lappend",                ID_WINDOW_CASCADE
+        MENUITEM "&Nebeneinander",              ID_WINDOW_TILE_HORZ
+        MENUITEM "&Symbole anordnen",           ID_WINDOW_ARRANGE
+    END
+    POPUP "&Hilfe"
+    BEGIN
+        MENUITEM "Inf&o über EasyCash...",      ID_APP_ABOUT
+    END
+END
+
+IDR_DAUERBUCHUNGEN_AUSFUEHREN_MONATE MENU 
+BEGIN
+    MENUITEM "Januar",                      ID_BUCHEN_DAUAUS_JANUAR
+    MENUITEM "Februar",                     ID_BUCHEN_DAUAUS_FEBRUAR
+    MENUITEM "März",                        ID_BUCHEN_DAUAUS_MAERZ
+    MENUITEM "April",                       ID_BUCHEN_DAUAUS_APRIL
+    MENUITEM "Mai",                         ID_BUCHEN_DAUAUS_MAI
+    MENUITEM "Juni",                        ID_BUCHEN_DAUAUS_JUNI
+    MENUITEM "Juli",                        ID_BUCHEN_DAUAUS_JULI
+    MENUITEM "August",                      ID_BUCHEN_DAUAUS_AUGUST
+    MENUITEM "September",                   ID_BUCHEN_DAUAUS_SEPTEMBER
+    MENUITEM "Oktober",                     ID_BUCHEN_DAUAUS_OKTOBER
+    MENUITEM "November",                    ID_BUCHEN_DAUAUS_NOVEMBER
+    MENUITEM "Dezember",                    ID_BUCHEN_DAUAUS_DEZEMBER
+END
+
+IDR_JOURNALANSICHT MENU 
+BEGIN
+    MENUITEM "Journal nach &Datum",         ID_VIEW_JOURNAL_DATUM
+    MENUITEM "Journal nach &Konten",        ID_VIEW_JOURNAL_KONTEN
+    MENUITEM "Journal nach &Bestandskonten", ID_VIEW_JOURNAL_BESTKONTEN
+END
+
+IDR_FILTER_MONAT MENU 
+BEGIN
+    MENUITEM "<alle Monate>",               ID_VIEW_JOURNAL_MONATE_ALLE
+    MENUITEM "Januar",                      ID_VIEW_JOURNAL_MONATE_JANUAR
+    MENUITEM "Februar",                     ID_VIEW_JOURNAL_MONATE_FEBRUAR
+    MENUITEM "März",                        ID_VIEW_JOURNAL_MONATE_MAERZ
+    MENUITEM "April",                       ID_VIEW_JOURNAL_MONATE_APRIL
+    MENUITEM "Mai",                         ID_VIEW_JOURNAL_MONATE_MAI
+    MENUITEM "Juni",                        ID_VIEW_JOURNAL_MONATE_JUNI
+    MENUITEM "Juli",                        ID_VIEW_JOURNAL_MONATE_JULI
+    MENUITEM "August",                      ID_VIEW_JOURNAL_MONATE_AUGUST
+    MENUITEM "September",                   ID_VIEW_JOURNAL_MONATE_SEPTEMBER
+    MENUITEM "Oktober",                     ID_VIEW_JOURNAL_MONATE_OKTOBER
+    MENUITEM "November",                    ID_VIEW_JOURNAL_MONATE_NOVEMBER
+    MENUITEM "Dezember",                    ID_VIEW_JOURNAL_MONATE_DEZEMBER
+    MENUITEM "1. Quartal",                  ID_VIEW_JOURNAL_MONATE_QUARTAL1
+    MENUITEM "2. Quartal",                  ID_VIEW_JOURNAL_MONATE_QUARTAL2
+    MENUITEM "3. Quartal",                  ID_VIEW_JOURNAL_MONATE_QUARTAL3
+    MENUITEM "4. Quartal",                  ID_VIEW_JOURNAL_MONATE_QUARTAL4
+END
+
+IDR_FILTER_KONTO MENU 
+BEGIN
+    MENUITEM "Dummy",                       IDC_DUMMY
+END
+
+IDR_JOURNALDRUCK MENU 
+BEGIN
+    MENUITEM "&Drucken...\tStrg+P",         ID_FILE_PRINT2
+    MENUITEM "Sei&tenansicht",              ID_FILE_PRINT_PREVIEW
+    MENUITEM "Druckerein&richtung...",      ID_FILE_PRINT_SETUP
+END
+
+IDR_ANSICHT_FORMULARE MENU 
+BEGIN
+    MENUITEM "Dummy",                       IDC_DUMMY
+END
+
+IDR_ANSICHT_PLUGINS MENU 
+BEGIN
+    MENUITEM "Dummy",                       IDC_DUMMY
+END
+
+IDR_THEME_MENU MENU 
+BEGIN
+    MENUITEM "&Onyx",                       ID_VIEW_APPLOOK_2007_1
+    MENUITEM "&Silber",                     ID_VIEW_APPLOOK_2007_2
+    MENUITEM "&Aqua",                       ID_VIEW_APPLOOK_2007_3
+    MENUITEM "&Luna",                       ID_VIEW_APPLOOK_2007
+    MENUITEM "&Blau",                       ID_VIEW_APPLOOK_2003
+    MENUITEM "&Grau",                       ID_VIEW_APPLOOK_2005
+END
+
+IDR_ZOOMFAKTOR MENU 
+BEGIN
+    MENUITEM "Ver&größern (Strg-'+')",      ID_ZOOMFAKTOR_VERGROESSERN
+    MENUITEM "Ver&kleinern (Strg-'-')",     ID_ZOOMFAKTOR_VERKLEINERN
+    MENUITEM SEPARATOR
+    MENUITEM "50%",                         ID_ZOOMFAKTOR_50
+    MENUITEM "75%",                         ID_ZOOMFAKTOR_75
+    MENUITEM "100%",                        ID_ZOOMFAKTOR_100
+    MENUITEM "125%",                        ID_ZOOMFAKTOR_125
+    MENUITEM "150%",                        ID_ZOOMFAKTOR_150
+    MENUITEM "175%",                        ID_ZOOMFAKTOR_175
+    MENUITEM "200%",                        ID_ZOOMFAKTOR_200
+    MENUITEM "250%",                        ID_ZOOMFAKTOR_250
+    MENUITEM "300%",                        ID_ZOOMFAKTOR_300
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Accelerator
+//
+
+IDR_MAINFRAME ACCELERATORS 
+BEGIN
+    "A",            ID_EDIT_AUSGABE_BUCHEN, VIRTKEY, CONTROL, NOINVERT
+    "C",            ID_EDIT_COPY,           VIRTKEY, CONTROL, NOINVERT
+    VK_INSERT,      ID_EDIT_COPY,           VIRTKEY, CONTROL, NOINVERT
+    VK_DELETE,      ID_EDIT_CUT,            VIRTKEY, SHIFT, NOINVERT
+    "X",            ID_EDIT_CUT,            VIRTKEY, CONTROL, NOINVERT
+    "D",            ID_EDIT_DAUERBUCHUNGEN_AUSFUEHREN, VIRTKEY, CONTROL, NOINVERT
+    "E",            ID_EDIT_EINNAHME_BUCHEN, VIRTKEY, CONTROL, NOINVERT
+    "V",            ID_EDIT_PASTE,          VIRTKEY, CONTROL, NOINVERT
+    VK_INSERT,      ID_EDIT_PASTE,          VIRTKEY, SHIFT, NOINVERT
+    "U",            ID_EDIT_UMSATZSTEUERVORAUSZAHLUNGEN, VIRTKEY, CONTROL, NOINVERT
+    VK_BACK,        ID_EDIT_UNDO,           VIRTKEY, ALT, NOINVERT
+    "Z",            ID_EDIT_UNDO,           VIRTKEY, CONTROL, NOINVERT
+    "N",            ID_FILE_NEW,            VIRTKEY, CONTROL, NOINVERT
+    "O",            ID_FILE_OPEN,           VIRTKEY, CONTROL, NOINVERT
+    "P",            ID_FILE_PRINT,          VIRTKEY, CONTROL, NOINVERT
+    "S",            ID_FILE_SAVE,           VIRTKEY, CONTROL, NOINVERT
+    "F",            ID_NEXT,                VIRTKEY, CONTROL, NOINVERT
+    VK_F3,          ID_NEXT,                VIRTKEY, NOINVERT
+    VK_F6,          ID_NEXT_PANE,           VIRTKEY, NOINVERT
+    "R",            ID_PREV,                VIRTKEY, CONTROL, NOINVERT
+    VK_F3,          ID_PREV,                VIRTKEY, SHIFT, NOINVERT
+    VK_F6,          ID_PREV_PANE,           VIRTKEY, SHIFT, NOINVERT
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Dialog
+//
+
+IDD_ABOUTBOX DIALOGEX 0, 0, 316, 358
+STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Info über EasyCash"
+FONT 8, "MS Sans Serif", 0, 0, 0x0
+BEGIN
+    DEFPUSHBUTTON   "OK",IDOK,259,18,50,14,WS_GROUP
+    PUSHBUTTON      "&Registrieren",IDC_REGISTER,259,36,50,14
+    CONTROL         333,IDC_STATIC,"Static",SS_BITMAP,13,25,27,25
+    LTEXT           "EasyCash&Tax Version 1.0",IDC_VERSION,53,19,165,8,SS_NOPREFIX
+    LTEXT           "© 1998-2020 Thomas Mielke (GNU GPL v3)",IDC_STATIC,53,34,188,8
+    LTEXT           "E-Mail:",IDC_STATIC,53,49,24,8
+    PUSHBUTTON      "thomas@mielke.software",IDC_KONTAKT_EMAIL,79,46,100,14
+    LTEXT           "Dieses Programm ist freie und quelloffene Software und unter der GNU General Public License veröffentlicht. Nutzung ist ohne Gewähr und vor allem ohne Telefonsupport (bitte nur E-Mail-Kontakt). Eine Registrierung ist erwünscht,",IDC_STATIC,53,63,256,24
+    LTEXT           "Vielleicht entstehen nach einiger Zeit auch Ideen für Veränderungen oder Erweiterungsvorschläge, vielleicht taucht aber auch mal ein Problem auf.",IDC_STATIC,53,142,256,18
+    ICON            IDI_FACE2,IDC_STATIC,20,229,21,20
+    PUSHBUTTON      "Ich möchte über den Bugtracker ein Problem melden oder eine Idee beisteuern",IDC_VOTE,53,232,256,14
+    LTEXT           "damit ich über Updates informieren und eine 'Rückrufaktion' starten kann, wenn ich einmal einen katastrophalen Fehler einbauen sollte. Wer mir nichts zu erzählen hat, kann es bei einem einfachen drücken hierdrauf belassen:",IDC_STATIC,53,88,256,28
+    ICON            IDI_FACE1,IDC_STATIC,20,116,21,20
+    PUSHBUTTON      "Ich möchte einfach nur einen kostenlosen und unverbindlichen Registriercode",IDC_KONTAKT_REGISTRIERCODE,53,120,256,14
+    LTEXT           "Wer die Erweiterung von EC&&T auch finanziell unterstützen will kann dies hier:",IDC_STATIC,53,249,256,8
+    ICON            IDI_FACE3,IDC_STATIC,19,258,21,20
+    PUSHBUTTON      "Ich möchte die Entwicklung der Software mit einer Spende fördern!",IDC_ERNST,53,262,256,12
+    LTEXT           "Der Quellcode der Software ist auf github.com verfügbar. Softwareentwickler klicken hier:",IDC_STATIC,53,319,256,17
+    LTEXT           "Die jeweils neueste Version gibt es im Plugin-Manager (Datei-Menü) oder zum manuellen Herunterladen natürlich auch im Web:",IDC_STATIC,53,281,256,17
+    PUSHBUTTON      "www.easyct.de",IDC_WWW,149,301,63,12
+    CTEXT           "",IDC_REG_STRING,124,7,126,12
+    LTEXT           "In dem Fall würde ich mich freuen, wenn ihr das in das EC&&T Bugtracking System eintragt, nachdem ihr geschaut habt, ob schon jemand anderes die Idee hatte oder das Problem evtl. schon gelöst ist. Vielleicht habt ihr auch",IDC_STATIC,54,161,255,24
+    LTEXT           "etwas Zeit einen Blick auf die andere Anfragen zu werfen und Notizen zu machen, wenn euch etwas auffällt oder einfach nur ein 'dito' zu hinterlassen. Auf diese Weise reguliere ich nämlich, welcher Arbeit ich mich zuerst widme.",IDC_STATIC,54,185,255,25
+    LTEXT           "Hinweis: Um den Bugtracker benutzen zu können, muss man dort erst einmal ein Benutzerkonto registrieren (das Passwort der EC&&T-Website geht dort nicht).",IDC_STATIC,54,212,255,16
+    PUSHBUTTON      "github.com/Thomas-Mielke-Software/EasyCash",IDC_GITHUB,82,339,200,12
+END
+
+IDD_BUCHUNG DIALOGEX 0, 0, 474, 177
+STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Buchen"
+FONT 8, "MS Sans Serif", 0, 0, 0x0
+BEGIN
+    LTEXT           "&Datum",IDC_STATIC,7,35,38,8
+    EDITTEXT        IDC_DATUM_TAG,83,33,19,12,ES_AUTOHSCROLL
+    LTEXT           ".",IDC_STATIC,103,35,8,8
+    EDITTEXT        IDC_DATUM_MONAT,113,33,19,12,ES_AUTOHSCROLL
+    LTEXT           ".",IDC_STATIC,134,35,8,8
+    EDITTEXT        IDC_DATUM_JAHR,143,33,29,12,ES_AUTOHSCROLL
+    LTEXT           "&Betrag (inkl. MWSt)",IDC_STATIC,7,50,65,8
+    EDITTEXT        IDC_BETRAG,83,48,49,12,ES_AUTOHSCROLL
+    LTEXT           "Be&schreibung",IDC_STATIC,7,65,70,8
+    COMBOBOX        IDC_BESCHREIBUNG,83,63,233,139,CBS_DROPDOWN | CBS_AUTOHSCROLL | CBS_SORT | WS_VSCROLL | WS_TABSTOP
+    LTEXT           "Beleg&nummer",IDC_STATIC,7,81,72,8
+    EDITTEXT        IDC_BELEGNUMMER,83,79,49,12,ES_AUTOHSCROLL
+    LTEXT           "&Konto in E/Ü-Rechn.",IDC_STATIC,7,97,72,8
+    COMBOBOX        IDC_EURECHNUNGSPOSTEN,83,95,233,164,CBS_DROPDOWNLIST | CBS_AUTOHSCROLL | WS_VSCROLL | WS_TABSTOP
+    LTEXT           "&MWSt (%)",IDC_STATIC,8,114,65,8
+    COMBOBOX        IDC_MWST,83,112,50,40,CBS_DROPDOWN | WS_VSCROLL | WS_TABSTOP
+    LTEXT           "Abschreibung (&Jahr)",IDC_ABSCHREIBUNGJAHRE_STATIC,7,130,69,8
+    COMBOBOX        IDC_ABSCHREIBUNGNUMMER,83,128,50,55,CBS_DROPDOWN | WS_VSCROLL | WS_TABSTOP
+    LTEXT           "&von",IDC_ABSCHREIBUNGJAHRE_STATIC2,137,130,12,8
+    COMBOBOX        IDC_ABSCHREIBUNGJAHRE,155,128,50,149,CBS_DROPDOWN | WS_VSCROLL | WS_TABSTOP
+    LTEXT           "Rest&wert (netto)",IDC_ABSCHREIBUNGRESTWERT_STATIC,220,130,51,8
+    EDITTEXT        IDC_ABSCHREIBUNGRESTWERT,272,128,44,12,ES_AUTOHSCROLL
+    LTEXT           "Abschreibungs- &genauigkeit",IDC_ABSCHREIBUNG_GENAUIGKEIT_STATIC,7,146,69,17
+    COMBOBOX        IDC_ABSCHREIBUNG_GENAUIGKEIT,83,144,149,55,CBS_DROPDOWN | WS_VSCROLL | WS_TABSTOP
+    LTEXT           "Be&trieb",IDC_BETRIEB_STATIC,325,9,26,8
+    CONTROL         "List2",IDC_BETRIEB,"SysListView32",LVS_SINGLESEL | LVS_SHOWSELALWAYS | WS_BORDER | WS_TABSTOP,325,20,65,150
+    LTEXT           "Be&stkto.",IDC_BESTANDSKONTO_STATIC,400,9,27,8
+    CONTROL         "List2",IDC_BESTANDSKONTO,"SysListView32",LVS_SINGLESEL | LVS_SHOWSELALWAYS | WS_BORDER | WS_TABSTOP,399,20,68,150
+    CONTROL         "",IDC_JAHR_ENABLED,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,175,35,14,8
+    LTEXT           "",IDC_EINNAHMEN_GEGENKONTO,176,50,140,8
+    CONTROL         "",IDC_MWST_ENABLED,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,136,114,14,8
+    DEFPUSHBUTTON   "Ausführen",IDOK,261,148,24,22,BS_BITMAP
+    PUSHBUTTON      "Schließen",IDCANCEL,292,148,24,22,BS_BITMAP
+    CONTROL         "&Einnahmen buchen",IDC_EINNAHMEN,"Button",BS_AUTORADIOBUTTON | WS_GROUP,7,7,170,12
+    CONTROL         "&Ausgaben buchen",IDC_AUSGABEN,"Button",BS_AUTORADIOBUTTON,7,19,170,12
+    PUSHBUTTON      "&Rechner",IDC_RECHNER,140,48,13,12,BS_BITMAP
+    PUSHBUTTON      "&Privat Split",IDC_SPLIT,160,48,13,12,BS_BITMAP
+    CONTROL         326,IDC_STATIC,"Static",SS_BITMAP | NOT WS_VISIBLE,267,7,21,20
+    PUSHBUTTON      "&Konvertieren: ",IDC_KONVERTIEREN,300,48,16,12,NOT WS_VISIBLE
+    PUSHBUTTON      "&1",IDC_ALT1,353,7,12,12
+    PUSHBUTTON      "&2",IDC_ALT2,366,7,12,12
+    PUSHBUTTON      "&3",IDC_ALT3,379,7,12,12
+    PUSHBUTTON      "&4",IDC_ALT4,429,7,12,12
+    PUSHBUTTON      "&5",IDC_ALT5,442,7,12,12
+    PUSHBUTTON      "&6",IDC_ALT6,455,7,12,12
+END
+
+IDD_DAUERBUCHUNGEN DIALOGEX 0, 0, 300, 309
+STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Dauerbuchungen"
+FONT 8, "MS Sans Serif", 0, 0, 0x0
+BEGIN
+    LISTBOX         IDC_LIST,7,7,286,79,LBS_USETABSTOPS | LBS_NOINTEGRALHEIGHT | WS_VSCROLL | WS_TABSTOP
+    PUSHBUTTON      "&Neu",IDC_Neu,7,91,46,14
+    PUSHBUTTON      "&Ändern",IDC_AENDERN,58,91,46,14
+    PUSHBUTTON      "&Löschen",IDC_LOESCHEN,109,91,46,14
+    CONTROL         "laufende &Einnahmen",IDC_EINNAHMEN,"Button",BS_AUTORADIOBUTTON | WS_GROUP,173,91,81,12
+    CONTROL         "laufende &Ausgaben",IDC_AUSGABEN,"Button",BS_AUTORADIOBUTTON,173,103,80,12
+    CONTROL         "m&onatlich buchen",IDC_MONATLICH,"Button",BS_AUTORADIOBUTTON | WS_GROUP,173,124,85,12
+    CONTROL         "&quartalsmäßig buchen",IDC_QUARTALSMAESSIG,"Button",BS_AUTORADIOBUTTON,173,136,86,12
+    CONTROL         "&halbjährlich buchen",IDC_HALBJAEHRLICH,"Button",BS_AUTORADIOBUTTON,173,148,85,12
+    CONTROL         "jähr&lich buchen",IDC_JAEHRLICH,"Button",BS_AUTORADIOBUTTON,173,160,86,12
+    CONTROL         "&2-monatlich buchen",IDC_2MONATLICH,"Button",BS_AUTORADIOBUTTON,173,172,85,12
+    LTEXT           "&Von (Monat/Jahr)",IDC_STATIC,7,116,76,8
+    EDITTEXT        IDC_DATUM_VON_MONAT,83,114,19,12,ES_AUTOHSCROLL
+    LTEXT           ".",IDC_STATIC,104,116,8,8
+    EDITTEXT        IDC_DATUM_VON_JAHR,113,114,29,12,ES_AUTOHSCROLL
+    LTEXT           "B&is (Monat/Jahr) inkl.",IDC_STATIC,8,131,76,8
+    EDITTEXT        IDC_DATUM_BIS_MONAT,83,129,19,12,ES_AUTOHSCROLL
+    LTEXT           ".",IDC_STATIC,104,131,8,8
+    EDITTEXT        IDC_DATUM_BIS_JAHR,113,129,29,12,ES_AUTOHSCROLL
+    LTEXT           "&Tag der Buchung (1-365)",IDC_STATIC,8,146,76,8
+    EDITTEXT        IDC_DATUM_TAG,83,144,19,12,ES_AUTOHSCROLL
+    LTEXT           "A&usgeführt bis (exklusive)",IDC_STATIC,8,161,76,8
+    EDITTEXT        IDC_DATUM_AKT_MONAT,83,159,19,12,ES_AUTOHSCROLL
+    LTEXT           ".",IDC_STATIC,103,161,8,8
+    EDITTEXT        IDC_DATUM_AKT_JAHR,113,159,29,12,ES_AUTOHSCROLL
+    LTEXT           "&Betrag (inkl. MWSt)",IDC_STATIC,7,178,65,8
+    EDITTEXT        IDC_BETRAG,83,175,51,12,ES_AUTOHSCROLL
+    LTEXT           "Be&schreibung (Platz-\nhalter $--M $+m $q $2 etc.)",IDC_STATIC,7,190,72,17
+    COMBOBOX        IDC_BESCHREIBUNG,83,191,210,71,CBS_DROPDOWN | CBS_AUTOHSCROLL | CBS_SORT | WS_VSCROLL | WS_TABSTOP
+    LTEXT           "Beleg&nummer",IDC_STATIC,7,210,72,8
+    EDITTEXT        IDC_BELEGNUMMER2,83,208,49,12,ES_AUTOHSCROLL
+    LTEXT           "(Platzhalter wie oben: $M $m $q $h $J $j $2 $#)",IDC_STATIC,138,210,155,10
+    LTEXT           "Konto in E/Ü-&Rechn.",IDC_STATIC,7,226,70,8
+    COMBOBOX        IDC_EURECHNUNGSPOSTEN,83,224,210,116,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
+    LTEXT           "&MWSt (%)",IDC_STATIC,8,242,65,8
+    COMBOBOX        IDC_MWST,83,240,34,40,CBS_DROPDOWN | WS_VSCROLL | WS_TABSTOP
+    LTEXT           "Betrieb",IDC_STATIC,7,258,70,8
+    COMBOBOX        IDC_BETRIEB,83,256,210,116,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
+    LTEXT           "Bestandskonto",IDC_STATIC,7,274,70,8
+    COMBOBOX        IDC_BESTANDSKONTO,83,272,210,116,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
+    PUSHBUTTON      "&Verwerfen",IDC_VERWERFEN,128,288,50,14
+    DEFPUSHBUTTON   "Übernehmen",IDOK,185,288,50,14
+    PUSHBUTTON      "Schließen",IDCANCEL,243,288,50,14
+    CONTROL         329,IDC_STATIC,"Static",SS_BITMAP | NOT WS_VISIBLE,263,94,21,20
+END
+
+IDD_DAUERBUCHUNGEN_AUSFUEHREN DIALOGEX 0, 0, 211, 44
+STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Dauerbuchungen ausführen"
+FONT 8, "MS Sans Serif", 0, 0, 0x0
+BEGIN
+    LTEXT           "B&is (Monat/Jahr) inkl.",IDC_STATIC,7,17,76,8
+    EDITTEXT        IDC_DATUM_BIS_MONAT,83,15,19,12,ES_AUTOHSCROLL
+    LTEXT           ".",IDC_STATIC,103,17,8,8
+    EDITTEXT        IDC_DATUM_BIS_JAHR,113,15,29,12,ES_AUTOHSCROLL
+    DEFPUSHBUTTON   "Ausführen",IDOK,151,9,24,22,BS_BITMAP
+    PUSHBUTTON      "Schließen",IDCANCEL,180,9,24,22,BS_BITMAP
+    CONTROL         332,IDC_STATIC,"Static",SS_BITMAP | NOT WS_VISIBLE,52,5,32,30
+END
+
+IDD_REGISTRIEREN DIALOG  0, 0, 302, 287
+STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Spenden-Registrierung"
+FONT 8, "MS Sans Serif"
+BEGIN
+    DEFPUSHBUTTON   "Schließen",IDOK,254,268,41,12
+    LTEXT           "Ja, herzlichen Dank!",IDC_STATIC,7,7,179,10
+    LTEXT           "Es gibt grundsätzlich vier Wege, um mir eine Spende zukommen zu lassen:",IDC_STATIC,7,18,288,10
+    LTEXT           "V-Scheck an Thomas Mielke, Hermann-Kauffmann-Str. 4b, D-22307 Hamburg (Absender und, wenn vorhanden, E-Mail-Adresse nicht vergessen)",IDC_STATIC,16,88,279,17
+    LTEXT           "1)",IDC_STATIC,7,30,8,9
+    LTEXT           "Überweisung mit der eigenen EMail-Adresse im Verwendungszweck (in der Form etwa: VORNAME.NACHNAME-AT-EMAILANBIETER.DE, denn @ wird nicht erkannt) + Bestätigungs-EMail mit der Spendensumme an thomas@mielke.software. Bankverbindung:",IDC_STATIC,16,30,279,25
+    LTEXT           "2)",IDC_STATIC,7,88,8,9
+    LTEXT           "Bitte in jedem Fall eine Bestätigungs-Email inklusive der überwiesenen Spendensumme an thomas@mielke.software senden, damit ich die Zahlung zuweisen und eine Rechnung ausstellen kann:",IDC_STATIC,7,178,288,16
+    PUSHBUTTON      "Jetzt E-Mail erstellen!",IDC_EMAIL,59,199,176,12
+    LTEXT           "Nach spätestens ein paar Tagen kommt dann ein Registriercode zurück, wenn noch keine für die Absender-EMailadresse vorhanden war. Außerdem gibt es eine Rechnung dazu,",IDC_STATIC,7,154,288,16
+    LTEXT           "Konto",IDC_STATIC,16,59,21,8
+    LTEXT           "Bankleitzahl",IDC_STATIC,107,59,40,8
+    LTEXT           "Kreditinstitut",IDC_STATIC,198,59,40,8
+    EDITTEXT        IDC_KONTO,41,57,63,12,ES_AUTOHSCROLL | ES_READONLY
+    EDITTEXT        IDC_BLZ,148,57,46,12,ES_AUTOHSCROLL | ES_READONLY
+    EDITTEXT        IDC_BANK,239,57,56,12,ES_AUTOHSCROLL | ES_READONLY
+    LTEXT           "SWIFT-BIC",IDC_STATIC,16,74,21,8
+    LTEXT           "IBAN",IDC_STATIC,107,74,35,8
+    EDITTEXT        IDC_BIC,41,72,63,12,ES_AUTOHSCROLL | ES_READONLY
+    EDITTEXT        IDC_IBAN,147,72,148,12,ES_AUTOHSCROLL | ES_READONLY
+    LTEXT           "PayPal-Spende an newsletter@easyct.de (obwohl ich die PayPal-Gebühren als zu hoch empfinde). Dazu kann der Knopf auf der Homepage benutzt werden.",IDC_STATIC,16,110,279,17
+    LTEXT           "3)",IDC_STATIC,7,110,8,9
+    LTEXT           "damit die Spende als Betriebsausgabe abgesetzt werden kann.",IDC_STATIC,7,170,288,8
+    LTEXT           "Als Bitcoin-Spende (eine Adresse wird per E-Mail übermittelt). Die Rechnung stelle ich in € aus entspr. dem Tagesmittel auf https://bitcoinaverage.com/#EUR .",IDC_STATIC,16,133,279,16
+    LTEXT           "4)",IDC_STATIC,7,133,8,9
+    LTEXT           "Hinweis: Die Rechnung erstelle ich grundsätzlich elektronisch. Mit dem Steuervereinfachungs- gesetz 2011 werden elektronische Rechnungen bzgl. Vorsteuerabzug inzwischen in Deutschland ",IDC_STATIC,7,216,288,16
+    LTEXT           "grundsätzlich anerkannt. Voraussetzung ist die Prüfung durch den Rechnungsempfängers, ob die ""Echtheit der Herkunft der Rechnung"" und ""die Unversehrtheit ihres Inhalts"" gewährleistet ist (§14 ",IDC_STATIC,7,232,288,16
+    LTEXT           "UStG). Um die Prüfung zu vereinfachen, wird die Rechnung mit dem frei verfügbaren PGP-Verfahren signiert. Mehr zum Thema PGP findet sich unter www.easyct.de -> Kontakt.",IDC_STATIC,7,248,288,16
+    LTEXT           "PGP-Fingerprint: BC5A D2D4 3C12 CC29 1CFA 6E19 E062 1713 1A95 1431",IDC_STATIC,7,272,239,8
+END
+
+IDD_REGISTER_DIALOG DIALOG  0, 0, 186, 50
+STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Registrieren"
+FONT 8, "MS Sans Serif"
+BEGIN
+    LTEXT           "Registrier-Nr.",IDC_STATIC,7,9,49,10
+    EDITTEXT        IDC_REG_EDIT,59,7,120,13,ES_AUTOHSCROLL
+    LTEXT           "# vorweg für Test-Version",IDC_TESTVERSION,7,18,126,8
+    PUSHBUTTON      "Nr.",IDC_MAKE_NR,18,29,50,14
+    DEFPUSHBUTTON   "OK",IDOK,73,29,50,14
+    PUSHBUTTON      "Cancel",IDCANCEL,129,29,50,14
+END
+
+IDD_DRUCKAUSWAHL DIALOGEX 0, 0, 294, 114
+STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION
+CAPTION "Druckauswahl"
+FONT 8, "MS Sans Serif", 0, 0, 0x0
+BEGIN
+    CONTROL         "Buchungsjournal nach &Datum",IDC_BUCHUNGSLISTE,"Button",BS_AUTORADIOBUTTON | WS_GROUP,12,11,117,12
+    CONTROL         "Buchungsjournal nach &Konto",IDC_BUCHUNGSLISTE_KONTEN,
+                    "Button",BS_AUTORADIOBUTTON,12,26,116,12
+    CONTROL         "Buchungsjournal nach &Bestandskonto",IDC_BUCHUNGSLISTE_BESTANDSKONTEN,
+                    "Button",BS_AUTORADIOBUTTON,12,41,132,12
+    CONTROL         "&Umsatzsteuererklärung",IDC_UMST_ERKLAERUNG,"Button",BS_AUTORADIOBUTTON,12,56,96,12
+    CONTROL         "&Einnahmen-Überschussrechnung",IDC_EURECHNUNG,"Button",BS_AUTORADIOBUTTON,12,71,136,12
+    PUSHBUTTON      "Abbrechen",IDCANCEL,237,93,50,14
+    GROUPBOX        "Filter",IDC_STATIC,148,9,132,78
+    LTEXT           "&Von (Tag/Monat)",IDC_STATIC,157,21,61,8
+    EDITTEXT        IDC_DATUM_VON_TAG,227,19,19,12,ES_AUTOHSCROLL
+    LTEXT           ".",IDC_STATIC,249,21,8,8
+    EDITTEXT        IDC_DATUM_VON_MONAT,257,19,19,12,ES_AUTOHSCROLL
+    LTEXT           "B&is (Tag/Monat) inkl.",IDC_STATIC,157,36,68,8
+    EDITTEXT        IDC_DATUM_BIS_TAG,227,34,19,12,ES_AUTOHSCROLL
+    LTEXT           ".",IDC_STATIC,249,36,8,8
+    EDITTEXT        IDC_DATUM_BIS_MONAT,257,34,19,12,ES_AUTOHSCROLL
+    COMBOBOX        IDC_KONTENFILTER,157,50,120,86,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
+    COMBOBOX        IDC_BETRIEBFILTER,158,68,120,42,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
+    DEFPUSHBUTTON   "OK",IDOK,179,93,50,14
+END
+
+IDD_EINSTELLUNGEN1 DIALOGEX 0, 0, 362, 199
+STYLE DS_SETFONT | WS_CHILD | WS_DISABLED | WS_CAPTION | WS_SYSMENU
+CAPTION "Allgemein"
+FONT 8, "MS Sans Serif", 0, 0, 0x0
+BEGIN
+    CONTROL         "Cursor ins Betragsfeld",IDC_TAEGLICH_BUCHEN,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,7,7,88,12
+    CONTROL         "Buchungsdatum belassen",IDC_BUCHUNGSDATUM_BELASSEN,
+                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,7,19,102,12
+    GROUPBOX        "Voranmeldungszeitraum",IDC_STATIC,7,32,96,25
+    CONTROL         "Monat",IDC_MONAT,"Button",BS_AUTORADIOBUTTON | WS_GROUP,11,41,42,12
+    CONTROL         "Quartal",IDC_QUARTAL,"Button",BS_AUTORADIOBUTTON,59,41,39,12
+    PUSHBUTTON      "Voreinstell. AfA-Genauigkeit",IDC_AFA_GENAUIGKEIT,7,62,96,12
+    PUSHBUTTON      "Bildschirmschrift",IDC_BILDSCHIRMSCHRIFT,7,78,60,12
+    PUSHBUTTON      "Druckerschrift",IDC_DRUCKERSCHRIFT,7,94,60,12
+    GROUPBOX        "aktuelles Dokument",IDC_STATIC,175,7,180,104
+    LTEXT           "lfd. Buchungsnummern für Belegnummernprefixe",IDC_STATIC,180,17,165,8
+    CONTROL         "für Einnahmen",IDC_LAUFENDE_BUCHUNGSNUMMERN_FUER_EINNAHMEN,
+                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,180,28,74,10
+    LTEXT           "E",IDC_LFD_BUCHUNGSNUMMER_EINNAHMEN_JAHR,258,30,8,8
+    EDITTEXT        IDC_LFD_BUCHUNGSNUMMER_EINNAHMEN,266,28,27,12,ES_AUTOHSCROLL
+    CONTROL         "für Ausgaben",IDC_LAUFENDE_BUCHUNGSNUMMERN_FUER_AUSGABEN,
+                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,180,41,67,10
+    LTEXT           "A",IDC_LFD_BUCHUNGSNUMMER_AUSGABEN_JAHR,258,42,8,8
+    EDITTEXT        IDC_LFD_BUCHUNGSNUMMER_AUSGABEN,266,41,27,12,ES_AUTOHSCROLL
+    CONTROL         "für Bank",IDC_LAUFENDE_BUCHUNGSNUMMERN_FUER_BANK,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,180,55,54,10
+    LTEXT           "B",IDC_LFD_BUCHUNGSNUMMER_EINNAHMEN_JAHR2,258,57,8,8
+    EDITTEXT        IDC_LFD_BUCHUNGSNUMMER_BANK,266,55,27,12,ES_AUTOHSCROLL
+    CONTROL         "für Kasse",IDC_LAUFENDE_BUCHUNGSNUMMERN_FUER_KASSE,
+                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,180,67,54,10
+    LTEXT           "K",IDC_LFD_BUCHUNGSNUMMER_AUSGABEN_JAHR2,258,69,8,8
+    EDITTEXT        IDC_LFD_BUCHUNGSNUMMER_KASSE,266,67,27,12,ES_AUTOHSCROLL
+    LTEXT           "Buchungsjahr",IDC_STATIC,192,83,50,8
+    EDITTEXT        IDC_BUCHUNGSJAHR,266,81,27,12,ES_AUTOHSCROLL
+    LTEXT           "Sondervorauszahlung",IDC_STATIC,192,96,71,8
+    EDITTEXT        IDC_SONDERVORAUSZAHLUNG,266,95,27,12,ES_AUTOHSCROLL
+    LTEXT           "(f. Dauerfristverl.)",IDC_STATIC,297,97,54,8
+    GROUPBOX        "Buchungs-Presets",IDC_STATIC,7,112,348,80
+    LTEXT           "Nr.",IDC_STATIC,14,124,12,8
+    LTEXT           "E/A",IDC_STATIC,27,124,14,8
+    LTEXT           "MWSt",IDC_STATIC,43,124,21,8
+    LTEXT           "AfA",IDC_STATIC,67,124,14,8
+    LTEXT           "Beschreibung",IDC_STATIC,86,124,94,8
+    LISTBOX         IDC_LISTE,13,132,342,27,LBS_USETABSTOPS | LBS_NOINTEGRALHEIGHT | WS_VSCROLL | WS_TABSTOP
+    LTEXT           "00",IDC_BUCHUNGSPOSTENNUMMER,15,163,10,10
+    EDITTEXT        IDC_EA,26,161,14,12,ES_AUTOHSCROLL
+    EDITTEXT        IDC_MWST,43,161,19,12,ES_AUTOHSCROLL
+    EDITTEXT        IDC_AFA,65,161,17,12,ES_AUTOHSCROLL
+    EDITTEXT        IDC_BUCHUNGSPOSTENTEXT,85,161,270,12,ES_AUTOHSCROLL
+    LTEXT           "Konto",IDC_STATIC,15,178,25,10
+    COMBOBOX        IDC_EURECHNUNGSPOSTEN,43,176,312,101,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
+END
+
+IDD_EINSTELLUNGEN2 DIALOGEX 0, 0, 362, 199
+STYLE DS_SETFONT | WS_CHILD | WS_DISABLED | WS_CAPTION | WS_SYSMENU
+CAPTION "pers. Daten"
+FONT 8, "MS Sans Serif", 0, 0, 0x0
+BEGIN
+    LTEXT           "Name",IDC_STATIC,7,9,22,10
+    EDITTEXT        IDC_NAME,70,7,285,12,ES_AUTOHSCROLL
+    LTEXT           "Vorname",IDC_STATIC,7,24,38,10
+    EDITTEXT        IDC_VORNAME,70,22,285,12,ES_AUTOHSCROLL
+    LTEXT           "Unternehmensart",IDC_STATIC,7,39,59,10
+    EDITTEXT        IDC_UNTERNEHMENSART1,70,37,285,12,ES_AUTOHSCROLL
+    LTEXT           "Rechtsform",IDC_STATIC,7,54,59,10
+    EDITTEXT        IDC_UNTERNEHMENSART2,70,52,285,12,ES_AUTOHSCROLL
+    LTEXT           "Straße/Hausnr.",IDC_STATIC,7,69,52,10
+    EDITTEXT        IDC_STRASSE,70,67,285,12,ES_AUTOHSCROLL
+    LTEXT           "PLZ/Ort",IDC_STATIC,7,84,47,10
+    EDITTEXT        IDC_PLZ,70,82,37,12,ES_AUTOHSCROLL
+    EDITTEXT        IDC_ORT,114,82,241,12,ES_AUTOHSCROLL
+    LTEXT           "Land",IDC_STATIC,7,99,47,10
+    CONTROL         "BRD",IDC_LAND1,"Button",BS_AUTORADIOBUTTON | WS_GROUP,70,98,31,10
+    CONTROL         "Österreich",IDC_LAND2,"Button",BS_AUTORADIOBUTTON,110,98,48,10
+    CONTROL         "Schweiz",IDC_LAND3,"Button",BS_AUTORADIOBUTTON,167,98,43,10
+    LTEXT           "MWSt-Sätze",IDC_STATIC,7,113,47,10
+    EDITTEXT        IDC_VAT1,70,111,37,12,ES_AUTOHSCROLL
+    EDITTEXT        IDC_VAT2,114,111,37,12,ES_AUTOHSCROLL
+    EDITTEXT        IDC_VAT3,158,111,37,12,ES_AUTOHSCROLL
+    EDITTEXT        IDC_VAT4,202,111,37,12,ES_AUTOHSCROLL
+END
+
+IDD_EINSTELLUNGEN3 DIALOG  0, 0, 362, 199
+STYLE DS_SETFONT | WS_CHILD | WS_DISABLED | WS_CAPTION | WS_SYSMENU
+CAPTION "Finanzamt"
+FONT 8, "MS Sans Serif"
+BEGIN
+    LTEXT           "Name",-1,7,9,22,10
+    LTEXT           "Abt./Sachbearb.",-1,7,24,60,10
+    LTEXT           "Straße/Postfach",-1,7,39,61,10
+    LTEXT           "PLZ/Ort",-1,7,54,47,10
+    EDITTEXT        IDC_NAME,70,7,285,12,ES_AUTOHSCROLL
+    EDITTEXT        IDC_NAME2,70,22,285,12,ES_AUTOHSCROLL
+    EDITTEXT        IDC_STRASSE,70,37,285,12,ES_AUTOHSCROLL
+    EDITTEXT        IDC_PLZ,70,52,37,12,ES_AUTOHSCROLL
+    EDITTEXT        IDC_ORT,114,52,241,12,ES_AUTOHSCROLL
+    LTEXT           "Steuernr. (ohne evtl. Trennstriche)",-1,7,69,59,22
+    EDITTEXT        IDC_STEUERNUMMER,70,67,87,12,ES_AUTOHSCROLL
+END
+
+IDD_VORANMELDUNGSZEITRAUM DIALOGEX 0, 0, 225, 76
+STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Voranmeldungszeitraum auswählen"
+FONT 8, "MS Sans Serif", 0, 0, 0x0
+BEGIN
+    LTEXT           "Anfangsmonat",IDC_QUARTALMONAT,43,18,50,8
+    EDITTEXT        IDC_DATUM_BIS_MONAT,97,16,19,12,ES_AUTOHSCROLL
+    EDITTEXT        IDC_DATUM_BIS_JAHR,127,16,29,12,ES_AUTOHSCROLL
+    CONTROL         "1. Quartal",IDC_RADIO1,"Button",BS_AUTORADIOBUTTON | WS_GROUP,43,10,47,10
+    CONTROL         "2. Quartal",IDC_RADIO2,"Button",BS_AUTORADIOBUTTON,43,22,47,10
+    CONTROL         "3. Quartal",IDC_RADIO3,"Button",BS_AUTORADIOBUTTON,105,10,47,10
+    CONTROL         "4. Quartal",IDC_RADIO4,"Button",BS_AUTORADIOBUTTON,105,22,47,10
+    CONTROL         "Vorauszahlungssoll für UmSt-Erklärung merken",IDC_MERKEN,
+                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,43,36,175,10
+    DEFPUSHBUTTON   "Ausführen",IDOK,164,11,24,22,BS_BITMAP
+    PUSHBUTTON      "Schließen",IDCANCEL,194,11,24,22,BS_BITMAP
+    LTEXT           ".",IDC_PUNKT,117,18,8,8
+    CONTROL         346,IDC_STATIC,"Static",SS_BITMAP,7,11,21,20
+    LTEXT           "Hinweis: Der Voranmeldungszeitraum kann unter Menü->Einstellungen->Allgemein geändert werden.",IDC_STATIC,43,51,173,18
+END
+
+IDD_EINSTELLUNGEN4 DIALOGEX 0, 0, 362, 199
+STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_DISABLED | WS_CAPTION | WS_SYSMENU
+CAPTION "E/Ü Konten"
+FONT 8, "MS Sans Serif", 0, 0, 0x0
+BEGIN
+    COMBOBOX        IDC_KONTENKATEGORIE,7,7,80,37,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
+    COMBOBOX        IDC_FORMULAR,92,7,263,130,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
+    CONTROL         "List1",IDC_LISTE,"SysListView32",LVS_REPORT | LVS_SINGLESEL | LVS_SHOWSELALWAYS | LVS_OWNERDATA | LVS_NOSORTHEADER | WS_BORDER | WS_TABSTOP,7,21,348,106
+    PUSHBUTTON      "Ausführen",IDC_PLUS,7,131,24,22,BS_BITMAP
+    PUSHBUTTON      "Ausführen",IDC_MINUS,32,131,24,22,BS_BITMAP
+    PUSHBUTTON      "Ausführen",IDC_UP,57,131,24,22,BS_BITMAP
+    PUSHBUTTON      "Ausführen",IDC_DOWN,82,131,24,22,BS_BITMAP
+    PUSHBUTTON      "Ausführen",IDC_AENDERN,107,131,24,22,BS_BITMAP
+    CONTROL         "&UST und VST in der E/Ü-Rechnung ",IDC_USTVST_GESONDERT,
+                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,7,159,131,10
+    CONTROL         "&im 'Journaldruck nach Konten' Seitenumbruch vor jedem Konto",IDC_NACH_KONTEN_SEITENUMBRUCH,
+                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,7,180,286,10
+    LTEXT           "Konten für USt-Erstattungen des und -Zahlungen ans Finanzamts:",IDC_STATIC,141,132,214,8
+    COMBOBOX        IDC_FINANZAMTSZAHLUNGEN1,141,144,214,130,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
+    COMBOBOX        IDC_FINANZAMTSZAHLUNGEN2,141,162,214,130,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
+    LTEXT           "als gesonderte Konten aufführen",IDC_USTVST_GESONDERT_STATIC,18,168,115,8
+END
+
+IDD_NEUES_KONTO DIALOGEX 0, 0, 288, 148
+STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION
+CAPTION "Neues E/Ü-Konto anlegen"
+FONT 8, "MS Sans Serif", 0, 0, 0x0
+BEGIN
+    LTEXT           "Name des Kontos",IDC_STATIC,7,8,60,8
+    EDITTEXT        IDC_KONTO,68,7,213,12,ES_AUTOHSCROLL
+    LTEXT           "Formularname",IDC_FORMULARNAME,7,43,60,8
+    COMBOBOX        IDC_FELDZUWEISUNG,68,41,213,149,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
+    DEFPUSHBUTTON   "OK",IDOK,173,127,50,14
+    PUSHBUTTON      "Cancel",IDCANCEL,231,127,50,14
+    LTEXT           "",IDC_HINWEIS,7,60,274,29
+    LTEXT           "",IDC_KATEGORIE,7,26,96,8
+    LTEXT           "Hinweis: Um das E/Ü-Konto auch  einem Feld in der USt-Voranmeldung zu zu weisen bitte hier OK klicken, oben rechts  über der Kontenliste das USt-Voranm. Formular wählen und noch einmal auf dieses Konto in der Liste doppelklicken.",IDC_STATIC,7,89,274,33
+    PUSHBUTTON      "Feldname -> Kontoname",IDC_UEBERTRAGEN,105,23,85,14
+    PUSHBUTTON      "Feldzuweisung löschen",IDC_FELDZUWEISUNG_LOESCHEN,196,23,85,14
+END
+
+IDD_EINSTELLUNGEN5 DIALOG  0, 0, 362, 199
+STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_DISABLED | WS_CAPTION | WS_SYSMENU
+CAPTION "Privat-Split"
+FONT 8, "MS Sans Serif"
+BEGIN
+    LTEXT           "Einnahmenkonto für Privatanteil",IDC_STATIC,7,6,104,8
+    LTEXT           "% Netto",IDC_STATIC,283,6,33,8
+    LTEXT           "% UST",IDC_STATIC,319,6,33,8
+    COMBOBOX        IDC_ART1,7,18,272,101,CBS_DROPDOWN | WS_VSCROLL | WS_TABSTOP
+    EDITTEXT        IDC_SATZ1,281,17,36,13,ES_AUTOHSCROLL
+    EDITTEXT        IDC_USTSATZ1,319,17,36,13,ES_AUTOHSCROLL
+    COMBOBOX        IDC_ART2,7,31,272,101,CBS_DROPDOWN | WS_VSCROLL | WS_TABSTOP
+    EDITTEXT        IDC_SATZ2,281,31,36,13,ES_AUTOHSCROLL
+    EDITTEXT        IDC_USTSATZ2,319,31,36,13,ES_AUTOHSCROLL
+    COMBOBOX        IDC_ART3,7,44,272,101,CBS_DROPDOWN | WS_VSCROLL | WS_TABSTOP
+    EDITTEXT        IDC_SATZ3,281,44,36,13,ES_AUTOHSCROLL
+    EDITTEXT        IDC_USTSATZ3,319,44,36,13,ES_AUTOHSCROLL
+    COMBOBOX        IDC_ART4,7,58,272,101,CBS_DROPDOWN | WS_VSCROLL | WS_TABSTOP
+    EDITTEXT        IDC_SATZ4,281,58,36,13,ES_AUTOHSCROLL
+    EDITTEXT        IDC_USTSATZ4,319,58,36,13,ES_AUTOHSCROLL
+    COMBOBOX        IDC_ART5,7,71,272,101,CBS_DROPDOWN | WS_VSCROLL | WS_TABSTOP
+    EDITTEXT        IDC_SATZ5,281,71,36,13,ES_AUTOHSCROLL
+    EDITTEXT        IDC_USTSATZ5,319,71,36,13,ES_AUTOHSCROLL
+    COMBOBOX        IDC_ART6,7,84,272,101,CBS_DROPDOWN | WS_VSCROLL | WS_TABSTOP
+    EDITTEXT        IDC_SATZ6,281,84,36,13,ES_AUTOHSCROLL
+    EDITTEXT        IDC_USTSATZ6,319,84,36,13,ES_AUTOHSCROLL
+    COMBOBOX        IDC_ART7,7,98,272,101,CBS_DROPDOWN | WS_VSCROLL | WS_TABSTOP
+    EDITTEXT        IDC_SATZ7,281,98,36,13,ES_AUTOHSCROLL
+    EDITTEXT        IDC_USTSATZ7,319,98,36,13,ES_AUTOHSCROLL
+    COMBOBOX        IDC_ART8,7,111,272,101,CBS_DROPDOWN | WS_VSCROLL | WS_TABSTOP
+    EDITTEXT        IDC_SATZ8,281,111,36,13,ES_AUTOHSCROLL
+    EDITTEXT        IDC_USTSATZ8,319,111,36,13,ES_AUTOHSCROLL
+    COMBOBOX        IDC_ART9,7,124,272,101,CBS_DROPDOWN | WS_VSCROLL | WS_TABSTOP
+    EDITTEXT        IDC_SATZ9,281,124,36,13,ES_AUTOHSCROLL
+    EDITTEXT        IDC_USTSATZ9,319,124,36,13,ES_AUTOHSCROLL
+    COMBOBOX        IDC_ART10,7,138,272,101,CBS_DROPDOWN | WS_VSCROLL | WS_TABSTOP
+    EDITTEXT        IDC_SATZ10,281,138,36,13,ES_AUTOHSCROLL
+    EDITTEXT        IDC_USTSATZ10,319,138,36,13,ES_AUTOHSCROLL
+    LTEXT           "Größe des Privatanteils:",IDC_STATIC,141,6,75,8
+    LTEXT           "Hinweis: Hier können ein paar Voreinstellungen für häufig gebrauchte Ausgaben- buchungen mit Privatanteil (privat genutzte Betriebsressourcen) erfasst werden, wobei eine zusätzliche Einnahmen-Buchung in Höhe des Privatanteils erzeugt wird.",IDC_STATIC,7,155,348,25
+    LTEXT           "Betrieblich genutzte Privatgegenstände werden als einfache Ausgabenbuchung erfasst.\r\nDer Privatsplit wird mit dem Tortendiagramm-Knopf neben dem Betragsfeld ausgewählt.",IDC_STATIC,7,179,348,19
+END
+
+IDD_VOTE DIALOG  0, 0, 407, 221
+STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION
+CAPTION "Erweiterungsvorschläge"
+FONT 8, "MS Sans Serif"
+BEGIN
+    DEFPUSHBUTTON   "Senden",IDOK,293,200,50,14
+    PUSHBUTTON      "Cancel",IDCANCEL,350,200,50,14
+    LTEXT           "Den folgenden Erweiterungsvorschlägen können per Doppelklick Prioritäten von 0-9 gegeben werden. Bitte nur die Vorschläge mit Priorität 9 versehen, die unter den Fingernägeln brennen.",IDC_STATIC,7,7,393,16
+    LISTBOX         IDC_LISTE,7,87,393,93,LBS_USETABSTOPS | LBS_NOINTEGRALHEIGHT | WS_VSCROLL | WS_HSCROLL | WS_TABSTOP
+    LTEXT           "Prio",IDC_STATIC,7,78,13,8
+    LTEXT           "Erweiterungsvorschlag",IDC_STATIC,23,78,105,8
+    LTEXT           "Priorität 0 bedeutet 'kein Interesse', 1 = 'verzichtbar', 3 = 'unter Umständen sinnvoll', 5 = 'wäre ganz nett', 7 = 'würde das Programm wesentlich aufwerten', 9 = 'ein Muss'.",IDC_STATIC,7,37,393,17
+    LTEXT           "Alle Einträge gleichmäßig hoch zu klicken wird die Entwicklung des Programms nicht beschleuigen.",IDC_STATIC,7,26,393,10
+    LTEXT           "Einträge mit einem Sternchen davor sind bereits umgesetzt. Ich wünsche ein fröhliches Klicken!",IDC_STATIC,7,67,393,8
+    EDITTEXT        IDC_TEXT,7,183,393,12,ES_MULTILINE | ES_AUTOHSCROLL | ES_READONLY
+    LTEXT           "Für hier nicht aufgeführte Vorschläge bitte ich um eine direkte e-mail.",IDC_STATIC,7,202,280,8
+    LTEXT           "Hinweis: Zum Versenden muss auf dem PC ein E-Mail Programm wie z.B. Outlook installiert && richtig konfiguriert sein.",IDC_STATIC,7,56,393,8
+END
+
+IDD_TIP DIALOGEX 0, 0, 258, 166
+STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Tipp des Tages"
+FONT 8, "MS Sans Serif", 0, 0, 0x0
+BEGIN
+    CONTROL         "",-1,"Static",SS_BLACKFRAME,12,11,239,128
+    LTEXT           "",IDC_TIPSTRING,46,23,180,101
+    CONTROL         "Tipps beim Start &anzeigen",IDC_STARTUP,"Button",BS_AUTOCHECKBOX | WS_GROUP | WS_TABSTOP,15,147,96,10
+    PUSHBUTTON      "&Nächster Tipp",IDC_NEXTTIP,143,144,50,14,WS_GROUP
+    DEFPUSHBUTTON   "&Schließen",IDOK,202,144,50,14,WS_GROUP
+    CONTROL         102,IDC_BULB,"Static",SS_BITMAP,20,17,27,33
+END
+
+IDD_PLUGIN_MANAGER DIALOGEX 0, 0, 417, 267
+STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION
+CAPTION "Plugin Manager"
+FONT 8, "MS Sans Serif", 0, 0, 0x0
+BEGIN
+    CONTROL         "List1",IDC_LISTE,"SysListView32",LVS_REPORT | LVS_SINGLESEL | LVS_SHOWSELALWAYS | LVS_OWNERDATA | LVS_NOSORTHEADER | WS_BORDER | WS_TABSTOP,7,7,403,184
+    LTEXT           "Info:",IDC_STATIC,7,195,86,8
+    EDITTEXT        IDC_STATUS,7,205,403,36,ES_MULTILINE | ES_AUTOVSCROLL | ES_READONLY | WS_VSCROLL
+    DEFPUSHBUTTON   "Download",IDOK,304,246,50,14
+    PUSHBUTTON      "Schließen",IDCANCEL,360,246,50,14
+    PUSHBUTTON      "Nochmaliger manueller Download von nicht richtig installierten Plugins",IDC_MANUELLER_DOWNLOAD,7,246,294,14
+END
+
+IDD_RECHNER DIALOG  0, 0, 186, 222
+STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Dialog"
+FONT 8, "MS Sans Serif"
+BEGIN
+    DEFPUSHBUTTON   "OK",IDOK,74,201,50,14
+    PUSHBUTTON      "Cancel",IDCANCEL,129,201,50,14
+    CONTROL         "Rechner",IDC_RECHNER,"CCalculatorCtrl",WS_TABSTOP,7,7,172,186
+END
+
+IDD_RECHN DIALOGEX 0, 0, 300, 241
+STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION
+CAPTION "Rechner"
+FONT 8, "MS Sans Serif", 0, 0, 0x1
+BEGIN
+    PUSHBUTTON      "Abbruch",IDCANCEL,250,145,50,14
+    EDITTEXT        IDC_EINGABE,0,131,300,12,ES_AUTOHSCROLL
+    LTEXT           "",IDC_ERGEBNIS,37,147,94,8
+    LTEXT           "Ergebnis:",IDC_STATIC,0,147,31,9
+    PUSHBUTTON      "&1. <Formel nicht belegt>",IDC_FORMEL1,0,0,299,13
+    PUSHBUTTON      "&2. <Formel nicht belegt>",IDC_FORMEL2,0,13,299,13
+    PUSHBUTTON      "&3. <Formel nicht belegt>",IDC_FORMEL3,0,26,299,13
+    PUSHBUTTON      "&4. <Formel nicht belegt>",IDC_FORMEL4,0,39,299,13
+    PUSHBUTTON      "&5. <Formel nicht belegt>",IDC_FORMEL5,0,52,299,13
+    PUSHBUTTON      "&6. <Formel nicht belegt>",IDC_FORMEL6,0,66,299,13
+    PUSHBUTTON      "&7. <Formel nicht belegt>",IDC_FORMEL7,0,79,299,13
+    PUSHBUTTON      "&8. <Formel nicht belegt>",IDC_FORMEL8,0,92,299,13
+    PUSHBUTTON      "&9. <Formel nicht belegt>",IDC_FORMEL9,0,106,299,13
+    PUSHBUTTON      "1&0. <Formel nicht belegt>",IDC_FORMEL10,0,119,299,13
+    LISTBOX         IDC_ERGEBNISSE_LBOX,0,172,98,39,LBS_NOINTEGRALHEIGHT | WS_VSCROLL | WS_TABSTOP,WS_EX_DLGMODALFRAME
+    LISTBOX         IDC_VARIABLEN_LBOX,101,172,97,39,LBS_SORT | LBS_NOINTEGRALHEIGHT | WS_VSCROLL | WS_TABSTOP,WS_EX_DLGMODALFRAME
+    LISTBOX         IDC_FUNKTIONEN_LBOX,201,172,98,39,LBS_SORT | LBS_NOINTEGRALHEIGHT | WS_VSCROLL | WS_TABSTOP,WS_EX_DLGMODALFRAME
+    LTEXT           "Letzte Ergebnisse:",IDC_STATIC,3,163,92,9
+    LTEXT           "Variablen:",IDC_STATIC,104,163,87,10
+    LTEXT           "Funktionen:",IDC_STATIC,204,163,88,9
+    DEFPUSHBUTTON   "Berechnen",IDC_BERECHNEN,141,145,50,14
+    PUSHBUTTON      "Über&nehmen",IDC_UEBERNEHMEN,195,145,50,14
+    LTEXT           "Tipp: Mit Alt-R und dann Alt-0 bis Alt-9 kann man die Formeln aus dem Buchen-Dialog heraus benutzen. Zum Speichern einer Formel diese erst in das Eingabefeld eingeben und dann einen der Knöpfe oben drücken.",IDC_STATIC,9,215,286,25
+END
+
+IDD_NEUES_FORMULAR DIALOG  0, 0, 235, 226
+STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Dialog"
+FONT 8, "MS Sans Serif"
+BEGIN
+    LTEXT           "Allg. Name d. Formulars",IDC_STATIC,7,9,78,8
+    EDITTEXT        IDC_NAME,86,7,142,12,ES_AUTOHSCROLL
+    LTEXT           "Anzeigename (Zeitraum)",IDC_STATIC,7,27,78,8
+    EDITTEXT        IDC_ANZEIGENAME,86,24,142,12,ES_AUTOHSCROLL
+    LTEXT           "Dateiname\n(ohne Verzeichnispfad)",IDC_STATIC,7,40,75,19
+    EDITTEXT        IDC_DATEINAME,86,41,142,12,ES_AUTOHSCROLL
+    LTEXT           "Anzahl Seiten",IDC_STATIC,7,96,73,8
+    EDITTEXT        IDC_SEITEN,86,92,24,12,ES_AUTOHSCROLL
+    LTEXT           "Seiten-Grafikdateien\n(ohne Verzeichnispfad)",IDC_STATIC,7,111,78,18
+    EDITTEXT        IDC_GRAFIKDATEIEN,86,109,142,32,ES_MULTILINE | ES_AUTOHSCROLL | WS_VSCROLL
+    LTEXT           "Pro Zeile bitte eine Seiten-Grafikdatei eingeben. Leerzeilen entsprechen Seiten ohne hinterlegte Grafikdatei. Dateien vom Typ .jpg, .gif und .png sind erlaubt (.png liefert die besten Ergebnisse für",IDC_STATIC,7,148,221,24
+    LTEXT           "Formulare). Bei .jpg bitte kein Multi-Pass-Encoding und allgemein kein Interlace-Encoding. STRG-Enter für Zeilenumbruch drücken.",IDC_STATIC,7,173,221,18
+    DEFPUSHBUTTON   "OK",IDOK,122,191,50,14
+    PUSHBUTTON      "Abbrechen",IDCANCEL,178,191,50,14
+    LTEXT           "Schriftart",IDC_STATIC,7,61,78,8
+    EDITTEXT        IDC_SCHRIFTART,86,58,72,12,ES_AUTOHSCROLL
+    LTEXT           "Schriftgröße",IDC_STATIC,7,76,71,11
+    EDITTEXT        IDC_SCHRIFTGROESSE,86,75,24,12,ES_AUTOHSCROLL
+END
+
+IDD_FORMULARFELD DIALOGEX 0, 0, 186, 307
+STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION
+CAPTION "Formular-Feldeigenschaften"
+FONT 8, "MS Sans Serif", 0, 0, 0x0
+BEGIN
+    LTEXT           "Feld-ID",IDC_STATIC,7,7,33,8
+    EDITTEXT        IDC_ID,7,17,30,12,ES_AUTOHSCROLL
+    LTEXT           "Name",IDC_STATIC,7,31,33,8
+    EDITTEXT        IDC_NAME,7,41,172,12,ES_AUTOHSCROLL
+    LTEXT           "Erweiterung",IDC_STATIC,7,56,114,8
+    EDITTEXT        IDC_LANGFORM,7,66,172,12,ES_AUTOHSCROLL
+    GROUPBOX        "Position",IDC_STATIC,7,83,172,34
+    LTEXT           "Seite",IDC_STATIC,14,96,17,8
+    EDITTEXT        IDC_SEITE,34,94,21,12,ES_AUTOHSCROLL
+    CONTROL         "Spin2",IDC_SEITE_SPIN,"msctls_updown32",UDS_ARROWKEYS,55,94,8,13
+    LTEXT           "Vert.",IDC_STATIC,72,96,16,8
+    EDITTEXT        IDC_VERTIKAL,89,94,21,12,ES_AUTOHSCROLL
+    CONTROL         "Spin2",IDC_VERTIKAL_SPIN,"msctls_updown32",UDS_ARROWKEYS,111,94,8,13
+    LTEXT           "Horiz.",IDC_STATIC,130,96,19,8
+    EDITTEXT        IDC_HORIZONTAL,150,94,21,12,ES_AUTOHSCROLL
+    CONTROL         "Spin2",IDC_HORIZONTAL_SPIN,"msctls_updown32",UDS_ARROWKEYS | UDS_HORZ,150,106,21,6
+    LTEXT           "Ausrichtung",IDC_STATIC,7,121,42,8
+    CONTROL         "linksbündig",IDC_AUSRICHTUNG,"Button",BS_AUTORADIOBUTTON | WS_GROUP,59,121,51,10
+    CONTROL         "rechtsbündig",IDC_AUSRICHTUNG2,"Button",BS_AUTORADIOBUTTON,122,121,55,10
+    LTEXT           "Typ",IDC_STATIC,7,139,19,8
+    COMBOBOX        IDC_TYP,34,137,145,73,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
+    LTEXT           "Anteil",IDC_STATIC,7,157,22,8
+    CONTROL         "brutto",IDC_ANTEIL,"Button",BS_AUTORADIOBUTTON | WS_GROUP,60,157,34,10
+    CONTROL         "netto",IDC_ANTEIL2,"Button",BS_AUTORADIOBUTTON,103,157,36,10
+    CONTROL         "MWSt.",IDC_ANTEIL3,"Button",BS_AUTORADIOBUTTON,145,157,36,10
+    LTEXT           "Nachkomma-\nanteil",IDC_STATIC,7,172,48,16
+    CONTROL         "mit",IDC_NACHKOMMAANTEIL,"Button",BS_AUTORADIOBUTTON | WS_GROUP,60,172,25,10
+    CONTROL         "ohne",IDC_NACHKOMMAANTEIL2,"Button",BS_AUTORADIOBUTTON,103,172,36,10
+    LTEXT           "",IDC_HINWEIS,7,222,172,42
+    LTEXT           "",IDC_MOUSEPOS,7,271,172,8
+    LTEXT           "Nullwerte",IDC_STATIC,7,189,42,16
+    CONTROL         "darstellen",IDC_NULLWERTE,"Button",BS_AUTORADIOBUTTON | WS_GROUP,59,189,46,10
+    CONTROL         "nicht darst.",IDC_NULLWERTE2,"Button",BS_AUTORADIOBUTTON,122,189,55,10
+    DEFPUSHBUTTON   "Speichern",IDOK,73,286,50,14
+    PUSHBUTTON      "Abbrechen",IDCANCEL,129,286,50,14
+    LTEXT           "Veraltet?",IDC_STATIC,7,205,42,16
+    CONTROL         "nein",IDC_VERALTET,"Button",BS_AUTORADIOBUTTON | WS_GROUP,59,205,29,10
+    CONTROL         "ja",IDC_VERALTET2,"Button",BS_AUTORADIOBUTTON,122,205,55,10
+END
+
+IDD_VORANMELDUNGSZEITRAUM_DROPLIST DIALOGEX 0, 0, 90, 12
+STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+EXSTYLE WS_EX_TOOLWINDOW
+CAPTION "Voranmeldungszeitraum"
+FONT 8, "MS Sans Serif", 0, 0, 0x1
+BEGIN
+    COMBOBOX        IDC_COMBO,0,0,90,160,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
+END
+
+IDD_ICONAUSWAHL_MANDANT DIALOG  0, 0, 320, 218
+STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Icon für neuen Mandanten auswählen"
+FONT 8, "MS Sans Serif"
+BEGIN
+    DEFPUSHBUTTON   "OK",IDOK,207,197,50,14
+    PUSHBUTTON      "Cancel",IDCANCEL,263,197,50,14
+    CONTROL         "List1",IDC_ICONLISTE,"SysListView32",LVS_SINGLESEL | LVS_AUTOARRANGE | WS_BORDER | WS_TABSTOP,7,7,306,167
+    LTEXT           "Bitte ein Icon auswählen und auf OK klicken.",IDC_BITTE,7,181,192,8
+    PUSHBUTTON      "&Neuer Mandant",IDC_Neu,7,179,57,14,NOT WS_VISIBLE
+    PUSHBUTTON      "&Löschen",IDC_LOESCHEN,70,179,50,14,NOT WS_VISIBLE
+    PUSHBUTTON      "&Umbenennen",IDC_UMBENENNEN,126,179,50,14,NOT WS_VISIBLE
+    PUSHBUTTON      "&Mandantenverzeichnis wählen",IDC_PROPERTY,182,179,131,14,NOT WS_VISIBLE
+END
+
+IDD_MANDANT_NAME DIALOG  0, 0, 186, 46
+STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION
+CAPTION "Mandant Name"
+FONT 8, "MS Sans Serif"
+BEGIN
+    EDITTEXT        IDC_NAME,7,7,172,13,ES_AUTOHSCROLL
+    DEFPUSHBUTTON   "OK",IDOK,75,24,50,14
+    PUSHBUTTON      "Cancel",IDCANCEL,129,24,50,14
+END
+
+IDD_ICONAUSWAHL_BETRIEB DIALOG  0, 0, 320, 218
+STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Icon für neuen Betrieb auswählen"
+FONT 8, "MS Sans Serif"
+BEGIN
+    DEFPUSHBUTTON   "OK",IDOK,208,197,50,14
+    PUSHBUTTON      "Cancel",IDCANCEL,263,197,50,14
+    CONTROL         "List1",IDC_ICONLISTE,"SysListView32",LVS_SINGLESEL | LVS_AUTOARRANGE | WS_BORDER | WS_TABSTOP,7,7,306,167
+    PUSHBUTTON      "&Neuer Betrieb",IDC_Neu,7,179,50,14,NOT WS_VISIBLE
+    PUSHBUTTON      "&Löschen",IDC_LOESCHEN,63,179,50,14,NOT WS_VISIBLE
+    LTEXT           "Bitte ein Icon auswählen und auf OK klicken.",IDC_BITTE,7,181,192,8
+    PUSHBUTTON      "&Umbenennen",IDC_UMBENENNEN,119,179,50,14,NOT WS_VISIBLE
+    PUSHBUTTON      "&Unternehmensart eingeben",IDC_PROPERTY,174,179,139,14,NOT WS_VISIBLE
+END
+
+IDD_ICONAUSWAHL_BESTANDSKONTO DIALOG  0, 0, 320, 218
+STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Icon für neues Bestandskonto auswählen"
+FONT 8, "MS Sans Serif"
+BEGIN
+    DEFPUSHBUTTON   "OK",IDOK,208,197,50,14
+    PUSHBUTTON      "Cancel",IDCANCEL,263,197,50,14
+    CONTROL         "List1",IDC_ICONLISTE,"SysListView32",LVS_SINGLESEL | LVS_AUTOARRANGE | WS_BORDER | WS_TABSTOP,7,7,306,167
+    LTEXT           "Bitte ein Icon auswählen und auf OK klicken.",IDC_BITTE,7,181,192,8
+    PUSHBUTTON      "&Neues Bestandskonto",IDC_Neu,7,179,81,14,NOT WS_VISIBLE
+    PUSHBUTTON      "&Löschen",IDC_LOESCHEN,93,179,50,14,NOT WS_VISIBLE
+    PUSHBUTTON      "&Umbenennen",IDC_UMBENENNEN,147,179,50,14,NOT WS_VISIBLE
+    PUSHBUTTON      "&Anfangssaldo setzen",IDC_PROPERTY,201,179,112,14,NOT WS_VISIBLE
+END
+
+IDD_UNTERNEHMENSART DIALOG  0, 0, 300, 96
+STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Beschreibung des Betriebs"
+FONT 8, "MS Sans Serif"
+BEGIN
+    LTEXT           "Unternehmensart",IDC_STATIC,7,9,59,10
+    EDITTEXT        IDC_UNTERNEHMENSART1,70,7,223,12,ES_AUTOHSCROLL
+    DEFPUSHBUTTON   "OK",IDOK,189,75,50,14
+    PUSHBUTTON      "Cancel",IDCANCEL,243,75,50,14
+    LTEXT           "Hinweis: die entspr. Felder in den Einstellungen (pers. Daten und Finanzamt) werden durch die Angaben hier aufgehoben und stattdessen in Formularen benutzt.",IDC_STATIC,7,56,169,33
+    LTEXT           "Rechtsform",IDC_STATIC,7,24,59,10
+    EDITTEXT        IDC_UNTERNEHMENSART2,70,22,223,12,ES_AUTOHSCROLL
+    LTEXT           "Betriebssteuernr.",IDC_STATIC,7,40,59,10
+    EDITTEXT        IDC_STEUERNUMMER,70,38,223,12,ES_AUTOHSCROLL
+END
+
+IDD_ANFANGSSALDO DIALOG  0, 0, 226, 44
+STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Anfangssaldo"
+FONT 8, "MS Sans Serif"
+BEGIN
+    EDITTEXT        IDC_ANFANGSSALDO,163,7,56,12,ES_AUTOHSCROLL
+    DEFPUSHBUTTON   "OK",IDOK,113,23,50,14
+    PUSHBUTTON      "Cancel",IDCANCEL,169,23,50,14
+    LTEXT           "Anfangssaldo bzw. Übertrag aus dem Vorjahr:",IDC_STATIC,7,9,151,8
+END
+
+IDD_DATENVERZEICHNIS DIALOG  0, 0, 409, 329
+STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Wichtige Hinweise zum Datenverzeichnis"
+FONT 8, "MS Sans Serif"
+BEGIN
+    DEFPUSHBUTTON   "OK",IDOK,352,308,50,14
+    LTEXT           "Im Datenverzeichnis werden sämtliche Einstellungen des Programms in der Datei easyct.ini abgelegt und alle Buchungsdateien (JahrXXXX.eca) sollten hier direkt gespeichert werden -- auch wenn man sonst Unterordner für die einzelnen Jahre anlegt.",IDC_STATIC,7,7,395,26
+    CONTROL         413,IDC_STATIC,"Static",SS_BITMAP,7,55,395,199
+    LTEXT           "Die BackupXXXX-Verzeichnisse werden von EC&&T beim Jahreswechsel automatisch angelegt als Datensicherung. Für elektronische Belege, PDF-Ausdrucke und alle sonstigen Dateien empfiehlt es sich für die einzelnen Buchungsjahre Unterverzeichnisse anzulegen.",IDC_STATIC,7,261,395,26
+    LTEXT           "Hier ein Beispiel für ein in 'Eigene Dateien\\Steuer' angelegtes Datenverzeichnis: ",IDC_STATIC,7,37,395,8
+    LTEXT           "Aber wie gesagt: Die Buchungsdateien (.eca) und Einstellungsdaten (easyct.ini) müssen immer im Basis-Datenverzeichnis liegen. ",IDC_STATIC,7,291,395,17
+END
+
+IDD_USTVORAUSZAHLUNGEN DIALOGEX 0, 0, 241, 353
+STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Umsatzsteuer-Vorauszahlungen"
+FONT 8, "MS Sans Serif", 0, 0, 0x0
+BEGIN
+    DEFPUSHBUTTON   "OK",IDOK,129,332,50,14
+    PUSHBUTTON      "Abbrechen",IDCANCEL,184,332,50,14
+    LTEXT           "Quartalsweise",IDC_STATIC,15,7,55,8
+    LTEXT           "Monatsweise",IDC_STATIC,122,7,68,8
+    EDITTEXT        IDC_Q1,15,45,40,12,ES_AUTOHSCROLL
+    GROUPBOX        "1. Quartal",IDC_STATIC,7,20,227,58
+    EDITTEXT        IDC_M1,122,30,40,12,ES_AUTOHSCROLL
+    EDITTEXT        IDC_M2,122,45,40,12,ES_AUTOHSCROLL
+    EDITTEXT        IDC_M3,122,59,40,12,ES_AUTOHSCROLL
+    LTEXT           "für Januar",IDC_STATIC,165,32,53,8
+    LTEXT           "für Februar",IDC_STATIC,166,47,55,8
+    LTEXT           "für März",IDC_STATIC,166,61,42,8
+    EDITTEXT        IDC_Q2,15,107,40,12,ES_AUTOHSCROLL
+    GROUPBOX        "2. Quartal",IDC_STATIC,7,81,227,58
+    EDITTEXT        IDC_M4,122,92,40,12,ES_AUTOHSCROLL
+    EDITTEXT        IDC_M5,122,107,40,12,ES_AUTOHSCROLL
+    EDITTEXT        IDC_M6,122,121,40,12,ES_AUTOHSCROLL
+    LTEXT           "für April",IDC_STATIC,165,94,42,8
+    LTEXT           "für Mai",IDC_STATIC,166,108,42,8
+    LTEXT           "für Juni",IDC_STATIC,166,123,42,8
+    EDITTEXT        IDC_Q3,15,168,40,12,ES_AUTOHSCROLL
+    GROUPBOX        "3. Quartal",IDC_STATIC,7,142,227,58
+    EDITTEXT        IDC_M7,122,153,40,12,ES_AUTOHSCROLL
+    EDITTEXT        IDC_M8,122,168,40,12,ES_AUTOHSCROLL
+    EDITTEXT        IDC_M9,122,182,40,12,ES_AUTOHSCROLL
+    LTEXT           "für Juli",IDC_STATIC,165,155,42,8
+    LTEXT           "für August",IDC_STATIC,166,169,55,8
+    LTEXT           "für September",IDC_STATIC,166,184,61,8
+    EDITTEXT        IDC_Q4,15,229,40,12,ES_AUTOHSCROLL
+    GROUPBOX        "4. Quartal",IDC_STATIC,7,203,227,74
+    EDITTEXT        IDC_M10,122,214,40,12,ES_AUTOHSCROLL
+    EDITTEXT        IDC_M11,122,229,40,12,ES_AUTOHSCROLL
+    EDITTEXT        IDC_M12,122,243,40,12,ES_AUTOHSCROLL
+    LTEXT           "für Oktober",IDC_STATIC,165,216,58,8
+    LTEXT           "für November",IDC_STATIC,166,230,57,8
+    LTEXT           "für Dezember",IDC_STATIC,166,245,57,8
+    LTEXT           "Hinweis: In dieser Maske wird nur der Vorauszahlungssoll _für_ das Buchungsjahr erfasst. Die tatsächlichen Zahlungen und Erstattungen, die _in_ diesem Buchungsjahr stattfinden, müssen noch einmal als",IDC_STATIC,7,282,227,25
+    LTEXT           "normale Buchungen erfasst werden (z.B. eine Vorauszahlung _für_ Dezember des letzten Jahres, die _im_ Januar dieses Jahres getätigt wurde).",IDC_STATIC,7,307,227,25
+    LTEXT           "oder",IDC_STATIC,80,46,15,8
+    LTEXT           "oder",IDC_STATIC,80,108,15,8
+    LTEXT           "oder",IDC_STATIC,80,169,15,8
+    LTEXT           "oder",IDC_STATIC,80,230,15,8
+    LTEXT           "zuzüglich",IDC_STATIC,15,259,33,8
+    EDITTEXT        IDC_VORAUSZAHLUNG,46,257,40,12,ES_AUTOHSCROLL
+    LTEXT           "für das Jahr geleistete Sondervorauszahlung",IDC_STATIC,87,259,147,8
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Version
+//
+
+VS_VERSION_INFO VERSIONINFO
+ FILEVERSION 2,30,0,1
+ PRODUCTVERSION 2,30,0,1
+ FILEFLAGSMASK 0x3fL
+#ifdef _DEBUG
+ FILEFLAGS 0x1L
+#else
+ FILEFLAGS 0x0L
+#endif
+ FILEOS 0x4L
+ FILETYPE 0x1L
+ FILESUBTYPE 0x0L
+BEGIN
+    BLOCK "StringFileInfo"
+    BEGIN
+        BLOCK "080004b0"
+        BEGIN
+            VALUE "CompanyName", "Thomas Mielke Softwareentwicklung"
+            VALUE "FileDescription", "EASYCASH_AND_TAX MFC Application"
+            VALUE "FileVersion", "2, 30, 0, 1"
+            VALUE "InternalName", "EASYCASH_AND_TAX"
+            VALUE "LegalCopyright", "© 1998-2019 Thomas Mielke Softwareentwicklung"
+            VALUE "OriginalFilename", "EASYCT.EXE"
+            VALUE "ProductName", "EASYCASH_AND_TAX Application"
+            VALUE "ProductVersion", "2, 30, 0, 1"
+        END
+    END
+    BLOCK "VarFileInfo"
+    BEGIN
+        VALUE "Translation", 0x800, 1200
+    END
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// DESIGNINFO
+//
+
+#ifdef APSTUDIO_INVOKED
+GUIDELINES DESIGNINFO 
+BEGIN
+    IDD_ABOUTBOX, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 309
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 351
+    END
+
+    IDD_BUCHUNG, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 467
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 170
+    END
+
+    IDD_DAUERBUCHUNGEN, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 293
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 302
+    END
+
+    IDD_DAUERBUCHUNGEN_AUSFUEHREN, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 204
+        TOPMARGIN, 5
+        BOTTOMMARGIN, 37
+    END
+
+    IDD_REGISTRIEREN, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 295
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 280
+    END
+
+    IDD_REGISTER_DIALOG, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 179
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 43
+    END
+
+    IDD_DRUCKAUSWAHL, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 287
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 107
+    END
+
+    IDD_EINSTELLUNGEN1, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 355
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 192
+    END
+
+    IDD_EINSTELLUNGEN2, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 355
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 192
+    END
+
+    IDD_EINSTELLUNGEN3, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 355
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 192
+    END
+
+    IDD_VORANMELDUNGSZEITRAUM, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 218
+        BOTTOMMARGIN, 69
+    END
+
+    IDD_EINSTELLUNGEN4, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 355
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 192
+    END
+
+    IDD_NEUES_KONTO, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 281
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 141
+    END
+
+    IDD_EINSTELLUNGEN5, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 355
+        TOPMARGIN, 6
+        BOTTOMMARGIN, 198
+    END
+
+    IDD_VOTE, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 400
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 214
+    END
+
+    IDD_TIP, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 251
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 159
+    END
+
+    IDD_PLUGIN_MANAGER, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 410
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 260
+    END
+
+    IDD_RECHNER, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 179
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 215
+    END
+
+    IDD_RECHN, DIALOG
+    BEGIN
+        BOTTOMMARGIN, 240
+    END
+
+    IDD_NEUES_FORMULAR, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 228
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 219
+    END
+
+    IDD_FORMULARFELD, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 179
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 300
+    END
+
+    IDD_ICONAUSWAHL_MANDANT, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 313
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 211
+    END
+
+    IDD_MANDANT_NAME, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 179
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 39
+    END
+
+    IDD_ICONAUSWAHL_BETRIEB, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 313
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 211
+    END
+
+    IDD_ICONAUSWAHL_BESTANDSKONTO, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 313
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 211
+    END
+
+    IDD_UNTERNEHMENSART, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 293
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 89
+    END
+
+    IDD_ANFANGSSALDO, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 219
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 37
+    END
+
+    IDD_DATENVERZEICHNIS, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 402
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 322
+    END
+
+    IDD_USTVORAUSZAHLUNGEN, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 234
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 346
+    END
+END
+#endif    // APSTUDIO_INVOKED
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Dialog Info
+//
+
+IDD_BUCHUNG DLGINIT
+BEGIN
+    IDC_MWST, 0x403, 3, 0
+0x3931, "\000" 
+    IDC_MWST, 0x403, 2, 0
+0x0037, 
+    IDC_MWST, 0x403, 2, 0
+0x0030, 
+    IDC_ABSCHREIBUNGNUMMER, 0x403, 2, 0
+0x0031, 
+    IDC_ABSCHREIBUNGNUMMER, 0x403, 2, 0
+0x0032, 
+    IDC_ABSCHREIBUNGNUMMER, 0x403, 2, 0
+0x0033, 
+    IDC_ABSCHREIBUNGNUMMER, 0x403, 2, 0
+0x0034, 
+    IDC_ABSCHREIBUNGNUMMER, 0x403, 2, 0
+0x0035, 
+    IDC_ABSCHREIBUNGNUMMER, 0x403, 2, 0
+0x0036, 
+    IDC_ABSCHREIBUNGNUMMER, 0x403, 2, 0
+0x0037, 
+    IDC_ABSCHREIBUNGNUMMER, 0x403, 2, 0
+0x0038, 
+    IDC_ABSCHREIBUNGNUMMER, 0x403, 2, 0
+0x0039, 
+    IDC_ABSCHREIBUNGNUMMER, 0x403, 3, 0
+0x3031, "\000" 
+    IDC_ABSCHREIBUNGJAHRE, 0x403, 2, 0
+0x0031, 
+    IDC_ABSCHREIBUNGJAHRE, 0x403, 2, 0
+0x0032, 
+    IDC_ABSCHREIBUNGJAHRE, 0x403, 2, 0
+0x0033, 
+    IDC_ABSCHREIBUNGJAHRE, 0x403, 2, 0
+0x0034, 
+    IDC_ABSCHREIBUNGJAHRE, 0x403, 2, 0
+0x0035, 
+    IDC_ABSCHREIBUNGJAHRE, 0x403, 2, 0
+0x0036, 
+    IDC_ABSCHREIBUNGJAHRE, 0x403, 2, 0
+0x0037, 
+    IDC_ABSCHREIBUNGJAHRE, 0x403, 2, 0
+0x0038, 
+    IDC_ABSCHREIBUNGJAHRE, 0x403, 2, 0
+0x0039, 
+    IDC_ABSCHREIBUNGJAHRE, 0x403, 3, 0
+0x3031, "\000" 
+    IDC_ABSCHREIBUNG_GENAUIGKEIT, 0x403, 11, 0
+0x614a, 0x7268, 0x7365, 0x412d, 0x4166, "\000" 
+    IDC_ABSCHREIBUNG_GENAUIGKEIT, 0x403, 15, 0
+0x6148, 0x626c, 0x616a, 0x7268, 0x7365, 0x412d, 0x4166, "\000" 
+    IDC_ABSCHREIBUNG_GENAUIGKEIT, 0x403, 17, 0
+0x6f6d, 0x616e, 0x7374, 0x6567, 0x616e, 0x6575, 0x4120, 0x4166, "\000" 
+    IDC_ABSCHREIBUNG_GENAUIGKEIT, 0x403, 36, 0
+0x6e65, 0x7374, 0x7270, 0x202e, 0x6564, 0x206e, 0x6b61, 0x7574, 0x6c65, 
+0x656c, 0x206e, 0x6945, 0x736e, 0x6574, 0x6c6c, 0x6e75, 0x6567, 0x006e, 
+
+    0
+END
+
+IDD_DAUERBUCHUNGEN DLGINIT
+BEGIN
+    IDC_MWST, 0x403, 3, 0
+0x3631, "\000" 
+    IDC_MWST, 0x403, 2, 0
+0x0037, 
+    IDC_MWST, 0x403, 2, 0
+0x0030, 
+    0
+END
+
+IDD_EINSTELLUNGEN4 DLGINIT
+BEGIN
+    IDC_KONTENKATEGORIE, 0x403, 10, 0
+0x6945, 0x6e6e, 0x6861, 0x656d, 0x006e, 
+    IDC_KONTENKATEGORIE, 0x403, 9, 0
+0x7541, 0x6773, 0x6261, 0x6e65, "\000" 
+    IDC_FORMULAR, 0x403, 10, 0
+0x6945, 0x6e6e, 0x6861, 0x656d, 0x006e, 
+    IDC_FORMULAR, 0x403, 9, 0
+0x7541, 0x6773, 0x6261, 0x6e65, "\000" 
+    IDC_FINANZAMTSZAHLUNGEN1, 0x403, 10, 0
+0x6945, 0x6e6e, 0x6861, 0x656d, 0x006e, 
+    IDC_FINANZAMTSZAHLUNGEN1, 0x403, 9, 0
+0x7541, 0x6773, 0x6261, 0x6e65, "\000" 
+    IDC_FINANZAMTSZAHLUNGEN2, 0x403, 10, 0
+0x6945, 0x6e6e, 0x6861, 0x656d, 0x006e, 
+    IDC_FINANZAMTSZAHLUNGEN2, 0x403, 9, 0
+0x7541, 0x6773, 0x6261, 0x6e65, "\000" 
+    0
+END
+
+IDD_FORMULARFELD DLGINIT
+BEGIN
+    IDC_TYP, 0x403, 10, 0
+0x6945, 0x6e6e, 0x6861, 0x656d, 0x006e, 
+    IDC_TYP, 0x403, 9, 0
+0x7541, 0x6773, 0x6261, 0x6e65, "\000" 
+    IDC_TYP, 0x403, 6, 0
+0x7553, 0x6d6d, 0x0065, 
+    IDC_TYP, 0x403, 18, 0
+0x6945, 0x736e, 0x6574, 0x6c6c, 0x6e75, 0x7367, 0x6164, 0x6574, 0x006e, 
+
+    IDC_TYP, 0x403, 14, 0
+0x6f44, 0x756b, 0x656d, 0x746e, 0x6164, 0x6574, 0x006e, 
+    IDC_TYP, 0x403, 9, 0
+0x7246, 0x6965, 0x6574, 0x7478, "\000" 
+    0
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// String Table
+//
+
+STRINGTABLE 
+BEGIN
+    IDR_MAINFRAME           "EasyCash&&Tax"
+    IDR_EASYCATYPE          "\nEasyCa\nEasyCa\nEasyCash&Tax Buchungsjahr (*.eca)\n.eca;.ecareg\nEasyCashAndTax.Document\nEasyCash&Tax Buchungsjahr"
+    IDR_EASYCAREGTYPE       "\nEasyCaReg\nEasyCaReg\nEasyCash&Tax Registrierungsinformationen (*.ecareg)\n.ecareg\nEasyCashAndTax.Registrierungsinformationen\nEasyCash&Tax Registrierungsinformationen"
+END
+
+STRINGTABLE 
+BEGIN
+    AFX_IDS_APP_TITLE       "EasyCash&Tax"
+    AFX_IDS_IDLEMESSAGE     "Bereit"
+END
+
+STRINGTABLE 
+BEGIN
+    ID_INDICATOR_EXT        "ER"
+    ID_INDICATOR_CAPS       "UF"
+    ID_INDICATOR_NUM        "NUM"
+    ID_INDICATOR_SCRL       "RF"
+    ID_INDICATOR_OVR        "ÜB"
+    ID_INDICATOR_REC        "MA"
+END
+
+STRINGTABLE 
+BEGIN
+    ID_FILE_NEW             "Erstellt ein neue Jahresbuchungdatei.\nNeu"
+    ID_FILE_OPEN            "Öffnet eine bestehende Jahresbuchungdatei.\nÖffnen"
+    ID_FILE_CLOSE           "Schließt die aktive Jahresbuchungdatei.\nSchließen"
+    ID_FILE_SAVE            "Speichert die aktive Jahresbuchungdatei.\nSpeichern"
+    ID_FILE_SAVE_AS         "Speichert die aktive Jahresbuchungdatei unter neuem Namen.\nSpeichern unter"
+    ID_FILE_PAGE_SETUP      "Ändert die Druckoptionen.\nSeite einrichten"
+    ID_FILE_PRINT_SETUP     "Ändert den Drucker und die Druckoptionen.\nDruckereinrichtung"
+    ID_FILE_PRINT           "Der Knopf öffnet bei Journalansicht das Druckmenü oder bei angezeigtem Formular den Drucken-Dialog. Unten gibt es zusätzlich die Optionen Seitenansicht oder Druckereinrichtung (Tipp: Querformat-Druck!).\nDrucken"
+    ID_FILE_PRINT_PREVIEW   "Zeigt eine Druckvorschau an.\nSeitenansicht"
+END
+
+STRINGTABLE 
+BEGIN
+    ID_APP_ABOUT            "Zeigt Programm-Informationen, Versionsnummer und Copyright an.\nInfo"
+    ID_APP_EXIT             "Verläßt die Anwendung; fragt, ob Dokumente gespeichert werden sollen.\nBeenden"
+END
+
+STRINGTABLE 
+BEGIN
+    ID_FILE_MRU_FILE1       "Öffnet dieses Dokument."
+    ID_FILE_MRU_FILE2       "Öffnet dieses Dokument."
+    ID_FILE_MRU_FILE3       "Öffnet dieses Dokument."
+    ID_FILE_MRU_FILE4       "Öffnet dieses Dokument."
+    ID_FILE_MRU_FILE5       "Öffnet dieses Dokument."
+    ID_FILE_MRU_FILE6       "Öffnet dieses Dokument."
+    ID_FILE_MRU_FILE7       "Öffnet dieses Dokument."
+    ID_FILE_MRU_FILE8       "Öffnet dieses Dokument."
+    ID_FILE_MRU_FILE9       "Öffnet dieses Dokument."
+    ID_FILE_MRU_FILE10      "Öffnet dieses Dokument."
+    ID_FILE_MRU_FILE11      "Öffnet dieses Dokument."
+    ID_FILE_MRU_FILE12      "Öffnet dieses Dokument."
+    ID_FILE_MRU_FILE13      "Öffnet dieses Dokument."
+    ID_FILE_MRU_FILE14      "Öffnet dieses Dokument."
+    ID_FILE_MRU_FILE15      "Öffnet dieses Dokument."
+    ID_FILE_MRU_FILE16      "Öffnet dieses Dokument."
+END
+
+STRINGTABLE 
+BEGIN
+    ID_NEXT_PANE            "Wechselt zum nächsten Fensterausschnitt.\nNächster Ausschnitt"
+    ID_PREV_PANE            "Springt zum vorherigen Fensterausschnitt zurück.\nVorheriger Ausschnitt"
+END
+
+STRINGTABLE 
+BEGIN
+    ID_WINDOW_NEW           "Öffnet ein weiteres Fenster für das aktive Dokument.\nNeues Fenster"
+    ID_WINDOW_ARRANGE       "Ordnet die Symbole im unteren Bereich des Fensters an.\nSymbole anordnen"
+    ID_WINDOW_CASCADE       "Ordnet die Fenster überlappend an.\nÜberlappende Fenster"
+    ID_WINDOW_TILE_HORZ     "Ordnet die Fenster nebeneinander an.\nFenster nebeneinander"
+    ID_WINDOW_TILE_VERT     "Ordnet die Fenster nebeneinander an.\nFenster nebeneinander"
+    ID_WINDOW_SPLIT         "Teilt das aktive Fenster in Ausschnitte.\nTeilen"
+END
+
+STRINGTABLE 
+BEGIN
+    ID_EDIT_CLEAR           "Löscht die Markierung.\nLöschen"
+    ID_EDIT_CLEAR_ALL       "Löscht alles.\nAlles löschen"
+    ID_EDIT_COPY            "Kopiert die Markierung und überträgt sie in die Zwischenablage.\nKopieren"
+    ID_EDIT_CUT             "Entfernt die Markierung und überträgt sie in die Zwischenablage.\nAusschneiden"
+    ID_EDIT_FIND            "Sucht den angegebenen Text.\nSuchen"
+    ID_EDIT_PASTE           "Fügt den Inhalt der Zwischenablage ein.\nEinfügen"
+    ID_EDIT_REPEAT          "Wiederholt die letzte Aktion.\nWiederholen"
+    ID_EDIT_REPLACE         "Ersetzt einen bestimmten Text durch einen anderen.\nErsetzen"
+    ID_EDIT_SELECT_ALL      "Markiert das gesamte Dokument.\nAlles markieren"
+    ID_EDIT_UNDO            "Macht die letzte Aktion rückgängig.\nRückgängig"
+    ID_EDIT_REDO            "Wiederholt die vorher rückgängig gemachte Aktion.\nWiederherstellen"
+END
+
+STRINGTABLE 
+BEGIN
+    ID_VIEW_TOOLBAR         "Blendet die Symbolleiste ein oder aus.\nSymbolleiste ein-/ausschalten"
+    ID_VIEW_STATUS_BAR      "Blendet die Statusleiste ein oder aus.\nStatusleiste ein-/ausschalten"
+END
+
+STRINGTABLE 
+BEGIN
+    AFX_IDS_SCSIZE          "Ändert die Fenstergröße."
+    AFX_IDS_SCMOVE          "Ändert die Position des Fensters."
+    AFX_IDS_SCMINIMIZE      "Verkleinert das Fenster zu einem Symbol."
+    AFX_IDS_SCMAXIMIZE      "Vergrößert das Fenster zu voller Größe."
+    AFX_IDS_SCNEXTWINDOW    "Wechselt zum nächsten Dokumentfenster."
+    AFX_IDS_SCPREVWINDOW    "Wechselt zum vorherigen Dokumentfenster."
+    AFX_IDS_SCCLOSE         "Schließt das aktive Fenster und fordert zur Dokumentspeicherung auf."
+END
+
+STRINGTABLE 
+BEGIN
+    AFX_IDS_SCRESTORE       "Stellt das Fenster in seiner normalen Größe wieder her."
+    AFX_IDS_SCTASKLIST      "Aktiviert die Task-Liste."
+    AFX_IDS_MDICHILD        "Aktiviert dieses Fenster."
+END
+
+STRINGTABLE 
+BEGIN
+    AFX_IDS_PREVIEW_CLOSE   "Beendet die Seitenansicht.\nSeitenansicht beenden"
+    ID_SALDO                "0"
+    IDS_ZEIGE_PLUGIN_MANAGER 
+                            "Der Plugin Manager kann auf der EasyCash&Tax Webseite nachschauen, ob es Updates bereits installierter Plugins oder neue Plugins gibt oder ob eine neue Version des Hauptprogramms zur Verfügung steht. Eine geöffnete Internetverbindung ist dafür Voraussetzung. Fortfahren?"
+END
+
+STRINGTABLE 
+BEGIN
+    ID_EDIT_EINNAHME_BUCHEN "Einnahmen buchen\nEinnahmen buchen"
+    ID_EDIT_AUSGABE_BUCHEN2 "Ausgaben buchen\nAusgaben buchen"
+    ID_EDIT_DAUERBUCHUNGEN_EINGEBEN 
+                            "Dauerbuchungen eingeben/ändern/löschen\nDauerbuchungen eingeben"
+    ID_EDIT_DAUERBUCHUNGEN_AUSFUEHREN 
+                            "Dauerbuchungen ausführen\nDauerbuchungen ausführen"
+    ID_FILE_JAHRESWECHSEL   "Erzeugt eine neue Jahresbuchsungsdatei aus der aktuellen und übernimmt dabei Daten wie AfAs und Bestandskontensalden.\nJahreswechsel"
+    ID_VIEW_OPTIONS         "Programmeinstellungen verändern/eingeben\nProgrammeinstellungen"
+    ID_FILE_EXPORT          "Speichert die Buchungen der Jahresbuchungsdatei im CSV-Format, so dass es von Excel oder dem Import-Plugin verarbeitet werden kann.\nExport"
+END
+
+STRINGTABLE 
+BEGIN
+    ID_VIEW_JOURNAL_SWITCH  "Der Knopf oben rotiert durch die verschiedenen Journalsortierungen. Der untere Teil ermöglicht die direkte Auswahl der gewünschten Sortierung.\nJournalsortierung"
+    ID_FILE_PLUGINMANAGER   "Der Knopf oben öffnet den Plugin-Manager. Der untere Teil öffnet ein Menü mit allen installieren Plugins.\nPlugins"
+END
+
+STRINGTABLE 
+BEGIN
+    CG_IDS_TIPOFTHEDAY      "Zeigt den Tipp des Tages an."
+    CG_IDS_TIPOFTHEDAYMENU  "Ti&pp des Tages..."
+    CG_IDS_DIDYOUKNOW       "Wusstest Du schon..."
+    CG_IDS_FILE_ABSENT      "Tipps-Datei existiert nicht im vorgeschriebenen Verzeichnis"
+    CG_IDP_FILE_CORRUPT     "Probleme beim Lesen dieser Tipps-Datei"
+    CG_IDS_TIPOFTHEDAYHELP  "&Hilfe"
+    IDS_CSVIMPORT_INSTABIL  "Hinweis: Das CSV-Import Plugin läuft derzeit mit der Version 2 von EC&T etwas instabil. Es besteht leider die Gefahr von Programmabstürzen. Stellen Sie sicher, dass Sie vor dem Import die Buchungsdaten gespeichert haben. Es wird empfohlen sofort nach dem Import zu speichern und dann EC&T neu zu starten. Bitte entschuldigen Sie die Unannehmlichkeiten. Ich arbeite fieberhaft an der Einkreisung des Problems. Vielen Dank für Ihr Verständnis!"
+    IDS_EASYRTX_INSTABIL    "Hinweis: EasyRide&Tax enthält noch einen kleinen Fehler bei der Darstellung. Wenn nach dem Aktivieren des Plugins das Menü nicht angezeigt wird, bitte kurz in das Dokumentfenster klicken.  Ich bitte um ein wenig Geduld bis ich den Fehler behoben habe."
+END
+
+STRINGTABLE 
+BEGIN
+    ID_FORMULAR_NEU         "Diese Funktion ist für die normale Verwendung von EC&&T nicht nötig. Die üblichen Formulare werden rechtzeitig vai Update verfügbar gemacht.\nNeues Formular erzeugen"
+    ID_FILE_PRINT2          "Druckt das Journal oder auch eine formlose E/Ü-Rechnung bzw. USt-Erklärung.\nDrucken"
+    ID_NEXT                 "Nächstes Vorkommen des Suchbegriffs suchen (auch F3-Taste).\nVorwärts suchen"
+    ID_PREV                 "Zurück zum letzten Vorkommen des Suchbegriffs (auch Shift-F3).\nRückwärts suchen"
+    ID_FILE_MANDANTEN       "Auswählen und Managen von Mandanten (bitte zuerst alle Dokumente schließen)\nMandanten"
+    ID_VIEW_JOURNAL_BETRIEB "Der Knopf oben öffnet den Betriebe-Dialog zum Anlegen und Bearbeiten von Betrieben. Unten lässt sich der Filter direkt auf einen bestimmten Betrieb einstellen.\nBetriebe-Filter"
+    ID_FILE_OEFFNE_DATENVERZEICHNIS 
+                            "Zeigt das Datenverzeichnis im Windows-Explorer Fenster an. Dort sind alle Jahres-Buchungsdateien (.eca) und die Einstellungsdatei (easyct.ini) zu finden.\nDatenverzeichnis mit Explorer öffnen"
+    ID_FILE_WAEHLE_DATENVERZEICHNIS 
+                            "Hier sucht EC&&T die Jahresbuchungsdateien und die Einstellungsdatei (easyct.ini).\nAuswahl eines neuen Datenverzeichnis"
+    ID_FILE_REGISTRIERUNGSINFORMATIONEN_WIEDERHERSTELLEN 
+                            "Stellt einige weniger essenzielle Programmeinstellungen wie den Pfad des Datenverzeichnisses oder Registriercode wieder her.\nRegistrierungsinformationen &wiederherstellen"
+    ID_VIEW_JOURNAL_BESTANDSKONTO 
+                            "Der obere Knopf öffnet den Bestandskonten-Dialog zum Anlegen und Bearbeiten von Bestandskonten. Unten lässt sich der Filter direkt auf ein bestimmtes Bestandskonto einstellen.\nBestandskonten-Filter"
+END
+
+STRINGTABLE 
+BEGIN
+    ID_FILE_BACKUP          "Erstellt eine Datensicherung in einem Unterverzeichnis des Datenverzeichnisses.\nDatensicherung"
+    ID_FILE_REGISTRIERUNGSINFORMATIONEN_SICHERN 
+                            "Sichert weniger essenzielle Programmeinstellungen wie Registriercode oder Pfad des Datenverzeichnisses.\n&Registrierungsinformationen sichern"
+END
+
+STRINGTABLE 
+BEGIN
+    ID_VIEW_JOURNAL_MONAT   "Der Knopf im oberen Teil wechselt zwischen aktuellem Monat und ganzem Jahr. Das Menü unten ermöglicht das Filtern nach einem beliebigen Monat.\nFilter nach Monat"
+    ID_VIEW_JOURNAL_KONTO   "Der Knopf oben rotiert durch sämtliche Konten. Der untere Teil erlaubt die direkte Einstellung des Filters auf ein Konto.\nFilter nach Konto"
+END
+
+STRINGTABLE 
+BEGIN
+    ID_ANSICHT_FORMULARE    "Der Knopf oben springt direkt zum aktuellen USt.-Voranmeldungs-Formular. Das Menü im untern Teil ermöglicht die Auswahl jedes beliebigen installieren Formulars.\nFormular-Ansicht"
+    ID_EINSTELLUNGEN_DOKU   "Die Benutzerdokumentation zu EC&T auf www.easyct.de.\nOnline-Dokumentation"
+    ID_EINSTELLUNGEN_FAQ    "Die von EC&T-Nutzern am häufigsten gestellten Fragen (FAQ - Frequently Asked Questions).\nHäufig gestellte Fragen"
+    ID_EINSTELLUNGEN_BUGTRACKER 
+                            "System für die Meldung von Fehlern und Anregungen. Erfordert eine eigene Nutzerregistrierung.\nFehler/Anregung melden"
+    ID_EINSTELLUNGEN_EMAIL  "Öffnet den Standard-Mail-Client zum Verfassen einer E-Mail an den Entwickler.\nE-Mail an den Autor"
+    ID_EINSTELLUNGEN_PGP    "Download eines PGP-Schlüssels zum Schreiben verschlüsselter Mails an den Entwickler. Die .asc-Datei kann mit den üblichen Tools (z.B. PGP4Win oder WinPT) in den öffentlichen Schlüsselring importiert werden.\nPGP-Schlüssel holen"
+    ID_EINSTELLUNGEN_KONTAKT 
+                            "Öffnet ein Web-Kontaktformular -- für alle, die kein Mail-Programm unter Windows benutzen.\nKontaktformular"
+    ID_TIPP_DES_TAGES_EMAIL "Eigenen Vorschlag für einen neuen Tipp des Tages in einer E-Mail verfassen.\nTipp vorschlagen"
+END
+
+STRINGTABLE 
+BEGIN
+    ID_EINSTELLUNGEN_SPENDE_BANK 
+                            "Kopiert die IBAN des Spenden-Kontos in Zwischenablage.\nSpende via Banküberweisung"
+    ID_EINSTELLUNGEN_SPENDE_PAYPAL 
+                            "Öffnet die PayPal-Spendenseite im Browser.\nSpende via PayPal"
+    ID_EINSTELLUNGEN_SPENDE_BITCOIN 
+                            "Kopiert eine Bitcoin-Adresse in die Zwischenablage und öffnet den lokalen Bitcoin-Client damit.\nSpende via Bitcoin"
+    ID_EINSTELLUNGEN_SPENDE_FLATTR 
+                            "Empfohlen für Kleinstspenden für die keine Rechnung benötigt wird. (Subscriptions welcome!)\nSpende via Flattr"
+    ID_ZOOMFAKTOR_VERGROESSERN "Vergrößern"
+    ID_ZOOMFAKTOR_VERKLEINERN "Ver&kleinern\tStrg+'-'"
+END
+
+STRINGTABLE 
+BEGIN
+    IDS_EASYCTX_FEHLT       "Die Datei EasyCTX.ocx (zuzständig dafür, dass das Plugin auf die EC&T-Daten zugreifen kann) fehlt oder ist nicht korrekt im System registriert, was im Plugin zu Fehlern wie 'Dialog Fenster kann nicht erzeugt werden' führen kann. Bitte installieren Sie EC&T erneut in das selbe Programmverzeichnis über. Dann sollte wieder alles ok sein."
+    IDS_CAPTION_IMAGE_TIP   "Wichtiger Hinweis"
+END
+
+#endif    // German (Germany) resources
+/////////////////////////////////////////////////////////////////////////////
+
+
+/////////////////////////////////////////////////////////////////////////////
+// English (U.S.) resources
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENU)
+#ifdef _WIN32
+LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
+#pragma code_page(1252)
+#endif //_WIN32
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Dialog
+//
+
+IDD_XFOLDERDIALOG DIALOG  0, 0, 381, 23
+STYLE DS_SETFONT | DS_3DLOOK | DS_CONTROL | WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS
+FONT 8, "MS Sans Serif"
+BEGIN
+    LTEXT           "Folder &name:",IDC_MRU_CAPTION,13,3,43,8,SS_CENTERIMAGE | NOT WS_GROUP
+    COMBOBOX        IDC_MRU_COMBO,58,1,103,130,CBS_DROPDOWN | CBS_AUTOHSCROLL | CBS_DISABLENOSCROLL | WS_VSCROLL | WS_TABSTOP
+    DEFPUSHBUTTON   "OK",IDOK,165,2,40,14
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// DESIGNINFO
+//
+
+#ifdef APSTUDIO_INVOKED
+GUIDELINES DESIGNINFO 
+BEGIN
+    "IDD_XFOLDERDIALOG", DIALOG
+    BEGIN
+        RIGHTMARGIN, 348
+    END
+END
+#endif    // APSTUDIO_INVOKED
+
+#endif    // English (U.S.) resources
+/////////////////////////////////////////////////////////////////////////////
+
+
+
+#ifndef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 3 resource.
+//
+#define _AFX_NO_SPLITTER_RESOURCES
+#define _AFX_NO_OLE_RESOURCES
+#define _AFX_NO_TRACKER_RESOURCES
+#define _AFX_NO_PROPERTY_RESOURCES
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_DEU)
+#ifdef _WIN32
+LANGUAGE 7, 1
+#pragma code_page(1252)
+#endif
+#include "res\EasyCash.rc2"  // non-Microsoft Visual C++ edited resources
+#include "l.deu\afxres.rc"          // Standard components
+#include "l.deu\afxprint.rc"        // printing/print preview resources
+#if !defined(_AFXDLL)
+#include "afxprint.rc"               // printing/print preview resources
+#include "afxribbon.rc"              // MFC ribbon and control bar resources
+#endif
+#endif
+/////////////////////////////////////////////////////////////////////////////
+#endif    // not APSTUDIO_INVOKED
+

@@ -1,0 +1,179 @@
+<?xml version="1.0" encoding="windows-1252" ?><formular name="E/Ü-Rechnung" anzeigename="E/Ü-Rechnung 2008" seiten="3" schriftart="Courier New" schriftgroesse="24" ><felder><feld id="1" typ="Einstellungsdaten" seite="1" horizontal="220" vertikal="178" ausrichtung="linksbuendig" anteil="netto" nachkommaanteil="ohne" ><name>Steuernummer</name><erweiterung>fsteuernummer</erweiterung> 
+
+</feld><feld id="2" typ="Einstellungsdaten" seite="1" horizontal="105" vertikal="99" ausrichtung="linksbuendig" anteil="netto" nachkommaanteil="ohne" ><name>Name</name><erweiterung>name</erweiterung> 
+
+</feld><feld id="100" typ="Einstellungsdaten" seite="1" horizontal="150" vertikal="362" ausrichtung="linksbuendig" anteil="netto" nachkommaanteil="ohne" ><name>Unternehmensart</name><erweiterung>unternehmensart1</erweiterung> 
+
+</feld><feld id="1111" typ="Einnahmen" seite="1" horizontal="1130" vertikal="514" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" ><name>Betriebseinnahmen als umsatzsteuerlicher Kleinunternehmer ohne Umsätze aus §19 Abs. 3 Nr. 1 und Nr. 2</name><erweiterung/> 
+
+</feld><feld id="119" typ="Einnahmen" seite="1" horizontal="611" vertikal="548" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" ><name>Betriebseinnahmen als umsatzsteuerlicher Kleinunternehmer aus Umsätzen gemäß §19 Abs. 3 Nr. 1 und Nr. 2</name><erweiterung/>
+
+</feld><feld id="4" typ="Summe" seite="1" horizontal="921" vertikal="515" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" ><name>Betriebseinnamen als steuerl. Kleinunternehmer gesamt</name><erweiterung>119+1111</erweiterung>
+
+</feld><feld id="1104" typ="Einnahmen" seite="1" horizontal="921" vertikal="595" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" ><name>Betriebseinnahmen aus Land- und Forstwirtschaft nach §24 UStG</name><erweiterung/> 
+
+</feld><feld id="1112" typ="Einnahmen" seite="1" horizontal="921" vertikal="633" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" ><name>Umsatzsteuerpflichtige Betriebseinnahmen</name><name>Umsatzsteuerpflichtige Betriebseinnahmen</name><name>Umsatzsteuerpflichtige Betriebseinnahmen</name><erweiterung/> 
+
+</feld><feld id="1103" typ="Einnahmen" seite="1" horizontal="921" vertikal="667" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" ><name>Umsatzsteuerfreie, nicht umsatzsteuerbare Betriebseinnahmen sowie Betriebseinnahmen, für die der Leistungsempfänger die Umsatzsteuer nach § 13 b UStG schuldet</name><erweiterung/> 
+
+</feld><feld id="1140" typ="Einnahmen" seite="1" horizontal="1130" vertikal="705" ausrichtung="rechtsbuendig" anteil="brutto" nachkommaanteil="mit" ><name>Vereinnahmte Umsatzsteuer sowie Umsatzsteuer auf unentgeltliche Wertabgaben</name><erweiterung/> 
+
+</feld><feld id="1141" typ="Einnahmen" seite="1" horizontal="921" vertikal="747" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" ><name>Vom Finanzamt erstattete und ggf. verrechnete Umsatzsteuer</name><erweiterung/> 
+
+</feld><feld id="1102" typ="Einnahmen" seite="1" horizontal="921" vertikal="784" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" ><name>Veräußerung oder Entnahme von Anlagevermögen</name><erweiterung/> 
+
+</feld><feld id="1106" typ="Einnahmen" seite="1" horizontal="921" vertikal="819" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" ><name>Private KFZ-Nutzung</name><erweiterung/> 
+
+</feld><feld id="1108" typ="Einnahmen" seite="1" horizontal="921" vertikal="855" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" ><name>Sonstige Sach-, Nutzungs- und Leistungsentnahmen</name><erweiterung>Sonstige Sach-, Nutzungs- und Leistungsentnahmen (z.B. private Telefonnutzung)</erweiterung> 
+
+</feld><feld id="2187" typ="Ausgaben" seite="3" horizontal="610" vertikal="577" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" ><name>Bildung von Rücklagen nach § 6c i.V.m. § 6b EStG, R 35 EStR</name><erweiterung/> 
+
+</feld><feld id="2120" typ="Einnahmen" seite="3" horizontal="921" vertikal="577" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" ><name>Auflösung von Rücklagen nach § 6c i.V.m. § 6b EStG, R 35 EStR</name><erweiterung/> 
+
+</feld><feld id="2188" typ="Ausgaben" seite="3" horizontal="1130" vertikal="577" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" ><name>Bildung von Ansparabschreibungen nach § 7g Abs. 3 - 6 EStG</name><erweiterung/> 
+
+</feld><feld id="2121" typ="Einnahmen" seite="3" horizontal="921" vertikal="622" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" ><name>Auflösung von Ansparabschreibungen nach § 7g Abs. 3 - 6 EStG</name><erweiterung/> 
+
+</feld><feld id="2189" typ="Ausgaben" seite="3" horizontal="1130" vertikal="622" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" ><name>Bildung von Ansparabschreibungen nach § 7g Abs. 7 und 8 EStG</name><erweiterung/> 
+
+</feld><feld id="2122" typ="Einnahmen" seite="3" horizontal="921" vertikal="664" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" ><name>Auflösung von Ansparabschreibungen nach § 7g Abs. 7 und 8 EStG</name><erweiterung/> 
+
+</feld><feld id="2123" typ="Einnahmen" seite="3" horizontal="921" vertikal="705" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" ><name>Auflösung des Gewinnzuschlags nach § 6c i.V.m. § 6b Abs. 7 und 10, §7 Abs. 5 und 6 EStG</name><erweiterung/> 
+
+</feld><feld id="2191" typ="Ausgaben" seite="3" horizontal="610" vertikal="750" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" ><name>Bildung von Ausgleichsposte nach § 4g EStG</name><erweiterung/>
+
+</feld><feld id="2125" typ="Einnahmen" seite="3" horizontal="921" vertikal="750" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" ><name>Auslösung von Ausgleichsposte nach § 4g EStG</name><erweiterung/>
+
+</feld><feld id="2190" typ="Summe" seite="3" horizontal="610" vertikal="792" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" ><name>Summe Bildung von Rücklagen</name><erweiterung>2187+2191</erweiterung> 
+
+</feld><feld id="2124" typ="Summe" seite="3" horizontal="921" vertikal="792" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" ><name>Summe Auflösung von Rücklagen</name><erweiterung>2120+2121+2122+2123+2125</erweiterung> 
+
+</feld><feld id="20" typ="Summe" seite="1" horizontal="921" vertikal="898" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" ><name>Übertrag von Zeile 54</name><erweiterung>2124</erweiterung> 
+
+</feld><feld id="7" typ="Summe" seite="1" horizontal="921" vertikal="705" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" ><name>Vereinnahmte Umsatzsteuer sowie Umsatzsteuer auf unentgeltliche Wertabgaben (Summe)</name><erweiterung>mwst(e:1111)+mwst(e:1104)+mwst(e:1112)+mwst(e:1103)+mwst(e:1141)+mwst(e:1102)+mwst(e:1106)+mwst(e:1108)+brutto(e:1140)+brutto(e:8)</erweiterung> 
+
+</feld><feld id="1159" typ="Summe" seite="1" horizontal="921" vertikal="940" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" ><name>Summe Betriebseinnahmen</name><erweiterung>1111+119+1104+1112+1103+1141+1102+1106+1108+2124+7</erweiterung> 
+
+</feld><feld id="30" typ="Einstellungsdaten" seite="2" horizontal="198" vertikal="34" ausrichtung="linksbuendig" anteil="netto" nachkommaanteil="ohne" ><name>Steuernummer1</name><erweiterung>fsteuernummer</erweiterung> 
+
+</feld><feld id="31" typ="Einstellungsdaten" seite="3" horizontal="218" vertikal="34" ausrichtung="linksbuendig" anteil="netto" nachkommaanteil="ohne" ><name>Steuernummer2</name><erweiterung>fsteuernummer</erweiterung> 
+
+</feld><feld id="1190" typ="Ausgaben" seite="1" horizontal="921" vertikal="1028" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" ><name>Betriebsausgabenpauschale</name><erweiterung/> 
+
+</feld><feld id="1191" typ="Ausgaben" seite="1" horizontal="921" vertikal="1063" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" ><name>Sachliche Bebauungskostenpauschale/Betriebsausgabenpauschale für Land- und Forstwirte</name><erweiterung/> 
+
+</feld><feld id="1100" typ="Ausgaben" seite="1" horizontal="921" vertikal="1099" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" ><name>Waren, Rohstoffe und Hilfsstoffe einschl. der Nebenkosten</name><erweiterung/> 
+
+</feld><feld id="1110" typ="Ausgaben" seite="1" horizontal="921" vertikal="1135" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" ><name>Bezogene Leistungen</name><erweiterung/> 
+
+</feld><feld id="1120" typ="Ausgaben" seite="1" horizontal="921" vertikal="1170" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" ><name>Ausgaben für eigenes Personal</name><erweiterung/> 
+
+</feld><feld id="1136" typ="Ausgaben" seite="1" horizontal="921" vertikal="1228" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" ><name>AfA auf unbewegliche Wirtschaftsgüter</name><erweiterung/> 
+
+</feld><feld id="1131" typ="Ausgaben" seite="1" horizontal="921" vertikal="1266" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" ><name>AfA auf immaterielle Wirtschaftsgüter</name><erweiterung/> 
+
+</feld><feld id="1130" typ="Ausgaben" seite="1" horizontal="921" vertikal="1303" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" ><name>AfA auf bewegliche Wirtschaftsgüter</name><erweiterung/> 
+
+</feld><feld id="1134" typ="Ausgaben" seite="2" horizontal="900" vertikal="122" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" ><name>Sonderabschreibungen nach § 7g Abs. 1 und 2 EStG</name><erweiterung/> 
+
+</feld><feld id="1138" typ="Ausgaben" seite="2" horizontal="900" vertikal="154" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" ><name>Herabsetzungsbeträge nach §7g Abs. 2 EStG</name><erweiterung/>
+
+</feld><feld id="1132" typ="Ausgaben" seite="2" horizontal="900" vertikal="190" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" ><name>Aufwendungen für geringwertige Wirtschaftsgüter</name><erweiterung/> 
+
+</feld><feld id="1137" typ="Ausgaben" seite="2" horizontal="900" vertikal="222" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" ><name>Auflösung Sammelposten nach §6 Abs. 2a EStG</name>
+
+</feld><feld id="1135" typ="Ausgaben" seite="2" horizontal="900" vertikal="256" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" ><name>Restbuchwert der im Kalenderjahr/Wirtschaftsjahr ausgeschiedenen Anlagegüter</name><erweiterung/> 
+
+</feld><feld id="140" typ="Ausgaben" seite="2" horizontal="595" vertikal="322" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" ><name>Laufende und feste Kraftfahrzeugkosten (ohne AfA und Zinsen)</name><erweiterung/> 
+
+</feld><feld id="142" typ="Ausgaben" seite="2" horizontal="595" vertikal="355" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" ><name>Enthaltene Kosten aus Zeilen 21, 25 und 32 für Wege zwischen Wohnung und Betriebsstätte</name><erweiterung>Achtung: auf dieses Konto nur negative Beträge buchen!</erweiterung> 
+
+</feld><feld id="1143" typ="Summe" seite="2" horizontal="595" vertikal="394" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" ><name>Verbleibender Betrag KFZ-Kosten</name><erweiterung>140-142</erweiterung> 
+
+</feld><feld id="1172" typ="Ausgaben" seite="2" horizontal="900" vertikal="488" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" ><name>Abziehbare Aufwendungen für ein häusliches Arbeitszimmer</name><erweiterung/> 
+
+</feld><feld id="1150" typ="Ausgaben" seite="2" horizontal="900" vertikal="522" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" ><name>Miete/Pacht für Geschäftsräume und betrieblich genutzte Grundstücke</name><erweiterung/> 
+
+</feld><feld id="1151" typ="Ausgaben" seite="2" horizontal="900" vertikal="557" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" ><name>Aufwendungen für betrieblich genutzte Grundstücke</name><erweiterung/> 
+
+</feld><feld id="34" typ="Summe" seite="1" horizontal="921" vertikal="1346" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" ><name>Übertrag (Summe Zeilen 14 - 21)</name><erweiterung>1190+1191+1100+1110+1120+1136+1131+1130</erweiterung> 
+
+</feld><feld id="35" typ="Summe" seite="2" horizontal="900" vertikal="79" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" ><name>Übertrag aus Zeile 34</name><erweiterung>34</erweiterung> 
+
+</feld><feld id="1178" typ="Ausgaben" seite="2" horizontal="595" vertikal="659" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" ><name>Finanzierung von Anschaffungs-/Herstellungskosten von Wirtschaftsgütern des Anlagevermögens</name><erweiterung/> 
+
+</feld><feld id="1167" typ="Ausgaben" seite="2" horizontal="355" vertikal="715" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" ><name>Nicht abziehbare übrige Schuldzinsen</name><erweiterung/> 
+
+</feld><feld id="1179" typ="Ausgaben" seite="2" horizontal="595" vertikal="715" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" ><name>Abziehbare übrige Schuldzinsen</name><erweiterung/> 
+
+</feld><feld id="1164" typ="Ausgaben" seite="2" horizontal="355" vertikal="808" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" ><name>Nicht abziehbare Aufwendungen für Geschenke</name><erweiterung/> 
+
+</feld><feld id="1174" typ="Ausgaben" seite="2" horizontal="595" vertikal="808" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" ><name>Abziehbare Aufwendungen für Geschenke</name><erweiterung/> 
+
+</feld><feld id="1165" typ="Ausgaben" seite="2" horizontal="355" vertikal="861" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" ><name>Nicht abziehbare Aufwendungen für Bewirtung</name><erweiterung/> 
+
+</feld><feld id="1175" typ="Ausgaben" seite="2" horizontal="595" vertikal="861" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" ><name>Abziehbare Aufwendungen für Bewirtung</name><erweiterung/> 
+
+</feld><feld id="1173" typ="Ausgaben" seite="2" horizontal="595" vertikal="914" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" ><name>Reisekosten, Aufwendungen für doppelte Haushaltsführung</name><erweiterung/> 
+
+</feld><feld id="1168" typ="Ausgaben" seite="2" horizontal="355" vertikal="968" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" ><name>Sonstige nicht abziehbare Betriebsausgaben</name><erweiterung/> 
+
+</feld><feld id="1177" typ="Ausgaben" seite="2" horizontal="595" vertikal="968" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" ><name>Sonstige abziehbare Betriebsausgaben</name><erweiterung/> 
+
+</feld><feld id="44" typ="Summe" seite="2" horizontal="595" vertikal="1005" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" ><name>Summe Zeilen 32 - 37</name><erweiterung>1178+1179+1174+1175+1173+1177</erweiterung>
+
+</feld><feld id="43" typ="Summe" seite="2" horizontal="900" vertikal="1207" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" ><name>Gezahlte Vorsteuerbeträge (Summe)</name><erweiterung>mwst(a:1190)+mwst(a:1191)+mwst(a:1100)+mwst(a:1110)+mwst(a:1120)+mwst(a:1136)+mwst(a:1131)+mwst(a:1130)+mwst(a:1134)+mwst(a:1132)+mwst(a:1135)+mwst(a:1137)+mwst(a:1138)+mwst(a:140)+mwst(a:142)+mwst(a:1176)+mwst(a:1172)+mwst(a:1150)+mwst(a:1151)+mwst(a:1178)+mwst(a:1167)+mwst(a:1179)+mwst(a:1164)+mwst(a:1174)+mwst(a:1165)+mwst(a:1175)+mwst(a:1173)+mwst(a:1168)+mwst(a:1177)+mwst(a:1192)+mwst(a:1193)+mwst(a:1194)+mwst(a:1183)+brutto(a:1185)+brutto(a:45)+brutto(a:48)</erweiterung>
+
+</feld><feld id="1192" typ="Ausgaben" seite="2" horizontal="900" vertikal="1065" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" ><name>Porto, Telefon, Büromaterial</name><erweiterung/> 
+
+</feld><feld id="1193" typ="Ausgaben" seite="2" horizontal="900" vertikal="1101" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" ><name>Fortbildung, Fachliteratur</name><erweiterung/> 
+
+</feld><feld id="1194" typ="Ausgaben" seite="2" horizontal="900" vertikal="1136" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" ><name>Rechts- und Steuerberatung, Buchführung</name><erweiterung/> 
+
+</feld><feld id="1183" typ="Ausgaben" seite="2" horizontal="900" vertikal="1172" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" ><name>Übrige Betriebsausgaben</name><erweiterung/> 
+
+</feld><feld id="1185" typ="Ausgaben" seite="2" horizontal="1102" vertikal="1207" ausrichtung="rechtsbuendig" anteil="brutto" nachkommaanteil="mit" ><name>Gezahlte Vorsteuerbeträge</name><erweiterung/> 
+
+</feld><feld id="1186" typ="Ausgaben" seite="2" horizontal="900" vertikal="1244" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" ><name>An das Finanzamt gezahlte und ggf. verrechnete Umsatzsteuer</name><erweiterung/> 
+
+</feld><feld id="52" typ="Summe" seite="2" horizontal="900" vertikal="1286" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" ><name>Bildung von Rücklagen und/oder Ansparabschreibungen</name><erweiterung>2190</erweiterung> 
+
+</feld><feld id="1199" typ="Summe" seite="2" horizontal="900" vertikal="1331" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" ><name>Summe Betriebsausgaben</name><erweiterung>35+44+1134+1138+1132+1137+1135+1143+43+1172+1150+1151+1192+1193+1194+1183+1186+52</erweiterung> 
+
+</feld><feld id="55" typ="Summe" seite="3" horizontal="921" vertikal="104" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" ><name>Summe der Betriebseinnahmen (Übertrag aus Zeile 13)</name><erweiterung>1159</erweiterung> 
+
+</feld><feld id="56" typ="Summe" seite="3" horizontal="921" vertikal="143" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" ><name>abzüglich Summe der Betriebsausgaben (Übertrag aus Zeile 53)</name><erweiterung>1199</erweiterung> 
+
+</feld><feld id="1188" typ="Einnahmen" seite="3" horizontal="921" vertikal="189" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" ><name>Hinzurechnung der Investitionsabzugsbeträge nach §7g Abs. 2 EStG</name><erweiterung/>
+
+</feld><feld id="1176" typ="Ausgaben" seite="3" horizontal="585" vertikal="236" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" ><name>Abziehbare Aufwendungen für Wege zwischen Wohnung und Betriebsstätte</name><erweiterung/> 
+
+</feld><feld id="1184" typ="Ausgaben" seite="3" horizontal="585" vertikal="274" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" ><name>erwerbsbedingte Kinderbetreuungskosten</name><erweiterung/>
+
+</feld><feld id="1187" typ="Ausgaben" seite="3" horizontal="585" vertikal="317" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" ><name>Investitionsabzugsbeträge nach §7g EStG</name><erweiterung/>
+
+</feld><feld id="1119" typ="Summe" seite="3" horizontal="921" vertikal="402" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" ><name>Gewinn/Verlust</name><erweiterung>55-56-1176-1184-1187+1188</erweiterung> 
+
+</feld><feld id="3" typ="Einstellungsdaten" seite="1" horizontal="105" vertikal="140" ausrichtung="linksbuendig" anteil="netto" nachkommaanteil="ohne" ><name>vorname</name><erweiterung>vorname</erweiterung>
+
+</feld><feld id="143" typ="Summe" seite="2" horizontal="900" vertikal="394" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" ><name>Verbleibender Betrag KFZ-Kosten nochmal</name><erweiterung>140+142</erweiterung>
+
+</feld><feld id="38" typ="Summe" seite="2" horizontal="900" vertikal="1006" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" ><name>Summe Zeilen 32 - 37 nochmal</name><erweiterung>1178+1179+1174+1175+1173+1177</erweiterung>
+
+</feld><feld id="45" typ="Ausgaben" seite="2" horizontal="1105" vertikal="1266" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" ><name>VST berechnete /gezahlte oder Altteilsteuer</name><erweiterung/>
+
+</feld><feld id="8" typ="Einnahmen" seite="1" horizontal="1131" vertikal="735" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" ><name>UST §13b USTG Lieferung Ausland</name><erweiterung/>
+
+</feld><feld id="48" typ="Ausgaben" seite="2" horizontal="1104" vertikal="1238" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" ><name>VST §13b USTG Lieferung Ausland</name><erweiterung/>
+
+</feld><feld id="47" typ="Ausgaben" seite="1" horizontal="1152" vertikal="1098" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" ><name>Warenlieferung Ausland §13b USTG 19% (KZ89)</name><erweiterung/>
+
+</feld><feld id="198" typ="Summe" seite="3" horizontal="588" vertikal="359" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" ><name>Summe Entfernungspauschale + Betreuungskosten + Inverstitionsabzugsbeträge</name><erweiterung>1176+1184+1187</erweiterung>
+
+</feld><feld id="98" typ="Summe" seite="3" horizontal="921" vertikal="358" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" ><name>nochmal Summe 198</name><erweiterung>1176+1184+1187</erweiterung></feld>
+
+</felder><seiten><seite nr="1" >EUeR2008-1.jpg</seite><seite nr="2" >EUeR2008-2.jpg</seite><seite nr="3" >EUeR2008-3.jpg</seite> 
+
+</seiten>
+
+</formular>

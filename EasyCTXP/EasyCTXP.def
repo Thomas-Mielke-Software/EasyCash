@@ -1,0 +1,6 @@
+; EasyCTXP.def : Declares the module parameters for the DLL.
+
+LIBRARY      "EasyCTXP"
+
+EXPORTS
+    ; Explicit exports can go here

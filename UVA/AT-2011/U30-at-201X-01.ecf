@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="windows-1252" ?>
+<formular name="Umsatzsteuer" anzeigename="Umsatzsteuer-Voranmeldung Januar (AT)" voranmeldungszeitraum="1" seiten="3" schriftart="Courier New" schriftgroesse="24" ><felder>
+
+<feld id="4001" typ="Einstellungsdaten" seite="1" horizontal="100" vertikal="75" ausrichtung="linksbuendig" anteil="netto" nachkommaanteil="ohne" nullwertdarstellung="nein" ><name>Finanzamt Name</name><erweiterung>fname</erweiterung></feld>
+<feld id="4002" typ="Einstellungsdaten" seite="1" horizontal="100" vertikal="103" ausrichtung="linksbuendig" anteil="netto" nachkommaanteil="ohne" nullwertdarstellung="nein" ><name>fname</name><erweiterung>fstrasse</erweiterung></feld>
+<feld id="4003" typ="Einstellungsdaten" seite="1" horizontal="100" vertikal="130" ausrichtung="linksbuendig" anteil="netto" nachkommaanteil="ohne" nullwertdarstellung="nein" ><name>Finanzamt-PLZl</name><erweiterung>fplz</erweiterung></feld>
+<feld id="4004" typ="Einstellungsdaten" seite="1" horizontal="188" vertikal="130" ausrichtung="linksbuendig" anteil="netto" nachkommaanteil="ohne" nullwertdarstellung="nein" ><name>Anschrift Ort</name><erweiterung>fort</erweiterung></feld>
+<feld id="4005" typ="Einstellungsdaten" seite="1" horizontal="646" vertikal="130" ausrichtung="linksbuendig" anteil="netto" nachkommaanteil="ohne" nullwertdarstellung="nein" ><name>Steuernummer</name><erweiterung>fsteuernummer</erweiterung></feld>
+<feld id="4006" typ="Einstellungsdaten" seite="1" horizontal="879" vertikal="130" ausrichtung="linksbuendig" anteil="netto" nachkommaanteil="ohne" nullwertdarstellung="nein" ><name>Finanzamt Team</name><erweiterung>fname2</erweiterung></feld>
+<feld id="4007" typ="Freitext" seite="1" horizontal="480" vertikal="277" ausrichtung="linksbuendig" anteil="netto" nachkommaanteil="ohne" nullwertdarstellung="nein" ><name>Monat</name><erweiterung>Januar</erweiterung></feld>
+<feld id="4008" typ="Freitext" seite="1" horizontal="675" vertikal="277" ausrichtung="linksbuendig" anteil="netto" nachkommaanteil="ohne" nullwertdarstellung="nein" ><name>Quartal</name><erweiterung></erweiterung></feld>
+<feld id="4009" typ="Freitext" seite="1" horizontal="885" vertikal="278" ausrichtung="linksbuendig" anteil="netto" nachkommaanteil="ohne" nullwertdarstellung="ja" ><name>Jahr</name><erweiterung>$J</erweiterung></feld>
+<feld id="4010" typ="Einstellungsdaten" seite="1" horizontal="100" vertikal="330" ausrichtung="linksbuendig" anteil="netto" nachkommaanteil="ohne" nullwertdarstellung="ja" ><name>name</name><erweiterung>name</erweiterung></feld>
+<feld id="4011" typ="Einstellungsdaten" seite="1" horizontal="350" vertikal="330" ausrichtung="linksbuendig" anteil="netto" nachkommaanteil="ohne" nullwertdarstellung="ja" ><name>Vorname</name><erweiterung>vorname</erweiterung></feld>
+<feld id="4012" typ="Einstellungsdaten" seite="1" horizontal="100" vertikal="355" ausrichtung="linksbuendig" anteil="netto" nachkommaanteil="ohne" nullwertdarstellung="nein" ><name>PLZ</name><erweiterung>plz</erweiterung></feld>
+<feld id="4013" typ="Einstellungsdaten" seite="1" horizontal="177" vertikal="355" ausrichtung="linksbuendig" anteil="netto" nachkommaanteil="ohne" nullwertdarstellung="nein" ><name>Ort</name><erweiterung>ort</erweiterung></feld>
+<feld id="4014" typ="Einstellungsdaten" seite="1" horizontal="500" vertikal="355" ausrichtung="linksbuendig" anteil="netto" nachkommaanteil="ohne" nullwertdarstellung="nein" ><name>Strasse</name><erweiterung>strasse</erweiterung></feld>
+<feld id="1000" typ="Summe" seite="1" horizontal="945" vertikal="455" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" nullwertdarstellung="ja" ><name>Lieferungen und sonstige Leistungen</name><erweiterung>netto(e)</erweiterung></feld>
+<feld id="2000" typ="Summe" seite="1" horizontal="945" vertikal="580" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" nullwertdarstellung="nein" ><name>Summe</name><erweiterung>1000</erweiterung></feld>
+<feld id="1020" typ="Summe" seite="1" horizontal="945" vertikal="898" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" nullwertdarstellung="nein" ><name>steuerfreie Umsätze ohne Vorsteuerabzug</name><erweiterung>-netto0000(e)</erweiterung></feld>
+<feld id="100" typ="Summe" seite="1" horizontal="945" vertikal="936" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" nullwertdarstellung="ja" ><name>Gesamtbetrag</name><erweiterung>1000+1020</erweiterung></feld>
+<feld id="1022" typ="Summe" seite="1" horizontal="730" vertikal="1000" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" nullwertdarstellung="ja" ><name>Steuerpflichtige Umsätze zum Steuersatz von 20%</name><erweiterung>netto20000(e)</erweiterung></feld>
+<feld id="2022" typ="Summe" seite="1" horizontal="945" vertikal="1000" ausrichtung="rechtsbuendig" anteil="mwst" nachkommaanteil="mit" nullwertdarstellung="ja" ><name>Mwst zum Steuersatz von 20%</name><erweiterung>1022*20/100</erweiterung></feld>
+<feld id="1029" typ="Summe" seite="1" horizontal="730" vertikal="1038" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" nullwertdarstellung="nein" ><name>Steuerpflichtige Umsätze zum Steuersatz von 10%</name><erweiterung>netto10000(e)</erweiterung></feld>
+<feld id="2029" typ="Summe" seite="1" horizontal="945" vertikal="1038" ausrichtung="rechtsbuendig" anteil="mwst" nachkommaanteil="mit" nullwertdarstellung="nein" ><name>Mwst zum Steuersatz von 10%</name><erweiterung>1029*10/100</erweiterung></feld>
+<feld id="1025" typ="Summe" seite="1" horizontal="730" vertikal="1078" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" nullwertdarstellung="nein" ><name>Steuerpflichtige Umsätze zum Steuersatz von 12%</name><erweiterung>mwst12000(e)</erweiterung></feld>
+<feld id="2025" typ="Summe" seite="1" horizontal="945" vertikal="1078" ausrichtung="rechtsbuendig" anteil="mwst" nachkommaanteil="mit" nullwertdarstellung="nein" ><name>Mwst</name><erweiterung>1025*12/100</erweiterung></feld>
+<feld id="1101" typ="Summe" seite="1" horizontal="945" vertikal="1322" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" nullwertdarstellung="nein" ><name>Zwischensumme Umsatzsteuer</name><erweiterung>2022+2029+2025</erweiterung></feld>
+
+<feld id="2101" typ="Summe" seite="2" horizontal="945" vertikal="60" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" nullwertdarstellung="nein" ><name>Übertrag</name><erweiterung>1101</erweiterung></feld>
+<feld id="1070" typ="Ausgaben" seite="2" horizontal="745" vertikal="244" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" nullwertdarstellung="nein" ><name>Innergemeinschaftliche Erwerbe</name><erweiterung/></feld>
+<feld id="1072" typ="Summe" seite="2" horizontal="745" vertikal="360" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" nullwertdarstellung="nein" ><name>Innergemeinschaftliche Erwerbe 20%</name><erweiterung>1070</erweiterung></feld>
+<feld id="2072" typ="Summe" seite="2" horizontal="945" vertikal="360" ausrichtung="rechtsbuendig" anteil="brutto" nachkommaanteil="mit" nullwertdarstellung="nein" ><name>Innergemeinschaftliche Erwerbe Mwst 20%</name><erweiterung>1072*20/100</erweiterung></feld>
+<feld id="1060" typ="Summe" seite="2" horizontal="945" vertikal="575" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" nullwertdarstellung="nein" ><name>060</name><erweiterung>-mwst(a)</erweiterung></feld>
+<feld id="1065" typ="Summe" seite="2" horizontal="945" vertikal="696" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" nullwertdarstellung="nein" ><name>Vorsteuier aus dem innergemeinschaftlichen Erwerb</name><erweiterung>-2072</erweiterung></feld>
+<feld id="2102" typ="Summe" seite="2" horizontal="945" vertikal="1056" ausrichtung="rechtsbuendig" anteil="brutto" nachkommaanteil="mit" nullwertdarstellung="nein" ><name>Gesamt Vorsteuer</name><erweiterung>1060-2072-1065</erweiterung></feld>
+<feld id="1095" typ="Summe" seite="2" horizontal="945" vertikal="1219" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" nullwertdarstellung="nein" ><name>Zahllast_Gutschrift</name><erweiterung>2101+2102</erweiterung></feld>
+ 
+; Prototyp-Hinweis auf leere Seite schreiben
+<feld id="9990" typ="Freitext" seite="3" horizontal="100" vertikal="20" ausrichtung="linksbuendig" anteil="netto" nachkommaanteil="ohne" nullwertdarstellung="nein" ><name>Hinweis1</name><erweiterung>Achtung: Dies ist eine erste experimentelle Version des</erweiterung></feld>
+<feld id="9991" typ="Freitext" seite="3" horizontal="100" vertikal="60" ausrichtung="linksbuendig" anteil="netto" nachkommaanteil="ohne" ><name>Hinweis2</name><erweiterung>österreichischen U30 Formulars, in der viele der spezielleren</erweiterung></feld>
+<feld id="9992" typ="Freitext" seite="3" horizontal="100" vertikal="100" ausrichtung="linksbuendig" anteil="netto" nachkommaanteil="ohne" nullwertdarstellung="nein" ><name>Hinweis3</name><erweiterung>Felder noch nicht berücksichtigt sind. Verbesserungsvorschläge</erweiterung></feld>
+<feld id="9993" typ="Freitext" seite="3" horizontal="100" vertikal="140" ausrichtung="linksbuendig" anteil="netto" nachkommaanteil="ohne" ><name>Hinweis4</name><erweiterung>können im EasyCash&amp;Tax Forum diskutiert werden:</erweiterung></feld>
+<feld id="9994" typ="Freitext" seite="3" horizontal="100" vertikal="180" ausrichtung="linksbuendig" anteil="netto" nachkommaanteil="ohne" nullwertdarstellung="nein" ><name>Hinweis5</name><erweiterung>www.easyct.de -&gt; Forum -&gt; Wie buche ich ...? (Österr.) oder</erweiterung></feld>
+<feld id="9995" typ="Freitext" seite="3" horizontal="100" vertikal="220" ausrichtung="linksbuendig" anteil="netto" nachkommaanteil="ohne" ><name>Hinweis6</name><erweiterung>http://www.easyct.de/fusion_forum/viewthread.php?forum_id=18&amp;thread_id=1563</erweiterung></feld>
+
+; (Formular mit 96 dpi 1031 x 1459 Pixel mit 24bit Farbitefe)
+</felder><seiten><seite nr="1" >U30-AT-201X-1.png</seite><seite nr="2" >U30-AT-201X-2.png</seite>
+</seiten>
+</formular>
