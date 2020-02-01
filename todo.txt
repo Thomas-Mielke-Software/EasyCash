@@ -592,9 +592,6 @@ BUGTRACKER-EINTRÄGE SIND HIER NICHT NOCH EINMAL AUFGEFÜHRT
 =============================================================
 
 
->>>>>>>>>>>>>> ELSTER-PLUGIN -- Finanzamtssuche-Knopf fixen!!!!! <<<<<<<<<<<<<<<<<
-
-
 1. Splittbuchungen:
 Bei unseren Buchungen kommt es immer wieder vor, dass mit einer Abrechnung/Kontobuchung mehrere Rechnungen gemeinsam bezahlt werden oder eingenommene Teilnehmerbeiträge direkt mit Auslagenabrechnungen verrechnet und die Differenz ausbezahlt wird.
 Aktuell müssen wir solche Buchungen händisch mit einzelnen Buchungsnummern versehen und einzeln als Einnahmen und Ausgaben verbuchen.
