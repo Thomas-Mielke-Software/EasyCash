@@ -312,9 +312,24 @@ BOOL CEasyCashApp::InitInstance()
 			SetRegistryKey("Thomas Mielke Softwareentwicklung");
 	}	
 	
-	LoadStdProfileSettings(10);  // Load standard INI file options (including MRU)
+	LoadStdProfileSettings(20);  // Load standard INI file options (including MRU)
+	{	// MRU file list nur mit im Datenverzeichnis befindlichen Dateien füllen
+		CString Datenverzeichnis = GetProfileString("Allgemein", "Datenverzeichnis");
+		if (!Datenverzeichnis.IsEmpty())
+		{
+			int i;
+			for (i = 0; i < m_pRecentFileList->GetSize() && !m_pRecentFileList->m_arrNames[i].IsEmpty(); i++)
+			{
+				if (m_pRecentFileList->m_arrNames[i].Left(Datenverzeichnis.GetLength() + 1) != Datenverzeichnis + "\\"
+					|| m_pRecentFileList->m_arrNames[i].Find('\\', Datenverzeichnis.GetLength() + 1) > 0)
+				{
+					m_pRecentFileList->Remove(i--);
+				}
+			}
+		}	
+	}
 	SetRegistryBase (_T("Settings"));
-
+	
 	// Initialize all Managers for usage. They are automatically constructed
 	// if not yet present
 	InitContextMenuManager();

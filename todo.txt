@@ -583,6 +583,8 @@ Bugfixes:
 - Bei Bildschirm- oder Auflösungswechsel konnte der Dauerbuchungs-Dialog außerhalb des sichtbaren Bereichs geöffnet werden und war deshalb unzugänglich.
 - Machte man während einer Formularanzeige einen Doppelklick darin, öffnet sich die Eingabemaske für die Buchungsänderung des zuvor angezeiten Journals. 
 
+v2.31
+- Alle Dateien, die nicht im offiziellen Datenverzeichnis liegen, werden nun aus der "zuletzt geöffnete Dateien"-Liste herausgefiltert, um Verwechselungen zu vermeiden.
 
 
 =============================================================
