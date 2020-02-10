@@ -294,12 +294,15 @@ void CEasyCashView::OnInitialUpdate()
 	{
 		CString Mandant0Existiert = theApp.GetProfileString("Mandanten", "Mandant00Datenverzeichnis", "");
 		if (Mandant0Existiert.IsEmpty())
-			AfxMessageBox("EasyCash wurde frisch installiert. Bitte geben Sie zunächst Ihre \
-Daten für den Formulardruck ein (zumindest die Steuernummer, damit diese Meldung nicht mehr erscheint)!", MB_ICONEXCLAMATION);
+			AfxMessageBox("EasyCash wurde frisch installiert oder die Daten wurden aus dem Datenverzeichnis entfernt. Bitte geben Sie zunächst Ihre \
+Daten für den Formulardruck ein (zumindest die Steuernummer, damit diese Meldung nicht mehr erscheint). \
+Für den Fall, dass die Daten verschoben wurden, ändern Sie bitte das Datenverzeichnis entsprechend \
+(im Applikationsmenü, der runde Knopf oben links, vorletzter Punkt im Menü: 'Wähle neues Datenverzeichnis aus')", MB_ICONEXCLAMATION);
 		else
-			AfxMessageBox("Das Datenverzeichnis für den Mandanten wurde neu angelegt. Bitte geben Sie zunächst seine \
-Daten für den Formulardruck ein (zumindest die Steuernummer, damit diese Meldung nicht mehr erscheint)!", MB_ICONEXCLAMATION);
-
+			AfxMessageBox("Das Datenverzeichnis für den Mandanten wurde neu angelegt oder die Daten wurden daraus entfernt. Bitte geben Sie zunächst seine \
+Daten für den Formulardruck ein (zumindest die Steuernummer, damit diese Meldung nicht mehr erscheint). \
+Für den Fall, dass die Daten verschoben wurden, ändern Sie bitte das Datenverzeichnis entsprechend \
+(im Applikationsmenü, der runde Knopf oben links, vorletzter Punkt im Menü: 'Wähle neues Datenverzeichnis aus')", MB_ICONEXCLAMATION);
 		OnViewOptions();
 	}
 
