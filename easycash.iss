@@ -3,7 +3,7 @@
 
 [Setup]
 AppName=EasyCash&Tax
-AppVerName=EasyCash&Tax 2.30a (Testversion mit gefilteter "zuletzt geöffnete Dateien"-Liste)
+AppVerName=EasyCash&Tax 2.31
 DiskSpanning=no
 AppPublisher=tm
 AppPublisherURL=http://www.easyct.de
