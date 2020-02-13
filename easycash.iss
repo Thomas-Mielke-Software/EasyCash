@@ -92,7 +92,8 @@ Source: D:\Work\EasyCash\UVA\D-2020\uva-d-2020-q4.ecf; DestDir: {app}; Flags: ig
 Source: D:\Work\EasyCash\EUeR\2019\EUeR-d-2019.ecf; DestDir: {app}; Flags: ignoreversion; Components: BRDFormular
 Source: D:\Work\EasyCash\EUeR\2019\EUeR-d-2019-1.png; DestDir: {app}; Flags: ignoreversion; Components: BRDFormular
 Source: D:\Work\EasyCash\EUeR\2019\EUeR-d-2019-2.png; DestDir: {app}; Flags: ignoreversion; Components: BRDFormular
-Source: D:\Work\EasyCash\EUeR\2019\EUeR-d-2019-3.png; DestDir: {app}; Flags: ignoreversion; Components: BRDFormular
+Source: D:\Work\EasyCash\EUeR\2019\EUeR-d-2019-3.png; DestDir: {app}; Flags: ignoreversion; Components: BRDFormular  
+Source: D:\Work\EasyCash\EUeR\2019\EUeR-d-2019-4.png; DestDir: {app}; Flags: ignoreversion; Components: BRDFormular
 Source: D:\Work\EasyCash\UST\AT-2019\U1-at-2019.ecf; DestDir: {app}; Flags: ignoreversion; Components: ATFormular
 Source: D:\Work\EasyCash\UST\AT-2019\U1-at-2019-1.png; DestDir: {app}; Flags: ignoreversion; Components: ATFormular
 Source: D:\Work\EasyCash\UST\AT-2019\U1-at-2019-2.png; DestDir: {app}; Flags: ignoreversion; Components: ATFormular
