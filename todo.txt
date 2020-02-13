@@ -584,7 +584,15 @@ Bugfixes:
 - Machte man während einer Formularanzeige einen Doppelklick darin, öffnet sich die Eingabemaske für die Buchungsänderung des zuvor angezeiten Journals. 
 
 v2.31
+- In Zeilen 63 und 64 waren Felder vertauscht. Außerdem fehlte in den gezahlten Vorsteuern noch die Felder 1132 und 1225; die veralteten Felder 1217 und 1218 wurden noch mit berücksichtigt.
+- Meldung ergänzt, wenn das Datenverzeichnis nicht gefunden werden konnte.
 - Alle Dateien, die nicht im offiziellen Datenverzeichnis liegen, werden nun aus der "zuletzt geöffnete Dateien"-Liste herausgefiltert, um Verwechselungen zu vermeiden.
+
+v2.32
+- Bugfix im EÜR-2019-Formular: Mit Feld 1132 (Geringwertige Wirtschaftsgüter) verknüpfte Vorsteuer wurde in Feld 1186 (gezahlte Vorsteuerbeträge) doppelt berücksichtigt.
+
+v2.33
+- Bugfix: die Hintergrundgrafik der 4. Seite der EÜR 2019 fehlte in der Setup-Datei
 
 
 =============================================================
