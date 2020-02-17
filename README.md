@@ -1,6 +1,6 @@
 # Finanzbuchhaltung EasyCash&Tax
 
-Eine Mini-Finanzbuchhaltung für Windows, Wine und ahnliche win32-basierten Systeme. Architektur: C++ mit Microsoft Foundation Classes (MFC).
+Eine Mini-Finanzbuchhaltung für Windows, Wine und ähnliche win32-basierten Systeme. Architektur: C++ mit Microsoft Foundation Classes (MFC).
 
 Homepage: https://www.easyct.de
 
