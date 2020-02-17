@@ -143,21 +143,21 @@
 			<name>Innergemeinschaftliche Erwerbe Mwst 20%</name>
 			<erweiterung>1072*20/100</erweiterung>
 		</feld>
-		<feld id="1073" typ="Ausgabe" seite="2" horizontal="740" vertikal="883" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" nullwertdarstellung="nein" >
+		<feld id="1073" typ="Ausgaben" seite="2" horizontal="740" vertikal="883" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" nullwertdarstellung="nein" >
 			<name>Innergemeinschaftliche Erwerbe 10% (steuerpflichtig gem‰ﬂ Art 6. Abs 2)</name>
 		</feld>
 		<feld id="2073" typ="Summe" seite="2" horizontal="945" vertikal="883" ausrichtung="rechtsbuendig" anteil="brutto" nachkommaanteil="mit" nullwertdarstellung="nein" >
 			<name>Innergemeinschaftliche Erwerbe Mwst 10%</name>
 			<erweiterung>1073*10/100</erweiterung>
 		</feld>
-		<feld id="1008" typ="Ausgabe" seite="2" horizontal="740" vertikal="921" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" nullwertdarstellung="nein" >
+		<feld id="1008" typ="Ausgaben" seite="2" horizontal="740" vertikal="921" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" nullwertdarstellung="nein" >
 			<name>Innergemeinschaftliche Erwerbe 13% (steuerpflichtig gem‰ﬂ Art 6. Abs 2)</name>
 		</feld>
 		<feld id="2008" typ="Summe" seite="2" horizontal="945" vertikal="921" ausrichtung="rechtsbuendig" anteil="brutto" nachkommaanteil="mit" nullwertdarstellung="nein" >
 			<name>Innergemeinschaftliche Erwerbe Mwst 13%</name>
 			<erweiterung>1008*13/100</erweiterung>
 		</feld>
-		<feld id="1088" typ="Ausgabe" seite="2" horizontal="740" vertikal="959" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" nullwertdarstellung="nein" >
+		<feld id="1088" typ="Ausgaben" seite="2" horizontal="740" vertikal="959" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" nullwertdarstellung="nein" >
 			<name>Innergemeinschaftliche Erwerbe 19% (steuerpflichtig gem‰ﬂ Art 6. Abs 2)</name>
 		</feld>
 		<feld id="2088" typ="Summe" seite="2" horizontal="945" vertikal="959" ausrichtung="rechtsbuendig" anteil="brutto" nachkommaanteil="mit" nullwertdarstellung="nein" >
