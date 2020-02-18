@@ -94,6 +94,14 @@ Source: D:\Work\EasyCash\EUeR\2019\EUeR-d-2019-1.png; DestDir: {app}; Flags: ign
 Source: D:\Work\EasyCash\EUeR\2019\EUeR-d-2019-2.png; DestDir: {app}; Flags: ignoreversion; Components: BRDFormular
 Source: D:\Work\EasyCash\EUeR\2019\EUeR-d-2019-3.png; DestDir: {app}; Flags: ignoreversion; Components: BRDFormular  
 Source: D:\Work\EasyCash\EUeR\2019\EUeR-d-2019-4.png; DestDir: {app}; Flags: ignoreversion; Components: BRDFormular
+Source: D:\Work\EasyCash\UST\AT-2017\U1-at-2017.ecf; DestDir: {app}; Flags: ignoreversion; Components: ATFormular
+Source: D:\Work\EasyCash\UST\AT-2017\U1-at-2017-1.png; DestDir: {app}; Flags: ignoreversion; Components: ATFormular
+Source: D:\Work\EasyCash\UST\AT-2017\U1-at-2017-2.png; DestDir: {app}; Flags: ignoreversion; Components: ATFormular
+Source: D:\Work\EasyCash\UST\AT-2017\U1-at-2017-3.png; DestDir: {app}; Flags: ignoreversion; Components: ATFormular    
+Source: D:\Work\EasyCash\UST\AT-2018\U1-at-2018.ecf; DestDir: {app}; Flags: ignoreversion; Components: ATFormular
+Source: D:\Work\EasyCash\UST\AT-2018\U1-at-2018-1.png; DestDir: {app}; Flags: ignoreversion; Components: ATFormular
+Source: D:\Work\EasyCash\UST\AT-2018\U1-at-2018-2.png; DestDir: {app}; Flags: ignoreversion; Components: ATFormular
+Source: D:\Work\EasyCash\UST\AT-2018\U1-at-2018-3.png; DestDir: {app}; Flags: ignoreversion; Components: ATFormular
 Source: D:\Work\EasyCash\UST\AT-2019\U1-at-2019.ecf; DestDir: {app}; Flags: ignoreversion; Components: ATFormular
 Source: D:\Work\EasyCash\UST\AT-2019\U1-at-2019-1.png; DestDir: {app}; Flags: ignoreversion; Components: ATFormular
 Source: D:\Work\EasyCash\UST\AT-2019\U1-at-2019-2.png; DestDir: {app}; Flags: ignoreversion; Components: ATFormular
