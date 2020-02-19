@@ -594,6 +594,11 @@ v2.32
 v2.33
 - Bugfix: die Hintergrundgrafik der 4. Seite der EÜR 2019 fehlte in der Setup-Datei
 
+v2.34
+- In den österr. Formularen U1 2017-2019 wurden die Beträge zu innergemeinschaftlichen Erwerben nicht in den dafür vorgesehenen Feldern 1073, 1008 und 1088 im Formular angezeigt.
+
+v2.35
+- Formular für österreichisches Bruttosystem (Kleinunternehmer*innen) fehlte
 
 =============================================================
 AB HIER UNSORTIERTE FEATURE-WÜNSCHE UND HINWEISE VON NUTZERN
