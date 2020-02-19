@@ -132,8 +132,8 @@ BOOL CEasyCashApp::InitInstance()
 		info.cb = sizeof(CR_INSTALL_INFO); 
 		info.pszAppName = app_name_und_version_string_exakt; // Define application name.
 		info.pszAppVersion = version_string_exakt; // Define application version.
-		info.uPriorities[CR_SMAPI] = 2;
 		info.uPriorities[CR_HTTP] = 1;
+		info.uPriorities[CR_SMAPI] = CR_NEGATIVE_PRIORITY;
 		info.uPriorities[CR_SMTP] = CR_NEGATIVE_PRIORITY;
 		info.pszEmailTo = "thomas@mielke.software";
 		info.pszEmailSubject = "EC&T Absturzbericht";
