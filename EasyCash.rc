@@ -450,20 +450,20 @@ FONT 8, "MS Sans Serif", 0, 0, 0x0
 BEGIN
     DEFPUSHBUTTON   "OK",IDOK,259,18,50,14,WS_GROUP
     PUSHBUTTON      "&Registrieren",IDC_REGISTER,259,36,50,14
-    CONTROL         333,IDC_STATIC,"Static",SS_BITMAP,13,25,27,25
+    CONTROL         333,IDC_STATIC_INFO,"Static",SS_BITMAP | SS_NOTIFY,13,25,27,25
     LTEXT           "EasyCash&Tax Version 1.0",IDC_VERSION,53,19,165,8,SS_NOPREFIX
     LTEXT           "© 1998-2020 Thomas Mielke (GNU GPL v3)",IDC_STATIC,53,34,188,8
     LTEXT           "E-Mail:",IDC_STATIC,53,49,24,8
     PUSHBUTTON      "thomas@mielke.software",IDC_KONTAKT_EMAIL,79,46,100,14
     LTEXT           "Dieses Programm ist freie und quelloffene Software und unter der GNU General Public License veröffentlicht. Nutzung ist ohne Gewähr und vor allem ohne Telefonsupport (bitte nur E-Mail-Kontakt). Eine Registrierung ist erwünscht,",IDC_STATIC,53,63,256,24
     LTEXT           "Vielleicht entstehen nach einiger Zeit auch Ideen für Veränderungen oder Erweiterungsvorschläge, vielleicht taucht aber auch mal ein Problem auf.",IDC_STATIC,53,142,256,18
-    ICON            IDI_FACE2,IDC_STATIC,20,229,21,20
+    ICON            IDI_FACE2,IDC_STATIC,20,229,20,20
     PUSHBUTTON      "Ich möchte über den Bugtracker ein Problem melden oder eine Idee beisteuern",IDC_VOTE,53,232,256,14
     LTEXT           "damit ich über Updates informieren und eine 'Rückrufaktion' starten kann, wenn ich einmal einen katastrophalen Fehler einbauen sollte. Wer mir nichts zu erzählen hat, kann es bei einem einfachen drücken hierdrauf belassen:",IDC_STATIC,53,88,256,28
-    ICON            IDI_FACE1,IDC_STATIC,20,116,21,20
+    ICON            IDI_FACE1,IDC_STATIC,20,116,20,20
     PUSHBUTTON      "Ich möchte einfach nur einen kostenlosen und unverbindlichen Registriercode",IDC_KONTAKT_REGISTRIERCODE,53,120,256,14
     LTEXT           "Wer die Erweiterung von EC&&T auch finanziell unterstützen will kann dies hier:",IDC_STATIC,53,249,256,8
-    ICON            IDI_FACE3,IDC_STATIC,19,258,21,20
+    ICON            IDI_FACE3,IDC_STATIC,19,258,20,20
     PUSHBUTTON      "Ich möchte die Entwicklung der Software mit einer Spende fördern!",IDC_ERNST,53,262,256,12
     LTEXT           "Der Quellcode der Software ist auf github.com verfügbar. Softwareentwickler klicken hier:",IDC_STATIC,53,319,256,17
     LTEXT           "Die jeweils neueste Version gibt es im Plugin-Manager (Datei-Menü) oder zum manuellen Herunterladen natürlich auch im Web:",IDC_STATIC,53,281,256,17
@@ -1190,8 +1190,8 @@ END
 //
 
 VS_VERSION_INFO VERSIONINFO
- FILEVERSION 2,35,0,2
- PRODUCTVERSION 2,35,0,2
+ FILEVERSION 2,35,0,3
+ PRODUCTVERSION 2,35,0,3
  FILEFLAGSMASK 0x3fL
 #ifdef _DEBUG
  FILEFLAGS 0x1L
@@ -1208,12 +1208,12 @@ BEGIN
         BEGIN
             VALUE "CompanyName", "Thomas Mielke Softwareentwicklung"
             VALUE "FileDescription", "EASYCASH_AND_TAX MFC Application"
-            VALUE "FileVersion", "2, 35, 0, 2"
+            VALUE "FileVersion", "2, 35, 0, 3"
             VALUE "InternalName", "EASYCASH_AND_TAX"
             VALUE "LegalCopyright", "© 1998-2020 Thomas Mielke Softwareentwicklung"
             VALUE "OriginalFilename", "EASYCT.EXE"
             VALUE "ProductName", "EASYCASH_AND_TAX Application"
-            VALUE "ProductVersion", "2, 35, 0, 2"
+            VALUE "ProductVersion", "2, 35, 0, 3"
         END
     END
     BLOCK "VarFileInfo"

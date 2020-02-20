@@ -132,8 +132,8 @@ BOOL CEasyCashApp::InitInstance()
 		info.cb = sizeof(CR_INSTALL_INFO); 
 		info.pszAppName = app_name_und_version_string_exakt; // Define application name.
 		info.pszAppVersion = version_string_exakt; // Define application version.
-		info.uPriorities[CR_HTTP] = 1;
-		info.uPriorities[CR_SMAPI] = CR_NEGATIVE_PRIORITY;
+		info.uPriorities[CR_HTTP] = 2;
+		info.uPriorities[CR_SMAPI] = 1;
 		info.uPriorities[CR_SMTP] = CR_NEGATIVE_PRIORITY;
 		info.pszEmailTo = "thomas@mielke.software";
 		info.pszEmailSubject = "EC&T Absturzbericht";
@@ -720,6 +720,7 @@ public:
 protected:
 	//{{AFX_MSG(CAboutDlg)
 	afx_msg void OnErnst();
+	afx_msg void OnStaticDblClk();
 	afx_msg void OnWww();
 	afx_msg void OnRegister();
 	virtual BOOL OnInitDialog();
@@ -755,6 +756,7 @@ void CAboutDlg::DoDataExchange(CDataExchange* pDX)
 BEGIN_MESSAGE_MAP(CAboutDlg, CDialog)
 	//{{AFX_MSG_MAP(CAboutDlg)
 	ON_BN_CLICKED(IDC_ERNST, OnErnst)
+	ON_BN_CLICKED(IDC_STATIC_INFO, OnStaticDblClk)
 	ON_BN_CLICKED(IDC_WWW, OnWww)
 	ON_BN_CLICKED(IDC_REGISTER, OnRegister)
 	ON_BN_CLICKED(IDC_KONTAKT_EMAIL, OnKontaktEmail)
@@ -768,6 +770,15 @@ void CAboutDlg::OnErnst()
 {
 	RegistrierenDlg dlg(this);
 	dlg.DoModal();	
+}
+
+void CAboutDlg::OnStaticDblClk() 
+{
+	if(AfxMessageBox("ACHTUNG: Du hast jetzt eine versteckte Funktion gefunden, um den Crash-Reporter bewusst auszulösen. Dies ist nur für Testzwecke. Bitte nur auf Anweisung eines Entwicklers auslösen. Möchtest Du das Programm hiermit wirklich bewusst zum Absturz bringen, um den Crash-Reporter auszulösen?", MB_OKCANCEL) == IDOK)
+	{
+		WORD *w = (WORD*)0xBAADF00D;
+		*w = 0xFEED;
+	}
 }
 
 void CAboutDlg::OnWww() 

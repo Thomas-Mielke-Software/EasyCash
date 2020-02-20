@@ -359,6 +359,8 @@
 #define IDC_MANUELLER_DOWNLOAD          1156
 #define IDC_Q2                          1157
 #define IDC_M4                          1158
+#define IDC_STATIC1                     1158
+#define IDC_STATIC_INFO                 1158
 #define IDC_M5                          1159
 #define IDC_M6                          1160
 #define IDC_Q3                          1161
@@ -510,7 +512,7 @@
 #define _APS_3D_CONTROLS                     1
 #define _APS_NEXT_RESOURCE_VALUE        437
 #define _APS_NEXT_COMMAND_VALUE         32912
-#define _APS_NEXT_CONTROL_VALUE         1158
+#define _APS_NEXT_CONTROL_VALUE         1159
 #define _APS_NEXT_SYMED_VALUE           110
 #endif
 #endif
