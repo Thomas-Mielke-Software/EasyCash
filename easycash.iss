@@ -127,11 +127,13 @@ Source: D:\Work\EasyCash\UVA\AT-2020\U30-AT-2020-q2.ecf; DestDir: {app}; Flags: 
 Source: D:\Work\EasyCash\UVA\AT-2020\U30-AT-2020-q3.ecf; DestDir: {app}; Flags: ignoreversion; Components: ATFormular
 Source: D:\Work\EasyCash\UVA\AT-2020\U30-AT-2020-q4.ecf; DestDir: {app}; Flags: ignoreversion; Components: ATFormular
 Source: D:\Work\EasyCash\EUeR\AT-2019\E1a-AT-2019.ecf; DestDir: {app}; Flags: ignoreversion; Components: ATFormular
-Source: D:\Work\EasyCash\EUeR\AT-2019\E1a-K-AT-2019.ecf; DestDir: {app}; Flags: ignoreversion; Components: ATFormular
 Source: D:\Work\EasyCash\EUeR\AT-2019\E1a-AT-2019-1.png; DestDir: {app}; Flags: ignoreversion; Components: ATFormular
 Source: D:\Work\EasyCash\EUeR\AT-2019\E1a-AT-2019-2.png; DestDir: {app}; Flags: ignoreversion; Components: ATFormular
 Source: D:\Work\EasyCash\EUeR\AT-2019\E1a-AT-2019-3.png; DestDir: {app}; Flags: ignoreversion; Components: ATFormular
-Source: D:\Work\EasyCash\EUeR\AT-2019\E1a-AT-2019-4.png; DestDir: {app}; Flags: ignoreversion; Components: ATFormular
+Source: D:\Work\EasyCash\EUeR\AT-2019\E1a-AT-2019-4.png; DestDir: {app}; Flags: ignoreversion; Components: ATFormular  
+Source: D:\Work\EasyCash\EUeR\AT-2019\E1a-K-AT-2019.ecf; DestDir: {app}; Flags: ignoreversion; Components: ATFormular
+Source: D:\Work\EasyCash\EUeR\AT-2019\E1a-K-AT-2019-1.png; DestDir: {app}; Flags: ignoreversion; Components: ATFormular
+Source: D:\Work\EasyCash\EUeR\AT-2019\E1a-K-AT-2019-2.png; DestDir: {app}; Flags: ignoreversion; Components: ATFormular
 
 [Registry]
 Root: HKCU; Subkey: Software\Tools; Flags: uninsdeletekeyifempty
