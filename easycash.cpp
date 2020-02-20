@@ -313,6 +313,7 @@ BOOL CEasyCashApp::InitInstance()
 	}	
 	
 	LoadStdProfileSettings(20);  // Load standard INI file options (including MRU)
+	if (m_pRecentFileList)
 	{	// MRU file list nur mit im Datenverzeichnis befindlichen Dateien füllen
 		CString Datenverzeichnis = GetProfileString("Allgemein", "Datenverzeichnis");
 		if (!Datenverzeichnis.IsEmpty())

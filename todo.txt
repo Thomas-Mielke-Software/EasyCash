@@ -600,6 +600,9 @@ v2.34
 v2.35
 - Formular für österreichisches Bruttosystem (Kleinunternehmer*innen) fehlte
 
+v2.36
+- Bugfix: 'Zuletzt geöffnete Dateien'-Filter führte in Einzelfällen zum Absturz.
+
 =============================================================
 AB HIER UNSORTIERTE FEATURE-WÜNSCHE UND HINWEISE VON NUTZERN
 WEITER UNTEN IST BEREITS NACH FUNKTIONALER KATEGORIE SORTIERT

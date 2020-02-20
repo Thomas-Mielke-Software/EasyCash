@@ -3,7 +3,7 @@
 
 [Setup]
 AppName=EasyCash&Tax
-AppVerName=EasyCash&Tax 2.35b (Crash-Reporter versendet prioritär über http und erst dann über email)
+AppVerName=EasyCash&Tax 2.36
 DiskSpanning=no
 AppPublisher=tm
 AppPublisherURL=http://www.easyct.de
