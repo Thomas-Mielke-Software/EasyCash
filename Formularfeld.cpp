@@ -150,9 +150,8 @@ void CFormularfeld::OnSpeichern()
 	xmldoc.LoadFile(m_csFormulardatei);
 	LPXNode xml = xmldoc.GetRoot();
 	LPXNode felder = NULL;
-	felder = xml->Find("felder");
 
-	if (felder)
+	if (xml && (felder = xml->Find("felder")))
 	{
 		LPXNode child;
 

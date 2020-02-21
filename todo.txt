@@ -603,6 +603,9 @@ v2.35
 v2.36
 - Bugfix: 'Zuletzt geöffnete Dateien'-Filter führte in Einzelfällen zum Absturz.
 
+v2.37
+- Codestabilität: Einige Stellen im Code, die mit XML-Formularen hantieren, besser gegen Null-Pointer-Exceptions abgesichert
+
 =============================================================
 AB HIER UNSORTIERTE FEATURE-WÜNSCHE UND HINWEISE VON NUTZERN
 WEITER UNTEN IST BEREITS NACH FUNKTIONALER KATEGORIE SORTIERT

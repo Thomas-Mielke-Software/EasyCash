@@ -5475,9 +5475,9 @@ BOOL CEasyCashView::OnCommand(WPARAM wParam, LPARAM lParam)
 				felder = xml->Find("felder");
 				
 				ptFeldmarke = PopUpPosition;
-				int nNaechsteFeldIndex = GetFeldindexFromMausposition(felder);
+				int nNaechsteFeldIndex;
 
-				if (nNaechsteFeldIndex >= 0)
+				if (felder && ((nNaechsteFeldIndex = GetFeldindexFromMausposition(felder)) >= 0))
 				{
 					// ggf. vorher Dialog löschen
 					if (pFormularfeldDlg) 
@@ -5562,21 +5562,22 @@ BOOL CEasyCashView::OnCommand(WPARAM wParam, LPARAM lParam)
 			xmldoc.LoadFile(m_csaFormulare[m_GewaehltesFormular]);
 			LPXNode xml = xmldoc.GetRoot();
 			LPXNode felder = NULL;
-			felder = xml->Find("felder");	
-			
-			ptFeldmarke = PopUpPosition;
-			int nNaechsteFeldIndex = GetFeldindexFromMausposition(felder);
-
-			if (nNaechsteFeldIndex >= 0)
+			if (xml && (felder = xml->Find("felder")))
 			{
-				HGLOBAL hResult = GlobalAlloc(GMEM_MOVEABLE, m_csaFormularfeldwerte[nNaechsteFeldIndex].GetLength()+1);	// In die Zwischenablage 
-				LPTSTR lptstrCopy = (LPTSTR)GlobalLock(hResult); 
-				memcpy(lptstrCopy, (LPCSTR)m_csaFormularfeldwerte[nNaechsteFeldIndex], m_csaFormularfeldwerte[nNaechsteFeldIndex].GetLength()+1); 
-				GlobalUnlock(hResult);
-				OpenClipboard(); 
-				EmptyClipboard();
-				HGLOBAL hmem = SetClipboardData(CF_TEXT, hResult);
-				CloseClipboard();	
+				ptFeldmarke = PopUpPosition;
+				int nNaechsteFeldIndex = GetFeldindexFromMausposition(felder);
+
+				if (nNaechsteFeldIndex >= 0)
+				{
+					HGLOBAL hResult = GlobalAlloc(GMEM_MOVEABLE, m_csaFormularfeldwerte[nNaechsteFeldIndex].GetLength()+1);	// In die Zwischenablage 
+					LPTSTR lptstrCopy = (LPTSTR)GlobalLock(hResult); 
+					memcpy(lptstrCopy, (LPCSTR)m_csaFormularfeldwerte[nNaechsteFeldIndex], m_csaFormularfeldwerte[nNaechsteFeldIndex].GetLength()+1); 
+					GlobalUnlock(hResult);
+					OpenClipboard(); 
+					EmptyClipboard();
+					HGLOBAL hmem = SetClipboardData(CF_TEXT, hResult);
+					CloseClipboard();	
+				}
 			}
 			break;
 		}
@@ -5675,30 +5676,31 @@ Code zu hektisch */
 		xmldoc.LoadFile(m_csaFormulare[m_GewaehltesFormular]);
 		LPXNode xml = xmldoc.GetRoot();
 		LPXNode felder = NULL;
-		felder = xml->Find("felder");
-
-		ptFeldmarke = GetScrollPosition() + point;				
-		int nNaechsteFeldIndex = GetFeldindexFromMausposition(felder);
-
-		if (nNaechsteFeldIndex >= 0)
+		if (xml && (felder = xml->Find("felder")))
 		{
-			// Feld ID über Index holen
-			LPXNode child;
-			int nNaechsteFeldId = -1;
-			child = felder->GetChild(nNaechsteFeldIndex);			
-			if (child && !child->value.IsEmpty())
-				nNaechsteFeldId = atoi(child->GetAttrValue("id"));
+			ptFeldmarke = GetScrollPosition() + point;				
+			int nNaechsteFeldIndex = GetFeldindexFromMausposition(felder);
 
-			if (nNaechsteFeldId >= 0)
+			if (nNaechsteFeldIndex >= 0)
 			{
-				CEasyCashDoc *pDoc = GetDocument();
-				if (pDoc->m_csaFeldStatustext[nNaechsteFeldId] != "")
-					((CMainFrame*)AfxGetMainWnd())->SetStatus(pDoc->m_csaFeldStatustext[nNaechsteFeldId]);
-				else
+				// Feld ID über Index holen
+				LPXNode child;
+				int nNaechsteFeldId = -1;
+				child = felder->GetChild(nNaechsteFeldIndex);			
+				if (child && !child->value.IsEmpty())
+					nNaechsteFeldId = atoi(child->GetAttrValue("id"));
+
+				if (nNaechsteFeldId >= 0)
 				{
-					CString csTemp;
-					csTemp.Format("Feldnummer %d", nNaechsteFeldId);
-					((CMainFrame*)AfxGetMainWnd())->SetStatus(csTemp);
+					CEasyCashDoc *pDoc = GetDocument();
+					if (pDoc->m_csaFeldStatustext[nNaechsteFeldId] != "")
+						((CMainFrame*)AfxGetMainWnd())->SetStatus(pDoc->m_csaFeldStatustext[nNaechsteFeldId]);
+					else
+					{
+						CString csTemp;
+						csTemp.Format("Feldnummer %d", nNaechsteFeldId);
+						((CMainFrame*)AfxGetMainWnd())->SetStatus(csTemp);
+					}
 				}
 			}
 		}
@@ -5747,8 +5749,7 @@ void CEasyCashView::OnLButtonDown(UINT nFlags, CPoint point)
 		xmldoc.LoadFile(m_csaFormulare[m_GewaehltesFormular]);
 		LPXNode xml = xmldoc.GetRoot();
 		LPXNode felder = NULL;
-		felder = xml->Find("felder");
-		if (felder && felder->GetChildCount() > 0)
+		if (xml && (felder = xml->Find("felder")) && felder->GetChildCount() > 0)
 		{
 			LPXNode child;
 
@@ -5803,8 +5804,7 @@ void CEasyCashView::OnLButtonUp(UINT nFlags, CPoint point)
 		xmldoc.LoadFile(m_csaFormulare[m_GewaehltesFormular]);
 		LPXNode xml = xmldoc.GetRoot();
 		LPXNode felder = NULL;
-		felder = xml->Find("felder");
-		if (felder && felder->GetChildCount() > 0)
+		if (xml && felder && (felder = xml->Find("felder")) && felder->GetChildCount() > 0)
 		{
 			LPXNode child;
 
@@ -7124,8 +7124,7 @@ void CEasyCashView::LoadProfile()
 						int i, i_e, i_a;
 						LPXNode child;
 						LPXNode felder = NULL;
-						felder = xml->Find("felder");
-						if (felder)
+						if (xml && (felder = xml->Find("felder")))
 						{
 							for(i = 0, i_e = 0, i_a = 0; i < felder->GetChildCount() && i_e < 100 && i_a < 100; i++)
 							{
