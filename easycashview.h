@@ -159,6 +159,7 @@ public:
 	int m_vm;
 	int m_bt;
 	int m_bm;
+	int m_bAfaKorrketuren;
 
 	// Bitmaps fürs Menü
 	CBitmap bmpEinBuch;

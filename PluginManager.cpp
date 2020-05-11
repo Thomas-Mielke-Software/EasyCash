@@ -243,10 +243,13 @@ void CPluginManager::Statusmeldung(CString &text)
 	// ((CEdit*)GetDlgItem(IDC_STATUS))->SetSel(m_status.GetLength(), m_status.GetLength()); <-- hier kam es gelegentlich zu Abstürzen
 	// ((CEdit*)GetDlgItem(IDC_STATUS))->ReplaceSel((LPCSTR)text, TRUE); -- durch m_status += text; obsolet geworden
 	// Ersatzcode:
-	int line = ((CEdit*)GetDlgItem(IDC_STATUS))->GetLineCount(); // <-- hier kommt es immer noch zu Abstürzen! siehe drei Zeilen zuvor
-	line -= 3;
-	if (line < 1) line = 1;
-	((CEdit*)GetDlgItem(IDC_STATUS))->LineScroll(line);
+	if (::IsWindow(GetDlgItem(IDC_STATUS)->m_hWnd))
+	{
+		int line = ((CEdit*)GetDlgItem(IDC_STATUS))->GetLineCount(); // <-- hier kam es immer noch zu Abstürzen, weil das CEdit angeblich kein Fenster war... siehe drei Zeilen zuvor
+		line -= 3;
+		if (line < 1) line = 1;
+		((CEdit*)GetDlgItem(IDC_STATUS))->LineScroll(line);
+	}
 }
 
 void CPluginManager::Check()

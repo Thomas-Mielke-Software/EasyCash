@@ -606,6 +606,9 @@ v2.36
 v2.37
 - Codestabilität: Einige Stellen im Code, die mit XML-Formularen hantieren, besser gegen Null-Pointer-Exceptions abgesichert
 
+v2.38
+- Versuchter Bugfix: Absturz beim Updaten via Plugin-Manager
+
 =============================================================
 AB HIER UNSORTIERTE FEATURE-WÜNSCHE UND HINWEISE VON NUTZERN
 WEITER UNTEN IST BEREITS NACH FUNKTIONALER KATEGORIE SORTIERT
@@ -920,7 +923,13 @@ Dauerbuchungen
      beim Datum vertippt hat), sollte ein Hinweis kommen
 - eigentlich könnte sich das Programm auch merken, welche Buchungen DB
   sind, so daß man die Beträge im nachhinein noch ändern kann
-
+- vergessen auszuführen?
+  > ich habe meine Dauerbuchungen immer eingegeben, jedoch hab ich nie auf
+  > /*Dauerbuchungen ausführe*/n geklickt. Bedeutet das, dass meine mit easy
+  > cash & tax per elster übermittelten Vorsteueranmeldungen und
+  > Einkommenssteuererklärungen also nie meine laufenden Dauerbuchungen
+  > enthalten haben?   
+  => Ich werde mal überlegen, wie ich das in Zukunft verhindern kann. Evtl. eine Abfrage beim Jahreswechsel...
 
 Nutzen bzw. Funktion
 - Voranmeldungszeitraum : Jährlich fehlt
@@ -1648,6 +1657,11 @@ gibt es da eine Lösung.....
 ansonst Anregung für neue Version
 
 Außerdem sollte man auch netto Preise eingeben können 
+
+> seit den Updates des Programmes Easy Cash & Tax Anfang des Jahres
+> erscheint mir im Pull Down zum Mehrwertsteuersatz 2x die 0.
+Aber ich bin immer froh, wenn ich Berichte über irritirende Phänomene bekomme.
+Wahrscheinlich sollte ich Doppelungen in der Drop-Down-Box löschen.
 
 Dauerbuchungen
 --------------

@@ -403,6 +403,18 @@ void BuchenDlg::OnOK()
 			MessageBox("Laufende Abschreibungsnummer ist größer als die Gesamt-Abschreibungsdauer!", NULL, MB_ICONSTOP);
 			goto error_delete_buchung;
 		}
+
+		if ((*p)->AbschreibungNr < 1)
+		{
+			MessageBox("Laufende Abschreibungsnummer muss mindestens 1 sein!", NULL, MB_ICONSTOP);
+			goto error_delete_buchung;
+		}
+
+		if ((*p)->AbschreibungJahre < 1)
+		{
+			MessageBox("Gesamt-Abschreibungsdauer muss mindestens 1 sein!", NULL, MB_ICONSTOP);
+			goto error_delete_buchung;
+		}
 		
 		int m = ((CComboBox *)GetDlgItem(IDC_EURECHNUNGSPOSTEN))->GetCurSel();
 		if (m == CB_ERR)

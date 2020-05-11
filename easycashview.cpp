@@ -150,6 +150,7 @@ CEasyCashView::CEasyCashView()
 	m_vm = 1;
 	m_bt = 31;
 	m_bm = 12;
+	m_bAfaKorrketuren = 0;
 
 	letzte_zeile = 0;
 
@@ -868,6 +869,19 @@ void CEasyCashView::OnUpdate(CView* pSender, LPARAM lHint, CObject* pHint)
 void CEasyCashView::CaptionBoxCheckOnUpdate()
 {
 	CEasyCashDoc *pDoc = GetDocument();
+
+	if (theApp.IsCaptionBoxShown()) return;
+
+	// gab es Korrekturen bei der AfA-Dauer?
+	if (m_bAfaKorrketuren)
+	{
+		CString csTemp;
+		csTemp.Format("Es wurden %d Ausgabenbuchungen mit einer AfA-Dauer von 0 gefunden und automatisch auf den Minimalwert von 1 korrigiert. Gegebenenfalls kann sich dadurch die Summe der Vorsteuer geändert haben. Bitte evtl. bereits versendete USt.-Voranmeldungen auf Differenzen prüfen.", m_bAfaKorrketuren);
+		m_bAfaKorrketuren = 0;
+		pDoc->SetModifiedFlag("AfA-Buchungen korrigiert");
+		theApp.CaptionBox(csTemp, ID_FILE_SAVE, "Speichern", "korrigierte Buchungsdaten speichern");
+		return;
+	}
 
 	// stimmt das Buchungsjahr des Dokuments mit denen der Buchungen überein?
 	BOOL bGefunden = FALSE;
@@ -1618,6 +1632,14 @@ void CEasyCashView::DrawToDC_AusgabenLine(DrawInfo *pDrawInfo, CBuchung *p)
 	{
 		// Netto-Betrag berechnen
 		netto = p->GetBuchungsjahrNetto(pDoc);
+
+		// Korrektur bei ungültigen AfA-Angaben
+		if (p->AbschreibungNr < 1 || p->AbschreibungJahre < 1)
+		{
+			m_bAfaKorrketuren++;
+			if (p->AbschreibungNr < 1) p->AbschreibungNr = 1;
+			if (p->AbschreibungJahre < 1) p->AbschreibungJahre = 1;
+		}
 
 		// MwSt-Betrag berechnen
 		if (p->AbschreibungNr == 1)	// nur im erstern Jahr Vorsteuer berechnen!

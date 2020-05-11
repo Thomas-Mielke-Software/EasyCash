@@ -935,6 +935,13 @@ void CEasyCashApp::CaptionBoxHide()
 	}
 }
 
+BOOL CEasyCashApp::IsCaptionBoxShown()
+{
+	if (m_pMainWnd && ((CMainFrame*)m_pMainWnd)->GetCaptionBar() && IsWindow(((CMainFrame*)m_pMainWnd)->GetCaptionBar()->m_hWnd))
+		return ((CMainFrame*)m_pMainWnd)->GetCaptionBar()->IsWindowVisible();
+	return FALSE;
+}
+
 void CEasyCashApp::OnFileOpen() 
 {
 	char szPathName[500], IniFileName[500];

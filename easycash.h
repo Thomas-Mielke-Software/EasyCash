@@ -63,6 +63,7 @@ public:
 	void CaptionBox(LPCTSTR str);
 	void CaptionBox(LPCTSTR str, int id, LPCTSTR buttontext, LPCTSTR tooltiptext);
 	void CaptionBoxHide();
+	BOOL IsCaptionBoxShown();
 
 	BOOL m_bCrashReportingAktiv;
 };
