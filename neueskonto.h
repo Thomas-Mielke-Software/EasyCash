@@ -59,4 +59,6 @@ protected:
 	afx_msg void OnFeldzuweisungLoeschen();
 	//}}AFX_MSG
 	DECLARE_MESSAGE_MAP()
+public:
+	CString m_unterkategorie;
 };

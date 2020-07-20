@@ -3225,6 +3225,8 @@ void CEasyCashView::DrawEURechungToDC(CDC* pDC, DrawInfo *pDrawInfo)
 	}
 
 	int line = 0;
+	int indent;
+	int unterkategorie_nummerierung;
 
 	long einnahmen_gesamtsumme = 0;
 	long einnahmen_mwst_summe = 0;
@@ -3309,15 +3311,24 @@ void CEasyCashView::DrawEURechungToDC(CDC* pDC, DrawInfo *pDrawInfo)
 			einnahmen_posten_name[j] = "UST";
 		}
 
-		for (i = 0, line = 15; i < 100; i++)
-		{
+		for (i = 0, line = 15, indent = 10, unterkategorie_nummerierung = 1; i < 100; i++)
+		{		
+			if (!einstellungen1->EinnahmenUnterkategorien[i].IsEmpty())	// Unterkategorien vorhanden?
+			{
+				indent = 13;
+				CString csUnterkategorietext;
+				csUnterkategorietext.Format("1.%d %s", unterkategorie_nummerierung++, einstellungen1->EinnahmenUnterkategorien[i].GetBuffer(0));
+				Text(pDrawInfo, 10, ++line, csUnterkategorietext.GetBuffer(0));
+				line++;
+			}
+
 			if (!einnahmen_posten_name[i].IsEmpty() && einnahmen_posten_summe[i] != 0)
 			{
 				int nMaxText = 72;
 				if (pDrawInfo->printer_gesamtgroesse.cx > pDrawInfo->printer_gesamtgroesse.cy) nMaxText = nMaxText * 150 / 100; // Querformat?
 				if (einnahmen_posten_name[i].GetLength() > nMaxText) 
 					einnahmen_posten_name[i] = einnahmen_posten_name[i].Left(nMaxText) + "...";
-				Text(pDrawInfo, 10, line, einnahmen_posten_name[i].GetBuffer(0));
+				Text(pDrawInfo, indent, line, einnahmen_posten_name[i].GetBuffer(0));
 
 				int_to_currency_tausenderpunkt(einnahmen_posten_summe[i], 10, buffer);
 				pDC->SetTextAlign(TA_RIGHT);
@@ -3436,13 +3447,22 @@ void CEasyCashView::DrawEURechungToDC(CDC* pDC, DrawInfo *pDrawInfo)
 			ausgaben_posten_name[j] = "VST";
 		}
 
-		for (i = 0; i < 100; i++)
+		for (i = 0, indent = 10, unterkategorie_nummerierung = 1; i < 100; i++)
 		{
+			if (!einstellungen1->AusgabenUnterkategorien[i].IsEmpty())	// Unterkategorien vorhanden?
+			{
+				indent = 13;
+				CString csUnterkategorietext;
+				csUnterkategorietext.Format("2.%d %s", unterkategorie_nummerierung++, einstellungen1->AusgabenUnterkategorien[i].GetBuffer(0));
+				Text(pDrawInfo, 10, ++line, csUnterkategorietext.GetBuffer(0));
+				line++;
+			}
+
 			if (!ausgaben_posten_name[i].IsEmpty() && ausgaben_posten_summe[i] != 0)
 			{
 				if (ausgaben_posten_name[i].GetLength() > 72) 
 					ausgaben_posten_name[i] = ausgaben_posten_name[i].Left(72) + "...";
-				Text(pDrawInfo, 10, line, ausgaben_posten_name[i].GetBuffer(0));
+				Text(pDrawInfo, indent, line, ausgaben_posten_name[i].GetBuffer(0));
 
 				int_to_currency_tausenderpunkt(ausgaben_posten_summe[i], 10, buffer);
 				pDC->SetTextAlign(TA_RIGHT);
@@ -7077,11 +7097,17 @@ void CEasyCashView::LoadProfile()
 		GetPrivateProfileString("EinnahmenFeldzuweisungen", key_buffer, "", buffer, sizeof(buffer), EasyCashIniFilenameBuffer);
 		einstellungen1->EinnahmenFeldzuweisungen[i] = buffer;
 
+		GetPrivateProfileString("EinnahmenUnterkategorien", key_buffer, "", buffer, sizeof(buffer), EasyCashIniFilenameBuffer);
+		einstellungen1->EinnahmenUnterkategorien[i] = buffer;
+
 		GetPrivateProfileString("AusgabenRechnungsposten", key_buffer, "", buffer, sizeof(buffer), EasyCashIniFilenameBuffer);
 		einstellungen1->AusgabenRechnungsposten[i] = buffer;
 
 		GetPrivateProfileString("AusgabenFeldzuweisungen", key_buffer, "", buffer, sizeof(buffer), EasyCashIniFilenameBuffer);
 		einstellungen1->AusgabenFeldzuweisungen[i] = buffer;
+
+		GetPrivateProfileString("AusgabenUnterkategorien", key_buffer, "", buffer, sizeof(buffer), EasyCashIniFilenameBuffer);
+		einstellungen1->AusgabenUnterkategorien[i] = buffer;
 
 		if (!einstellungen1->EinnahmenRechnungsposten[i].IsEmpty()
 			|| !einstellungen1->AusgabenRechnungsposten[i].IsEmpty())
@@ -7431,10 +7457,11 @@ void CEasyCashView::SaveProfile()
 
 		WritePrivateProfileString("EinnahmenRechnungsposten", key_buffer, (LPCSTR)einstellungen1->EinnahmenRechnungsposten[i], EasyCashIniFilenameBuffer);
 		WritePrivateProfileString("EinnahmenFeldzuweisungen", key_buffer, (LPCSTR)einstellungen1->EinnahmenFeldzuweisungen[i], EasyCashIniFilenameBuffer);
+		WritePrivateProfileString("EinnahmenUnterkategorien", key_buffer, (LPCSTR)einstellungen1->EinnahmenUnterkategorien[i], EasyCashIniFilenameBuffer);
 
 		WritePrivateProfileString("AusgabenRechnungsposten", key_buffer, (LPCSTR)einstellungen1->AusgabenRechnungsposten[i], EasyCashIniFilenameBuffer);
 		WritePrivateProfileString("AusgabenFeldzuweisungen", key_buffer, (LPCSTR)einstellungen1->AusgabenFeldzuweisungen[i], EasyCashIniFilenameBuffer);
-
+		WritePrivateProfileString("AusgabenUnterkategorien", key_buffer, (LPCSTR)einstellungen1->AusgabenUnterkategorien[i], EasyCashIniFilenameBuffer);
 	}
 
 	sprintf(buffer, "%d", (int)einstellungen4->m_ustvst_gesondert);

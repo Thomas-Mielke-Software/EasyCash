@@ -3,7 +3,7 @@
 
 [Setup]
 AppName=EasyCash&Tax
-AppVerName=EasyCash&Tax 2.36 mit Korrektur für AfA-Dauer
+AppVerName=EasyCash&Tax 2.36 mit Korrektur für AfA-Dauer und Konten-Unterkategorien
 DiskSpanning=no
 AppPublisher=tm
 AppPublisherURL=http://www.easyct.de

@@ -138,6 +138,7 @@ BEGIN_MESSAGE_MAP(BuchenDlg, CDialog)
 	ON_CBN_EDITCHANGE(IDC_ABSCHREIBUNGJAHRE, &BuchenDlg::OnCbnEditchangeAbschreibungjahre)
 	ON_CBN_EDITCHANGE(IDC_ABSCHREIBUNGNUMMER, &BuchenDlg::OnCbnEditchangeAbschreibungnummer)
 	ON_BN_CLICKED(IDC_MWST_ENABLED, &BuchenDlg::OnBnClickedMwstEnabled)
+	ON_CBN_SELCHANGE(IDC_EURECHNUNGSPOSTEN, &BuchenDlg::OnCbnSelchangeEurechnungsposten)
 END_MESSAGE_MAP()
 
 /////////////////////////////////////////////////////////////////////////////
@@ -422,6 +423,8 @@ void BuchenDlg::OnOK()
 		else
 		{
 			((CComboBox *)GetDlgItem(IDC_EURECHNUNGSPOSTEN))->GetLBText(m, (*p)->Konto);
+			if (m_bUnterkategorien && (*p)->Konto.Left(3) == "   ")
+				(*p)->Konto = (*p)->Konto.Mid(3);
 		}
 		
 		if (m_ausgaben && m_pParent->einstellungen1->m_bErzeugeLaufendeBuchungsnummernFuerAusgaben && !m_ppb)
@@ -1055,6 +1058,21 @@ void BuchenDlg::OnSelchangeBeschreibung()
 	}
 }
 
+void BuchenDlg::OnCbnSelchangeEurechnungsposten()
+{
+	if (m_bUnterkategorien)  // ggf. Auswahl einer Unterkategorie als Konto verhindern
+	{
+		int n = ((CComboBox *)GetDlgItem(IDC_EURECHNUNGSPOSTEN))->GetCurSel();
+		if (n >= 0)
+		{
+			CString itemText;
+			((CComboBox *)GetDlgItem(IDC_EURECHNUNGSPOSTEN))->GetLBText(n, itemText);
+			if (itemText[0] != ' ')  // nur die Auswahl mit Tab-Zeichen eingerückter Einträge als Konto akzeptieren
+				((CComboBox *)GetDlgItem(IDC_EURECHNUNGSPOSTEN))->SetCurSel(-1);
+		}
+	}
+}
+
 void BuchenDlg::OnTimer(UINT nIDEvent) 
 {
 	KillTimer(nIDEvent);
@@ -1330,20 +1348,44 @@ void BuchenDlg::OnSetfocusBeschreibung()
 void BuchenDlg::UpdateCombo(CString ea)
 {
 	int i;
+	m_bUnterkategorien = FALSE;
 
 	((CComboBox *)GetDlgItem(IDC_EURECHNUNGSPOSTEN))->ResetContent();
 
-	for (i = 0; i < 100; i++)
+	if (ea == "E")
 	{
-		if (ea == "E")
+		for (i = 0; i < 100; i++)
+			if (!m_pParent->einstellungen1->EinnahmenUnterkategorien[i].IsEmpty())  // gibt es Unterkategorien?
+			{
+				m_bUnterkategorien = TRUE;
+				break;
+			}
+		if (m_bUnterkategorien && m_pParent->einstellungen1->EinnahmenUnterkategorien[0].IsEmpty())  // erstes konto hat keine Unterkategorie? dann eine Kategorie erdichten...
+			((CComboBox *)GetDlgItem(IDC_EURECHNUNGSPOSTEN))->AddString("Einnahmenkonten ohne Unterkategorie");
+		for (i = 0; i < 100; i++)
 		{
+			if (!m_pParent->einstellungen1->EinnahmenUnterkategorien[i].IsEmpty())  // Beginn einer neuen Unterkategorie?
+				((CComboBox *)GetDlgItem(IDC_EURECHNUNGSPOSTEN))->AddString(m_pParent->einstellungen1->EinnahmenUnterkategorien[i]);
 			if (!m_pParent->einstellungen1->EinnahmenRechnungsposten[i].IsEmpty())
-				((CComboBox *)GetDlgItem(IDC_EURECHNUNGSPOSTEN))->AddString(m_pParent->einstellungen1->EinnahmenRechnungsposten[i]);
+				((CComboBox *)GetDlgItem(IDC_EURECHNUNGSPOSTEN))->AddString((m_bUnterkategorien ? "   " : "") + m_pParent->einstellungen1->EinnahmenRechnungsposten[i]);
 		}
-		else
+	}
+	else
+	{
+		for (i = 0; i < 100; i++)
+			if (!m_pParent->einstellungen1->AusgabenUnterkategorien[i].IsEmpty())  // gibt es Unterkategorien?
+			{
+				m_bUnterkategorien = TRUE;
+				break;
+			}
+		if (m_bUnterkategorien && m_pParent->einstellungen1->AusgabenUnterkategorien[0].IsEmpty())  // erstes konto hat keine Unterkategorie? dann eine Kategorie erdichten...
+			((CComboBox *)GetDlgItem(IDC_EURECHNUNGSPOSTEN))->AddString("Ausgabenkonten ohne Unterkategorie");
+		for (i = 0; i < 100; i++)
 		{
+			if (!m_pParent->einstellungen1->AusgabenUnterkategorien[i].IsEmpty())  // Beginn einer neuen Unterkategorie?
+				((CComboBox *)GetDlgItem(IDC_EURECHNUNGSPOSTEN))->AddString(m_pParent->einstellungen1->AusgabenUnterkategorien[i]);
 			if (!m_pParent->einstellungen1->AusgabenRechnungsposten[i].IsEmpty())
-				((CComboBox *)GetDlgItem(IDC_EURECHNUNGSPOSTEN))->AddString(m_pParent->einstellungen1->AusgabenRechnungsposten[i]);
+				((CComboBox *)GetDlgItem(IDC_EURECHNUNGSPOSTEN))->AddString((m_bUnterkategorien ? "   " : "") + m_pParent->einstellungen1->AusgabenRechnungsposten[i]);
 		}
 	}
 }

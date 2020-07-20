@@ -66,6 +66,7 @@ protected:
 	int m_nGewaehlterSplit;
 	CImageList m_imgListIcons;
 	CImageList m_imgListIconsBestandskonten;
+	BOOL m_bUnterkategorien;
 
 	void InitDlg(BOOL bBelasseEinigeFelder = FALSE);
 	void InitRestwert();
@@ -114,4 +115,5 @@ public:
 	afx_msg void OnCbnEditchangeAbschreibungjahre();
 	afx_msg void OnCbnEditchangeAbschreibungnummer();
 	afx_msg void OnBnClickedMwstEnabled();
+	afx_msg void OnCbnSelchangeEurechnungsposten();
 };

@@ -400,6 +400,7 @@ void CEinstellungen4::OnPlus()
 					if (dlg.m_konto.IsEmpty()) return;
 
 					m_einstellungen1->EinnahmenRechnungsposten[i] = dlg.m_konto;
+					m_einstellungen1->EinnahmenUnterkategorien[i] = dlg.m_unterkategorie;
 					char feldid_str[30];
 					_ultoa(dlg.m_feldID, feldid_str, 10);
 					SetErweiterungKey(m_einstellungen1->EinnahmenFeldzuweisungen[i], "ECT", dlg.m_formularname, feldid_str);
@@ -430,6 +431,7 @@ void CEinstellungen4::OnPlus()
 					if (dlg.m_konto.IsEmpty()) return;
 
 					m_einstellungen1->AusgabenRechnungsposten[i] = dlg.m_konto;
+					m_einstellungen1->AusgabenUnterkategorien[i] = dlg.m_unterkategorie;
 					char feldid_str[30];
 					_ultoa(dlg.m_feldID, feldid_str, 10);
 					SetErweiterungKey(m_einstellungen1->AusgabenFeldzuweisungen[i], "ECT", dlg.m_formularname, feldid_str);
@@ -551,6 +553,9 @@ void CEinstellungen4::OnDown()
 		cs = m_einstellungen1->EinnahmenFeldzuweisungen[n];
 		m_einstellungen1->EinnahmenFeldzuweisungen[n] = m_einstellungen1->EinnahmenFeldzuweisungen[n+1];
 		m_einstellungen1->EinnahmenFeldzuweisungen[n+1] = cs;
+		cs = m_einstellungen1->EinnahmenUnterkategorien[n];
+		m_einstellungen1->EinnahmenUnterkategorien[n] = m_einstellungen1->EinnahmenUnterkategorien[n+1];
+		m_einstellungen1->EinnahmenUnterkategorien[n+1] = cs;
 		UpdateList();
 	}
 	else if (m_kontenkategorie == 1)
@@ -561,6 +566,9 @@ void CEinstellungen4::OnDown()
 		cs = m_einstellungen1->AusgabenFeldzuweisungen[n];
 		m_einstellungen1->AusgabenFeldzuweisungen[n] = m_einstellungen1->AusgabenFeldzuweisungen[n+1];
 		m_einstellungen1->AusgabenFeldzuweisungen[n+1] = cs;
+		cs = m_einstellungen1->AusgabenUnterkategorien[n];
+		m_einstellungen1->AusgabenUnterkategorien[n] = m_einstellungen1->AusgabenUnterkategorien[n+1];
+		m_einstellungen1->AusgabenUnterkategorien[n+1] = cs;
 		UpdateList();
 	}
 	m_liste.SetItemState(n, 0, LVIS_SELECTED | LVIS_FOCUSED);
@@ -595,11 +603,13 @@ TRACE3("%d: %s  --  %s\n\r", n, dlg.m_formularname.GetBuffer(0), m_csaFormulare[
 	if (m_kontenkategorie == 0)
 	{
 		dlg.m_konto = m_einstellungen1->EinnahmenRechnungsposten[n];
+		dlg.m_unterkategorie = m_einstellungen1->EinnahmenUnterkategorien[n];
 		dlg.m_feldID = atoi(GetErweiterungKey(m_einstellungen1->EinnahmenFeldzuweisungen[n], "ECT", dlg.m_formularname));
 	}
 	else if (m_kontenkategorie == 1)
 	{
 		dlg.m_konto = m_einstellungen1->AusgabenRechnungsposten[n];
+		dlg.m_unterkategorie = m_einstellungen1->AusgabenUnterkategorien[n];
 		dlg.m_feldID = atoi(GetErweiterungKey(m_einstellungen1->AusgabenFeldzuweisungen[n], "ECT", dlg.m_formularname));
 	}
 	((CComboBox *)GetDlgItem(IDC_KONTENKATEGORIE))->GetLBText(m_kontenkategorie, dlg.m_kategorie);
@@ -611,6 +621,7 @@ TRACE3("%d: %s  --  %s\n\r", n, dlg.m_formularname.GetBuffer(0), m_csaFormulare[
 		if (m_kontenkategorie == 0)
 		{
 			m_einstellungen1->EinnahmenRechnungsposten[n] = dlg.m_konto;
+			m_einstellungen1->EinnahmenUnterkategorien[n] = dlg.m_unterkategorie;
 			char feldid_str[30];
 			_ultoa(dlg.m_feldID, feldid_str, 10);
 			SetErweiterungKey(m_einstellungen1->EinnahmenFeldzuweisungen[n], "ECT", dlg.m_formularname, feldid_str);
@@ -618,6 +629,7 @@ TRACE3("%d: %s  --  %s\n\r", n, dlg.m_formularname.GetBuffer(0), m_csaFormulare[
 		else if (m_kontenkategorie == 1)
 		{
 			m_einstellungen1->AusgabenRechnungsposten[n] = dlg.m_konto;
+			m_einstellungen1->AusgabenUnterkategorien[n] = dlg.m_unterkategorie;
 			char feldid_str[30];
 			_ultoa(dlg.m_feldID, feldid_str, 10);
 			SetErweiterungKey(m_einstellungen1->AusgabenFeldzuweisungen[n], "ECT", dlg.m_formularname, feldid_str);

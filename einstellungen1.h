@@ -44,8 +44,10 @@ public:
 	CBuchungsposten Buchungsposten[100];
 	CString EinnahmenRechnungsposten[100];
 	CString EinnahmenFeldzuweisungen[100];
+	CString EinnahmenUnterkategorien[100];
 	CString AusgabenRechnungsposten[100];
 	CString AusgabenFeldzuweisungen[100];
+	CString AusgabenUnterkategorien[100];
 
 // Dialog Data
 	//{{AFX_DATA(CEinstellungen1)

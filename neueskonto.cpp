@@ -35,6 +35,7 @@ static char THIS_FILE[] = __FILE__;
 
 CNeuesKonto::CNeuesKonto(CWnd* pParent /*=NULL*/)
 	: CDialog(CNeuesKonto::IDD, pParent)
+	, m_unterkategorie(_T(""))
 {
 	//{{AFX_DATA_INIT(CNeuesKonto)
 	m_konto = _T("");
@@ -55,6 +56,8 @@ void CNeuesKonto::DoDataExchange(CDataExchange* pDX)
 	DDX_Text(pDX, IDC_FORMULARNAME, m_formularname);
 	DDX_Text(pDX, IDC_KATEGORIE, m_kategorie);
 	//}}AFX_DATA_MAP
+	DDX_Text(pDX, IDC_UNTERKATEGORIE, m_unterkategorie);
+	DDV_MaxChars(pDX, m_unterkategorie, 70);
 }
 
 

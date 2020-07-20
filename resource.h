@@ -215,6 +215,7 @@
 #define IDC_PLUS2                       1046
 #define IDC_LAND1                       1046
 #define IDC_BIC                         1046
+#define IDC_KONTO2                      1046
 #define IDC_LAND2                       1047
 #define IDC_LAND3                       1048
 #define IDC_KONTAKT_EMAIL               1048
@@ -359,9 +360,9 @@
 #define IDC_MANUELLER_DOWNLOAD          1156
 #define IDC_Q2                          1157
 #define IDC_M4                          1158
-#define IDC_STATIC1                     1158
 #define IDC_STATIC_INFO                 1158
 #define IDC_M5                          1159
+#define IDC_UNTERKATEGORIE              1159
 #define IDC_M6                          1160
 #define IDC_Q3                          1161
 #define IDC_M7                          1162
@@ -512,7 +513,7 @@
 #define _APS_3D_CONTROLS                     1
 #define _APS_NEXT_RESOURCE_VALUE        437
 #define _APS_NEXT_COMMAND_VALUE         32912
-#define _APS_NEXT_CONTROL_VALUE         1159
+#define _APS_NEXT_CONTROL_VALUE         1160
 #define _APS_NEXT_SYMED_VALUE           110
 #endif
 #endif
