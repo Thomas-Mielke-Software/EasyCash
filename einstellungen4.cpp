@@ -468,9 +468,11 @@ void CEinstellungen4::OnMinus()
 			{
 				m_einstellungen1->EinnahmenRechnungsposten[i] = m_einstellungen1->EinnahmenRechnungsposten[i+1];
 				m_einstellungen1->EinnahmenFeldzuweisungen[i] = m_einstellungen1->EinnahmenFeldzuweisungen[i+1];
+				m_einstellungen1->EinnahmenUnterkategorien[i] = m_einstellungen1->EinnahmenUnterkategorien[i+1];
 			}
 			m_einstellungen1->EinnahmenRechnungsposten[99] = "";
 			m_einstellungen1->EinnahmenFeldzuweisungen[99] = "";
+			m_einstellungen1->EinnahmenUnterkategorien[99] = "";
 			UpdateList();
 		}
 		else if (m_kontenkategorie == 1)
@@ -480,9 +482,11 @@ void CEinstellungen4::OnMinus()
 			{
 				m_einstellungen1->AusgabenRechnungsposten[i] = m_einstellungen1->AusgabenRechnungsposten[i+1];
 				m_einstellungen1->AusgabenFeldzuweisungen[i] = m_einstellungen1->AusgabenFeldzuweisungen[i+1];
+				m_einstellungen1->AusgabenUnterkategorien[i] = m_einstellungen1->AusgabenUnterkategorien[i+1];
 			}
 			m_einstellungen1->AusgabenRechnungsposten[99] = "";
 			m_einstellungen1->AusgabenFeldzuweisungen[99] = "";
+			m_einstellungen1->AusgabenUnterkategorien[99] = "";
 			UpdateList();
 		}
 		m_liste.SetItemState(n, 0, LVIS_SELECTED | LVIS_FOCUSED);
@@ -512,6 +516,9 @@ void CEinstellungen4::OnUp()
 		cs = m_einstellungen1->EinnahmenFeldzuweisungen[n];
 		m_einstellungen1->EinnahmenFeldzuweisungen[n] = m_einstellungen1->EinnahmenFeldzuweisungen[n-1];
 		m_einstellungen1->EinnahmenFeldzuweisungen[n-1] = cs;
+		cs = m_einstellungen1->EinnahmenUnterkategorien[n];
+		m_einstellungen1->EinnahmenUnterkategorien[n] = m_einstellungen1->EinnahmenUnterkategorien[n-1];
+		m_einstellungen1->EinnahmenUnterkategorien[n-1] = cs;
 		UpdateList();
 	}
 	else if (m_kontenkategorie == 1)
@@ -522,6 +529,9 @@ void CEinstellungen4::OnUp()
 		cs = m_einstellungen1->AusgabenFeldzuweisungen[n];
 		m_einstellungen1->AusgabenFeldzuweisungen[n] = m_einstellungen1->AusgabenFeldzuweisungen[n-1];
 		m_einstellungen1->AusgabenFeldzuweisungen[n-1] = cs;
+		cs = m_einstellungen1->AusgabenUnterkategorien[n];
+		m_einstellungen1->AusgabenUnterkategorien[n] = m_einstellungen1->AusgabenUnterkategorien[n-1];
+		m_einstellungen1->AusgabenUnterkategorien[n-1] = cs;
 		UpdateList();
 	}
 	m_liste.SetItemState(n, 0, LVIS_SELECTED | LVIS_FOCUSED);
