@@ -7114,6 +7114,8 @@ void CEasyCashView::LoadProfile()
 				bInitRechnungsposten = FALSE;				
 	}
 
+	BOOL bUnterkategorienVorhanden = FALSE;
+
 	// wenn frische Ini-Datei: Rechnungsposten initialisieren mit EÜR-Konten aus XML-Formulardatei
 	if (bInitRechnungsposten)
 	{
@@ -7179,16 +7181,20 @@ void CEasyCashView::LoadProfile()
 								child = felder->GetChild(i);
 								if (!child->GetAttrValue("veraltet") || stricmp(child->GetAttrValue("veraltet"), "ja"))
 								{
+									CString unterkategorie = child->GetAttrValue("unterkategorie");
+									if (!unterkategorie.IsEmpty()) bUnterkategorienVorhanden = TRUE;
 									if (!stricmp(child->GetAttrValue("typ"), "Einnahmen"))
 									{
 										einstellungen1->EinnahmenRechnungsposten[i_e] = child->GetChildValue("name");
 										SetErweiterungKey(einstellungen1->EinnahmenFeldzuweisungen[i_e], "ECT", formular_name, child->GetAttrValue("id"));
+										einstellungen1->EinnahmenUnterkategorien[i_e] = unterkategorie;
 										i_e++;
 									}
 									else if (!stricmp(child->GetAttrValue("typ"), "Ausgaben"))
 									{
 										einstellungen1->AusgabenRechnungsposten[i_a] = child->GetChildValue("name");
 										SetErweiterungKey(einstellungen1->AusgabenFeldzuweisungen[i_a], "ECT", formular_name, child->GetAttrValue("id"));
+										einstellungen1->AusgabenUnterkategorien[i_a] = unterkategorie;
 										i_a++;
 									}
 								}
@@ -7224,6 +7230,7 @@ void CEasyCashView::LoadProfile()
 					einstellungen1->AusgabenRechnungsposten[i] = "VST-Beträge separat";
 					SetErweiterungKey(einstellungen1->AusgabenFeldzuweisungen[i], "ECT", "E/Ü-Rechnung", "1185");
 					SetErweiterungKey(einstellungen1->AusgabenFeldzuweisungen[i], "ECT", "Umsatzsteuer-Voranmeldung", "66");
+					if (bUnterkategorienVorhanden) einstellungen1->AusgabenUnterkategorien[i] = "Unabhängig gebuchte Vorsteuer";
 					WritePrivateProfileString("Allgemein", "VST-Betraege-separat-angelegt", "1", EasyCashIniFilenameBuffer);
 					if (!bVSTBetraegeSeparatAngelegt && !bInitRechnungsposten) AfxMessageBox("Ein Konto 'VST-Beträge separat' wurde angelegt für VST-Beträge, die vom Netto-Betrag entkoppelt sind. Bitte kontrollieren Sie die Formularfeld-Zuweisungen unter Einstellungen->E/Ü-Konten!");
 					bInitVSTSeparat = TRUE;
