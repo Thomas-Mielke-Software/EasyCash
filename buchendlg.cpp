@@ -942,7 +942,12 @@ void BuchenDlg::InitDlg(BOOL bBelasseEinigeFelder)
 		if ((m = ((CComboBox *)GetDlgItem(IDC_EURECHNUNGSPOSTEN))->FindStringExact(0, (*m_ppb)->Konto)) != CB_ERR)
 			((CComboBox *)GetDlgItem(IDC_EURECHNUNGSPOSTEN))->SetCurSel(m);
 		else
-			((CComboBox *)GetDlgItem(IDC_EURECHNUNGSPOSTEN))->SetCurSel(-1);
+		{
+			if ((m = ((CComboBox *)GetDlgItem(IDC_EURECHNUNGSPOSTEN))->FindStringExact(0, "   " + (*m_ppb)->Konto)) != CB_ERR)
+				((CComboBox *)GetDlgItem(IDC_EURECHNUNGSPOSTEN))->SetCurSel(m);
+			else
+				((CComboBox *)GetDlgItem(IDC_EURECHNUNGSPOSTEN))->SetCurSel(-1);
+		}
 
 		for (i = 0; i < ((CListCtrl *)GetDlgItem(IDC_BETRIEB))->GetItemCount(); i++)
 		{
@@ -1054,7 +1059,12 @@ void BuchenDlg::OnSelchangeBeschreibung()
 		if ((m = ((CComboBox *)GetDlgItem(IDC_EURECHNUNGSPOSTEN))->FindStringExact(0, m_pParent->einstellungen1->Buchungsposten[i].Rechnungsposten)) != CB_ERR)
 			((CComboBox *)GetDlgItem(IDC_EURECHNUNGSPOSTEN))->SetCurSel(m);
 		else
-			((CComboBox *)GetDlgItem(IDC_EURECHNUNGSPOSTEN))->SetCurSel(-1);
+		{
+			if ((m = ((CComboBox *)GetDlgItem(IDC_EURECHNUNGSPOSTEN))->FindStringExact(0, "   " + m_pParent->einstellungen1->Buchungsposten[i].Rechnungsposten)) != CB_ERR)
+				((CComboBox *)GetDlgItem(IDC_EURECHNUNGSPOSTEN))->SetCurSel(m);
+			else
+				((CComboBox *)GetDlgItem(IDC_EURECHNUNGSPOSTEN))->SetCurSel(-1);
+		}
 	}
 }
 
@@ -1174,13 +1184,13 @@ void BuchenDlg::OnTimer(UINT nIDEvent)
 		if (n > 1 && ((CComboBox *)GetDlgItem(IDC_EURECHNUNGSPOSTEN))->GetCurSel() == -1)
 		{
 			int m;
-			if ((m = ((CComboBox *)GetDlgItem(IDC_EURECHNUNGSPOSTEN))->FindStringExact(0, "Abschreibungen")) != CB_ERR)
+			if ((m = ((CComboBox *)GetDlgItem(IDC_EURECHNUNGSPOSTEN))->FindString(0, "Abschreibungen")) != CB_ERR)
 				((CComboBox *)GetDlgItem(IDC_EURECHNUNGSPOSTEN))->SetCurSel(m);
-			else if ((m = ((CComboBox *)GetDlgItem(IDC_EURECHNUNGSPOSTEN))->FindStringExact(0, "AfA")) != CB_ERR)
+			else if ((m = ((CComboBox *)GetDlgItem(IDC_EURECHNUNGSPOSTEN))->FindString(0, "AfA")) != CB_ERR)
 				((CComboBox *)GetDlgItem(IDC_EURECHNUNGSPOSTEN))->SetCurSel(m);
-			else if ((m = ((CComboBox *)GetDlgItem(IDC_EURECHNUNGSPOSTEN))->FindStringExact(0, "AfA auf bewegliche Wirtschaftsgüter")) != CB_ERR)
+			else if ((m = ((CComboBox *)GetDlgItem(IDC_EURECHNUNGSPOSTEN))->FindString(0, "AfA auf bewegliche Wirtschaftsgüter")) != CB_ERR)
 				((CComboBox *)GetDlgItem(IDC_EURECHNUNGSPOSTEN))->SetCurSel(m);
-			else if ((m = ((CComboBox *)GetDlgItem(IDC_EURECHNUNGSPOSTEN))->FindStringExact(0, "Abschreibung auf das Anlagevermögen (Afa, GWG)")) != CB_ERR)
+			else if ((m = ((CComboBox *)GetDlgItem(IDC_EURECHNUNGSPOSTEN))->FindString(0, "Abschreibung auf das Anlagevermögen (Afa, GWG)")) != CB_ERR)
 				((CComboBox *)GetDlgItem(IDC_EURECHNUNGSPOSTEN))->SetCurSel(m);			
 		}			
 
@@ -1255,7 +1265,12 @@ void BuchenDlg::OnEditchangeBeschreibung()
 			if ((m = ((CComboBox *)GetDlgItem(IDC_EURECHNUNGSPOSTEN))->FindStringExact(0, m_pParent->einstellungen1->Buchungsposten[i].Rechnungsposten)) != CB_ERR)
 				((CComboBox *)GetDlgItem(IDC_EURECHNUNGSPOSTEN))->SetCurSel(m);
 			else
-				((CComboBox *)GetDlgItem(IDC_EURECHNUNGSPOSTEN))->SetCurSel(-1);
+			{
+				if ((m = ((CComboBox *)GetDlgItem(IDC_EURECHNUNGSPOSTEN))->FindStringExact(0, "   " + m_pParent->einstellungen1->Buchungsposten[i].Rechnungsposten)) != CB_ERR)
+					((CComboBox *)GetDlgItem(IDC_EURECHNUNGSPOSTEN))->SetCurSel(m);
+				else
+					((CComboBox *)GetDlgItem(IDC_EURECHNUNGSPOSTEN))->SetCurSel(-1);
+			}
 		}
 		else
 			MessageBeep(0xFFFFFFFF);
