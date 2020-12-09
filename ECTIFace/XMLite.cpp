@@ -269,7 +269,6 @@ LPTSTR _tcsenistr( LPCTSTR psz, LPCTSTR str, int len, int escape )
 {
 	LPTSTR pch = (LPTSTR)psz;
 	LPTSTR prev_escape = NULL;
-	LPTSTR des = (LPTSTR)str;
 	int i = 0;
 	
 	while( pch && *pch )

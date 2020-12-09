@@ -1375,6 +1375,19 @@ Journalansicht
 > den einzellnen tabellen) Du verstehst was ich meine ????
 tm: Ja. Notiert.
 
+>  3. Auch wäre hier eine hübsche Verbesserung, wenn *alle genutzen Konten
+>     links in einer Spalte angezeigt würden*. Darauf könnte dann ein
+>     Schnellzugriff erfolgen und man könnte direkt auf das gesuchte Konto
+>     zuspringen, ohne lange zu scrollen. Auch diese Möglichkeit gibt es
+>     durch den Knopf "Konto" oben, da wird allerdings NUR dieses Kono
+>     angezeigt (was zur weiteren Arbeit wieder rückgängig gemacht werden
+>     muss) - und nicht schlicht zu dem Konto /innerhalb //aller
+>     Kontenansichten/ gesprungen.
+>     Mit der Spalte links ist dies ja auch leicht machbar, da das
+>     Programm (bei mir) nur die halbe Bildschirmbreite benötigt.
+Das ist eine gute Idee, so eine Art Lesezeichen-Leiste... Habe ich mir notiert.
+Und ja: Das Fenster-Layout zu überarbeiten steht bei mir auf dem Zettel. 
+
 
 Journalausdruck
 ---------------
@@ -1670,6 +1683,7 @@ Dauerbuchungen wöchentlich.
 
 Außerdem sollte bei den Dauerbuchungen noch Häufigkeit "wöchentlich" eingefügt werden.
 
+Die erzeugten Buchungen im Journalfenster (nur bis Programmende) mit einer speziellen Farbe hinterlegen.
 
 automatische Belegnummernvergabe
 --------------------------------
@@ -1724,3 +1738,5 @@ automatische Generierung von Buchungen für USt-Zahlungen oder -Erstattungen
 
 Passwortschutz der ECT-Datei
 
+Hinweis, dass wenn Buchungen über mehr als zwei Jahre gehen, eine neue Datei mit 
+der Jahreswechselfunktion angelegt werden sollte.
