@@ -214,7 +214,7 @@ void CFormularCtrl::AboutBox()
 {
 	CDialog dlgAbout(IDD_ABOUTBOX_FORMULAR);
 	if (dlgAbout.DoModal() == IDCANCEL)
-		ShellExecute(m_hWnd, "open", "http://easyct.no-ip.org/readarticle.php?article_id=23#Formular", 
+		ShellExecute(m_hWnd, "open", "http://www.easyct.de/readarticle.php?article_id=23#Formular", 
 			NULL, ".", SW_SHOWNORMAL);		
 }
 

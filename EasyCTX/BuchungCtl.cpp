@@ -223,7 +223,7 @@ void CBuchungCtrl::AboutBox()
 {
 	CDialog dlgAbout(IDD_ABOUTBOX_BUCHUNG);
 	if (dlgAbout.DoModal() == IDCANCEL)
-		ShellExecute(m_hWnd, "open", "http://easyct.no-ip.org/readarticle.php?article_id=23#Buchung", 
+		ShellExecute(m_hWnd, "open", "https://www.easyct.de/readarticle.php?article_id=23#Buchung", 
 			NULL, ".", SW_SHOWNORMAL);		
 
 }

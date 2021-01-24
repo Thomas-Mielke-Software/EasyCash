@@ -1528,7 +1528,7 @@ So mache ich dies auch derzeit, damit weiß ich und mein Partner immer
 wer was an USt. zahlen muß.
 UND:
 > Ich habe bisher MSMoney genutzt, das diese Möglichkeit der Differenzierung über
-> "Geschäftsbereiche" bietet. 
+> "Geschäftsbereiche" bietet.
 tm: Ich hatte bereits eine ähnliche Anfrage. Es ging darum, einzelne Gesellschafter 
     einer GbR auseinanderzuhalten. Ich werde mir das mal notieren.
 
@@ -1740,3 +1740,13 @@ Passwortschutz der ECT-Datei
 
 Hinweis, dass wenn Buchungen über mehr als zwei Jahre gehen, eine neue Datei mit 
 der Jahreswechselfunktion angelegt werden sollte.
+
+> Wenn ich zum Beispiel Bürobedarf in das Konto „Porto, Telefon, Bürobedarf“ eintrage, bekomme ich beim Ausdruck den Hinweis das Feld… ist veraltet - Eintrag in ….. Damit bin ich schon wieder überfordert („Blondine“ und „Zahlen-Blind“).
+
+> Könnten Sie nicht die Konten so aktualisieren, dass der *Kontennahme/die Kontenbeschreibung*
+> genau das aussagt, was dort erfasst werden soll und dann wird der Inhalt in die richtigen 
+> Felder eingesetzt?
+Viele, die EC&T nutzen, haben ihren eigenen, angepassten Kontenrahmen, auf den sie nicht 
+verzichten möchten. Das ist tatsächlich ein Kompromiss zwischen Einfachheit und Freiheit...
+Tatsächlich ist das die erste Anfrage dazu. Ich habs mir mal notiert und vielleicht fällt mir 
+eine Lösung ein, die allen Nutzern gerecht wird. 

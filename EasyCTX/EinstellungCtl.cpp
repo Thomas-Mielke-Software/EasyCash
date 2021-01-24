@@ -205,7 +205,7 @@ void CEinstellungCtrl::AboutBox()
 {
 	CDialog dlgAbout(IDD_ABOUTBOX_EINSTELLUNG);
 	if (dlgAbout.DoModal() == IDCANCEL)
-		ShellExecute(m_hWnd, "open", "http://easyct.no-ip.org/readarticle.php?article_id=23#Einstellung", 
+		ShellExecute(m_hWnd, "open", "http://www.easyct.de/readarticle.php?article_id=23#Einstellung", 
 			NULL, ".", SW_SHOWNORMAL);		
 }
 
