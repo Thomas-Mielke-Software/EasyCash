@@ -6620,7 +6620,7 @@ void CEasyCashView::OnViewJournalDatum()
 	DestroyPlugin();
 			
 	// Formularansicht zurücksetzen
-	m_GewaehltesFormular = -1;
+	m_GewaehltesFormular = nSelected = -1;
 
 	GetParent()->ShowWindow(SW_SHOW);
 //VS9
@@ -6637,7 +6637,7 @@ void CEasyCashView::OnViewJournalKonten()
 	DestroyPlugin();
 			
 	// Formularansicht zurücksetzen
-	m_GewaehltesFormular = -1;
+	m_GewaehltesFormular = nSelected = -1;
 
 	GetParent()->ShowWindow(SW_SHOW);
 //VS9
@@ -6705,7 +6705,7 @@ void CEasyCashView::OnViewJournalBestkonten()
 	DestroyPlugin();
 			
 	// Formularansicht zurücksetzen
-	m_GewaehltesFormular = -1;
+	m_GewaehltesFormular = nSelected = -1;
 
 	GetParent()->ShowWindow(SW_SHOW);
 //VS9
