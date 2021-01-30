@@ -371,7 +371,7 @@ END
 
 IDR_ANSICHT_FORMULARE MENU 
 BEGIN
-    MENUITEM "Dummy",                       IDC_DUMMY
+    MENUITEM "Dummy",                       ID_DUMMY
 END
 
 IDR_ANSICHT_PLUGINS MENU 

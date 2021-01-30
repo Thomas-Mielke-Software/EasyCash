@@ -502,6 +502,7 @@ void CMainFrame::Add_QAT ()
 	qatState.AddCommand(ID_VIEW_JOURNAL_BESTKONTEN, FALSE);
 	qatState.AddCommand(ID_VIEW_OPTIONS);
 	qatState.AddCommand(ID_ANSICHT_FORMULARE, FALSE);
+	qatState.AddCommand(ID_FORMULAR_INFO, FALSE);
 	qatState.AddCommand(ID_FORMULAR_NEU, FALSE);
 	qatState.AddCommand(ID_FILE_PLUGINMANAGER, FALSE);
 	qatState.AddCommand(ID_NEXT, FALSE);

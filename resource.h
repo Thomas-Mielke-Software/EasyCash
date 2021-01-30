@@ -215,7 +215,6 @@
 #define IDC_PLUS2                       1046
 #define IDC_LAND1                       1046
 #define IDC_BIC                         1046
-#define IDC_KONTO2                      1046
 #define IDC_LAND2                       1047
 #define IDC_LAND3                       1048
 #define IDC_KONTAKT_EMAIL               1048
@@ -500,6 +499,8 @@
 #define ID_300                          32909
 #define ID_ZOOMFAKTOR_300               32910
 #define ID_SEP                          32911
+#define ID_DUMMY                        32912
+#define ID_FORMULAR_INFO                32913
 #define ID_CMD_CUSTOM_MRU               48000
 #define ID_STATUS                       61445
 #define ID_SALDO                        61446
@@ -512,7 +513,7 @@
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_3D_CONTROLS                     1
 #define _APS_NEXT_RESOURCE_VALUE        437
-#define _APS_NEXT_COMMAND_VALUE         32912
+#define _APS_NEXT_COMMAND_VALUE         32914
 #define _APS_NEXT_CONTROL_VALUE         1160
 #define _APS_NEXT_SYMED_VALUE           110
 #endif

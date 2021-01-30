@@ -297,6 +297,7 @@ protected:
 	afx_msg void OnViewJournalSwitch();
 	afx_msg void OnMouseMove(UINT nFlags, CPoint point);
 	afx_msg void OnLButtonDblClk(UINT nFlags, CPoint point);
+	afx_msg void OnFormularInfo();
 	afx_msg void OnFormularNeu();
 	afx_msg void OnFilePrintPreview();
 	afx_msg void OnFindNext();

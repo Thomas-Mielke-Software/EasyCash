@@ -83,6 +83,7 @@ BEGIN_MESSAGE_MAP(CEasyCashView, CScrollView)
 	ON_COMMAND(ID_VIEW_JOURNAL_SWITCH, OnViewJournalSwitch)
 	ON_WM_MOUSEMOVE()
 	ON_WM_LBUTTONDBLCLK()
+	ON_COMMAND(ID_FORMULAR_INFO, OnFormularInfo)
 	ON_COMMAND(ID_FORMULAR_NEU, OnFormularNeu)
 	ON_COMMAND(ID_FILE_PRINT_PREVIEW, OnFilePrintPreview)
 	ON_COMMAND(ID_NEXT, OnFindNext)
@@ -467,12 +468,14 @@ Für den Fall, dass die Daten verschoben wurden, ändern Sie bitte das Datenverzei
 		//int ii;
 		//for (ii = 0; ii < m_csaFormularnamen.GetSize(); ii++)
 		//	TRACE("%02d: %s // %s // %s\r\n", ii, (LPCTSTR)m_csaFormularnamen[ii], (LPCTSTR)m_csaFormularfilter[ii], (LPCTSTR)m_csaFormulare[ii]);
-
 	}
 	if (AfxGetMainWnd() && AfxGetMainWnd()->GetMenu() && AfxGetMainWnd()->GetMenu()->GetSubMenu(4)) //VS9
 		AfxGetMainWnd()->GetMenu()->GetSubMenu(4)->InsertMenu(AfxGetMainWnd()->GetMenu()->GetSubMenu(4)->GetMenuItemCount(), MF_BYPOSITION, ID_FORMULAR_NEU, "<neues Formular erzeugen>");
 	else
-		if (pBtnAnsichtFormulare) pBtnAnsichtFormulare->AddSubItem(new CMFCRibbonButton(ID_FORMULAR_NEU, "<neues Formular erzeugen>"));
+	{
+		if (pBtnAnsichtFormulare) pBtnAnsichtFormulare->AddSubItem(new CMFCRibbonButton(ID_FORMULAR_INFO, "<weitere Formulare ...>"));
+		if (pBtnAnsichtFormulare) pBtnAnsichtFormulare->AddSubItem(new CMFCRibbonButton(ID_FORMULAR_NEU, "<eigenes Formular erzeugen>"));
+	}
 
 	ASSERT(m_csaFormulare.GetSize() == m_csaFormularnamen.GetSize());
 	ASSERT(m_csaFormulare.GetSize() == m_csaFormularfilter.GetSize());
@@ -8131,6 +8134,12 @@ BOOL CEasyCashView::OnCmdMsg(UINT nID, int nCode, void* pExtra, AFX_CMDHANDLERIN
 	}
 
 	return CScrollView::OnCmdMsg(nID, nCode, pExtra, pHandlerInfo);
+}
+
+void CEasyCashView::OnFormularInfo()
+{
+	if (AfxMessageBox("Hinweis: Die Formulare für EasyCash&Tax werden üblicherweise bis Ende Januar über ein Update des Hauptprogramms zur Verfügung gestellt. Um zu prüfen, ob es schon ein Update gibt, einfach auf das rote Puzzlestück im Ansicht-Menübereich drücken. Bis zur Release des Updates kann man für eine Vorschau gern das Formular des Vorjahres benutzen. Registrierte User werden per E-Mail benachrichtigt, unregistrierte können sich auf der Homepage www.easyct.de auf dem Laufenden halten.\r\n\r\nÄltere Formulare können über Downloads -> Formulararchiv auf www.easyct.de bezogen werden. Jetzt das Formulararchiv im Browser öffnen?", MB_YESNO) == IDYES)
+		ShellExecute(m_hWnd, "open", "https://www.easyct.de/downloads.php?cat_id=7", NULL, ".", SW_SHOWNORMAL);
 }
 
 void CEasyCashView::OnFormularNeu() 
