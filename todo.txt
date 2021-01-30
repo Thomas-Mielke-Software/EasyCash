@@ -609,6 +609,12 @@ v2.37
 v2.38
 - Versuchter Bugfix: Absturz beim Updaten via Plugin-Manager
 
+v2.39
+- Menüpunkt <weitere Formulare> hinzugefügt mit Hinweisen zu Updatezeitpunkten und zum Formular-Archiv
+- Abfrage beim Jahreswechsel, ob alle Dauerbuchungen bereits bis Dezembeer (bzw. Bis-Datum) ausgeführt wurden
+
+
+
 =============================================================
 AB HIER UNSORTIERTE FEATURE-WÜNSCHE UND HINWEISE VON NUTZERN
 WEITER UNTEN IST BEREITS NACH FUNKTIONALER KATEGORIE SORTIERT
@@ -923,13 +929,6 @@ Dauerbuchungen
      beim Datum vertippt hat), sollte ein Hinweis kommen
 - eigentlich könnte sich das Programm auch merken, welche Buchungen DB
   sind, so daß man die Beträge im nachhinein noch ändern kann
-- vergessen auszuführen?
-  > ich habe meine Dauerbuchungen immer eingegeben, jedoch hab ich nie auf
-  > /*Dauerbuchungen ausführe*/n geklickt. Bedeutet das, dass meine mit easy
-  > cash & tax per elster übermittelten Vorsteueranmeldungen und
-  > Einkommenssteuererklärungen also nie meine laufenden Dauerbuchungen
-  > enthalten haben?   
-  => Ich werde mal überlegen, wie ich das in Zukunft verhindern kann. Evtl. eine Abfrage beim Jahreswechsel...
 
 Nutzen bzw. Funktion
 - Voranmeldungszeitraum : Jährlich fehlt

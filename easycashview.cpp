@@ -6038,6 +6038,22 @@ void CEasyCashView::OnFileJahreswechsel()
 {
 	CEasyCashDoc *pDoc = GetDocument();
 
+	// sind da noch Dauerbuchungen auszuführen?
+	CTime aktualisiert_bis_jahresende(pDoc->nJahr, 12, 31, 0, 0, 0);
+	CString csMeldung = "";
+	CDauerbuchung *dbp;
+	for (dbp = pDoc->Dauerbuchungen; dbp; dbp = dbp->next)
+	{
+		if (dbp->AktualisiertBisDatum < dbp->BisDatum && dbp->AktualisiertBisDatum < aktualisiert_bis_jahresende)
+		{
+			if (csMeldung != "") csMeldung += ", ";
+			csMeldung += dbp->Beschreibung;
+		}
+	}
+	if (csMeldung != "")
+		if (AfxMessageBox((CString)"Achtung: Es wurde(n) folgende Dauerbuchung(en) noch nicht bis zum Jahresende bzw. Bis-Datum ausgeführt: " + csMeldung + "\r\n\r\nSoll jetzt wirklich der Jahresabschluss gemacht werden?", MB_YESNO) == IDNO)
+			return;
+
 	CString csMessageText;
 	csMessageText.Format("Es wird dringend empfohlen am Ende des Jahres eine Sicherungskopie der Daten anzulegen. Es wird jetzt im Datenverzeichnis ein Unterverzeichnis 'Backup%04d-Jahreswechsel' angelegt, wo die Daten des beendeten Buchungsjahrs gespeichert werden. Kopieren Sie das Verzeichnis möglichst gleich auf ein externes Medium, z.B. einen USB-Speicherstick. Um die gesetzlichen Vorgaben vollständig zu erfüllen, muss die Datensicherung aber auf einer CD-ROM geschehen, die nicht mehr geändert werden kann. Gespeichert wird die Buchungsdatei (Jahr%04d.eca), die Einstellungsdaten inkl. Kontenrahmen (easyct.ini) und jeweils ein CSV-Export der Einnahmen und Ausgaben (easyct_E.csv und easyct_A.csv). Die CD-ROM muss dann für min. 10 Jahre an einem sicheren Ort aufbewahrt werden.", pDoc->nJahr, pDoc->nJahr);
 	if (AfxMessageBox(csMessageText, MB_OKCANCEL) == IDOK)
