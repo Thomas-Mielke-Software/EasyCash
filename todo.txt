@@ -613,7 +613,7 @@ v2.39
 - Menüpunkt <weitere Formulare> hinzugefügt mit Hinweisen zu Updatezeitpunkten und zum Formular-Archiv
 - Abfrage beim Jahreswechsel, ob alle Dauerbuchungen bereits bis Dezembeer (bzw. Bis-Datum) ausgeführt wurden
 - Selektierte Zeilen werden beim Wechsel der Journalansicht jetzt deselektiert.
-
+- neue Formulare
 
 =============================================================
 AB HIER UNSORTIERTE FEATURE-WÜNSCHE UND HINWEISE VON NUTZERN
