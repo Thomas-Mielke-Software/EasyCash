@@ -29,6 +29,7 @@
 #include "einstellungen4.h"
 #include "einstellungen5.h"
 #include "Formularfeld.h"
+#include "Navigation.h"
 #include "..\GrafLib\cimage\cimage.h"
 
 class BuchenDlg;
@@ -82,6 +83,7 @@ protected: // create from serialization only
 // Attributes
 public:
 	CEasyCashDoc* GetDocument();
+	CNavigation *m_pNavigationWnd;
 
 	// Einstellungsdialogbox
 	CPropertySheet *propdlg;

@@ -141,6 +141,7 @@ CEasyCashView::CEasyCashView()
 	pBuchungAendernDlg = NULL;
 	pFormularfeldDlg = NULL;
 	pPluginWnd = NULL;
+	m_pNavigationWnd = NULL;
 	nSelected = -1;
 	ptFeldmarke.x = 0;
 	ptFeldmarke.y = 0;

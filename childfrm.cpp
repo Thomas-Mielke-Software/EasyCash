@@ -21,8 +21,8 @@
 #include "stdafx.h"
 #include "EasyCash.h"
 #include "ECTIFace\EasyCashDoc.h"
-#include "Navigation.h"
 #include "EasyCashView.h"
+#include "Navigation.h"
 
 #include "ChildFrm.h"
 #include "MainFrm.h"
@@ -94,21 +94,25 @@ BOOL CChildFrame::OnCreateClient(LPCREATESTRUCT /*lpcs*/, CCreateContext* pConte
 
     if (!m_wndSplitter.CreateStatic(this, 1, 2))   
     {   
-        MessageBox("Error setting up splitter frames!", "Init Error!", MB_OK | MB_ICONERROR);   
+        MessageBox("Fehler beim erzeugen des geteilten Journalfensters (CreateStatic).", "Initialisierungsfehler", MB_OK | MB_ICONERROR);   
         return FALSE;   
     }  
 
-    if (!m_wndSplitter.CreateView( 0, 0, RUNTIME_CLASS(CEasyCashView), CSize(cr.Width()/2, cr.Height()), pContext ) )   
+    if (!m_wndSplitter.CreateView( 0, 0, RUNTIME_CLASS(CEasyCashView), CSize(cr.Width()/2, cr.Height()), pContext ))   
     {   
-        MessageBox("Error setting up splitter frames!", "Init Error!", MB_OK | MB_ICONERROR);  
+        MessageBox("Fehler beim erzeugen des geteilten Journalfensters (CEasyCashView).", "Initialisierungsfehler", MB_OK | MB_ICONERROR);  
         return FALSE;   
     }  
 
     if (!m_wndSplitter.CreateView( 0, 1, RUNTIME_CLASS(CNavigation), CSize(cr.Width()/2, cr.Height()), pContext))   
     {    
-        MessageBox("Error setting up splitter frames!", "Init Error!", MB_OK | MB_ICONERROR);  
+        MessageBox("Fehler beim erzeugen des geteilten Journalfensters (CNavigation).", "Initialisierungsfehler", MB_OK | MB_ICONERROR);  
 		return FALSE;   
     } 
+
+	// Navigaion und view sollen voneinander wissen:
+	((CEasyCashView*)m_wndSplitter.GetPane(0, 0))->m_pNavigationWnd = (CNavigation*)m_wndSplitter.GetPane(0, 1);
+	((CNavigation*)m_wndSplitter.GetPane(0, 1))->m_pViewWnd = (CEasyCashView*)m_wndSplitter.GetPane(0, 0);
 
     m_bInitSplitter = TRUE;  
 
@@ -139,7 +143,16 @@ void CChildFrame::ActivateFrame(int nCmdShow)
 //VS9			}
 //VS9		}
 */	}
-	
+
+    // if another window is open, use default
+    if(GetMDIFrame()->MDIGetActive())
+    {
+        CMDIChildWnd::ActivateFrame(nCmdShow);
+    }
+    else // else open the child window maximized.
+    {
+        CMDIChildWnd::ActivateFrame(SW_SHOWMAXIMIZED);
+    }	
 	
 	CMDIChildWndEx::ActivateFrame(nCmdShow);
 }
@@ -162,9 +175,9 @@ void CChildFrame::OnSize(UINT nType, int cx, int cy)
     if (m_bInitSplitter && nType != SIZE_MINIMIZED)  
     {  
         m_wndSplitter.SetRowInfo( 0, cy, 0 );  
-        m_wndSplitter.SetColumnInfo(0, cr.Width() * 9 / 20, 50);  
-        m_wndSplitter.SetColumnInfo(1, cr.Width() * 1 / 20, 50);  
+        m_wndSplitter.SetColumnInfo(0, cr.Width() * 9 / 10, 50);  
+        m_wndSplitter.SetColumnInfo(1, cr.Width() * 1 / 10, 50);  
 
         m_wndSplitter.RecalcLayout();  
-    } 
+    }
 }
