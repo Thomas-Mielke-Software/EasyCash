@@ -21,6 +21,8 @@
 #include "stdafx.h"
 #include "EasyCash.h"
 #include "ECTIFace\EasyCashDoc.h"
+#include "Navigation.h"
+#include "EasyCashView.h"
 
 #include "ChildFrm.h"
 #include "MainFrm.h"
@@ -42,6 +44,7 @@ BEGIN_MESSAGE_MAP(CChildFrame, CMDIChildWndEx)
 		//    DO NOT EDIT what you see in these blocks of generated code !
 	//}}AFX_MSG_MAP
 	ON_WM_MDIACTIVATE()
+	ON_WM_SIZE()
 END_MESSAGE_MAP()
 
 /////////////////////////////////////////////////////////////////////////////
@@ -49,7 +52,7 @@ END_MESSAGE_MAP()
 
 CChildFrame::CChildFrame()
 {
-	// TODO: add member initialization code here
+	m_bInitSplitter = false;
 	
 }
 
@@ -83,6 +86,34 @@ void CChildFrame::Dump(CDumpContext& dc) const
 
 /////////////////////////////////////////////////////////////////////////////
 // CChildFrame message handlers
+
+BOOL CChildFrame::OnCreateClient(LPCREATESTRUCT /*lpcs*/, CCreateContext* pContext)
+{
+    CRect cr;  
+    GetWindowRect( &cr );  
+
+    if (!m_wndSplitter.CreateStatic(this, 1, 2))   
+    {   
+        MessageBox("Error setting up splitter frames!", "Init Error!", MB_OK | MB_ICONERROR);   
+        return FALSE;   
+    }  
+
+    if (!m_wndSplitter.CreateView( 0, 0, RUNTIME_CLASS(CEasyCashView), CSize(cr.Width()/2, cr.Height()), pContext ) )   
+    {   
+        MessageBox("Error setting up splitter frames!", "Init Error!", MB_OK | MB_ICONERROR);  
+        return FALSE;   
+    }  
+
+    if (!m_wndSplitter.CreateView( 0, 1, RUNTIME_CLASS(CNavigation), CSize(cr.Width()/2, cr.Height()), pContext))   
+    {    
+        MessageBox("Error setting up splitter frames!", "Init Error!", MB_OK | MB_ICONERROR);  
+		return FALSE;   
+    } 
+
+    m_bInitSplitter = TRUE;  
+
+    return TRUE;  
+}
 
 void CChildFrame::ActivateFrame(int nCmdShow) 
 {
@@ -120,4 +151,20 @@ void CChildFrame::OnMDIActivate(BOOL bActivate, CWnd* pActivateWnd, CWnd* pDeact
 	// // Saldo im status bar aktualisieren, z.B. bei Strg-Tab
 	if (bActivate)
 		((CMainFrame*)m_pMDIFrame)->UpdateSaldo();
+}
+
+void CChildFrame::OnSize(UINT nType, int cx, int cy)
+{
+    CMDIChildWnd::OnSize(nType, cx, cy);  
+    CRect cr;  
+    GetWindowRect(&cr);  
+
+    if (m_bInitSplitter && nType != SIZE_MINIMIZED)  
+    {  
+        m_wndSplitter.SetRowInfo( 0, cy, 0 );  
+        m_wndSplitter.SetColumnInfo(0, cr.Width() * 9 / 20, 50);  
+        m_wndSplitter.SetColumnInfo(1, cr.Width() * 1 / 20, 50);  
+
+        m_wndSplitter.RecalcLayout();  
+    } 
 }

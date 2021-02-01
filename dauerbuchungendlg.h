@@ -73,6 +73,10 @@ protected:
 	afx_msg void OnDestroy();
 	afx_msg void OnTimer(UINT nIDEvent);
 	afx_msg void OnSelchangeBeschreibung();
+	afx_msg BOOL OnTtnNeedText(UINT id, NMHDR* pNMHDR, LRESULT* pResult);
 	//}}AFX_MSG
 	DECLARE_MESSAGE_MAP()
+public:
+	afx_msg void OnEnChangeDatumVonMonat();
+	afx_msg void OnEnChangeDatumVonJahr();
 };

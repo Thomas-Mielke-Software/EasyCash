@@ -733,6 +733,10 @@
 				</FileConfiguration>
 			</File>
 			<File
+				RelativePath=".\Navigation.cpp"
+				>
+			</File>
+			<File
 				RelativePath="nbMessageBox.cpp"
 				>
 				<FileConfiguration
@@ -1355,6 +1359,10 @@
 			</File>
 			<File
 				RelativePath="MandantName.h"
+				>
+			</File>
+			<File
+				RelativePath=".\Navigation.h"
 				>
 			</File>
 			<File

@@ -70,6 +70,7 @@ BEGIN_MESSAGE_MAP(DauerbuchungenDlg, CDialog)
 	ON_WM_DESTROY()
 	ON_WM_TIMER()
 	ON_CBN_SELCHANGE(IDC_BESCHREIBUNG, OnSelchangeBeschreibung)
+	ON_NOTIFY_EX(TTN_NEEDTEXT, 0, OnTtnNeedText)
 	//}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 
@@ -82,6 +83,8 @@ END_MESSAGE_MAP()
 BOOL DauerbuchungenDlg::OnInitDialog() 
 {
 	CDialog::OnInitDialog();
+
+	EnableToolTips();
 	
 	((CEdit *)GetDlgItem(IDC_BESCHREIBUNG))->LimitText(27);
 
@@ -374,7 +377,7 @@ void DauerbuchungenDlg::OnOK()
 		(*p)->BisDatum = *pdatb;	delete pdatb; 
 		if ((*p)->VonDatum > (*p)->BisDatum)
 		{
-			MessageBox("Von-Datum muß kleiner sein als Bis-Datun!", NULL, MB_ICONSTOP);
+			MessageBox("Von-Datum muß kleiner sein als Bis-Datum!", NULL, MB_ICONSTOP);
 			GetDlgItem(IDC_DATUM_VON_MONAT)->SetFocus();
 			goto error_delete_buchung;
 		}
@@ -403,10 +406,17 @@ void DauerbuchungenDlg::OnOK()
 			if (ja > 3000) ja = 3000;
 
 			(*p)->AktualisiertBisDatum = CTime(ja, ma, 1, 0, 0, 0);
+
+			if ((*p)->AktualisiertBisDatum > (*p)->BisDatum)
+			{
+				MessageBox("Hinweis: Das Aktualisiert-Bis-Datum liegt nach dem Bis-Datum. Diese Dauerbuchung wird deshalb nicht dazu führen, dass reale Buchungen erzeugt werden.", NULL, MB_ICONSTOP);
+				GetDlgItem(IDC_DATUM_VON_MONAT)->SetFocus();
+				goto error_delete_buchung;
+			}
 		}
 		else
 		{
-			CTime data(1980, 1, 1, 0, 0, 0);
+			CTime data(2000, 1, 1, 0, 0, 0);
 			if (newFlag) (*p)->AktualisiertBisDatum = data;	
 		}
 		
@@ -585,9 +595,10 @@ void DauerbuchungenDlg::InitCtrls()
 	SetDlgItemText(IDC_DATUM_BIS_MONAT, "12");
 	sprintf(buf, "%d", (int)now.GetYear());
 	SetDlgItemText(IDC_DATUM_VON_JAHR, buf);
+	sprintf(buf, "%d", (int)now.GetYear() + 50);
 	SetDlgItemText(IDC_DATUM_BIS_JAHR, buf);
 	SetDlgItemText(IDC_DATUM_AKT_MONAT, "1");
-	SetDlgItemText(IDC_DATUM_AKT_JAHR, "1980");
+	SetDlgItemText(IDC_DATUM_AKT_JAHR, "2000");
 	SetDlgItemText(IDC_BESCHREIBUNG, "");
 	SetDlgItemText(IDC_BELEGNUMMER2, "");
 	SetDlgItemText(IDC_BETRAG, "");
@@ -763,4 +774,71 @@ void DauerbuchungenDlg::OnSelchangeBeschreibung()
 		else
 			((CComboBox *)GetDlgItem(IDC_EURECHNUNGSPOSTEN))->SetCurSel(-1);
 	}
+}
+
+BOOL DauerbuchungenDlg::OnTtnNeedText(UINT id, NMHDR* pNMHDR, LRESULT* pResult)
+{
+	UNREFERENCED_PARAMETER(id);
+
+	NMTTDISPINFO* pTTT = (NMTTDISPINFO*)pNMHDR;
+	UINT_PTR nID = pNMHDR->idFrom;
+	BOOL bRet = FALSE;
+
+	if (pTTT->uFlags & TTF_IDISHWND)
+	{
+		// idFrom is actually the HWND of the tool
+		nID = ::GetDlgCtrlID((HWND)nID);
+		switch (nID)
+		{
+		case IDC_Neu: pTTT->lpszText = _T("neue Dauerbuchung anlegen"); goto finish;
+		case IDC_AENDERN: pTTT->lpszText = _T("bestehende Dauerbuchung ändern -- bitte zuvor oben in der Liste die gewünschte Dauerbuchung auswählen"); goto finish;
+		case IDC_LOESCHEN: pTTT->lpszText = _T("bestehende Dauerbuchung löschen -- bitte zuvor oben in der Liste die gewünschte Dauerbuchung auswählen"); goto finish;
+		case IDC_EINNAHMEN: pTTT->lpszText = _T("zu erzeugende Buchungen sollen vom Typ 'Einnahmen' sein"); goto finish;
+		case IDC_AUSGABEN: pTTT->lpszText = _T("zu erzeugende Buchungen sollen vom Typ 'Ausgaben' sein"); goto finish;
+		case IDC_MONATLICH: pTTT->lpszText = _T("die Buchung wird monatlich erzeugt"); goto finish;
+		case IDC_QUARTALSMAESSIG: pTTT->lpszText = _T("die Buchung wird vierteljährlich erzeugt"); goto finish;
+		case IDC_HALBJAEHRLICH: pTTT->lpszText = _T("die Buchung wird halbjährlich erzeugt"); goto finish;
+		case IDC_JAEHRLICH: pTTT->lpszText = _T("die Buchung wird halbjährlich erzeugt"); goto finish;
+		case IDC_2MONATLICH: pTTT->lpszText = _T("die Buchung wird alle zwei Monate erzeugt"); goto finish;
+		case IDC_DATUM_VON_STATIC:
+		case IDC_DATUM_VON_MONAT: pTTT->lpszText = _T("Monat der erste Ausführung"); goto finish;
+		case IDC_DATUM_VON_JAHR: pTTT->lpszText = _T("Jahr der erste Ausführung"); goto finish;
+		case IDC_DATUM_BIS_STATIC: 
+		case IDC_DATUM_BIS_MONAT: pTTT->lpszText = _T("Monat der letzten Ausführung"); goto finish;
+		case IDC_DATUM_BIS_JAHR: pTTT->lpszText = _T("Jahr der letzten Ausführung"); goto finish;
+		case IDC_DATUM_TAG_STATIC:
+		case IDC_DATUM_TAG: pTTT->lpszText = _T("Tag im Monat, die in das Buchungsdatum übernommen wird"); goto finish;
+		case IDC_DATUM_AKT_STATIC:
+		case IDC_DATUM_AKT_MONAT: 
+		case IDC_DATUM_AKT_JAHR: pTTT->lpszText = _T("hiermit merkt sich das Programm, bis wann die Buchungen schon ausgeführt wurden; sollte anfangs vor dem Von-Datum liegen; durch zurücksetzen lassen sich Dauerbuchungen noch einmal ausführen"); goto finish;
+		case IDC_BETRAG_STATIC:
+		case IDC_BETRAG: pTTT->lpszText = _T("Geldbetrag, der wiederholt werden soll"); goto finish;
+		case IDC_BESCHREIBUNG_STATIC:
+		case IDC_BESCHREIBUNG: pTTT->lpszText = _T("Buchungs-Beschreibungstext, der wiederholt werden soll"); goto finish;
+		case IDC_BELEGNUMMER2_STATIC:
+		case IDC_BELEGNUMMER2: pTTT->lpszText = _T("Buchungs-Belegnummer, der wiederholt werden soll"); goto finish;
+		case IDC_PLATZHALTER_STATIC: pTTT->lpszText = _T("$J = Jahr vierstellig, $j = Jahr zweistellig, $q = Quartal, $h = Halbjahr, $2 = 2-Monats-Zeitraum, $m = Monat (1-12), $M = Monat (01-12), $+m = nächster Monat, $--M = vorletzter Monat mit führender Null"); goto finish;
+		case IDC_EURECHNUNGSPOSTEN_STATIC:
+		case IDC_EURECHNUNGSPOSTEN: pTTT->lpszText = _T("E/Ü-Konto, auf das der Betrag verbucht werden soll"); goto finish;
+		case IDC_MWST_STATIC:
+		case IDC_MWST: pTTT->lpszText = _T("Mehrwertsteuersatz"); goto finish;
+		case IDC_BETRIEB_STATIC:
+		case IDC_BETRIEB: pTTT->lpszText = _T("Betrieb, für den die Buchung angelegt werden soll"); goto finish;
+		case IDC_BESTANDSKONTO_STATIC:
+		case IDC_BESTANDSKONTO: pTTT->lpszText = _T("Bestandskonto (z.B. 'Bank' oder 'Kasse'), auf das der Betrag verbucht werden soll"); goto finish;
+		case IDC_VERWERFEN: pTTT->lpszText = _T("eingegebene Werte nicht in einer neuen Dauerbuchung speichern"); goto finish;
+		case IDOK: pTTT->lpszText = _T("eingegebene Werte in einer neuen Dauerbuchung speichern"); goto finish;
+		case IDCANCEL: pTTT->lpszText = _T("Dialogfenster schließen"); goto finish;	
+		finish:
+			pTTT->hinst = AfxGetResourceHandle();
+			bRet = TRUE;
+			break;
+		default:
+			bRet = FALSE;
+		}
+	}
+
+	*pResult = 0;
+
+	return bRet;
 }

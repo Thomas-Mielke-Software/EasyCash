@@ -363,15 +363,26 @@
 #define IDC_M5                          1159
 #define IDC_UNTERKATEGORIE              1159
 #define IDC_M6                          1160
+#define IDC_VON_STATIC                  1160
+#define IDC_DATUM_VON_STATIC            1160
 #define IDC_Q3                          1161
+#define IDC_DATUM_BIS_STATIC            1161
 #define IDC_M7                          1162
+#define IDC_DATUM_TAG_STATIC            1162
 #define IDC_M8                          1163
+#define IDC_DATUM_AKT_STATIC            1163
 #define IDC_M9                          1164
+#define IDC_BETRAG_STATIC               1164
 #define IDC_Q4                          1165
+#define IDC_BESCHREIBUNG_STATIC         1165
 #define IDC_M10                         1166
+#define IDC_BELEGNUMMER2_STATIC         1166
 #define IDC_M11                         1167
+#define IDC_PLATZHALTER_STATIC          1167
 #define IDC_M12                         1168
+#define IDC_EURECHNUNGSPOSTEN_STATIC    1168
 #define IDC_VORAUSZAHLUNG               1169
+#define IDC_MWST_STATIC                 1169
 #define IDC_BUCHUNGSLISTE_BESTANDSKONTEN 1500
 #define ID_VIEW_JOURNAL_MONATE_ALLE     2802
 #define ID_VIEW_JOURNAL_MONATE_JANUAR   2803
@@ -514,7 +525,7 @@
 #define _APS_3D_CONTROLS                     1
 #define _APS_NEXT_RESOURCE_VALUE        437
 #define _APS_NEXT_COMMAND_VALUE         32914
-#define _APS_NEXT_CONTROL_VALUE         1160
+#define _APS_NEXT_CONTROL_VALUE         1170
 #define _APS_NEXT_SYMED_VALUE           110
 #endif
 #endif

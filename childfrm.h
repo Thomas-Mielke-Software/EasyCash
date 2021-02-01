@@ -48,6 +48,13 @@ public:
 	virtual void AssertValid() const;
 	virtual void Dump(CDumpContext& dc) const;
 #endif
+	virtual BOOL OnCreateClient(LPCREATESTRUCT lpcs, CCreateContext* pContext);
+
+// internal variables for splitter window
+
+private:
+	BOOL m_bInitSplitter;
+	CSplitterWnd m_wndSplitter;
 
 // Generated message map functions
 protected:
@@ -58,6 +65,7 @@ protected:
 	DECLARE_MESSAGE_MAP()
 public:
 	afx_msg void OnMDIActivate(BOOL bActivate, CWnd* pActivateWnd, CWnd* pDeactivateWnd);
+	afx_msg void OnSize(UINT nType, int cx, int cy);
 };
 
 /////////////////////////////////////////////////////////////////////////////

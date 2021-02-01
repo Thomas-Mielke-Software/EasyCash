@@ -138,11 +138,13 @@ public:
 	CPoint ptLetzteMousePosition;
 	int m_nFeldMove;
 	int querformat_faktor;
+	CSplitterWnd m_wndSplitter;
 
 	// Menü-Krempel
 	CMenu PopUp;
 	CMenu PopUpFormular;
 	CPoint PopUpPosition;
+
 #define MAX_BUCHUNGEN 655360
 	CBuchung **ppPosBuchungsliste[MAX_BUCHUNGEN];	// zu faul...
 	int nSelected;
