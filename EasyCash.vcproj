@@ -733,6 +733,10 @@
 				</FileConfiguration>
 			</File>
 			<File
+				RelativePath=".\MyListView.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\Navigation.cpp"
 				>
 			</File>
@@ -1359,6 +1363,10 @@
 			</File>
 			<File
 				RelativePath="MandantName.h"
+				>
+			</File>
+			<File
+				RelativePath=".\MyListView.h"
 				>
 			</File>
 			<File

@@ -10,7 +10,7 @@
 
 // CNavigation
 
-IMPLEMENT_DYNCREATE(CNavigation, CListCtrl)
+IMPLEMENT_DYNCREATE(CNavigation, CMyListView)
 
 CNavigation::CNavigation()
 {
@@ -22,8 +22,9 @@ CNavigation::~CNavigation()
 }
 
 
-BEGIN_MESSAGE_MAP(CNavigation, CListCtrl)
+BEGIN_MESSAGE_MAP(CNavigation, CMyListView)
 	ON_WM_CREATE()
+	ON_WM_SIZE()
 END_MESSAGE_MAP()
 
 
@@ -34,10 +35,21 @@ END_MESSAGE_MAP()
 
 int CNavigation::OnCreate(LPCREATESTRUCT lpCreateStruct)
 {
-	if (CListCtrl::OnCreate(lpCreateStruct) == -1)
+	if (CMyListView::OnCreate(lpCreateStruct) == -1)
 		return -1;
 
 	lpCreateStruct->style |= WS_CHILD | WS_VISIBLE | LVS_REPORT;
 
 	return 0;
+}
+
+void CNavigation::OnSize(UINT nType, int cx, int cy)
+{
+	CMyListView::OnSize(nType, cx, cy);
+
+	CRect clir;
+	GetClientRect(&clir);
+	CListCtrl &nav = GetListCtrl();
+	nav.SetColumnWidth(0, clir.Width());
+	nav.EnableGroupView(TRUE);
 }

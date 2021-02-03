@@ -134,6 +134,8 @@ END_MESSAGE_MAP()
 /////////////////////////////////////////////////////////////////////////////
 // CEasyCashView construction/destruction
 
+static char *cpMonat[] = { "Januar", "Februar", "März", "April", "Mai", "Juni", "Juli", "August", "September", "Oktober", "November", "Dezember" };
+
 CEasyCashView::CEasyCashView()
 {
 	buchenDlg = NULL;
@@ -860,6 +862,83 @@ void CEasyCashView::OnUpdate(CView* pSender, LPARAM lHint, CObject* pHint)
 		int i;
 		for (i = 0; i < m_KontenMitBuchungen.GetSize(); i++)
 			pBtnFilterKonto->AddSubItem(new CMFCRibbonButton(ID_VIEW_JOURNAL_FUER_KONTO_BASE + i, (LPCTSTR)m_KontenMitBuchungen[i]));
+	}
+	
+	// Navigationsleiste aktualisieren
+	if (m_pNavigationWnd)
+	{
+		CListCtrl &nav = m_pNavigationWnd->GetListCtrl();
+		nav.ModifyStyle(LVS_ICON, LVS_REPORT);
+		if (nav.GetHeaderCtrl()->GetItemCount())	// Spalte hinzufügen, wenn noch nicht vorhanden
+			nav.DeleteColumn(0);
+		CRect clir;
+		m_pNavigationWnd->GetClientRect(&clir);
+		nav.InsertColumn(0, "Navigation", LVCFMT_CENTER, clir.Width());
+
+		// Navigations-ListView, Gruppen initialisieren
+		nav.RemoveAllGroups();
+		LVGROUP lg = {0};
+		lg.cbSize = sizeof(lg);
+		lg.state = LVGS_NORMAL;
+		lg.uAlign = LVGA_HEADER_CENTER;
+		lg.mask = LVGF_GROUPID | LVGF_HEADER | LVGF_STATE | LVGF_ALIGN;
+		lg.iGroupId = 1;
+		lg.pszHeader = L"Einnahmen";	
+		lg.cchHeader = wcslen(lg.pszHeader);
+		nav.InsertGroup(0, &lg);
+		lg.iGroupId = 2;
+		lg.pszHeader = L"Ausgaben";
+		lg.cchHeader = wcslen(lg.pszHeader);
+		nav.InsertGroup(1, &lg);
+
+		// Navigations-ListView, Items neu aufbauen
+		nav.SetRedraw(FALSE);
+		nav.DeleteAllItems();
+		nav.SetRedraw(TRUE);	
+
+		int i, group;
+		switch (m_nAnzeige)
+		{
+		// Journal nach Datum 
+		case 0: 
+
+			for (group = 1; group <= 2; group++)
+				for (i = 0; i < 12; i++)
+			{
+				int iItem = nav.InsertItem(i, cpMonat[i]);
+
+			    LVITEM lvItem = {0};
+				lvItem.mask = LVIF_GROUPID;
+				lvItem.iItem = iItem;
+				lvItem.iSubItem = 0;
+				lvItem.iGroupId = group;
+				nav.SetItem(&lvItem);
+			}
+					
+			break;
+		// Journal nach Konten
+		case 1:
+			for (i = 0, group = 1; i < m_KontenMitBuchungen.GetSize(); i++)
+			{
+				if (m_KontenMitBuchungen[i] == "<alle Konten>") continue;
+
+				CString csTemp = m_KontenMitBuchungen[i].Mid(10).TrimLeft();
+				int iItem = nav.InsertItem(nav.GetItemCount(), csTemp);
+
+				if (m_KontenMitBuchungen[i].Mid(10) == ausgaben_posten_name[0]) group = 2; // fangen die Ausgaben an? dann Gruppe umschalten
+			    LVITEM lvItem = {0};
+				lvItem.mask = LVIF_GROUPID;
+				lvItem.iItem = iItem;
+				lvItem.iSubItem = 0;
+				lvItem.iGroupId = group;
+				nav.SetItem(&lvItem);
+
+			}
+			break;
+		// Journal nach Bestandskonten
+		case 2: 
+			break;
+		}
 	}
 
 	// Status bar
@@ -7883,7 +7962,6 @@ BOOL CEasyCashView::OnCmdMsg(UINT nID, int nCode, void* pExtra, AFX_CMDHANDLERIN
 			if (!einstellungen1->m_monatliche_voranmeldung)
 			{
 				now -= CTimeSpan(28 + daufritage, 0, 0, 0);
-				static char *cpMonat[] = { "Januar", "Februar", "März", "April", "Mai", "Juni", "Juli", "August", "September", "Oktober", "November", "Dezember" };
 				csFromularnamenMatchDE.Format("Umsatzsteuer-Voranmeldung %d %s (D)", (int)now.GetYear(), (LPCSTR)cpMonat[now.GetMonth()-1]);
 				cpMonat[0] = "Jänner";
 				csFromularnamenMatchAT.Format("U30 %d %s (AT)", (int)now.GetYear(), (LPCSTR)cpMonat[now.GetMonth()-1]);

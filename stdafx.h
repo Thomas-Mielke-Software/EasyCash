@@ -59,6 +59,7 @@ extern CComModule _Module;
 #include <afxres.h>
 
 #include <afxctl.h>
+#include <afxcview.h>
 
 // XFolderDialog Stuff
 #define _WIN32_WINNT 0x0500

@@ -1,8 +1,9 @@
 #pragma once
 
+#include "MyListView.h"
 // CNavigation
 
-class CNavigation : public CListCtrl
+class CNavigation : public CMyListView
 {
 	DECLARE_DYNCREATE(CNavigation)
 
@@ -18,6 +19,7 @@ protected:
 	DECLARE_MESSAGE_MAP()
 public:
 	afx_msg int OnCreate(LPCREATESTRUCT lpCreateStruct);
+	afx_msg void OnSize(UINT nType, int cx, int cy);
 };
 
 

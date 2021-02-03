@@ -140,7 +140,6 @@ public:
 	CPoint ptLetzteMousePosition;
 	int m_nFeldMove;
 	int querformat_faktor;
-	CSplitterWnd m_wndSplitter;
 
 	// Menü-Krempel
 	CMenu PopUp;
