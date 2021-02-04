@@ -763,6 +763,7 @@ void CEasyCashView::OnUpdate(CView* pSender, LPARAM lHint, CObject* pHint)
 	CBuchung *p;
 	CString einnahmen_posten_name[100];
 	CString ausgaben_posten_name[100];
+	CStringArray csaBestandskontenMitBuchungenUnsortiert;
 
 	for (i = 0; i < 100; i++)
 	{
@@ -770,6 +771,7 @@ void CEasyCashView::OnUpdate(CView* pSender, LPARAM lHint, CObject* pHint)
 		ausgaben_posten_name[i]   = "";
 	}
 
+	// benutzte E/Ü-Konten und Bestandskonten in Einnahmen finden
 	for (p = pDoc->Einnahmen; p; p = p->next)
 	{
 		for (j = 0; j < 100; j++)
@@ -791,8 +793,15 @@ void CEasyCashView::OnUpdate(CView* pSender, LPARAM lHint, CObject* pHint)
 				break;
 			}
 		}
+
+		for (j = 0; j < csaBestandskontenMitBuchungenUnsortiert.GetSize(); j++)
+			if (csaBestandskontenMitBuchungenUnsortiert[j] == p->Bestandskonto)
+				break;
+		if (j >= csaBestandskontenMitBuchungenUnsortiert.GetSize())
+			csaBestandskontenMitBuchungenUnsortiert.Add(p->Bestandskonto);			
 	}
 
+	// benutzte E/Ü-Konten und Bestandskonten in Ausgaben finden
 	for (p = pDoc->Ausgaben; p; p = p->next)
 	{
 		for (j = 0; j < 100; j++)
@@ -813,7 +822,26 @@ void CEasyCashView::OnUpdate(CView* pSender, LPARAM lHint, CObject* pHint)
 				break;
 			}
 		}
+
+		for (j = 0; j < csaBestandskontenMitBuchungenUnsortiert.GetSize(); j++)
+			if (csaBestandskontenMitBuchungenUnsortiert[j] == p->Bestandskonto)
+				break;
+		if (j >= csaBestandskontenMitBuchungenUnsortiert.GetSize())
+			csaBestandskontenMitBuchungenUnsortiert.Add(p->Bestandskonto);
 	}
+
+	// BestandskontenMitBuchungen sortieren	
+	m_csaBestandskontenMitBuchungen.RemoveAll();
+	int anzahlGroups = csaBestandskontenMitBuchungenUnsortiert.GetSize();
+	int group;
+	for (i = 0, group = 0; i < m_csaBestandskontenNamen.GetSize(); i++)
+		for (j = 0; j < anzahlGroups; j++)
+			if (m_csaBestandskontenNamen[i] == csaBestandskontenMitBuchungenUnsortiert[j])
+			{
+				m_csaBestandskontenMitBuchungen.Add(csaBestandskontenMitBuchungenUnsortiert[j]);
+				group++;
+			}
+
 
 	// für Menüaufbau benötigte Daten in m_KontenMitBuchungen speichern:
 //		if (!pDrawInfo->pm) 	
@@ -859,7 +887,6 @@ void CEasyCashView::OnUpdate(CView* pSender, LPARAM lHint, CObject* pHint)
 	{
 		pBtnFilterKonto->RemoveAllSubItems();
 
-		int i;
 		for (i = 0; i < m_KontenMitBuchungen.GetSize(); i++)
 			pBtnFilterKonto->AddSubItem(new CMFCRibbonButton(ID_VIEW_JOURNAL_FUER_KONTO_BASE + i, (LPCTSTR)m_KontenMitBuchungen[i]));
 	}
@@ -882,14 +909,35 @@ void CEasyCashView::OnUpdate(CView* pSender, LPARAM lHint, CObject* pHint)
 		lg.state = LVGS_NORMAL;
 		lg.uAlign = LVGA_HEADER_CENTER;
 		lg.mask = LVGF_GROUPID | LVGF_HEADER | LVGF_STATE | LVGF_ALIGN;
-		lg.iGroupId = 1;
-		lg.pszHeader = L"Einnahmen";	
-		lg.cchHeader = wcslen(lg.pszHeader);
-		nav.InsertGroup(0, &lg);
-		lg.iGroupId = 2;
-		lg.pszHeader = L"Ausgaben";
-		lg.cchHeader = wcslen(lg.pszHeader);
-		nav.InsertGroup(1, &lg);
+		if (m_nAnzeige < 2)
+		{
+			lg.iGroupId = 0;
+			lg.pszHeader = L"Einnahmen";	
+			lg.cchHeader = wcslen(lg.pszHeader);
+			nav.InsertGroup(0, &lg);
+			lg.iGroupId = 1;
+			lg.pszHeader = L"Ausgaben";
+			lg.cchHeader = wcslen(lg.pszHeader);
+			nav.InsertGroup(1, &lg);
+			anzahlGroups = 2;
+		}
+		else  // Journal nach Bestandskonten
+		{
+			anzahlGroups = m_csaBestandskontenMitBuchungen.GetSize();
+			int i;
+			for (i = 0; i < anzahlGroups; i++)
+			{
+				lg.iGroupId = i;
+				WCHAR wcTemp[1000];
+				if (!MultiByteToWideChar(CP_ACP, 0, m_csaBestandskontenMitBuchungen[i], (int)m_csaBestandskontenMitBuchungen[i].GetLength(), wcTemp, sizeof(wcTemp)))
+					continue;
+				wcTemp[m_csaBestandskontenMitBuchungen[i].GetLength()] = L'\0';
+				lg.pszHeader = wcTemp;	
+				lg.cchHeader = wcslen(lg.pszHeader);
+				nav.InsertGroup(i, &lg);
+			}
+			anzahlGroups = m_csaBestandskontenMitBuchungen.GetSize();
+		}
 
 		// Navigations-ListView, Items neu aufbauen
 		nav.SetRedraw(FALSE);
@@ -900,9 +948,10 @@ void CEasyCashView::OnUpdate(CView* pSender, LPARAM lHint, CObject* pHint)
 		switch (m_nAnzeige)
 		{
 		// Journal nach Datum 
-		case 0: 
-
-			for (group = 1; group <= 2; group++)
+		case 0:	// und
+		// Journal nach Bestandskonten
+		case 2: 
+			for (group = 0; group < anzahlGroups; group++)
 				for (i = 0; i < 12; i++)
 			{
 				int iItem = nav.InsertItem(i, cpMonat[i]);
@@ -932,11 +981,7 @@ void CEasyCashView::OnUpdate(CView* pSender, LPARAM lHint, CObject* pHint)
 				lvItem.iSubItem = 0;
 				lvItem.iGroupId = group;
 				nav.SetItem(&lvItem);
-
 			}
-			break;
-		// Journal nach Bestandskonten
-		case 2: 
 			break;
 		}
 	}
@@ -5151,18 +5196,6 @@ void CEasyCashView::DauerbuchungenAusfuehren(int jb, int mb)
 			}
 		}
 	}
-	
-
-}
-
-void CEasyCashView::OnFindNext() 
-{
-	OnFind(1);
-}
-
-void CEasyCashView::OnFindPrev() 
-{
-	OnFind(-1);	
 }
 
 void CEasyCashView::GetUmsatzsteuervorauszahlung(int nZeitraum, CString& csValue)
@@ -5275,6 +5308,16 @@ void CEasyCashView::OnEditUmsatzsteuervorauszahlungen()
 	}
 }
 
+void CEasyCashView::OnFindNext() 
+{
+	OnFind(1);
+}
+
+void CEasyCashView::OnFindPrev() 
+{
+	OnFind(-1);	
+}
+
 void CEasyCashView::OnFind(int nIncrement) 
 {
 	if (pPluginWnd || m_GewaehltesFormular != -1) OnViewJournalSwitch();	// sicherstellen, dass Journal sichtbar ist
@@ -5329,15 +5372,9 @@ void CEasyCashView::OnFind(int nIncrement)
 				csAktuellerBetrag.TrimLeft();
 				if (csAktuelleBelegnummer.Find(csText) != -1 || csAktuelleBeschreibung.Find(csText) != -1 || csText == csAktuellerBetrag)
 				{
-					RECT r;
 					nSelected = i;
-					GetWindowRect(&r);
-					int vpos = i * charheight + charheight/2 - (r.bottom - r.top) / 2;
-					if (vpos < 0) vpos = 0;
-					SetScrollPos(SB_VERT, vpos);
-					//RedrawWindow();
+					ScrolleZuBuchung(i);
 					((CMainFrame*)AfxGetMainWnd())->SetStatus("Suchbegriff in Buchung " + (pb->Belegnummer != "" ? pb->Belegnummer : pb->Beschreibung) + " gefunden.");
-					GetDocument()->UpdateAllViews(NULL);
 					break;
 				}
 			}
@@ -5348,6 +5385,16 @@ void CEasyCashView::OnFind(int nIncrement)
 			MessageBeep(MB_ICONASTERISK);
 		}		
 	}
+}
+
+void CEasyCashView::ScrolleZuBuchung(int b)
+{
+	RECT r;
+	GetWindowRect(&r);
+	int vpos = b * charheight + charheight/2 - (r.bottom - r.top) / 2;
+	if (vpos < 0) vpos = 0;
+	SetScrollPos(SB_VERT, vpos);
+	GetDocument()->UpdateAllViews(NULL);
 }
 
 void CEasyCashView::ShowFindToolbar(int nShowstate)

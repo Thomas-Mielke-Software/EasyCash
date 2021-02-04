@@ -115,6 +115,7 @@ public:
 	CString m_BetriebFilterDisplay;		
 	CString m_BestandskontoFilterDisplay;	
 	CStringArray m_KontenMitBuchungen;		// für Menü-Aufbau, gesetzt in DrawToDC...
+	CStringArray m_csaBestandskontenMitBuchungen;	// für Navigation
 	OSVERSIONINFOEX m_osvi;				// für Win95/98/ME - Scrollbug-Message
 
 	// Formularanzeige
@@ -274,6 +275,7 @@ public:
 	char *GetVATs(int n);
 	char *GetLandeskuerzel(); 
 	char *GetWaehrungskuerzel();
+	void ScrolleZuBuchung(int b);
 
 // Generated message map functions
 protected:
