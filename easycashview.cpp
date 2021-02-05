@@ -744,6 +744,16 @@ void CEasyCashView::UpdateBestandskonten()
 	}
 }
 
+// callback für sortierte Gruppen (Bestandskonten) in der Navigations-Seitenleiste
+int CALLBACK GroupCompare(int Arg1, int Arg2, void *Arg3)
+{
+	if (Arg1 == Arg2) return 0;
+	if (Arg1 < Arg2) 
+		return -1;
+	else
+		return 1;
+}
+
 void CEasyCashView::OnUpdate(CView* pSender, LPARAM lHint, CObject* pHint) 
 {
 	CEasyCashDoc* pDoc = GetDocument();
@@ -838,8 +848,10 @@ void CEasyCashView::OnUpdate(CView* pSender, LPARAM lHint, CObject* pHint)
 		for (j = 0; j < anzahlGroups; j++)
 			if (m_csaBestandskontenNamen[i] == csaBestandskontenMitBuchungenUnsortiert[j])
 			{
+				TRACE2("\r\nBestandskonto %d: %s", i, m_csaBestandskontenNamen[i]);
 				m_csaBestandskontenMitBuchungen.Add(csaBestandskontenMitBuchungenUnsortiert[j]);
 				group++;
+				break;
 			}
 
 
@@ -934,6 +946,11 @@ void CEasyCashView::OnUpdate(CView* pSender, LPARAM lHint, CObject* pHint)
 				wcTemp[m_csaBestandskontenMitBuchungen[i].GetLength()] = L'\0';
 				lg.pszHeader = wcTemp;	
 				lg.cchHeader = wcslen(lg.pszHeader);
+				//LVINSERTGROUPSORTED lgs;
+				//lgs.pfnGroupCompare = (PFNLVGROUPCOMPARE)GroupCompare;
+				//lgs.pvData = NULL;  // wird nicht gebraucht, weil wir nach Group-ID sortieren
+				//lgs.lvGroup = lg;
+				//nav.InsertGroupSorted(&lgs);
 				nav.InsertGroup(i, &lg);
 			}
 			anzahlGroups = m_csaBestandskontenMitBuchungen.GetSize();
@@ -954,7 +971,7 @@ void CEasyCashView::OnUpdate(CView* pSender, LPARAM lHint, CObject* pHint)
 			for (group = 0; group < anzahlGroups; group++)
 				for (i = 0; i < 12; i++)
 			{
-				int iItem = nav.InsertItem(i, cpMonat[i]);
+				int iItem = nav.InsertItem(group * 12 + i, cpMonat[i]);
 
 			    LVITEM lvItem = {0};
 				lvItem.mask = LVIF_GROUPID;
@@ -2618,7 +2635,23 @@ void CEasyCashView::DrawToDC_Konten(CDC* pDC_par, DrawInfo *pDrawInfo)
 	}
 }
 
+// Hilfsfunktion für DrawToDC_Bestandskonten
+BOOL CEasyCashView::BestandskontoExistiertInBuchungen(CString &bestandskontoname)
+{
+	CEasyCashDoc* pDoc = GetDocument();
 
+	CBuchung *liste, *p;
+	for (liste = pDoc->Einnahmen; ; liste = pDoc->Ausgaben)
+	{
+		for (p = liste; p; p = p->next)
+		{
+			if (p->Bestandskonto == bestandskontoname)
+				return TRUE;
+		}
+		if (liste == pDoc->Ausgaben) break;  // nach 2. Durchlauf raus
+	}
+	return FALSE;
+}
 
 void CEasyCashView::DrawToDC_Bestandskonten(CDC* pDC_par, DrawInfo *pDrawInfo)
 {
@@ -2692,6 +2725,7 @@ void CEasyCashView::DrawToDC_Bestandskonten(CDC* pDC_par, DrawInfo *pDrawInfo)
 	else
 		pDrawInfo->line = 0;
 
+	// temporär Bestandskonten hier speichern, für die tatsächlich auch Buchungen existieren
 	CString bestandskonto_name[100];
 	int     bestandskonto_icon[100];
 	int     bestandskonto_anfangssaldo[100];
@@ -2714,7 +2748,20 @@ void CEasyCashView::DrawToDC_Bestandskonten(CDC* pDC_par, DrawInfo *pDrawInfo)
 	}
 	else
 	{
-		// sonst Bestandskonten aus Buchungen zusammenkratzen und Icons/Salden herausfinden
+		// erst einmal reguläre Bestandskonten mit der gewohnten Sortierung aus den Einstellungen inkl. Icons/Salden auflisten
+		for (i = 0, bestandskonten_anzahl = 0; i < m_csaBestandskontenNamen.GetSize(); i++)
+		{
+			if (BestandskontoExistiertInBuchungen(m_csaBestandskontenNamen[i]))
+			{
+				bestandskonto_name[bestandskonten_anzahl] = m_csaBestandskontenNamen[i];
+				bestandskonto_icon[bestandskonten_anzahl] = atoi(m_csaBestandskontenIcons[i]);
+				bestandskonto_anfangssaldo[bestandskonten_anzahl] = currency_to_int(m_csaBestandskontenSalden[i].GetBuffer(0));	
+				TRACE2("\r\nreguläres Bestandskonto %d: %s", bestandskonten_anzahl, m_csaBestandskontenNamen[bestandskonten_anzahl]);
+				bestandskonten_anzahl++;
+			}
+		}
+
+		// danach versprengte Bestandskonten aus Buchungen zusammenkratzen 
 		CBuchung *liste;
 		for (liste = pDoc->Einnahmen; ; liste = pDoc->Ausgaben)
 		{
@@ -2749,6 +2796,7 @@ void CEasyCashView::DrawToDC_Bestandskonten(CDC* pDC_par, DrawInfo *pDrawInfo)
 					{
 						bestandskonto_icon[i] = -1;
 						bestandskonto_anfangssaldo[i] = 0;
+						TRACE2("\r\nirreguläres Bestandskonto %d: %s", bestandskonten_anzahl, m_csaBestandskontenNamen[bestandskonten_anzahl]);
 					}
 
 					bestandskonten_anzahl++;
@@ -4047,8 +4095,8 @@ RECT CEasyCashView::TextEx(DrawInfo *pDrawInfo, int left, int top, int right, in
 	{	// Bildschirm DC
 		if (!pDrawInfo->m_pDC->RectVisible(&r) && pDrawInfo->fontsize != -1)  // -1: Kalibrierungstest, nicht aussteigen, sondern maximale Texthöhe messen!
 			return CRect(0, 0, 0, 0);   //  RectVisible() funktioniert manchmal irgendwie nicht richtig...
-		else 
-			TRACE1("RectVisible: %s\r\n", s_param);
+		// else 
+		// 	TRACE1("RectVisible: %s\r\n", s_param);
 
 		/*if (pDrawInfo->fontsize != -1)
 		{
@@ -5372,7 +5420,6 @@ void CEasyCashView::OnFind(int nIncrement)
 				csAktuellerBetrag.TrimLeft();
 				if (csAktuelleBelegnummer.Find(csText) != -1 || csAktuelleBeschreibung.Find(csText) != -1 || csText == csAktuellerBetrag)
 				{
-					nSelected = i;
 					ScrolleZuBuchung(i);
 					((CMainFrame*)AfxGetMainWnd())->SetStatus("Suchbegriff in Buchung " + (pb->Belegnummer != "" ? pb->Belegnummer : pb->Beschreibung) + " gefunden.");
 					break;
@@ -5391,6 +5438,7 @@ void CEasyCashView::ScrolleZuBuchung(int b)
 {
 	RECT r;
 	GetWindowRect(&r);
+	nSelected = b;
 	int vpos = b * charheight + charheight/2 - (r.bottom - r.top) / 2;
 	if (vpos < 0) vpos = 0;
 	SetScrollPos(SB_VERT, vpos);

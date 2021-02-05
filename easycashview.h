@@ -84,6 +84,7 @@ protected: // create from serialization only
 public:
 	CEasyCashDoc* GetDocument();
 	CNavigation *m_pNavigationWnd;
+	//int CALLBACK GroupCompare(int Arg1, int Arg2, void *Arg3);  // callback für Navigation
 
 	// Einstellungsdialogbox
 	CPropertySheet *propdlg;
@@ -232,6 +233,7 @@ protected:
 	void Icon(DrawInfo *pDrawInfo, int left, int top, /*int right,*/ int bottom, CBitmap *bitmap, int n);
 	void DrawToDC_Datum(CDC* pDC, DrawInfo *pDrawInfo);
 	void DrawToDC_Konten(CDC* pDC, DrawInfo *pDrawInfo);
+	BOOL BestandskontoExistiertInBuchungen(CString &bestandskontoname);
 	void DrawToDC_Bestandskonten(CDC* pDC, DrawInfo *pDrawInfo);
 	void CheckLayout(DrawInfo *pDrawInfo);
 	bool CheckPlatzFuerBeschreibung(DrawInfo *pDrawInfo);
