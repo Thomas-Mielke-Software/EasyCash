@@ -210,8 +210,8 @@ LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
 //
 
 VS_VERSION_INFO VERSIONINFO
- FILEVERSION 2,29,0,1
- PRODUCTVERSION 2,29,0,1
+ FILEVERSION 2,39,0,1
+ PRODUCTVERSION 2,39,0,1
  FILEFLAGSMASK 0x3fL
 #ifdef _DEBUG
  FILEFLAGS 0x1L
@@ -228,12 +228,12 @@ BEGIN
         BEGIN
             VALUE "CompanyName", "Thomas Mielke Softwareentwicklung"
             VALUE "FileDescription", "ECTIFACE DLL"
-            VALUE "FileVersion", "2, 29, 0, 1"
+            VALUE "FileVersion", "2, 39, 0, 1"
             VALUE "InternalName", "ECTIFACE"
-            VALUE "LegalCopyright", "© 1998-2019 Thomas Mielke Softwareentwicklung"
+            VALUE "LegalCopyright", "© 1998-2021 Thomas Mielke Softwareentwicklung"
             VALUE "OriginalFilename", "ECTIFACE.DLL"
             VALUE "ProductName", "ECTIFACE Dynamic Link Library"
-            VALUE "ProductVersion", "2, 29, 0, 1"
+            VALUE "ProductVersion", "2, 39, 0, 1"
         END
     END
     BLOCK "VarFileInfo"
