@@ -1012,6 +1012,7 @@ void CEasyCashView::OnUpdate(CView* pSender, LPARAM lHint, CObject* pHint)
 			break;
 		// irgendein Formular (dann nur die Seiten anzeigen)
 		default:
+			if (m_csaFormulare.GetSize() > 0)
 			{
 				// Formulardefinitionsdatei in xmldoc laden
 				XDoc xmldoc;
@@ -3730,7 +3731,8 @@ void CEasyCashView::BerechneFormularfeldwerte()
 {
 	CEasyCashDoc* pDoc = GetDocument();
 	ASSERT_VALID(pDoc);
-	pDoc->BerechneFormularfeldwerte(m_csaFormulare[m_GewaehltesFormular], m_csaFormularfeldwerte, NULL, NULL, m_csaFormularfilter[m_GewaehltesFormular]);
+	if (m_csaFormulare.GetSize())
+		pDoc->BerechneFormularfeldwerte(m_csaFormulare[m_GewaehltesFormular], m_csaFormularfeldwerte, NULL, NULL, m_csaFormularfilter[m_GewaehltesFormular]);
 }
 
 void CEasyCashView::DrawFormularToDC(CDC* pDC, DrawInfo *pDrawInfo)
@@ -3746,6 +3748,7 @@ void CEasyCashView::DrawFormularToDC(CDC* pDC, DrawInfo *pDrawInfo)
 //		TRACE3("%02d: %s // %s\r\n", i, m_csaFormularnamen[i], m_csaFormulare[i]);
 //	}
 
+	if (!m_csaFormulare.GetSize()) return;
 	// Formulardefinitionsdatei in xmldoc laden
 	XDoc xmldoc;
 	xmldoc.LoadFile(m_csaFormulare[m_GewaehltesFormular]);
@@ -5936,7 +5939,7 @@ Code zu hektisch */
 		
 	}
 
-	if (m_GewaehltesFormular >= 0)
+	if (m_GewaehltesFormular >= 0 && m_csaFormulare.GetSize() > 0)
 	{
 		// Formulardefinitionsdatei in xmldoc laden
 		XDoc xmldoc;
