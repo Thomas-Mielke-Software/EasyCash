@@ -175,8 +175,16 @@ void CChildFrame::OnSize(UINT nType, int cx, int cy)
     if (m_bInitSplitter && nType != SIZE_MINIMIZED)  
     {  
         m_wndSplitter.SetRowInfo( 0, cy, 0 );  
-        m_wndSplitter.SetColumnInfo(0, cr.Width() * 9 / 10, 50);  
-        m_wndSplitter.SetColumnInfo(1, cr.Width() * 1 / 10, 50);  
+		if (cx < 300)
+		{
+			m_wndSplitter.SetColumnInfo(0, cr.Width() * 5 / 10, 50);  
+			m_wndSplitter.SetColumnInfo(1, cr.Width() * 5 / 10, 50);  
+		}
+		else
+		{
+			m_wndSplitter.SetColumnInfo(0, cr.Width() - 150, 50);  
+			m_wndSplitter.SetColumnInfo(1, 150, 50);  
+		}
 
         m_wndSplitter.RecalcLayout();  
     }

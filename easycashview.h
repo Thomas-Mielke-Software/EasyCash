@@ -165,6 +165,7 @@ public:
 	int m_bt;
 	int m_bm;
 	int m_bAfaKorrketuren;
+	int m_anzahl_formularseiten;  // wird für die Navigations-Seitenleiste benutzt (ein bisschen redundant, aber dafür sicher, dass es keine Nebeneffekte hat)
 
 	// Bitmaps fürs Menü
 	CBitmap bmpEinBuch;
@@ -278,6 +279,7 @@ public:
 	char *GetLandeskuerzel(); 
 	char *GetWaehrungskuerzel();
 	void ScrolleZuBuchung(int b);
+	void ScrolleZuSeite(int s);
 
 // Generated message map functions
 protected:

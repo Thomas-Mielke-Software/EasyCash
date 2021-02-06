@@ -914,14 +914,21 @@ void CEasyCashView::OnUpdate(CView* pSender, LPARAM lHint, CObject* pHint)
 		m_pNavigationWnd->GetClientRect(&clir);
 		nav.InsertColumn(0, "Navigation", LVCFMT_CENTER, clir.Width());
 
-		// Navigations-ListView, Gruppen initialisieren
+		// Navigations-ListView: Gruppen initialisieren, wenn es sich nicht um ein Formular handelt
 		nav.RemoveAllGroups();
 		LVGROUP lg = {0};
 		lg.cbSize = sizeof(lg);
 		lg.state = LVGS_NORMAL;
 		lg.uAlign = LVGA_HEADER_CENTER;
 		lg.mask = LVGF_GROUPID | LVGF_HEADER | LVGF_STATE | LVGF_ALIGN;
-		if (m_nAnzeige < 2)
+		if (m_GewaehltesFormular >= 0)
+		{
+			lg.iGroupId = 0;
+			lg.pszHeader = L"Seiten";	
+			lg.cchHeader = wcslen(lg.pszHeader);
+			nav.InsertGroup(0, &lg);
+		}
+		else if (m_nAnzeige < 2)
 		{
 			lg.iGroupId = 0;
 			lg.pszHeader = L"Einnahmen";	
@@ -933,7 +940,7 @@ void CEasyCashView::OnUpdate(CView* pSender, LPARAM lHint, CObject* pHint)
 			nav.InsertGroup(1, &lg);
 			anzahlGroups = 2;
 		}
-		else  // Journal nach Bestandskonten
+		else if (m_nAnzeige == 2) // Journal nach Bestandskonten
 		{
 			anzahlGroups = m_csaBestandskontenMitBuchungen.GetSize();
 			int i;
@@ -961,8 +968,9 @@ void CEasyCashView::OnUpdate(CView* pSender, LPARAM lHint, CObject* pHint)
 		nav.DeleteAllItems();
 		nav.SetRedraw(TRUE);	
 
-		int i, group;
-		switch (m_nAnzeige)
+#define SPACES_ZU_ITEMS_HINZUFUEGEN 20
+		int group;
+		switch (m_GewaehltesFormular >= 0 ? -1 : m_nAnzeige)
 		{
 		// Journal nach Datum 
 		case 0:	// und
@@ -971,9 +979,11 @@ void CEasyCashView::OnUpdate(CView* pSender, LPARAM lHint, CObject* pHint)
 			for (group = 0; group < anzahlGroups; group++)
 				for (i = 0; i < 12; i++)
 			{
-				int iItem = nav.InsertItem(group * 12 + i, cpMonat[i]);
+				CString csItemText;
+				csItemText.Format("%s%s", cpMonat[i], CString(_T(' '), max(0, SPACES_ZU_ITEMS_HINZUFUEGEN-strlen(cpMonat[i]))).GetString());
+				int iItem = nav.InsertItem(group * 12 + i, csItemText);
 
-			    LVITEM lvItem = {0};
+				LVITEM lvItem = {0};
 				lvItem.mask = LVIF_GROUPID;
 				lvItem.iItem = iItem;
 				lvItem.iSubItem = 0;
@@ -984,15 +994,15 @@ void CEasyCashView::OnUpdate(CView* pSender, LPARAM lHint, CObject* pHint)
 			break;
 		// Journal nach Konten
 		case 1:
-			for (i = 0, group = 1; i < m_KontenMitBuchungen.GetSize(); i++)
+			for (i = 0, group = 0; i < m_KontenMitBuchungen.GetSize(); i++)
 			{
 				if (m_KontenMitBuchungen[i] == "<alle Konten>") continue;
 
 				CString csTemp = m_KontenMitBuchungen[i].Mid(10).TrimLeft();
 				int iItem = nav.InsertItem(nav.GetItemCount(), csTemp);
 
-				if (m_KontenMitBuchungen[i].Mid(10) == ausgaben_posten_name[0]) group = 2; // fangen die Ausgaben an? dann Gruppe umschalten
-			    LVITEM lvItem = {0};
+				if (m_KontenMitBuchungen[i].Mid(10) == ausgaben_posten_name[0]) group = 1; // fangen die Ausgaben an? dann Gruppe umschalten
+				LVITEM lvItem = {0};
 				lvItem.mask = LVIF_GROUPID;
 				lvItem.iItem = iItem;
 				lvItem.iSubItem = 0;
@@ -1000,6 +1010,33 @@ void CEasyCashView::OnUpdate(CView* pSender, LPARAM lHint, CObject* pHint)
 				nav.SetItem(&lvItem);
 			}
 			break;
+		// irgendein Formular (dann nur die Seiten anzeigen)
+		default:
+			{
+				// Formulardefinitionsdatei in xmldoc laden
+				XDoc xmldoc;
+				xmldoc.LoadFile(m_csaFormulare[m_GewaehltesFormular]);
+				LPXNode xml = xmldoc.GetRoot();
+				if (!xml) break;
+				LPXNode seiten = NULL;
+				seiten = xml->Find("seiten");
+				CString csAnzahlSeiten = xml->GetAttrValue("seiten");
+				m_anzahl_formularseiten = atoi(csAnzahlSeiten);
+
+				for (i = 0; i < m_anzahl_formularseiten; i++)
+				{
+					CString csItemText;
+					csItemText.Format("%d%s", i + 1, CString(_T(' '), SPACES_ZU_ITEMS_HINZUFUEGEN).GetString());
+					int iItem = nav.InsertItem(i, csItemText);
+
+					LVITEM lvItem = {0};
+					lvItem.mask = LVIF_GROUPID;
+					lvItem.iItem = iItem;
+					lvItem.iSubItem = 0;
+					lvItem.iGroupId = 0;
+					nav.SetItem(&lvItem);
+				}	
+			}		
 		}
 	}
 
@@ -4161,7 +4198,7 @@ RECT CEasyCashView::TextEx(DrawInfo *pDrawInfo, int left, int top, int right, in
 					  MulDiv(einstellungen1->m_Bildschirmschriftgroesse, pDrawInfo->m_pDC->GetDeviceCaps(LOGPIXELSY), 72)  //  * m_zoomfaktor / 100
 				 : // else
 					  charheight) / 2, increment = -h, bPasst = FALSE;  // for-Initialisierung
-		 (abs(increment) > 0 && !bPasst);  // for-Bedingung
+		 (abs(increment) > 0 && !bPasst && h > 0);  // for-Bedingung
 		 h += increment)  // for-Inkrementor
 	{
 //if (*s_param == ' ' && s_param[1] == 0) {
@@ -5443,6 +5480,16 @@ void CEasyCashView::ScrolleZuBuchung(int b)
 	if (vpos < 0) vpos = 0;
 	SetScrollPos(SB_VERT, vpos);
 	GetDocument()->UpdateAllViews(NULL);
+}
+
+void CEasyCashView::ScrolleZuSeite(int s)
+{	
+	if (m_GewaehltesFormular >= 0 && s >= 1 && s <= m_anzahl_formularseiten)
+	{
+		CPoint scrollpos;
+		scrollpos.SetPoint(0, (s - 1) * charheight * (PAGE_GAP + VCHARS));
+		ScrollToPosition(scrollpos);
+	}
 }
 
 void CEasyCashView::ShowFindToolbar(int nShowstate)
