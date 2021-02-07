@@ -20,6 +20,7 @@
 
 #include "stdafx.h"
 #include "EasyCash.h"
+#include "ExtSplitter.h"
 #include "ECTIFace\EasyCashDoc.h"
 #include "BuchenDlg.h"
 #include "DauerbuchungenDlg.h"
@@ -6984,6 +6985,7 @@ void CEasyCashView::OnViewJournalSwitch()
 	else
 	{
 		/*GetParent()->*/ShowWindow(SW_SHOW);
+		((CExtSplitter*)GetParent())->ShowColumn(1);
 		switch (m_nAnzeige)
 		{
 		case 0: OnViewJournalKonten(); break;
@@ -7903,6 +7905,8 @@ exit_here:
 			pPluginWnd->DestroyWindow(); 
 		delete pPluginWnd;
 		pPluginWnd = NULL;
+
+		((CExtSplitter*)GetParent())->ShowColumn(1);
 	}
 }
 
@@ -8280,6 +8284,7 @@ BOOL CEasyCashView::OnCmdMsg(UINT nID, int nCode, void* pExtra, AFX_CMDHANDLERIN
 					return TRUE;
 				}
 
+				((CExtSplitter*)GetParent())->HideColumn(1);
 				ShowWindow(SW_HIDE);
 
 				// Wenn ein Platzhalter mit der Doc-ID ersetzt wurde, dann brauchen wir dies hier nicht:

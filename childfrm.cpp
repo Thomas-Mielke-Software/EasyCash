@@ -24,6 +24,7 @@
 #include "EasyCashView.h"
 #include "Navigation.h"
 
+#include "ExtSplitter.h"
 #include "ChildFrm.h"
 #include "MainFrm.h"
 

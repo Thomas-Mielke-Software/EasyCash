@@ -54,7 +54,7 @@ public:
 
 private:
 	BOOL m_bInitSplitter;
-	CSplitterWnd m_wndSplitter;
+	CExtSplitter m_wndSplitter;
 
 // Generated message map functions
 protected:

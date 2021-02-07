@@ -5,6 +5,7 @@
 #include "EasyCash.h"
 #include "ECTIFace\EasyCashDoc.h"
 #include "EasyCashView.h"
+#include "ExtSplitter.h"
 #include "mainfrm.h"
 #include "ChildFrm.h"
 #include "Navigation.h"

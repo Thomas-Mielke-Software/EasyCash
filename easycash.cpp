@@ -21,6 +21,7 @@
 #include "stdafx.h"
 #include "EasyCash.h"
 
+#include "ExtSplitter.h"
 #include "MainFrm.h"
 #include "ChildFrm.h"
 #include "ECTIFace\EasyCashDoc.h"
