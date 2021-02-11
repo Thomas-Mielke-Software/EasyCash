@@ -130,6 +130,7 @@ BEGIN_MESSAGE_MAP(CEasyCashView, CScrollView)
 	ON_COMMAND(ID_ZOOMFAKTOR_200, &CEasyCashView::OnZoomfaktor200)
 	ON_COMMAND(ID_ZOOMFAKTOR_250, &CEasyCashView::OnZoomfaktor250)
 	ON_COMMAND(ID_ZOOMFAKTOR_300, &CEasyCashView::OnZoomfaktor300)
+	ON_WM_MOUSEWHEEL()
 END_MESSAGE_MAP()
 
 /////////////////////////////////////////////////////////////////////////////
@@ -8671,4 +8672,14 @@ void CEasyCashView::OnKeyUp(UINT nChar, UINT nRepCnt, UINT nFlags)
 	}
 	
 	CScrollView::OnKeyUp(nChar, nRepCnt, nFlags);
+}
+
+BOOL CEasyCashView::OnMouseWheel(UINT nFlags, short zDelta, CPoint pt)
+{
+	// CSplitterWnd verhindert mousewheel irgendwie. Deshalb explizit nochmal:
+	CPoint pos = GetScrollPosition();
+	pos.y -= zDelta;
+	ScrollToPosition(pos);
+
+	return CScrollView::OnMouseWheel(nFlags, zDelta, pt);
 }

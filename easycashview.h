@@ -351,6 +351,7 @@ public:
 	afx_msg void OnZoomfaktor200();
 	afx_msg void OnZoomfaktor250();
 	afx_msg void OnZoomfaktor300();
+	afx_msg BOOL OnMouseWheel(UINT nFlags, short zDelta, CPoint pt);
 };
 
 #ifndef _DEBUG  // debug version in EasyCashView.cpp

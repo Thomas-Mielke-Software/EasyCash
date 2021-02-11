@@ -93,7 +93,7 @@ BOOL CChildFrame::OnCreateClient(LPCREATESTRUCT /*lpcs*/, CCreateContext* pConte
     CRect cr;  
     GetWindowRect( &cr );  
 
-    if (!m_wndSplitter.CreateStatic(this, 1, 2))   
+    if (!m_wndSplitter.CreateStatic(this, 1, 2, WS_CHILD | WS_VISIBLE /* | WS_VSCROLL*/))   
     {   
         MessageBox("Fehler beim erzeugen des geteilten Journalfensters (CreateStatic).", "Initialisierungsfehler", MB_OK | MB_ICONERROR);   
         return FALSE;   
