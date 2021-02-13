@@ -52,11 +52,11 @@ protected:
 	void	RenumeratePanes();
 	CPoint	RelToAbsPosition(int i, int j);
 	int		RelToAbsPosition(LIST_INT &vis_list, LIST_INT &hid_list, int cur_index);
-	BOOL	IsPaneVisible(int row, int col);
-
+	void	StopTracking(BOOL bAccept);
 
 
 public:	
+	BOOL	IsPaneVisible(int row, int col);
 		
 	LIST_INT m_shown_cols;		//shown  column list
 	LIST_INT m_hid_cols;		//hidden column list

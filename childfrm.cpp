@@ -175,16 +175,19 @@ void CChildFrame::OnSize(UINT nType, int cx, int cy)
 
     if (m_bInitSplitter && nType != SIZE_MINIMIZED)  
     {  
+		int nNavBreite = theApp.GetProfileInt("Fenster", "NavigationBreitenverhaeltnis", 150);  // Nav-Leiste Breite in promille der Gesamtfensterbreite
+		int nNavBreiteAbsolut = nNavBreite * cx / 1000;
+
         m_wndSplitter.SetRowInfo( 0, cy, 0 );  
-		if (cx < 300)
+		if (cx < 2 * nNavBreiteAbsolut)
 		{
 			m_wndSplitter.SetColumnInfo(0, cr.Width() * 5 / 10, 50);  
 			m_wndSplitter.SetColumnInfo(1, cr.Width() * 5 / 10, 50);  
 		}
 		else
 		{
-			m_wndSplitter.SetColumnInfo(0, cr.Width() - 150, 50);  
-			m_wndSplitter.SetColumnInfo(1, 150, 50);  
+			m_wndSplitter.SetColumnInfo(0, cr.Width() - nNavBreiteAbsolut, 50);  
+			m_wndSplitter.SetColumnInfo(1, nNavBreiteAbsolut, 50);  
 		}
 
         m_wndSplitter.RecalcLayout();  

@@ -1234,6 +1234,7 @@ void CEasyCashView::CaptionBoxCheckOnUpdate()
 
 void CEasyCashView::OnSize(UINT nType, int cx, int cy) 
 {
+	TRACE3("CEasyCashView::OnSize(nType=%d, cx=%d, cy=%d)", nType, cx, cy);
 	CScrollView::OnSize(nType, cx, cy);
 	static int cx_old = -1;
 	
@@ -6986,7 +6987,8 @@ void CEasyCashView::OnViewJournalSwitch()
 	else
 	{
 		/*GetParent()->*/ShowWindow(SW_SHOW);
-		((CExtSplitter*)GetParent())->ShowColumn(1);
+		if (!((CExtSplitter*)GetParent())->IsPaneVisible(0, 1))
+			((CExtSplitter*)GetParent())->ShowColumn(1);
 		switch (m_nAnzeige)
 		{
 		case 0: OnViewJournalKonten(); break;
