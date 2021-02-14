@@ -621,7 +621,7 @@ v2.40
 - Bugfix: Plugin-Fenster wurden von der Navigations-Seitenleiste überdeckt, so dass teilweise Bedienelemente nicht erreichbar waren.
 
 v2.41
-- Workaround für nicht mehr funktionierendes Mausrad in CScrollView nach dem Einbau des Seiten-Navigationsleiste
+- Workaround für nicht mehr funktionierendes Mausrad in CScrollView nach dem Einbau der Seiten-Navigationsleiste
 - Größe der Navigations-Seitenleise wird jetzt zwischen Programmstarts gespeichert
 - Problem mit automatischer Anpassung des Zoom-Levels behoben
 - Buchungen ohne Kontenzuweisung in der Navigations-Seitenleiste gefixt

@@ -778,6 +778,7 @@ void CEasyCashView::OnUpdate(CView* pSender, LPARAM lHint, CObject* pHint)
 	CString ausgaben_posten_name[100];
 	CStringArray csaBestandskontenMitBuchungenUnsortiert;	
 	BOOL bUnzugewieseneEinnahmenbuchungenExistieren = FALSE, bUnzugewieseneAusgabenbuchungenExistieren = FALSE;
+	int nKontenMitBuchungenErsteAusgabenbuchung = 0;
 
 	for (i = 0; i < 100; i++)
 	{
@@ -889,6 +890,7 @@ void CEasyCashView::OnUpdate(CView* pSender, LPARAM lHint, CObject* pHint)
 			if (i == m_KontenMitBuchungen.GetSize())  // Rouge-Konto in Buchung?
 				m_KontenMitBuchungen.Add((CString)"Einnahmen: " + einnahmen_posten_name[j]);  // zusätzlich aufnehmen
 		}
+		nKontenMitBuchungenErsteAusgabenbuchung = m_KontenMitBuchungen.GetSize();
 		if (bUnzugewieseneEinnahmenbuchungenExistieren)
 			m_KontenMitBuchungen.Add((CString)"--- [noch zu keinem Konto zugewiesene Einnahmen] ---");
 		for (i = 0; i < 100; i++)  // in der Reihenfolge der regulären Konten wie in den Einstellungen auflisten
@@ -1060,7 +1062,7 @@ void CEasyCashView::OnUpdate(CView* pSender, LPARAM lHint, CObject* pHint)
 					csTemp = m_KontenMitBuchungen[i].Mid(10).TrimLeft();
 				int iItem = nav.InsertItem(nav.GetItemCount(), csTemp);
 
-				if (m_KontenMitBuchungen[i].Mid(10) == ausgaben_posten_name[0]) group = 1; // fangen die Ausgaben an? dann Gruppe umschalten
+				if (i >= nKontenMitBuchungenErsteAusgabenbuchung) group = 1; // fangen die Ausgaben an? dann Gruppe umschalten
 				LVITEM lvItem = {0};
 				lvItem.mask = LVIF_GROUPID;
 				lvItem.iItem = iItem;
