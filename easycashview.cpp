@@ -866,14 +866,53 @@ void CEasyCashView::OnUpdate(CView* pSender, LPARAM lHint, CObject* pHint)
 	{
 		m_KontenMitBuchungen.RemoveAll();
 		m_KontenMitBuchungen.Add("<alle Konten>");
-		for (j = 0; j < 100; j++)
-			if (!einnahmen_posten_name[j].IsEmpty())
-				m_KontenMitBuchungen.Add((CString)"Einnahmen: " + einnahmen_posten_name[j]);
+ 
+		for (i = 0; i < 100; i++)  // in der Reihenfolge der regulären Konten wie in den Einstellungen auflisten
+		{			
+			if (!einstellungen1 || einstellungen1->EinnahmenRechnungsposten[i].IsEmpty()) break;
+			for (j = 0; j < 100; j++)
+			{
+				if (einnahmen_posten_name[j].IsEmpty()) break;
+				if (einstellungen1 && einstellungen1->EinnahmenRechnungsposten[i] == einnahmen_posten_name[j])
+				{
+					m_KontenMitBuchungen.Add((CString)"Einnahmen: " + einnahmen_posten_name[j]);
+					break;
+				}
+			}
+		}
+		for (j = 0; j < 100; j++)  // auch die Konten aus Buchungen auflisten, für die es in den Einstellungen keine Konten gibt
+		{
+			if (einnahmen_posten_name[j].IsEmpty()) break;
+			for (i = 0; i < m_KontenMitBuchungen.GetSize(); i++)
+				if ("Einnahmen: " + einnahmen_posten_name[j] == m_KontenMitBuchungen[i])
+					break;  // schon drin
+			if (i == m_KontenMitBuchungen.GetSize())  // Rouge-Konto in Buchung?
+				m_KontenMitBuchungen.Add((CString)"Einnahmen: " + einnahmen_posten_name[j]);  // zusätzlich aufnehmen
+		}
 		if (bUnzugewieseneEinnahmenbuchungenExistieren)
 			m_KontenMitBuchungen.Add((CString)"--- [noch zu keinem Konto zugewiesene Einnahmen] ---");
-		for (j = 0; j < 100; j++)
-			if (!ausgaben_posten_name[j].IsEmpty())
-				m_KontenMitBuchungen.Add((CString)"Ausgaben: " + ausgaben_posten_name[j]);
+		for (i = 0; i < 100; i++)  // in der Reihenfolge der regulären Konten wie in den Einstellungen auflisten
+		{			
+			if (!einstellungen1 || einstellungen1->AusgabenRechnungsposten[i].IsEmpty()) break;
+			for (j = 0; j < 100; j++)
+			{
+				if (ausgaben_posten_name[j].IsEmpty()) break;
+				if (einstellungen1 && einstellungen1->AusgabenRechnungsposten[i] == ausgaben_posten_name[j])
+				{
+					m_KontenMitBuchungen.Add((CString)"Ausgaben: " + ausgaben_posten_name[j]);
+					break;
+				}
+			}
+		}
+		for (j = 0; j < 100; j++)  // auch die Konten aus Buchungen auflisten, für die es in den Einstellungen keine Konten gibt
+		{
+			if (ausgaben_posten_name[j].IsEmpty()) break;
+			for (i = 0; i < m_KontenMitBuchungen.GetSize(); i++)
+				if ("Ausgaben: " + ausgaben_posten_name[j] == m_KontenMitBuchungen[i])
+					break;  // schon drin
+			if (i == m_KontenMitBuchungen.GetSize())  // Rouge-Konto in Buchung?
+				m_KontenMitBuchungen.Add((CString)"Ausgaben: " + ausgaben_posten_name[j]);  // zusätzlich aufnehmen
+		}
 		if (bUnzugewieseneAusgabenbuchungenExistieren)
 			m_KontenMitBuchungen.Add((CString)"--- [noch zu keinem Konto zugewiesene Ausgaben] ---");
 	}

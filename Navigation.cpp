@@ -65,6 +65,13 @@ void CNavigation::OnNMClick(NMHDR *pNMHDR, LRESULT *pResult)
 	
 	if (m_pViewWnd)
 	{	
+		LVITEM lvi = {0};
+		lvi.iItem = pNMItemActivate->iItem;
+		lvi.iSubItem = 0;
+		lvi.mask = LVIF_GROUPID;
+		GetListCtrl().GetItem(&lvi);
+		int nGroup = lvi.iGroupId;  // bei Journal nach Konto: 0 = Einnahmen, 1 = Ausgaben
+
 		CEasyCashDoc* pDoc = m_pViewWnd->GetDocument();
 		if (m_pViewWnd->m_GewaehltesFormular < 0)
 		{
@@ -120,9 +127,13 @@ void CNavigation::OnNMClick(NMHDR *pNMHDR, LRESULT *pResult)
 					for (i = 0; i < MAX_BUCHUNGEN; i++)
 						if (m_pViewWnd->ppPosBuchungsliste[i])
 							if (((*(m_pViewWnd->ppPosBuchungsliste[i]))->Konto.IsEmpty() && bSucheUnzugewieseneEinnahmenbuchungen && pDoc->BuchungIstEinnahme(*(m_pViewWnd->ppPosBuchungsliste[i])))
-							 || ((*(m_pViewWnd->ppPosBuchungsliste[i]))->Konto.IsEmpty() && bSucheUnzugewieseneAusgabenbuchungen && pDoc->BuchungIstAusgabme(*(m_pViewWnd->ppPosBuchungsliste[i])))
+							 || ((*(m_pViewWnd->ppPosBuchungsliste[i]))->Konto.IsEmpty() && bSucheUnzugewieseneAusgabenbuchungen && pDoc->BuchungIstAusgabe(*(m_pViewWnd->ppPosBuchungsliste[i])))
 							 || (*(m_pViewWnd->ppPosBuchungsliste[i]))->Konto == csKonto)
 							{
+								if (nGroup == 1 && pDoc->BuchungIstEinnahme(*(m_pViewWnd->ppPosBuchungsliste[i])))  // Wenn Kontoname sowohl in Einnahmen als auch in Ausgaben existiert sicherstellen,
+									continue;																		// dass bei einer Ausgaben-Buchung auch das Ausgaben-Konto gewählt wird
+								if (nGroup == 0 && pDoc->BuchungIstAusgabe(*(m_pViewWnd->ppPosBuchungsliste[i])))   // und pro forma auch noch mal für Einnahmen, obwohl das nicht vorkommen sollte...
+									continue;
 								m_pViewWnd->ScrolleZuBuchung(i);
 								CString csMsg;
 								csMsg.Format("zu Konto %s gescrollt", csKonto);

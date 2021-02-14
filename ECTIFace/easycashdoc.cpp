@@ -2575,7 +2575,7 @@ BOOL CEasyCashDoc::BuchungIstEinnahme(CBuchung *pBuchung)
 	return FALSE;
 }
 
-BOOL CEasyCashDoc::BuchungIstAusgabme(CBuchung *pBuchung)
+BOOL CEasyCashDoc::BuchungIstAusgabe(CBuchung *pBuchung)
 {
 	CBuchung *pb;
 	for (pb = Ausgaben; pb; pb = pb->next)

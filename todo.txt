@@ -614,6 +614,20 @@ v2.39
 - Abfrage beim Jahreswechsel, ob alle Dauerbuchungen bereits bis Dezembeer (bzw. Bis-Datum) ausgeführt wurden
 - Selektierte Zeilen werden beim Wechsel der Journalansicht jetzt deselektiert.
 - neue Formulare
+- neues Feature 'Seiten-Navigationsleiste', um schnell zu einer bestimmten Stelle des Journals zu kommen
+- Dauerbuchungen mit Tooltips, um die Funktion insbesondere des Aktualisiert-Bis-Datums deutlicher zu machen
+
+v2.40
+- Bugfix: Plugin-Fenster wurden von der Navigations-Seitenleiste überdeckt, so dass teilweise Bedienelemente nicht erreichbar waren.
+
+v2.41
+- Workaround für nicht mehr funktionierendes Mausrad in CScrollView nach dem Einbau des Seiten-Navigationsleiste
+- Größe der Navigations-Seitenleise wird jetzt zwischen Programmstarts gespeichert
+- Problem mit automatischer Anpassung des Zoom-Levels behoben
+- Buchungen ohne Kontenzuweisung in der Navigations-Seitenleiste gefixt
+- Reihenfolge der Konten in der Navigations-Seitenleiste und dem Filter-Menü entspricht jetzt der Reihenfolge in den Einstellungen
+
+
 
 =============================================================
 AB HIER UNSORTIERTE FEATURE-WÜNSCHE UND HINWEISE VON NUTZERN
