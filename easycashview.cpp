@@ -261,6 +261,7 @@ void CEasyCashView::OnInitialUpdate()
 		GetParent()->SetWindowText(GetDocument()->GetTitle());
 
 	m_zoomfaktor = m_wunschzoomfaktor = theApp.GetProfileInt("Fenster", "JournalZoomFaktor", 100);
+	m_timeLetzteZwangsverkleinerung = CTime::GetCurrentTime() - CTimeSpan(1);
 	SetupScroll();
 
 	// Popup-Menü aufbauen
@@ -1247,8 +1248,9 @@ void CEasyCashView::OnSize(UINT nType, int cx, int cy)
 		pPluginWnd->ResizeClient(r.right, r.bottom);
 	}
 
-	if (m_zoomfaktor < m_wunschzoomfaktor && cx > cx_old) // bei Vergrößerung der Fensterbreite versuchen, den Wunsch-Zoomlevel wieder herzustellen, wenn er zwangsweise verkleinert wurde
-		m_zoomfaktor = m_wunschzoomfaktor; 
+	if (m_timeLetzteZwangsverkleinerung < CTime::GetCurrentTime() - CTimeSpan(0, 0, 0, 1)  // unterbinden, wenn gerade Zoomverkleinerung im Gange ist
+		&& m_zoomfaktor < m_wunschzoomfaktor && cx > cx_old) // bei Vergrößerung der Fensterbreite versuchen, den Wunsch-Zoomlevel wieder herzustellen, wenn er zwangsweise verkleinert wurde
+			m_zoomfaktor = m_wunschzoomfaktor; 
 	cx_old = cx;
 
 	SetupScroll();	
@@ -1448,6 +1450,7 @@ bool CEasyCashView::CheckPlatzFuerBeschreibung(DrawInfo *pDrawInfo)
 		if (netto_oder_brutto_linker_rand < beschreibung_rechter_rand)	
 		{
 			m_zoomfaktor -= 25;
+			m_timeLetzteZwangsverkleinerung = CTime::GetCurrentTime();
 			if (m_zoomfaktor < 25) 
 				m_zoomfaktor = 25;
 			else

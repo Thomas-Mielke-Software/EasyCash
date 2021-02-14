@@ -217,6 +217,7 @@ protected:
 	DWORD m_TextColorAusgaben; 
 	int m_zoomfaktor;		// in prozent
 	int m_wunschzoomfaktor;	// wird in registry gespeichert
+	CTime m_timeLetzteZwangsverkleinerung;  // um automatische Zoomvergrößerung auf den Wunschlevel zu unterbinden
 
 	BOOL m_bCtrlKeyPressed;	// tracked in OnKeyUp/Down
 
