@@ -111,16 +111,24 @@ void CNavigation::OnNMClick(NMHDR *pNMHDR, LRESULT *pResult)
 			case 1:
 				{
 					CString csKonto = GetListCtrl().GetItemText(pNMItemActivate->iItem, 0);
+					BOOL bSucheUnzugewieseneEinnahmenbuchungen = FALSE, bSucheUnzugewieseneAusgabenbuchungen = FALSE;
+					if (csKonto == "[noch zu keinem Konto zugewiesene Einnahmen]")
+						bSucheUnzugewieseneEinnahmenbuchungen = TRUE;
+					if (csKonto == "[noch zu keinem Konto zugewiesene Ausgaben]")
+						bSucheUnzugewieseneAusgabenbuchungen = TRUE;
 					int i;
 					for (i = 0; i < MAX_BUCHUNGEN; i++)
-						if (m_pViewWnd->ppPosBuchungsliste[i] && (*(m_pViewWnd->ppPosBuchungsliste[i]))->Konto == csKonto)
-						{
-							m_pViewWnd->ScrolleZuBuchung(i);
-							CString csMsg;
-							csMsg.Format("zu Konto %s gescrollt", csKonto);
-							((CMainFrame*)AfxGetMainWnd())->SetStatus(csMsg);
-							break;
-						}
+						if (m_pViewWnd->ppPosBuchungsliste[i])
+							if (((*(m_pViewWnd->ppPosBuchungsliste[i]))->Konto.IsEmpty() && bSucheUnzugewieseneEinnahmenbuchungen && pDoc->BuchungIstEinnahme(*(m_pViewWnd->ppPosBuchungsliste[i])))
+							 || ((*(m_pViewWnd->ppPosBuchungsliste[i]))->Konto.IsEmpty() && bSucheUnzugewieseneAusgabenbuchungen && pDoc->BuchungIstAusgabme(*(m_pViewWnd->ppPosBuchungsliste[i])))
+							 || (*(m_pViewWnd->ppPosBuchungsliste[i]))->Konto == csKonto)
+							{
+								m_pViewWnd->ScrolleZuBuchung(i);
+								CString csMsg;
+								csMsg.Format("zu Konto %s gescrollt", csKonto);
+								((CMainFrame*)AfxGetMainWnd())->SetStatus(csMsg);
+								break;
+							}
 				}
 				break;
 			// Journal nach Bestandskonten

@@ -776,7 +776,8 @@ void CEasyCashView::OnUpdate(CView* pSender, LPARAM lHint, CObject* pHint)
 	CBuchung *p;
 	CString einnahmen_posten_name[100];
 	CString ausgaben_posten_name[100];
-	CStringArray csaBestandskontenMitBuchungenUnsortiert;
+	CStringArray csaBestandskontenMitBuchungenUnsortiert;	
+	BOOL bUnzugewieseneEinnahmenbuchungenExistieren = FALSE, bUnzugewieseneAusgabenbuchungenExistieren = FALSE;
 
 	for (i = 0; i < 100; i++)
 	{
@@ -791,6 +792,7 @@ void CEasyCashView::OnUpdate(CView* pSender, LPARAM lHint, CObject* pHint)
 		{
 			if (p->Konto.IsEmpty())
 			{
+				bUnzugewieseneEinnahmenbuchungenExistieren = TRUE;
 				break;
 			}
 
@@ -821,6 +823,7 @@ void CEasyCashView::OnUpdate(CView* pSender, LPARAM lHint, CObject* pHint)
 		{
 			if (p->Konto.IsEmpty())
 			{
+				bUnzugewieseneAusgabenbuchungenExistieren = TRUE;
 				break;
 			}
 
@@ -866,11 +869,13 @@ void CEasyCashView::OnUpdate(CView* pSender, LPARAM lHint, CObject* pHint)
 		for (j = 0; j < 100; j++)
 			if (!einnahmen_posten_name[j].IsEmpty())
 				m_KontenMitBuchungen.Add((CString)"Einnahmen: " + einnahmen_posten_name[j]);
-		m_KontenMitBuchungen.Add((CString)"--- [noch zu keinem Konto zugewiesene Einnahmen] ---");
+		if (bUnzugewieseneEinnahmenbuchungenExistieren)
+			m_KontenMitBuchungen.Add((CString)"--- [noch zu keinem Konto zugewiesene Einnahmen] ---");
 		for (j = 0; j < 100; j++)
 			if (!ausgaben_posten_name[j].IsEmpty())
 				m_KontenMitBuchungen.Add((CString)"Ausgaben: " + ausgaben_posten_name[j]);
-		m_KontenMitBuchungen.Add((CString)"--- [noch zu keinem Konto zugewiesene Ausgaben] ---");
+		if (bUnzugewieseneAusgabenbuchungenExistieren)
+			m_KontenMitBuchungen.Add((CString)"--- [noch zu keinem Konto zugewiesene Ausgaben] ---");
 	}
 
 /*		// alter Menü-Kram für Konten-Filter
@@ -1001,7 +1006,19 @@ void CEasyCashView::OnUpdate(CView* pSender, LPARAM lHint, CObject* pHint)
 			{
 				if (m_KontenMitBuchungen[i] == "<alle Konten>") continue;
 
-				CString csTemp = m_KontenMitBuchungen[i].Mid(10).TrimLeft();
+				CString csTemp;
+				if (m_KontenMitBuchungen[i] == "--- [noch zu keinem Konto zugewiesene Einnahmen] ---")
+				{
+					if (!bUnzugewieseneEinnahmenbuchungenExistieren) continue;
+					csTemp = "[noch zu keinem Konto zugewiesene Einnahmen]";
+				}
+				else if (m_KontenMitBuchungen[i] == "--- [noch zu keinem Konto zugewiesene Ausgaben] ---")
+				{
+					if (!bUnzugewieseneAusgabenbuchungenExistieren) continue;
+					csTemp = "[noch zu keinem Konto zugewiesene Ausgaben]";
+				}
+				else
+					csTemp = m_KontenMitBuchungen[i].Mid(10).TrimLeft();
 				int iItem = nav.InsertItem(nav.GetItemCount(), csTemp);
 
 				if (m_KontenMitBuchungen[i].Mid(10) == ausgaben_posten_name[0]) group = 1; // fangen die Ausgaben an? dann Gruppe umschalten

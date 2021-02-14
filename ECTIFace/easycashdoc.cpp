@@ -2564,5 +2564,22 @@ void CEasyCashDoc::BerechneFormularfeldwerte(CString &Formular, CStringArray &cs
 			}
 		}
 	}
+}
 
+BOOL CEasyCashDoc::BuchungIstEinnahme(CBuchung *pBuchung)
+{
+	CBuchung *pb;
+	for (pb = Einnahmen; pb; pb = pb->next)
+		if (pb == pBuchung)
+			return TRUE;
+	return FALSE;
+}
+
+BOOL CEasyCashDoc::BuchungIstAusgabme(CBuchung *pBuchung)
+{
+	CBuchung *pb;
+	for (pb = Ausgaben; pb; pb = pb->next)
+		if (pb == pBuchung)
+			return TRUE;
+	return FALSE;
 }

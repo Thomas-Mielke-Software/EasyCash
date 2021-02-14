@@ -165,6 +165,8 @@ public:
 	BOOL ConvertToEuro();
 	static char *GetWaehrungskuerzel(int i);
 	static double GetUmrechnungskurs(int i);
+	BOOL BuchungIstEinnahme(CBuchung *pBuchung);
+	BOOL BuchungIstAusgabme(CBuchung *pBuchung);
 
 // weiter Attributes
 public:
