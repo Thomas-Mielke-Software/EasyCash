@@ -5,16 +5,27 @@
 
 class CNavigation : public CMyListView
 {
+protected: // create from serialization only
+	CNavigation();
 	DECLARE_DYNCREATE(CNavigation)
 
+// Attributes
 public:
-	CNavigation();
+	CEasyCashDoc* GetDocument() const;
+protected:
+	CSplitterWnd m_wndSplitter;
+
+// Operations
+public:
+
+// Overrides
+public:
+
+// Implementation
 	virtual ~CNavigation();
 	CEasyCashView *m_pViewWnd;
 
-private:
-	CSplitterWnd m_wndSplitter;
-
+// Generated message map functions
 protected:
 	DECLARE_MESSAGE_MAP()
 public:

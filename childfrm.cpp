@@ -64,7 +64,7 @@ CChildFrame::~CChildFrame()
 BOOL CChildFrame::PreCreateWindow(CREATESTRUCT& cs)
 {
     if(CMDIChildWndEx::PreCreateWindow(cs)==0) return FALSE;
-	cs.style &= ~(LONG)FWS_ADDTOTITLE;
+	//cs.style &= ~(LONG)FWS_ADDTOTITLE;
 
 	return TRUE;
 }
@@ -93,7 +93,7 @@ BOOL CChildFrame::OnCreateClient(LPCREATESTRUCT /*lpcs*/, CCreateContext* pConte
     CRect cr;  
     GetWindowRect( &cr );  
 
-    if (!m_wndSplitter.CreateStatic(this, 1, 2, WS_CHILD | WS_VISIBLE /* | WS_VSCROLL*/))   
+    if (!m_wndSplitter.CreateStatic(this, 1, 2, WS_CHILD | WS_VISIBLE))
     {   
         MessageBox("Fehler beim erzeugen des geteilten Journalfensters (CreateStatic).", "Initialisierungsfehler", MB_OK | MB_ICONERROR);   
         return FALSE;   
@@ -110,6 +110,10 @@ BOOL CChildFrame::OnCreateClient(LPCREATESTRUCT /*lpcs*/, CCreateContext* pConte
         MessageBox("Fehler beim erzeugen des geteilten Journalfensters (CNavigation).", "Initialisierungsfehler", MB_OK | MB_ICONERROR);  
 		return FALSE;   
     } 
+	//m_wndSplitter.SetActivePane(0, 0);
+	// CView* pView = (CView *)m_wndSplitter.GetDlgItem(m_wndSplitter.IdFromRowCol(0, 0));
+	// if (pView) SetActiveView(pView);
+	//SetActiveView((CView *) m_wndSplitter.GetPane(0,0));
 
 	// Navigaion und view sollen voneinander wissen:
 	((CEasyCashView*)m_wndSplitter.GetPane(0, 0))->m_pNavigationWnd = (CNavigation*)m_wndSplitter.GetPane(0, 1);
@@ -148,11 +152,11 @@ void CChildFrame::ActivateFrame(int nCmdShow)
     // if another window is open, use default
     if(GetMDIFrame()->MDIGetActive())
     {
-        CMDIChildWnd::ActivateFrame(nCmdShow);
+        CMDIChildWndEx::ActivateFrame(nCmdShow);
     }
     else // else open the child window maximized.
     {
-        CMDIChildWnd::ActivateFrame(SW_SHOWMAXIMIZED);
+        CMDIChildWndEx::ActivateFrame(SW_SHOWMAXIMIZED);
     }	
 	
 	CMDIChildWndEx::ActivateFrame(nCmdShow);

@@ -16,6 +16,7 @@ static char THIS_FILE[] = __FILE__;
 
 CExtSplitter::CExtSplitter(): m_pSavedColInfo(NULL)
 {
+	m_pSavedRowInfo = m_pSavedColInfo = NULL;
 }
 
 CExtSplitter::~CExtSplitter()

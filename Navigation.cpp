@@ -199,3 +199,9 @@ void CNavigation::OnSetFocus(CWnd* pOldWnd)
 	STATIC_DOWNCAST(CChildFrame, GetParent()->GetParent())->SetActiveView(m_pViewWnd);
 	m_pViewWnd->SetFocus();
 }
+
+CEasyCashDoc* CNavigation::GetDocument() const // non-debug version is inline
+{
+	ASSERT(m_pDocument->IsKindOf(RUNTIME_CLASS(CEasyCashDoc)));
+	return (CEasyCashDoc*)m_pDocument;
+}
