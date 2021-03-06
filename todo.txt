@@ -627,6 +627,9 @@ v2.41
 - Buchungen ohne Kontenzuweisung in der Navigations-Seitenleiste gefixt
 - Reihenfolge der Konten in der Navigations-Seitenleiste und dem Filter-Menü entspricht jetzt der Reihenfolge in den Einstellungen
 
+v2.42
+- Fenstertitel werden jetzt wieder mit dem Dokumentnamen angezeigt
+- Navigation im Journal nach Datum funktioniert jetzt besser mit Filtern und wenn ein Monat angeklickt wird, für den es keine Buchungen gibt
 
 
 =============================================================

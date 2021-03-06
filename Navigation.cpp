@@ -93,25 +93,41 @@ void CNavigation::OnNMClick(NMHDR *pNMHDR, LRESULT *pResult)
 					pb = pDoc->Ausgaben;
 					monat = pNMItemActivate->iItem - 11;
 				}
-				while (pb)
-				{
-					if (pb->Datum.GetMonth() == monat || !pb->next)
-						break;
-					pb = pb->next;
-				}
 				// finde Zeile im Journalfenster, in der eine Buchung mit passendem Datum steht, und scrolle da hin
-				if (pb)
 				{
+					int nBesteAnnäherungZeile = -1;
+					int nBesteAnnaeherungMonate = 13;
 					int i;
 					for (i = 0; i < MAX_BUCHUNGEN; i++)
-						if (m_pViewWnd->ppPosBuchungsliste[i] && pb == *(m_pViewWnd->ppPosBuchungsliste[i]))
-						{
-							m_pViewWnd->ScrolleZuBuchung(i);
-							CString csMsg;
-							csMsg.Format("zu Monat %d in den %s gescrollt", monat, (pNMItemActivate->iItem < 12) ? "Einnahmen" : "Ausgaben");
-							((CMainFrame*)AfxGetMainWnd())->SetStatus(csMsg);
-							break;
+					{
+						if (m_pViewWnd->ppPosBuchungsliste[i] && (														// keine Leerzeile ö.ä.
+							(pb == pDoc->Einnahmen && pDoc->BuchungIstEinnahme(*(m_pViewWnd->ppPosBuchungsliste[i]))) ||	// und richtiger Buchungstyp (E/A)
+							(pb == pDoc->Ausgaben && pDoc->BuchungIstAusgabe(*(m_pViewWnd->ppPosBuchungsliste[i])))))
+						{	
+							if ((*m_pViewWnd->ppPosBuchungsliste[i])->Datum.GetMonth() == monat)  // eine Buchung mit passendem Monat im Journal gefunden? Optimal!
+							{
+								break; 
+							}
+							if (nBesteAnnäherungZeile == -1 || abs((*m_pViewWnd->ppPosBuchungsliste[i])->Datum.GetMonth() - CTime(pDoc->nJahr, monat, 15, 12, 0, 0).GetMonth()) < nBesteAnnaeherungMonate)
+							{
+								nBesteAnnäherungZeile = i;
+								nBesteAnnaeherungMonate = abs((*m_pViewWnd->ppPosBuchungsliste[i])->Datum.GetMonth() - CTime(pDoc->nJahr, monat, 15, 12, 0, 0).GetMonth());
+							}
 						}
+					}
+					CString csMsg;
+					csMsg.Format("zu Monat %d in den %s gescrollt", monat, (pNMItemActivate->iItem < 12) ? "Einnahmen" : "Ausgaben");
+					if (i >= MAX_BUCHUNGEN)			// keinen exakten Monats-Treffer gefunden?
+					{
+						i = nBesteAnnäherungZeile;  // zu zeitlich nächster Buchung scrollen
+						csMsg.Format("keine %s-Buchung für Monat %d gefunden; zur zeitlich nächsten Buchung gescrollt", (pNMItemActivate->iItem < 12) ? "Einnahmen" : "Ausgaben", monat);
+					}
+					if (i >= 0 && i < MAX_BUCHUNGEN)
+					{
+						m_pViewWnd->ScrolleZuBuchung(i);
+						((CMainFrame*)AfxGetMainWnd())->SetStatus(csMsg);
+						break;
+					}
 				}
 				break;
 			// Journal nach Konten
