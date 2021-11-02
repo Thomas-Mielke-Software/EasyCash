@@ -70,13 +70,19 @@
 		<feld id="1017" typ="Einnahmen" seite="1" horizontal="945" vertikal="1107" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" nullwertdarstellung="nein" >
 			<name>innergemeinschaftliche Lieferungen</name>
 		</feld>
+		<feld id="1019" typ="Einnahmen" seite="1" horizontal="945" vertikal="1183" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" nullwertdarstellung="nein" >
+			<name>Steuerfrei ohne Vorsteuerabzug Grundstücksumsätze $6 Abs. 1 Z 9</name>
+		</feld>			
+		<feld id="1016" typ="Einnahmen" seite="1" horizontal="945" vertikal="1219" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" nullwertdarstellung="nein" >
+			<name>Steuerfrei ohne Vorsteuerabzug Kleinunternehmer $6 Abs. 1 Z 26</name>
+		</feld>		
 		<feld id="1020" typ="Summe" seite="1" horizontal="945" vertikal="1255" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" nullwertdarstellung="nein" >
 			<name>steuerfreie Umsätze ohne Vorsteuerabzug</name>
-			<erweiterung>netto0000(e)-1017-3103-1011-1021</erweiterung>
+			<erweiterung>netto0000(e)-1017-1019-1016-3103-1011-1021</erweiterung>
 		</feld>
 		<feld id="100" typ="Summe" seite="1" horizontal="945" vertikal="1295" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" nullwertdarstellung="ja" >
 			<name>Gesamtbetrag</name>
-			<erweiterung>2000-1017-1020-1011</erweiterung>
+			<erweiterung>2000-1017-1019-1016-1020-1011</erweiterung>
 		</feld>
 		<feld id="1022" typ="Summe" seite="2" horizontal="740" vertikal="92" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" nullwertdarstellung="ja" >
 			<name>Steuerpflichtige Umsätze zum Steuersatz von 20%</name>

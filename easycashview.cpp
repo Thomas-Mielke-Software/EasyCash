@@ -6555,6 +6555,19 @@ BOOL CEasyCashView::Export(char *_Efilename, char *_Afilename, BOOL bExplorerOef
 	{
 		CBuchung *pB = pDoc->Einnahmen;
 
+		char *header_einnahmen = "Datum;Belegnummer;Betrag;MWSt-Betrag;Beschreibung;Konto;Betrieb;Bestandskonto\r\n";
+		TRY
+		{
+			File.Write(header_einnahmen, strlen(header_einnahmen));
+		}
+		CATCH(CFileException, e)
+		{
+			AfxMessageBox("Fehler beim Schreiben der Export-Datei", MB_ICONSTOP);
+			File.Close();
+			return FALSE;
+		}
+		END_CATCH
+
 		while (pB)
 		{
 			char buffer[1000];
@@ -6647,6 +6660,19 @@ BOOL CEasyCashView::Export(char *_Efilename, char *_Afilename, BOOL bExplorerOef
 		if (File.Open(csa, CFile::modeWrite|CFile::modeCreate))
 		{
 			CBuchung *pB = pDoc->Ausgaben;
+
+			char *header_ausgaben = "Datum;Belegnummer;Betrag;MWSt-Satz;Beschreibung;Konto;Betrieb;Bestandskonto;Abschreibung-Nr;Abschreibung-Jahre;Restwert;Buchungsjahr-Netto\r\n";
+			TRY
+			{
+				File.Write(header_ausgaben, strlen(header_ausgaben));
+			}
+			CATCH(CFileException, e)
+			{
+				AfxMessageBox("Fehler beim Schreiben der Export-Datei", MB_ICONSTOP);
+				File.Close();
+				return FALSE;
+			}
+			END_CATCH
 
 			while (pB)
 			{

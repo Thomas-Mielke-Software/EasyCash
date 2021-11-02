@@ -631,6 +631,46 @@ v2.42
 - Fenstertitel werden jetzt wieder mit dem Dokumentnamen angezeigt
 - Navigation im Journal nach Datum funktioniert jetzt besser mit Filtern und wenn ein Monat angeklickt wird, für den es keine Buchungen gibt
 
+v2.43
+- PLZ, Ort, E-Mail und Telefonnummer waren im USt-2020-Formular nicht an der richtigen Position
+- Felder 1019 und 1016 im österr. U1-Formular
+- Titelzeile im CSV-Export
+
+!!!!!!!!!!!!!!!!!!!!!
+Vorsteuer, bei Bewirtungen etwa, muss in den Freestyle-Formularen auch einbezogen werden, wenn sie auf "/"-Konten gebucht werden.
+
+!!!!!!!
+> Ich benutze eine registrierte Version von Easy Cash & Tax. Bruhrain ist 
+> der Benutzername, finde allerdings keine weiteren Daten mehr,ansonsten 
+> hätte ich das hier ins Forum geschrieben.
+> 
+> Betreffend des Jahresabschlußes 2020 habe ich Post vom Finanzamt erhalten.
+> 
+> Eine Frage war: „Sie erklären in Ihrer Umsatzsteuererklärung keine 
+> unentgeltlichen Wertabgaben. In der Gewinnermittlung sind jedoch 
+> Privatentnahmen erfasst. Ich bitte um Aufklärung der Differenz.“
+> 
+> Jetzt ist es so, dass In der EÜR private Kfz Nutzung erfasst wird übr 
+> das Feld 1106, in der Umsatzsteuererklärung sind die Zeile 38, 39, 42 
+> und 43 nicht unterstützt.
+
+Ja, das Problem ist, dass das USt.-Erkl.-Formular von den unterstützten Feldern eigentlich nur ein aufs ganze Jahr ausgedehnte USt.-Voranmeldung ist. In der Voranmeldung sind diese unterschiedlichen Umsätze im Feld 81 alledings nur zusammengefasst. Macht natürlich einiges einfacher -- man spart sich Feldzuweisungen für ein weiteres Formular -- aber hat natürlich so seine Beschränkungen.
+
+Ich gehe auch davon aus, dass diese spezielle Prüfung automatisiert stattfindet. Wahrscheinlich reicht zur Aufklärung ein Schreiben, dass die entspr. Beträge in den USt.-Erkl-Felder 177 und 275 enthalten sind.
+
+Ich muss mal überlegen, wie ich das Problem angehen kann. Es gibt mehrere Möglichkeiten:
+- einfach eine Randnotiz machen mit der Aufforderung evtl. Privatentnahmen entspr. dem EÜR-Feld ggf. manuell aus 117 herauszurechnen
+- die Entnahme/Privatnutzungs-Felder auch in den USt.-Voranmeldungen unsichtbar mitzuführen und dann in der USt.-Erklärung aufzudröseln
+- das USt.-Erklärungs-Formular komplett mit einer eigenen Feldnummerierung zu unterstützten (was perspektivisch irgendwann passieren muss, um die Übermittlung an Elster direkt aus EC&T anbieten zu können).
+!!!!!!!
+
+!!!!!!!!!!!!!!!
+!!!!!!!!!!!!!!!
+nur eine Kleinigkeit: Einzelne Seiten eines Formulars (z. Umsatzsteuererklärung) lassen sich nicht drucken, nur das Formular als Ganzes. Sowohl mit Samsung M2885FW als auch HP-Deskjet 400.
+Wenn man aus welchem Grund auch immer nur Teilausdrucke benötigt, ist das lästig.
+Ansonsten nach wie vor ein tolles Programm, auch wenn das Finanzamt Oldenburg bei der kürzlich statt gefundenen Betriebsprüfung die Daten nicht einlesen konnte.
+!!!!!!!!!!!!!!!
+!!!!!!!!!!!!!!!
 
 =============================================================
 AB HIER UNSORTIERTE FEATURE-WÜNSCHE UND HINWEISE VON NUTZERN
