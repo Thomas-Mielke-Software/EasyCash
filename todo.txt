@@ -635,6 +635,7 @@ v2.43
 - PLZ, Ort, E-Mail und Telefonnummer waren im USt-2020-Formular nicht an der richtigen Position
 - Felder 1019 und 1016 im österr. U1-Formular
 - Titelzeile im CSV-Export
+- neues Feature: Anlagengegenstand aus dem Betriebsvermögen ausscheiden lassen
 
 !!!!!!!!!!!!!!!!!!!!!
 Vorsteuer, bei Bewirtungen etwa, muss in den Freestyle-Formularen auch einbezogen werden, wenn sie auf "/"-Konten gebucht werden.

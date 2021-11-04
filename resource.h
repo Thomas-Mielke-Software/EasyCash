@@ -357,6 +357,8 @@
 #define IDC_M3                          1156
 #define IDC_BUTTON1                     1156
 #define IDC_MANUELLER_DOWNLOAD          1156
+#define IDC_ABGANG                      1156
+#define IDC_ABGANG_BUCHEN               1156
 #define IDC_Q2                          1157
 #define IDC_M4                          1158
 #define IDC_STATIC_INFO                 1158

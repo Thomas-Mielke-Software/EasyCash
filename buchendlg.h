@@ -61,6 +61,7 @@ protected:
 	CBuchung **m_ppb;
 	BOOL m_bKopieren;
 	BOOL m_bNeueBelegnummer;
+	CBuchung *m_bVorlage;
 	BOOL m_UpdateBeschreibung;
 	CString m_csZielwaehrung;
 	int m_nGewaehlterSplit;
@@ -116,4 +117,5 @@ public:
 	afx_msg void OnCbnEditchangeAbschreibungnummer();
 	afx_msg void OnBnClickedMwstEnabled();
 	afx_msg void OnCbnSelchangeEurechnungsposten();
+	afx_msg void OnBnClickedAbgangBuchen();
 };

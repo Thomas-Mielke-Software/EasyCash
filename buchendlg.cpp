@@ -139,6 +139,7 @@ BEGIN_MESSAGE_MAP(BuchenDlg, CDialog)
 	ON_CBN_EDITCHANGE(IDC_ABSCHREIBUNGNUMMER, &BuchenDlg::OnCbnEditchangeAbschreibungnummer)
 	ON_BN_CLICKED(IDC_MWST_ENABLED, &BuchenDlg::OnBnClickedMwstEnabled)
 	ON_CBN_SELCHANGE(IDC_EURECHNUNGSPOSTEN, &BuchenDlg::OnCbnSelchangeEurechnungsposten)
+	ON_BN_CLICKED(IDC_ABGANG_BUCHEN, &BuchenDlg::OnBnClickedAbgangBuchen)
 END_MESSAGE_MAP()
 
 /////////////////////////////////////////////////////////////////////////////
@@ -791,6 +792,10 @@ void BuchenDlg::InitDlg(BOOL bBelasseEinigeFelder)
 		InitRestwert();
 		GetDlgItem(IDC_ABSCHREIBUNG_GENAUIGKEIT_STATIC)->ShowWindow(SW_SHOW);
 		GetDlgItem(IDC_ABSCHREIBUNG_GENAUIGKEIT)->ShowWindow(SW_SHOW);
+		if (m_ppb && (*m_ppb)->AbschreibungNr > 1)
+			GetDlgItem(IDC_ABGANG_BUCHEN)->ShowWindow(SW_SHOW);
+		else
+			GetDlgItem(IDC_ABGANG_BUCHEN)->ShowWindow(SW_HIDE);
 
 		((CButton *)GetDlgItem(IDC_EINNAHMEN))->SetCheck(FALSE);
 		((CButton *)GetDlgItem(IDC_AUSGABEN))->SetCheck(TRUE);
@@ -821,6 +826,7 @@ void BuchenDlg::InitDlg(BOOL bBelasseEinigeFelder)
 		GetDlgItem(IDC_ABSCHREIBUNGRESTWERT)->ShowWindow(SW_HIDE);
 		GetDlgItem(IDC_ABSCHREIBUNG_GENAUIGKEIT_STATIC)->ShowWindow(SW_HIDE);
 		GetDlgItem(IDC_ABSCHREIBUNG_GENAUIGKEIT)->ShowWindow(SW_HIDE);
+		GetDlgItem(IDC_ABGANG_BUCHEN)->ShowWindow(SW_HIDE);
 
 		((CButton *)GetDlgItem(IDC_AUSGABEN))->SetCheck(FALSE);
 		((CButton *)GetDlgItem(IDC_EINNAHMEN))->SetCheck(TRUE);
@@ -1685,4 +1691,26 @@ void BuchenDlg::OnAlt5()
 void BuchenDlg::OnAlt6() 
 {
 	OnAlt(IDC_BESTANDSKONTO, 2);
+}
+
+void BuchenDlg::OnBnClickedAbgangBuchen()
+{
+	if (m_ppb && (*m_ppb)->AbschreibungNr > 1 && 
+		(AfxMessageBox((CString)"Anlagengegenstand aus dem Betriebsvermögen ausscheiden lassen? (Die AfA-Buchung wird dabei in eine einfache Ausgaben-Buchung über den Restwert umgewandelt.)", MB_YESNO) == IDYES))
+	{
+		CString anschaffungsdatum = (*m_ppb)->Datum.Format("%Y%m%d");
+		SetErweiterungKey((*m_ppb)->Erweiterung, "EasyCash", "Anschaffungsdatum", anschaffungsdatum);
+		SetErweiterungKey((*m_ppb)->Erweiterung, "EasyCash", "UrspruenglichesKonto", (*m_ppb)->Konto);		
+		(*m_ppb)->Datum = CTime(m_pDoc->nJahr, 1, 1, 0, 0, 0);
+		(*m_ppb)->Betrag = (*m_ppb)->AbschreibungRestwert;
+		(*m_ppb)->MWSt = 0;
+		(*m_ppb)->AbschreibungRestwert = 0;
+		(*m_ppb)->AbschreibungNr = 1;
+		(*m_ppb)->AbschreibungJahre = 1;
+		//(*m_ppb)->Konto = TODO!!!!!!!!!!!!!!!!!!!!!!
+		(*m_ppb)->Bestandskonto = "kalkulatorische Restbuchwerte (bitte ignorieren)";
+		CDialog::OnOK();
+		m_pParent->RedrawWindow();
+		m_pDoc->UpdateAllViews(NULL);
+	}
 }
