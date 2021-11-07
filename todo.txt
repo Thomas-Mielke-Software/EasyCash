@@ -636,6 +636,7 @@ v2.43
 - Felder 1019 und 1016 im österr. U1-Formular
 - Titelzeile im CSV-Export
 - neues Feature: Anlagengegenstand aus dem Betriebsvermögen ausscheiden lassen
+- Kosmetik: Doppelte MWSt.-Sätze werden aus dem Buchen-Dialog herausgefiltert.
 
 !!!!!!!!!!!!!!!!!!!!!
 Vorsteuer, bei Bewirtungen etwa, muss in den Freestyle-Formularen auch einbezogen werden, wenn sie auf "/"-Konten gebucht werden.

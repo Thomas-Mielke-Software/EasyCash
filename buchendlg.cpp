@@ -174,8 +174,12 @@ BOOL BuchenDlg::OnInitDialog()
 
 	((CComboBox *)GetDlgItem(IDC_MWST))->ResetContent();
 	int i;
-	for (i = 0; *m_pParent->GetVATs(i); i++)
-		((CComboBox *)GetDlgItem(IDC_MWST))->AddString(m_pParent->GetVATs(i));		
+	char *mwst;
+	for (i = 0; *(mwst = m_pParent->GetVATs(i)); i++)
+	{
+		if (((CComboBox *)GetDlgItem(IDC_MWST))->FindStringExact(0, mwst) < 0)
+			((CComboBox *)GetDlgItem(IDC_MWST))->AddString(mwst);
+	}
 
 	// Imagelists für Betriebe und Bestandskonten füllen
 	{
@@ -881,8 +885,12 @@ void BuchenDlg::InitDlg(BOOL bBelasseEinigeFelder)
 
 	if (bBelasseEinigeFelder) GetDlgItemText(IDC_MWST, csWiederherstellen);
 	((CComboBox *)GetDlgItem(IDC_MWST))->ResetContent();
-	for (i = 0; *m_pParent->GetVATs(i); i++)
-		((CComboBox *)GetDlgItem(IDC_MWST))->AddString(m_pParent->GetVATs(i));		
+	char *mwst;
+	for (i = 0; *(mwst = m_pParent->GetVATs(i)); i++)
+	{
+		if (((CComboBox *)GetDlgItem(IDC_MWST))->FindStringExact(0, mwst) < 0)
+			((CComboBox *)GetDlgItem(IDC_MWST))->AddString(mwst);
+	}
 	if (bBelasseEinigeFelder) SetDlgItemText(IDC_MWST, csWiederherstellen);
 
 	if (m_ppb && *m_ppb)	// ändern
@@ -1707,7 +1715,7 @@ void BuchenDlg::OnBnClickedAbgangBuchen()
 		(*m_ppb)->AbschreibungRestwert = 0;
 		(*m_ppb)->AbschreibungNr = 1;
 		(*m_ppb)->AbschreibungJahre = 1;
-		//(*m_ppb)->Konto = TODO!!!!!!!!!!!!!!!!!!!!!!
+//		(*m_ppb)->Konto = TODO!!!!!!!!!!!!!!!!!!!!!!
 		(*m_ppb)->Bestandskonto = "kalkulatorische Restbuchwerte (bitte ignorieren)";
 		CDialog::OnOK();
 		m_pParent->RedrawWindow();
