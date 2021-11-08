@@ -1706,18 +1706,57 @@ void BuchenDlg::OnBnClickedAbgangBuchen()
 	if (m_ppb && (*m_ppb)->AbschreibungNr > 1 && 
 		(AfxMessageBox((CString)"Anlagengegenstand aus dem Betriebsvermögen ausscheiden lassen? (Die AfA-Buchung wird dabei in eine einfache Ausgaben-Buchung über den Restwert umgewandelt.)", MB_YESNO) == IDYES))
 	{
-		CString anschaffungsdatum = (*m_ppb)->Datum.Format("%Y%m%d");
-		SetErweiterungKey((*m_ppb)->Erweiterung, "EasyCash", "Anschaffungsdatum", anschaffungsdatum);
-		SetErweiterungKey((*m_ppb)->Erweiterung, "EasyCash", "UrspruenglichesKonto", (*m_ppb)->Konto);		
+		CString csRestwertKonto;
+		CString csRestwertFeldnummer = m_pParent->einstellungen2->m_land == 1 ? "9210" : "1135";
+		char *pRestwertKonto = HoleKontoFuerFeld('A', csRestwertFeldnummer);
+		CString csEURoderE1a = m_pParent->einstellungen2->m_land == 1 ? "E1a" : "EÜR";
+		if (!pRestwertKonto)
+		{
+			csRestwertKonto = "Restbuchwert abgegangener Anlagengüter";
+			if (m_pParent->einstellungen2->m_land == 0 || m_pParent->einstellungen2->m_land == 1)
+				AfxMessageBox("Es wurde kein Konto gefunden, das mit dem Formularfeld " + csRestwertFeldnummer + " verknüpft ist. Deshalb wurde in der Buchung provisorisch das Konto '" 
+							  + csRestwertKonto + "' eingetragen. Wenn Sie Formulare benutzen, sollten Sie dieses Ausgabenkonto in den Einstellungen -> E/Ü-Konten anlegen und dem " + csEURoderE1a + "-Feld "
+							  + csRestwertFeldnummer + " zuweisen.");
+		}
+		else
+			csRestwertKonto = pRestwertKonto;
+
+		CString csUrspruenglichesAnschaffungsdatum = (*m_ppb)->Datum.Format("%Y%m%d");
+		char urspruenglicherBetrag[30];
+		int_to_currency((*m_ppb)->Betrag, 20, urspruenglicherBetrag);
+		CString csUrspruenglicheAbschreibungNr;
+		csUrspruenglicheAbschreibungNr.Format("%d", (*m_ppb)->AbschreibungNr);
+		CString csUrspruenglicheAbschreibungJahre;
+		csUrspruenglicheAbschreibungNr.Format("%d", (*m_ppb)->AbschreibungJahre);
+		char urspruenglicherRestwert[30];
+		int_to_currency((*m_ppb)->AbschreibungRestwert, 20, urspruenglicherRestwert);
+		SetErweiterungKey((*m_ppb)->Erweiterung, "EasyCash", "UrspruenglichesAnschaffungsdatum", csUrspruenglichesAnschaffungsdatum);	/// benötigt im Anlagenverzeichnis
+		SetErweiterungKey((*m_ppb)->Erweiterung, "EasyCash", "UrspruenglichesKonto", (*m_ppb)->Konto);									//
+		SetErweiterungKey((*m_ppb)->Erweiterung, "EasyCash", "UrspruenglicherBetrag", urspruenglicherBetrag);						//
+		SetErweiterungKey((*m_ppb)->Erweiterung, "EasyCash", "UrspruenglicheAbschreibungNr", csUrspruenglicheAbschreibungNr);		//
+		SetErweiterungKey((*m_ppb)->Erweiterung, "EasyCash", "UrspruenglicheAbschreibungJahre", csUrspruenglicheAbschreibungJahre);	// TODO: "Abgang rückgängigmachen"-Funktion!
+		SetErweiterungKey((*m_ppb)->Erweiterung, "EasyCash", "UrspruenglicherRestwert", urspruenglicherRestwert);					//
+		SetErweiterungKey((*m_ppb)->Erweiterung, "EasyCash", "UrspruenglichesBestandskonto", (*m_ppb)->Bestandskonto);				//
 		(*m_ppb)->Datum = CTime(m_pDoc->nJahr, 1, 1, 0, 0, 0);
 		(*m_ppb)->Betrag = (*m_ppb)->AbschreibungRestwert;
 		(*m_ppb)->MWSt = 0;
 		(*m_ppb)->AbschreibungRestwert = 0;
 		(*m_ppb)->AbschreibungNr = 1;
 		(*m_ppb)->AbschreibungJahre = 1;
-//		(*m_ppb)->Konto = TODO!!!!!!!!!!!!!!!!!!!!!!
+		(*m_ppb)->Konto = csRestwertKonto;
 		(*m_ppb)->Bestandskonto = "kalkulatorische Restbuchwerte (bitte ignorieren)";
+		m_pDoc->SetModifiedFlag("Anlagengut wurde aus dem Betriebsvermögen entnommen. Ggf. müssen Veräußerungserlöse oder Entsorgungskosten noch separat gebucht werden.");
+		m_pDoc->InkrementBuchungszaehler();
+
 		CDialog::OnOK();
+
+		int i;
+		for (i = 0; i < MAX_BUCHUNGEN; i++)
+			if (m_pParent->ppPosBuchungsliste[i] && *(m_pParent->ppPosBuchungsliste[i]) == *m_ppb)
+			{
+				m_pParent->nSelected = i;
+				break;
+			}
 		m_pParent->RedrawWindow();
 		m_pDoc->UpdateAllViews(NULL);
 	}

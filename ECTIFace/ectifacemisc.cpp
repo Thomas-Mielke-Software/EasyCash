@@ -446,3 +446,140 @@ extern "C" AFX_EXT_CLASS LPCSTR IniSektion(LPCSTR id)
 	return "Allgemein";
 }
 
+// Gibt den Kontennamen eines Einnahmenkontos (ea == 'E') oder Ausgabenkontos (ea='A') zurück, das mit bestimmten Formularfeldern verknüpft ist.
+// Bei den _feld-Parametern kann eines NULL sein, wenn lediglich eine Feldzuweisung für nur einen Formulartyp benötigt wird.
+// return: pointer auf einen String-Buffer oder NULL, wenn kein Konto mit der Gewünschten Verknüpfung geliefert werden konnte
+static char kontoReturnBuffer[1000];
+extern "C" AFX_EXT_CLASS char *HoleKontoFuerFeld(char ea, LPCSTR eurech_feld, LPCSTR uva_feld)
+{
+	char inifilename[1000];
+	if (!GetIniFileName(inifilename, sizeof(inifilename)))
+		return NULL;
+
+	if (!eurech_feld && !uva_feld)  // mindestens eine Feldzuweisung benötigt
+		return NULL;
+
+	CString line;
+	CString csKontensektion = ea == 'E' ? "[EinnahmenRechnungsposten]" : "[AusgabenRechnungsposten]";
+	CString csFeldzuweisungssektion = ea == 'E' ? "[EinnahmenFeldzuweisungen]" : "[AusgabenFeldzuweisungen]";
+	CString Kontenliste[100];
+	// CStringArray csaPassendeFelder;  TODO: Bei mehr als einem passenden Feld Auswahldialog einblenden.
+
+	CStdioFile inifile;
+	if (!inifile.Open(inifilename, CFile::modeRead))
+		return NULL;
+
+	BOOL bInKontensektion = FALSE;
+	BOOL bInFeldzuweisungssektion = FALSE;
+	CString csPassendesKontoNr = "";  // zweistellige Nummer des Kontos, das die gewünschten Feldzuweisungen enthält
+	BOOL bKontenlisteEingelesen = FALSE;
+	while(inifile.ReadString(line))
+	{
+		if (line == csKontensektion)
+		{
+			bInKontensektion = TRUE;
+			bInFeldzuweisungssektion = FALSE;
+			continue;
+		}
+		if (line == csFeldzuweisungssektion)
+		{
+			bInKontensektion = FALSE;
+			bInFeldzuweisungssektion = TRUE;
+			continue;
+		}
+
+		// Konten einlesen
+		if (bInKontensektion) 
+		{
+			if (line == "") continue;	// Leerzeilen ignorieren
+			if (line[0] == '[') 
+			{
+				bInKontensektion = FALSE;  // schon nächste Sektion? Dann Suche beenden.
+				if (line == csFeldzuweisungssektion) bInFeldzuweisungssektion = TRUE;
+				if (csPassendesKontoNr != "")	// schon eine passende Feldzuweisung gefunden?
+					break;						// dann aufhören die ini-Datei zu parsen
+				else
+					continue;
+			}
+			if (isdigit(line[0]) && isdigit(line[1]) && line[2] == '=')	// ist gültiger Konteneintrag?
+			{
+				int n = atoi(line);
+				Kontenliste[n] = line.Mid(3);
+				continue;
+			}
+		}
+
+		// in Feldzuweisungen suchen
+		if (bInFeldzuweisungssektion) 
+		{
+			if (line == "") continue;	// Leerzeilen ignorieren
+			if (line[0] == '[') 
+			{
+				bInFeldzuweisungssektion = FALSE;  // schon nächste Sektion? Dann Suche beenden.
+				if (line == csKontensektion) bInKontensektion = TRUE;
+				if (bKontenlisteEingelesen)	// Kontenliste bereits eingelesen?
+					break;					// dann aufhören die ini-Datei zu parsen
+				else
+					continue;
+			}
+			if (isdigit(line[0]) && isdigit(line[1]) && line[2] == '=')	// ist gültiger Feldzuweisungseintrag?
+			{
+				char *posTrennzeichen;
+				CString csSpeicher = line.Mid(3);	// eigentlichen Wert holen			
+				CString csEURechVerknuepfung;	
+				CString csUVAVerknuepfung;
+				
+				// ist EÜR-Verknüpfung vorhanden?
+				char *pEURechVerknuepfung = GetErweiterungKey(csSpeicher, "ECT", "E/Ü-Rechnung");
+				if (*pEURechVerknuepfung)
+				{
+					if ((posTrennzeichen = strchr(pEURechVerknuepfung, '|')) >= 0)
+					{
+						char *cp = csEURechVerknuepfung.GetBuffer(posTrennzeichen - pEURechVerknuepfung + 1);
+						strncpy(cp, pEURechVerknuepfung, posTrennzeichen - pEURechVerknuepfung);
+						cp[posTrennzeichen - pEURechVerknuepfung] = '\0';
+						csEURechVerknuepfung.ReleaseBuffer();
+					}
+				}
+
+				// ist UVA-Verknüpfung vorhanden?
+				char *pUVAVerknuepfung = GetErweiterungKey(csSpeicher, "ECT", "Umsatzsteuer-Voranmeldung");
+				if (*pUVAVerknuepfung)
+				{
+					if ((posTrennzeichen = strchr(pUVAVerknuepfung, '|')) >= 0)
+					{
+						char *cp = csUVAVerknuepfung.GetBuffer(posTrennzeichen - pUVAVerknuepfung + 1);
+						strncpy(cp, pUVAVerknuepfung, posTrennzeichen - pUVAVerknuepfung);
+						cp[posTrennzeichen - pUVAVerknuepfung] = '\0';
+						csUVAVerknuepfung.ReleaseBuffer();
+					}
+				}
+
+				if (eurech_feld && uva_feld)  // Konto mit Zuweisungen zu gesuchtem EÜR- *und* UVA-Feld benötigt
+				{
+					if (csEURechVerknuepfung == (CString)eurech_feld && csUVAVerknuepfung == (CString)uva_feld)
+						csPassendesKontoNr = line.Left(2);
+				}
+				else if (eurech_feld)  // nur nach EÜR-Feldzuweisung gesucht
+				{
+					if (csEURechVerknuepfung == (CString)eurech_feld)
+						csPassendesKontoNr = line.Left(2);
+				}
+				else if (uva_feld)  // nur nach UVA-Feldzuweisung gesucht
+				{
+					if (csUVAVerknuepfung == (CString)uva_feld)
+						csPassendesKontoNr = line.Left(2);
+				}
+			}
+		}
+	}
+
+	inifile.Close();
+	if (csPassendesKontoNr == "") return NULL;
+	int n = atoi(csPassendesKontoNr);
+	if (n < 0 || n >= 100) return NULL;
+	CString csPassendesKonto = Kontenliste[n];
+	if (Kontenliste[n] == "") return NULL;
+	strcpy(kontoReturnBuffer, (LPCTSTR)Kontenliste[n]);
+	return kontoReturnBuffer;
+}

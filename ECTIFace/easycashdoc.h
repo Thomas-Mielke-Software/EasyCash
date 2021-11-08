@@ -296,6 +296,7 @@ extern "C" AFX_EXT_CLASS void HoleFormularnamenAusCSA(long Index, LPCTSTR Filter
 
 // berechnet die Ini-Sektion aus dem angeforderten-Einstellungs-Key ('f' voranstellen für Finanzamts-Daten)
 extern "C" AFX_EXT_CLASS LPCSTR IniSektion(LPCSTR id);
+extern "C" AFX_EXT_CLASS char *HoleKontoFuerFeld(char ea, LPCSTR eurech_feld, LPCSTR uva_feld = NULL);
 
 ////////////////////////////////////////////
 // ExtensionDLLTable
