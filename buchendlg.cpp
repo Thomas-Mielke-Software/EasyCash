@@ -1721,9 +1721,12 @@ void BuchenDlg::OnBnClickedAbgangBuchen()
 		else
 			csRestwertKonto = pRestwertKonto;
 
-		CString csUrspruenglichesAnschaffungsdatum = (*m_ppb)->Datum.Format("%Y%m%d");
+		CTime ctUrspruenglichesAnschaffungsdatum = CTime((*m_ppb)->Datum.GetYear() - (*m_ppb)->AbschreibungNr + 1, (*m_ppb)->Datum.GetMonth(), (*m_ppb)->Datum.GetDay(), 0, 0, 0);
+		CString csUrspruenglichesAnschaffungsdatum = ctUrspruenglichesAnschaffungsdatum.Format("%d.%m.%Y");
 		char urspruenglicherBetrag[30];
 		int_to_currency((*m_ppb)->Betrag, 20, urspruenglicherBetrag);
+		char urspruenglicherNettobetrag[30];
+		int_to_currency((*m_ppb)->GetNetto(), 20, urspruenglicherNettobetrag);
 		CString csUrspruenglicheAbschreibungNr;
 		csUrspruenglicheAbschreibungNr.Format("%d", (*m_ppb)->AbschreibungNr);
 		CString csUrspruenglicheAbschreibungJahre;
@@ -1733,6 +1736,7 @@ void BuchenDlg::OnBnClickedAbgangBuchen()
 		SetErweiterungKey((*m_ppb)->Erweiterung, "EasyCash", "UrspruenglichesAnschaffungsdatum", csUrspruenglichesAnschaffungsdatum);	/// benötigt im Anlagenverzeichnis
 		SetErweiterungKey((*m_ppb)->Erweiterung, "EasyCash", "UrspruenglichesKonto", (*m_ppb)->Konto);									//
 		SetErweiterungKey((*m_ppb)->Erweiterung, "EasyCash", "UrspruenglicherBetrag", urspruenglicherBetrag);						//
+		SetErweiterungKey((*m_ppb)->Erweiterung, "EasyCash", "UrspruenglicherNettobetrag", urspruenglicherNettobetrag);				//
 		SetErweiterungKey((*m_ppb)->Erweiterung, "EasyCash", "UrspruenglicheAbschreibungNr", csUrspruenglicheAbschreibungNr);		//
 		SetErweiterungKey((*m_ppb)->Erweiterung, "EasyCash", "UrspruenglicheAbschreibungJahre", csUrspruenglicheAbschreibungJahre);	// TODO: "Abgang rückgängigmachen"-Funktion!
 		SetErweiterungKey((*m_ppb)->Erweiterung, "EasyCash", "UrspruenglicherRestwert", urspruenglicherRestwert);					//

@@ -174,9 +174,10 @@
 #define IDC_BUCHUNGSDATUM_BELASSEN      1027
 #define IDC_VORNAME                     1028
 #define IDC_MONAT                       1028
-#define IDC_FORMULARDRUCK_FEINJUSTIERUNG 1028
 #define IDC_ID                          1028
 #define IDC_ANZEIGENAME                 1028
+#define IDC_UMST_ERKLAERUNG2            1028
+#define IDC_ANLAGENVERZEICHNIS          1028
 #define IDC_EURECHNUNG_FORMULAR         1029
 #define IDC_UNTERNEHMENSART1            1029
 #define IDC_QUARTAL                     1029
@@ -357,7 +358,6 @@
 #define IDC_M3                          1156
 #define IDC_BUTTON1                     1156
 #define IDC_MANUELLER_DOWNLOAD          1156
-#define IDC_ABGANG                      1156
 #define IDC_ABGANG_BUCHEN               1156
 #define IDC_Q2                          1157
 #define IDC_M4                          1158
@@ -514,6 +514,8 @@
 #define ID_SEP                          32911
 #define ID_DUMMY                        32912
 #define ID_FORMULAR_INFO                32913
+#define ID_ANLAGENVERZEICHNIS           32914
+#define ID_VIEW_JOURNAL_ANLAGENVERZEICHNIS 32915
 #define ID_CMD_CUSTOM_MRU               48000
 #define ID_STATUS                       61445
 #define ID_SALDO                        61446
@@ -526,7 +528,7 @@
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_3D_CONTROLS                     1
 #define _APS_NEXT_RESOURCE_VALUE        437
-#define _APS_NEXT_COMMAND_VALUE         32914
+#define _APS_NEXT_COMMAND_VALUE         32916
 #define _APS_NEXT_CONTROL_VALUE         1170
 #define _APS_NEXT_SYMED_VALUE           110
 #endif

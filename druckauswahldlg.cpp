@@ -194,6 +194,12 @@ void DruckauswahlDlg::OnOK()
 		return;
 	}
 
+	if (((CButton *)GetDlgItem(IDC_ANLAGENVERZEICHNIS))->GetCheck())
+	{
+		CDialog::EndDialog(IDC_ANLAGENVERZEICHNIS);
+		return;
+	}
+
 	if (((CButton *)GetDlgItem(IDC_UMST_ERKLAERUNG))->GetCheck())
 	{
 		CDialog::EndDialog(IDC_UMST_ERKLAERUNG);

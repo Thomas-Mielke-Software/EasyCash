@@ -286,6 +286,7 @@ extern "C" AFX_EXT_CLASS int GetMandant();
 //		   Der Key-Wert ist nicht Null-Terminiert, sondern '|'-Terminiert!!!
 // Die Aufrufende Funktion sollte nach der Verarbeitung einen ReleaseBuffer auf m_pDoc->Erweiterung machen
 extern "C" AFX_EXT_CLASS char *GetErweiterungKey(CString &csSpeicher, LPCTSTR sErweiterung, LPCTSTR sKey);
+extern "C" AFX_EXT_CLASS CString *GetErweiterungKeyCS(CString &csSpeicher, LPCTSTR sErweiterung, LPCTSTR sKey);
 extern "C" AFX_EXT_CLASS void SetErweiterungKey(CString &csSpeicher, LPCTSTR sErweiterung, LPCTSTR sKey, LPCTSTR sValue);	// einen Wert im Erweiterungs-Bereich der Dokumentklasse schreiben
 
 // holt alle Dateipfade mit Dateien der Endung .ecf im Programmverzeichnis in ein String Array

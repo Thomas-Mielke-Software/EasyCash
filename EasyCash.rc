@@ -334,6 +334,7 @@ BEGIN
     MENUITEM "Journal nach &Datum",         ID_VIEW_JOURNAL_DATUM
     MENUITEM "Journal nach &Konten",        ID_VIEW_JOURNAL_KONTEN
     MENUITEM "Journal nach &Bestandskonten", ID_VIEW_JOURNAL_BESTKONTEN
+    MENUITEM "&Anlagenverzeichnis",         ID_VIEW_JOURNAL_ANLAGENVERZEICHNIS
 END
 
 IDR_FILTER_MONAT MENU 
@@ -652,8 +653,9 @@ BEGIN
                     "Button",BS_AUTORADIOBUTTON,12,26,116,12
     CONTROL         "Buchungsjournal nach &Bestandskonto",IDC_BUCHUNGSLISTE_BESTANDSKONTEN,
                     "Button",BS_AUTORADIOBUTTON,12,41,132,12
-    CONTROL         "&Umsatzsteuererklärung",IDC_UMST_ERKLAERUNG,"Button",BS_AUTORADIOBUTTON,12,56,96,12
-    CONTROL         "&Einnahmen-Überschussrechnung",IDC_EURECHNUNG,"Button",BS_AUTORADIOBUTTON,12,71,136,12
+    CONTROL         "&Anlagenverzeichnis",IDC_ANLAGENVERZEICHNIS,"Button",BS_AUTORADIOBUTTON,12,56,96,12
+    CONTROL         "&Umsatzsteuererklärung",IDC_UMST_ERKLAERUNG,"Button",BS_AUTORADIOBUTTON,12,71,96,12
+    CONTROL         "&Einnahmen-Überschussrechnung",IDC_EURECHNUNG,"Button",BS_AUTORADIOBUTTON,12,86,136,12
     PUSHBUTTON      "Abbrechen",IDCANCEL,237,93,50,14
     GROUPBOX        "Filter",IDC_STATIC,148,9,132,78
     LTEXT           "&Von (Tag/Monat)",IDC_STATIC,157,21,61,8
@@ -1195,8 +1197,8 @@ END
 //
 
 VS_VERSION_INFO VERSIONINFO
- FILEVERSION 2,42,0,1
- PRODUCTVERSION 2,42,0,1
+ FILEVERSION 2,42,0,2
+ PRODUCTVERSION 2,42,0,2
  FILEFLAGSMASK 0x3fL
 #ifdef _DEBUG
  FILEFLAGS 0x1L
@@ -1213,12 +1215,12 @@ BEGIN
         BEGIN
             VALUE "CompanyName", "Thomas Mielke Softwareentwicklung"
             VALUE "FileDescription", "EASYCASH_AND_TAX MFC Application"
-            VALUE "FileVersion", "2, 42, 0, 1"
+            VALUE "FileVersion", "2, 42, 0, 2"
             VALUE "InternalName", "EASYCASH_AND_TAX"
             VALUE "LegalCopyright", "© 1998-2021 Thomas Mielke Softwareentwicklung"
             VALUE "OriginalFilename", "EASYCT.EXE"
             VALUE "ProductName", "EASYCASH_AND_TAX Application"
-            VALUE "ProductVersion", "2, 42, 0, 1"
+            VALUE "ProductVersion", "2, 42, 0, 2"
         END
     END
     BLOCK "VarFileInfo"

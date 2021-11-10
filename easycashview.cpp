@@ -97,6 +97,7 @@ BEGIN_MESSAGE_MAP(CEasyCashView, CScrollView)
 	ON_WM_LBUTTONDOWN()
 	ON_WM_LBUTTONUP()
 	ON_COMMAND(ID_VIEW_JOURNAL_BESTKONTEN, OnViewJournalBestkonten)
+	ON_COMMAND(ID_VIEW_JOURNAL_ANLAGENVERZEICHNIS, OnViewJournalAnlagenverzeichnis)
 	//}}AFX_MSG_MAP
 	// Standard printing commands
 	ON_COMMAND(ID_FILE_PRINT2, OnFilePrint2)
@@ -338,6 +339,7 @@ Für den Fall, dass die Daten verschoben wurden, ändern Sie bitte das Datenverzei
 		case 0:	AfxGetMainWnd()->GetMenu()->GetSubMenu(3)->CheckMenuRadioItem(ID_VIEW_JOURNAL_DATUM, ID_VIEW_JOURNAL_BESTANDSKONTEN, ID_VIEW_JOURNAL_DATUM, MF_BYCOMMAND); break;
 		case 1:	AfxGetMainWnd()->GetMenu()->GetSubMenu(3)->CheckMenuRadioItem(ID_VIEW_JOURNAL_DATUM, ID_VIEW_JOURNAL_BESTANDSKONTEN, ID_VIEW_JOURNAL_KONTEN, MF_BYCOMMAND); break;
 		case 2:	AfxGetMainWnd()->GetMenu()->GetSubMenu(3)->CheckMenuRadioItem(ID_VIEW_JOURNAL_DATUM, ID_VIEW_JOURNAL_BESTANDSKONTEN, ID_VIEW_JOURNAL_BESTANDSKONTEN, MF_BYCOMMAND); break;
+		case 3:	AfxGetMainWnd()->GetMenu()->GetSubMenu(3)->CheckMenuRadioItem(ID_VIEW_JOURNAL_DATUM, ID_VIEW_JOURNAL_BESTANDSKONTEN, ID_VIEW_JOURNAL_ANLAGENVERZEICHNIS, MF_BYCOMMAND); break;
 		}
 
 	// Formulare in Menü laden
@@ -1011,6 +1013,13 @@ void CEasyCashView::OnUpdate(CView* pSender, LPARAM lHint, CObject* pHint)
 			}
 			anzahlGroups = m_csaBestandskontenMitBuchungen.GetSize();
 		}
+		else if (m_nAnzeige == 3)
+		{
+			lg.pszHeader = L"Anlagengruppen";
+			lg.cchHeader = wcslen(lg.pszHeader);
+			nav.InsertGroup(1, &lg);
+			anzahlGroups = 1;
+		}
 
 		// Navigations-ListView, Items neu aufbauen
 		nav.SetRedraw(FALSE);
@@ -1021,10 +1030,9 @@ void CEasyCashView::OnUpdate(CView* pSender, LPARAM lHint, CObject* pHint)
 		int group;
 		switch (m_GewaehltesFormular >= 0 ? -1 : m_nAnzeige)
 		{
-		// Journal nach Datum 
-		case 0:	// und
-		// Journal nach Bestandskonten
-		case 2: 
+		case 3: // Anlagenverzeichnis
+		case 0:	// Journal nach Datum 		
+		case 2: // Journal nach Bestandskonten
 			for (group = 0; group < anzahlGroups; group++)
 				for (i = 0; i < 12; i++)
 			{
@@ -1405,6 +1413,7 @@ void CEasyCashView::OnDraw(CDC* pDC_par)
 			case 0: DrawToDC_Datum(pDC_par, &di); break;
 			case 1: DrawToDC_Konten(pDC_par, &di); break;
 			case 2: DrawToDC_Bestandskonten(pDC_par, &di); break;
+			case 3: DrawToDC_Anlagenverzeichnis(pDC_par, &di); break;
 			}
 
 			DrawToDC_Selection(&di, pDC_par);
@@ -1494,6 +1503,50 @@ void CEasyCashView::CheckLayout(DrawInfo *pDrawInfo)
 	pDrawInfo->spalte_afanr = pDrawInfo->letzte_spalte_device-2;
 }
 
+// Hilfsfunktion zur Steuerung des Layouts des Anlagenverzeichnisses
+void CEasyCashView::CheckAnlagenverzeichnisLayout(DrawInfo *pDrawInfo)
+{
+	CEasyCashDoc* pDoc = GetDocument();
+
+	if (pDrawInfo->pm) pDrawInfo->printer_fontsize = 0;
+
+	pDrawInfo->zeige_betriebicon = FALSE;
+	pDrawInfo->zeige_bestandskontoicon = FALSE;
+	pDrawInfo->zeige_belegnummernspalte = FALSE;
+	pDrawInfo->zeige_steuerspalte = FALSE;
+
+	if (m_csaBetriebeNamen.GetSize()) pDrawInfo->zeige_betriebicon = 3;
+
+	CBuchung *p;
+	if (!pDrawInfo->zeige_steuerspalte)
+	{
+		for (p = pDoc->Ausgaben; p; p = p->next)
+		{
+			if (p->MWSt)
+			{
+				pDrawInfo->zeige_steuerspalte = TRUE;
+				break;
+			}
+		}
+	}
+
+	querformat_faktor = 100; // %
+	if (pDrawInfo->printer_gesamtgroesse.cx > pDrawInfo->printer_gesamtgroesse.cy)
+		querformat_faktor = 70; // %
+
+	pDrawInfo->letzte_spalte_device = pDrawInfo->pm ? HCHARS : letzte_spalte;
+	pDrawInfo->spalte_betriebicon = pDrawInfo->pm ? 3 : 1;
+	pDrawInfo->spalte_beschreibung = pDrawInfo->zeige_betriebicon + (pDrawInfo->pm ? 3 * querformat_faktor/100 : (m_zoomfaktor <= 50 ? 2 : 1));
+	pDrawInfo->spalte_beschreibung_ende = pDrawInfo->letzte_spalte_device - (pDrawInfo->pm ? 61 * querformat_faktor/100 : 94);
+	pDrawInfo->spalte_datum = pDrawInfo->letzte_spalte_device - (pDrawInfo->pm ? 59 * querformat_faktor/100 : 93);
+	pDrawInfo->spalte_anschaffungskosten = pDrawInfo->letzte_spalte_device - (pDrawInfo->pm ? 40 * querformat_faktor/100 : 67); 
+	pDrawInfo->spalte_buchwert_beginn = pDrawInfo->letzte_spalte_device - (pDrawInfo->pm ? 30 * querformat_faktor/100 : 52);
+	pDrawInfo->spalte_afa = pDrawInfo->letzte_spalte_device - (pDrawInfo->pm ? 22 * querformat_faktor/100 : 37);
+	pDrawInfo->spalte_abgaenge = pDrawInfo->letzte_spalte_device - (pDrawInfo->pm ? 15 * querformat_faktor/100 : 22);
+	pDrawInfo->spalte_buchwert_ende = pDrawInfo->letzte_spalte_device - (pDrawInfo->pm ? 6 * querformat_faktor/100 : 9);	
+	pDrawInfo->spalte_afanr = pDrawInfo->letzte_spalte_device-2;
+}
+
 // nicht mehr genügend Platz für "Beschreibung" Spaltenüberschrift? Dann verkleinern!
 bool CEasyCashView::CheckPlatzFuerBeschreibung(DrawInfo *pDrawInfo)
 {
@@ -1580,6 +1633,32 @@ void CEasyCashView::DrawToDC_AusgabenHeader(DrawInfo *pDrawInfo)
 	}
 	Text(pDrawInfo, pDrawInfo->spalte_brutto, pDrawInfo->line, "Brutto");
 	Text(pDrawInfo, pDrawInfo->spalte_afanr, pDrawInfo->line, "AfANr");
+	pDrawInfo->m_pDC->SetTextAlign(TA_LEFT);
+
+	if (pDrawInfo->pm)
+	{
+		pDrawInfo->line+=2;
+		Underline10(pDrawInfo, pDrawInfo->spalte_betriebicon, pDrawInfo->line*10-5, pDrawInfo->spalte_afanr);
+	}
+	else
+	{
+		Underline(pDrawInfo, pDrawInfo->spalte_betriebicon, pDrawInfo->line, pDrawInfo->spalte_afanr);
+		pDrawInfo->line++;
+	}
+}
+
+void CEasyCashView::DrawToDC_AnlagenverzeichnisHeader(DrawInfo *pDrawInfo)
+{
+	// Spaltenüberschriften
+	Text(pDrawInfo, pDrawInfo->spalte_beschreibung, pDrawInfo->line, "Beschreibung");
+	Text(pDrawInfo, pDrawInfo->spalte_datum, pDrawInfo->line, "Ansch.Datum");
+	pDrawInfo->m_pDC->SetTextAlign(TA_RIGHT);
+	Text(pDrawInfo, pDrawInfo->spalte_anschaffungskosten, pDrawInfo->line, "Ansch.kosten");
+	Text(pDrawInfo, pDrawInfo->spalte_buchwert_beginn, pDrawInfo->line, "Buchw.Beginn");
+	Text(pDrawInfo, pDrawInfo->spalte_afa, pDrawInfo->line, "AfA");
+	Text(pDrawInfo, pDrawInfo->spalte_abgaenge, pDrawInfo->line, "Abgänge");
+	Text(pDrawInfo, pDrawInfo->spalte_afanr, pDrawInfo->line, "AfANr");
+	Text(pDrawInfo, pDrawInfo->spalte_buchwert_ende, pDrawInfo->line, "Buchw.Ende");
 	pDrawInfo->m_pDC->SetTextAlign(TA_LEFT);
 
 	if (pDrawInfo->pm)
@@ -1731,6 +1810,43 @@ void CEasyCashView::DrawToDC_BestandskontenFooter(DrawInfo *pDrawInfo)
 
 	pDrawInfo->m_pDC->SetTextAlign(TA_RIGHT);
 	Text(pDrawInfo, pDrawInfo->spalte_afanr, pDrawInfo->line, ((CEasyCashDoc *)GetDocument())->csWaehrung.GetBuffer(0));
+	pDrawInfo->m_pDC->SetTextAlign(TA_LEFT);
+
+	pDrawInfo->line++;
+}
+
+void CEasyCashView::DrawToDC_AnlagenverzeichnisFooter(DrawInfo *pDrawInfo)
+{
+	char buf[300];
+
+	if (pDrawInfo->pm)
+	{
+		pDrawInfo->line++;
+		Underline10(pDrawInfo, pDrawInfo->spalte_betriebicon, pDrawInfo->line*10-5, pDrawInfo->spalte_afanr);
+	}
+	else
+		Underline(pDrawInfo, pDrawInfo->spalte_betriebicon, pDrawInfo->line-1, pDrawInfo->spalte_afanr);
+
+	pDrawInfo->m_pDC->SetTextAlign(TA_RIGHT);
+
+	// Buchwert zu Jahresbeginn
+	int_to_currency_tausenderpunkt(pDrawInfo->buchwert_beginn_summe, 10, buf);
+	Text(pDrawInfo, pDrawInfo->spalte_buchwert_beginn, pDrawInfo->line, buf);
+
+	// Netto-AfA-Betrag 
+	int_to_currency_tausenderpunkt(pDrawInfo->netto_summe, 10, buf);
+	Text(pDrawInfo, pDrawInfo->spalte_afa, pDrawInfo->line, buf);
+
+	// Abgänge
+	int_to_currency_tausenderpunkt(pDrawInfo->abgaenge_summe, 10, buf);
+	Text(pDrawInfo, pDrawInfo->spalte_abgaenge, pDrawInfo->line, buf);
+
+	// Buchwert zu Jahresende
+	int_to_currency_tausenderpunkt(pDrawInfo->buchwert_ende_summe, 10, buf);
+	Text(pDrawInfo, pDrawInfo->spalte_buchwert_ende, pDrawInfo->line, buf);
+
+	Text(pDrawInfo, pDrawInfo->spalte_afanr, pDrawInfo->line, ((CEasyCashDoc *)GetDocument())->csWaehrung.GetBuffer(0));
+
 	pDrawInfo->m_pDC->SetTextAlign(TA_LEFT);
 
 	pDrawInfo->line++;
@@ -1945,6 +2061,109 @@ void CEasyCashView::DrawToDC_AusgabenLine(DrawInfo *pDrawInfo, CBuchung *p)
 		Text(pDrawInfo, pDrawInfo->spalte_afanr, pDrawInfo->line, buf);
 		pDrawInfo->m_pDC->SetTextAlign(TA_LEFT);
 	}
+
+	pDrawInfo->m_pDC->SetBkMode(nOldBkMode);
+}
+
+void CEasyCashView::DrawToDC_AnlagenverzeichnisLine(DrawInfo *pDrawInfo, CBuchung *p)
+{
+	int nOldBkMode = pDrawInfo->m_pDC->GetBkMode();
+	pDrawInfo->m_pDC->SetBkMode(TRANSPARENT);	// nötig für:
+	// jede gerade Zeile grau unterlegen
+	if (!(pDrawInfo->line % 2) && pDrawInfo->line != nSelected) GraueBox(pDrawInfo, pDrawInfo->spalte_beschreibung, pDrawInfo->line, pDrawInfo->spalte_afanr, pDrawInfo->line+1);
+	
+	if (pDrawInfo->zeige_betriebicon)
+	{
+		int i;
+		int n = m_csaBetriebeNamen.GetSize();
+		for (i = 0; i < n; i++)
+		if (m_csaBetriebeNamen.GetAt(i) == p->Betrieb)
+			{
+				Icon(pDrawInfo, pDrawInfo->spalte_betriebicon, pDrawInfo->line, pDrawInfo->line+1, &m_cbmIcons, atoi(m_csaBetriebeIcons.GetAt(i)));
+				break;
+			}
+	}
+	
+	CEasyCashDoc* pDoc = GetDocument();
+	char buf[3000];
+	BOOL bIstAbgang = FALSE;
+
+	// Beschreibungstext
+	TextEx(pDrawInfo, pDrawInfo->spalte_beschreibung, pDrawInfo->line, pDrawInfo->spalte_beschreibung_ende, pDrawInfo->line, p->Beschreibung.GetBuffer(0));
+
+	// Korrektur bei ungültigen AfA-Angaben
+	if (p->AbschreibungNr < 1 || p->AbschreibungJahre < 1)
+	{
+		m_bAfaKorrketuren++;
+		if (p->AbschreibungNr < 1) p->AbschreibungNr = 1;
+		if (p->AbschreibungJahre < 1) p->AbschreibungJahre = 1;
+	}
+
+	// Datum
+	CString *pcsErweiterungswert = GetErweiterungKeyCS(p->Erweiterung, "EasyCash", "UrspruenglichesAnschaffungsdatum");	// Abgang?
+	if (*pcsErweiterungswert != "")
+	{
+		strcpy(buf, (LPCSTR)(*pcsErweiterungswert));
+		bIstAbgang = TRUE;
+	}
+	else
+		sprintf(buf, "%02d.%02d.%04d", p->Datum.GetDay(), p->Datum.GetMonth(), p->Datum.GetYear() - p->AbschreibungNr + 1);
+	Text(pDrawInfo, pDrawInfo->spalte_datum, pDrawInfo->line, buf);
+	delete pcsErweiterungswert;
+
+	pDrawInfo->m_pDC->SetTextAlign(TA_RIGHT);
+
+	if (bIstAbgang)
+	{
+		// Anschaffungskosten
+		pcsErweiterungswert = GetErweiterungKeyCS(p->Erweiterung, "EasyCash", "UrspruenglicherNettobetrag");
+		Text(pDrawInfo, pDrawInfo->spalte_anschaffungskosten, pDrawInfo->line, (*pcsErweiterungswert).GetBuffer());
+		delete pcsErweiterungswert;
+
+		// Buchwert zu Jahresbeginn
+		pcsErweiterungswert = GetErweiterungKeyCS(p->Erweiterung, "EasyCash", "UrspruenglicherRestwert");
+		Text(pDrawInfo, pDrawInfo->spalte_buchwert_beginn, pDrawInfo->line, (*pcsErweiterungswert).GetBuffer());		
+		pDrawInfo->buchwert_beginn_summe += currency_to_int((*pcsErweiterungswert).TrimLeft().GetBuffer());
+		delete pcsErweiterungswert;
+
+		// Abgänge
+		int_to_currency_tausenderpunkt(p->GetNetto(), 8, buf);
+		Text(pDrawInfo, pDrawInfo->spalte_abgaenge, pDrawInfo->line, buf);
+		pDrawInfo->abgaenge_summe += p->GetNetto();
+
+		// Buchwert zu Jahresende
+		Text(pDrawInfo, pDrawInfo->spalte_buchwert_ende, pDrawInfo->line, "0,00");
+	}
+	else
+	{
+		// Anschaffungskosten
+		int_to_currency_tausenderpunkt(p->GetNetto(), 8, buf);
+		Text(pDrawInfo, pDrawInfo->spalte_anschaffungskosten, pDrawInfo->line, buf);
+
+		// Buchwert zu Jahresbeginn
+		int_to_currency_tausenderpunkt(p->AbschreibungRestwert, 8, buf);
+		Text(pDrawInfo, pDrawInfo->spalte_buchwert_beginn, pDrawInfo->line, buf);
+		pDrawInfo->buchwert_beginn_summe += p->AbschreibungRestwert;
+
+		// Netto-AfA-Betrag 
+		long netto = p->GetBuchungsjahrNetto(pDoc);	
+		pDrawInfo->netto_summe += netto;	// Summe mitführen
+		int_to_currency_tausenderpunkt(netto, 8, buf);
+		Text(pDrawInfo, pDrawInfo->spalte_afa, pDrawInfo->line, buf);
+
+		// Buchwert zu Jahresende
+		int_to_currency_tausenderpunkt(p->AbschreibungRestwert + netto, 8, buf);
+		Text(pDrawInfo, pDrawInfo->spalte_buchwert_ende, pDrawInfo->line, buf);
+		pDrawInfo->buchwert_ende_summe += p->AbschreibungRestwert + netto;
+
+		if (p->AbschreibungJahre > 1)
+		{
+			sprintf(buf, "%d/%d", p->AbschreibungNr, p->AbschreibungJahre);
+			Text(pDrawInfo, pDrawInfo->spalte_afanr, pDrawInfo->line, buf);
+		}
+	}
+
+	pDrawInfo->m_pDC->SetTextAlign(TA_LEFT);
 
 	pDrawInfo->m_pDC->SetBkMode(nOldBkMode);
 }
@@ -3057,6 +3276,310 @@ void CEasyCashView::DrawToDC_Bestandskonten(CDC* pDC_par, DrawInfo *pDrawInfo)
 		max_seitenzahl = seitenzaehler;
 		DrawToDC_PrintLineNumber(pDrawInfo);
 	}
+}
+
+void CEasyCashView::DrawToDC_Anlagenverzeichnis(CDC* pDC_par, DrawInfo *pDrawInfo)
+{
+	char buffer[1000];
+	CEasyCashDoc* pDoc = GetDocument();
+	ASSERT_VALID(pDoc);
+
+	CheckAnlagenverzeichnisLayout(pDrawInfo);
+
+	seitenzaehler = 1;
+	extern char last_path[500];
+
+	CBuchung **pp;
+	CBuchung *p;
+	int i, j;
+
+	pDrawInfo->m_pDC = pDC_par;
+
+	if (!pDrawInfo->pm)
+		pDrawInfo->fontsize = -1 ;
+	else
+		pDrawInfo->printer_fontsize = -1;
+
+	strcpy(last_path, pDoc->GetPathName());
+
+	CTime von(pDoc->nJahr, m_vm, m_vt, 0, 0, 0);
+	CTime bis(pDoc->nJahr, m_bm, m_bt, 23, 59, 59);
+
+	if (von > bis) bis = CTime(pDoc->nJahr+1, m_bm, m_bt, 23, 59, 59);
+
+	if (m_BetriebFilterPrinter == "") m_BetriebFilterPrinter = "<alle Betriebe>";
+
+	if (!pDrawInfo->pm) 
+	{
+		int i;
+		for (i = 0; i < MAX_BUCHUNGEN; i++)
+			ppPosBuchungsliste[i] = NULL;
+	}
+
+	// jetzt Zeilenindex
+	// Ein bisschem mehr Platz oben beim Drucken
+	if (pDrawInfo->pm) 
+		pDrawInfo->line = 2;
+	else
+		pDrawInfo->line = 0;
+
+	pDrawInfo->line++;
+
+	CString ausgaben_posten_name[100];
+	BOOL ausgaben_posten_buchungen[100];
+	BOOL ausgaben_posten_buchungen_unzugewiesen = FALSE;
+
+	// reguläre Konten 
+	for (i = 0; i < 100; i++)
+	{
+		ausgaben_posten_name[i]   = einstellungen1->AusgabenRechnungsposten[i];
+		ausgaben_posten_buchungen[i] = FALSE;
+	}
+
+	//--- Farbeinstellungen ---
+	m_TextColor = GetSysColor(COLOR_WINDOWTEXT);
+	if (m_TextColor == 0x00000000 && !pDrawInfo->pm)
+	{
+		m_TextColorEinnahmen = 0x00d03010;
+		m_TextColorAusgaben  = 0x001030d0;
+	}
+	else
+	{
+		m_TextColorEinnahmen = m_TextColor;
+		m_TextColorAusgaben  = m_TextColor;
+	}
+	pDrawInfo->m_pDC->SetTextColor(m_TextColor);
+
+	//--- Überschrift beim Druck ---
+
+	if (pDrawInfo->pm) 
+	{
+		// Titel
+		sprintf(buffer, "Anlagenverzeichnis - Zeitraum: %02d.%02d.%04d - %02d.%02d.%04d",
+				m_vt, m_vm, pDoc->nJahr, m_bt, m_bm, bis.GetYear());
+		Text(pDrawInfo, pDrawInfo->spalte_beschreibung, pDrawInfo->line, buffer);
+		
+		// aktuelles Datum rechts an den Rand
+		pDrawInfo->m_pDC->SetTextAlign(TA_RIGHT);
+		CTime now = CTime::GetCurrentTime();
+		sprintf(buffer, " Stand: %02d.%02d.%04d", now.GetDay(), now.GetMonth(), now.GetYear());
+		Text(pDrawInfo, 78, pDrawInfo->line++, buffer);
+		pDrawInfo->m_pDC->SetTextAlign(TA_LEFT);
+
+		// Steuerpflichtiger
+		strcpy(buffer, einstellungen2->m_vorname);
+		strcat(buffer, " ");
+		strcat(buffer, einstellungen2->m_name);
+		if (*einstellungen3->m_steuernummer)
+		{
+			strcat(buffer, ", Steuernummer ");
+			strcat(buffer, einstellungen3->m_steuernummer);
+		}
+		strcat(buffer, " ");
+		if (strcmp(m_BetriebFilterPrinter, "<alle Betriebe>"))
+		{
+			strcat(buffer, ", Betrieb: ");
+			strcat(buffer, (LPCSTR)m_BetriebFilterPrinter);
+		}
+		Text(pDrawInfo, pDrawInfo->spalte_beschreibung, pDrawInfo->line++, buffer);
+
+		pDrawInfo->line++;
+	}
+	else if (m_KontenFilterDisplay != "<alle Konten>" || m_MonatsFilterDisplay)
+	{
+		if (m_KontenFilterDisplay != "<alle Konten>" && m_MonatsFilterDisplay)
+		{
+			if (m_MonatsFilterDisplay > 12)
+				sprintf(buffer, "Anlagenverzeichnis für %s -- %d. Quartal %04d",
+					(LPCSTR)m_KontenFilterDisplay, m_MonatsFilterDisplay - 12, pDoc->nJahr);
+			else
+				sprintf(buffer, "Anlagenverzeichnis für %s -- Monat %02d/%04d",
+					(LPCSTR)m_KontenFilterDisplay, m_MonatsFilterDisplay, pDoc->nJahr);
+		}
+		else if (m_MonatsFilterDisplay)
+		{
+			if (m_MonatsFilterDisplay > 12)
+				sprintf(buffer, "Anlagenverzeichnis für %d. Quartal %04d",
+					m_MonatsFilterDisplay - 12, pDoc->nJahr);
+			else
+				sprintf(buffer, "Anlagenverzeichnis für Monat %02d/%04d",
+					m_MonatsFilterDisplay, pDoc->nJahr);
+		}
+		else
+			sprintf(buffer, "Anlagenverzeichnis für %s",
+				(LPCSTR)m_KontenFilterDisplay);
+
+		Text(pDrawInfo, pDrawInfo->spalte_beschreibung, pDrawInfo->line++, buffer);
+		pDrawInfo->line++;
+	}
+
+	//--- Konten für Ausgaben vorbereiten ---
+
+	BOOL bDruckeUeberschrift = FALSE;
+	for (p = pDoc->Ausgaben; p; p = p->next)
+	{
+		// Filter für Druck
+		if (pDrawInfo->pm && (p->Datum < von || p->Datum > bis)) continue;
+		if (pDrawInfo->pm && m_KontenFilterPrinter != "<alle Konten>" && m_KontenFilterPrinter != p->Konto) continue;
+		if (pDrawInfo->pm && m_BetriebFilterPrinter != "<alle Betriebe>" && m_BetriebFilterPrinter != p->Betrieb) continue;	
+		// Filter für Bildschirmanzeige
+		if (!pDrawInfo->pm && (m_KontenFilterDisplay != "<alle Konten>" && p->Konto.GetLength() && "Einnahmen: " + p->Konto != m_KontenFilterDisplay && "Ausgaben: " + p->Konto != m_KontenFilterDisplay)) continue;
+		if (!pDrawInfo->pm && (m_KontenFilterDisplay != "<alle Konten>" && m_KontenFilterDisplay != "--- [noch zu keinem Konto zugewiesene Ausgaben] ---" && !p->Konto.GetLength())) continue;
+		if (!pDrawInfo->pm && (m_KontenFilterDisplay == "--- [noch zu keinem Konto zugewiesene Ausgaben] ---" && p->Konto.GetLength())) continue;
+		if (!pDrawInfo->pm && (m_KontenFilterDisplay == "--- [noch zu keinem Konto zugewiesene Einnahmen] ---")) continue;
+		if (!pDrawInfo->pm && (m_MonatsFilterDisplay >= 1 && m_MonatsFilterDisplay <= 12 && p->Datum.GetMonth() != m_MonatsFilterDisplay)) continue;
+		if (!pDrawInfo->pm && (m_MonatsFilterDisplay > 12 && (p->Datum.GetMonth() - 1) / 3 + 1 != m_MonatsFilterDisplay - 12)) continue;
+		if (!pDrawInfo->pm && (m_BetriebFilterDisplay != "" && p->Betrieb != m_BetriebFilterDisplay)) continue;
+
+		for (j = 0; j < 100; j++)
+		{
+			char *cp = GetErweiterungKey(p->Erweiterung, "EasyCash", "UrspruenglichesAnschaffungsdatum");
+			char *cp2 = strchr(cp, '|');
+			if (p->AbschreibungJahre <= 1 && cp2 - cp != 10) continue;  // keine AfA und auch kein Abgang? dann weitersuchen
+
+			CString csKonto;
+			if (p->AbschreibungJahre == 1)	// muss dann wohl Abgang sein...
+			{
+				CString *pcs = GetErweiterungKeyCS(p->Erweiterung, "EasyCash", "UrspruenglichesKonto");
+				csKonto = *pcs;
+				delete pcs;
+			}
+			else
+				csKonto = p->Konto;
+
+			if (p->Konto.IsEmpty())
+			{
+				ausgaben_posten_buchungen_unzugewiesen = TRUE;
+				break;
+			}
+
+			if (ausgaben_posten_name[j].IsEmpty())
+			{
+				ausgaben_posten_name[j] = csKonto;
+				ausgaben_posten_buchungen[j] = TRUE;
+				bDruckeUeberschrift = TRUE;
+				break;
+			}
+
+			if (csKonto == ausgaben_posten_name[j])
+			{
+				ausgaben_posten_buchungen[j] = TRUE;
+				bDruckeUeberschrift = TRUE;
+				break;
+			}
+
+			if (j >= 100) 
+			{
+				AfxMessageBox("Zu viele Ausgaben-Konten. Bitte überflüssige Konten aus Buchungen entfernen!");			
+				m_nAnzeige = 0;
+				return;
+			}
+		}
+	}
+
+	//--- Ausgaben -----
+
+	pDrawInfo->line++; pDrawInfo->line++;
+	DrawToDC_LineBreak(pDrawInfo, 8);
+
+	if (bDruckeUeberschrift)
+	{
+		pDrawInfo->m_pDC->SetTextColor(m_TextColorAusgaben);
+		Text(pDrawInfo, pDrawInfo->spalte_beschreibung, pDrawInfo->line++, "ANLAGENVERZEICHNIS");
+		pDrawInfo->m_pDC->SetTextColor(m_TextColor);
+	}
+
+	for (i = 0; i < 100; i++)
+	{
+		if (ausgaben_posten_buchungen[i] 
+			|| (ausgaben_posten_name[i].IsEmpty() 
+				&& ausgaben_posten_buchungen_unzugewiesen))
+		{
+			pDrawInfo->m_pDC->SetTextColor(m_TextColorAusgaben);
+			pDrawInfo->line++;
+			DrawToDC_LineBreak(pDrawInfo, 6);
+			if (!ausgaben_posten_name[i].IsEmpty())
+			{
+				char buffer[1000];
+				sprintf(buffer, "--- %s ---", ausgaben_posten_name[i].GetBuffer(0));
+				Text(pDrawInfo, pDrawInfo->spalte_beschreibung, pDrawInfo->line++, buffer);
+			}
+			else
+				Text(pDrawInfo, pDrawInfo->spalte_beschreibung, pDrawInfo->line++, "--- [noch zu keinem Konto zugewiesene Ausgaben] ---");
+			pDrawInfo->m_pDC->SetTextColor(m_TextColor);
+
+			DrawToDC_AnlagenverzeichnisHeader(pDrawInfo);
+			pDrawInfo->buchwert_beginn_summe = 0, pDrawInfo->netto_summe = 0, pDrawInfo->buchwert_ende_summe = 0, pDrawInfo->abgaenge_summe = 0;
+			for (pp = &(pDoc->Ausgaben); *pp && pDrawInfo->line < MAX_BUCHUNGEN-20; pp = &((*pp)->next))
+			{
+				// Darstellung beschleunigen:
+				if (!pDrawInfo->pm && m_MonatsFilterDisplay)
+				{
+					if (m_MonatsFilterDisplay > 12)
+						while (*pp && ((*pp)->Datum.GetMonth() - 1) / 3 + 1 != m_MonatsFilterDisplay - 12)
+							pp = &((*pp)->next);
+					else
+						while (*pp && (*pp)->Datum.GetMonth() != m_MonatsFilterDisplay)
+							pp = &((*pp)->next);
+				}
+				if (!*pp) break;
+
+				CString csKonto;
+				if ((*pp)->AbschreibungJahre == 1)	// muss dann wohl Abgang sein...
+				{
+					CString *pcs = GetErweiterungKeyCS((*pp)->Erweiterung, "EasyCash", "UrspruenglichesKonto");
+					csKonto = *pcs;
+					delete pcs;
+				}
+				else
+					csKonto = (*pp)->Konto;
+
+				if (csKonto == ausgaben_posten_name[i])
+				{
+					if (!pDrawInfo->pm) ppPosBuchungsliste[pDrawInfo->line] = pp;
+					p = *pp;
+					char *cp = GetErweiterungKey(p->Erweiterung, "EasyCash", "UrspruenglichesAnschaffungsdatum");
+					char *cp2 = strchr(cp, '|');					if (p->AbschreibungJahre <= 1 && cp2 - cp != 10) continue;  // keine AfA und auch kein Abgang? dann weitersuchen
+					if (pDrawInfo->pm && (p->Datum < von || p->Datum > bis)) continue;
+					if (pDrawInfo->pm && m_BetriebFilterPrinter != "<alle Betriebe>" && m_BetriebFilterPrinter != p->Betrieb) continue;	
+					if (!pDrawInfo->pm && (m_KontenFilterDisplay != "<alle Konten>" && csKonto.GetLength() && "Einnahmen: " + csKonto != m_KontenFilterDisplay && "Ausgaben: " + csKonto != m_KontenFilterDisplay)) continue;
+					if (!pDrawInfo->pm && (m_KontenFilterDisplay != "<alle Konten>" && m_KontenFilterDisplay != "--- [noch zu keinem Konto zugewiesene Ausgaben] ---" && !csKonto.GetLength())) continue;
+					if (!pDrawInfo->pm && (m_KontenFilterDisplay == "--- [noch zu keinem Konto zugewiesene Ausgaben] ---" && csKonto.GetLength())) continue;
+					if (!pDrawInfo->pm && (m_KontenFilterDisplay == "--- [noch zu keinem Konto zugewiesene Einnahmen] ---")) continue;
+					if (!pDrawInfo->pm && (m_MonatsFilterDisplay >= 1 && m_MonatsFilterDisplay <= 12 && p->Datum.GetMonth() != m_MonatsFilterDisplay)) continue;
+					if (!pDrawInfo->pm && (m_MonatsFilterDisplay > 12 && (p->Datum.GetMonth() - 1) / 3 + 1 != m_MonatsFilterDisplay - 12)) continue;
+					if (!pDrawInfo->pm && (m_BetriebFilterDisplay != "" && p->Betrieb != m_BetriebFilterDisplay)) continue;
+					DrawToDC_LineBreak(pDrawInfo, 3);
+					DrawToDC_AnlagenverzeichnisLine(pDrawInfo,  p);			
+					pDrawInfo->line++;
+				}
+			}
+			if (pDrawInfo->line > 0) DrawToDC_AnlagenverzeichnisFooter(pDrawInfo);
+
+			// ggf. Seitenwechsel forcieren
+			if (pDrawInfo->pm && einstellungen4->m_nach_konten_seitenumbruch) DrawToDC_LineBreak(pDrawInfo, 200);
+
+			if (ausgaben_posten_name[i].IsEmpty()) break;
+		}
+	}
+
+	if (!pDrawInfo->pm)
+	{
+		int old_letzte_zeile = letzte_zeile;
+		letzte_zeile = pDrawInfo->line+1;
+		if (old_letzte_zeile != letzte_zeile) 
+			GetDocument()->UpdateAllViews(NULL);
+	}
+
+	// Wichtig für das Printer-Mainframe um die Anzahl Seiten zu ermitteln
+	if (pDrawInfo->pInfo)
+	{
+		max_seitenzahl = seitenzaehler;
+		DrawToDC_PrintLineNumber(pDrawInfo);
+	}
+
+	if (!m_BestandskontoFilterDisplay.IsEmpty())
+		((CMainFrame*)AfxGetMainWnd())->SetStatus("Hinweis: Der Bestandskontenfilter wird in der Anlagenverzeichnis-Ansicht ignoriert.");
 }
 
 void CEasyCashView::DrawToDC_Selection(DrawInfo *pDrawInfo, CDC *pDC)
@@ -4772,6 +5295,7 @@ BOOL CEasyCashView::OnPreparePrinting(CPrintInfo* pInfo)
 		case IDC_BUCHUNGSLISTE:
 		case IDC_BUCHUNGSLISTE_KONTEN:
 		case IDC_BUCHUNGSLISTE_BESTANDSKONTEN:
+		case IDC_ANLAGENVERZEICHNIS:
 			break;	// alles ok
 
 		case IDC_UMST_ERKLAERUNG:
@@ -4923,6 +5447,12 @@ void CEasyCashView::OnPrint(CDC* pDC, CPrintInfo* pInfo)
 		DrawToDC_Bestandskonten(pDC, &di);
 		break;
 
+	case IDC_ANLAGENVERZEICHNIS:
+		di.pm = TRUE;
+		di.pInfo = pInfo;
+		DrawToDC_Anlagenverzeichnis(pDC, &di);
+		break;
+
 	case IDC_UMST_ERKLAERUNG:
 		di.pm = TRUE;
 		di.pInfo = pInfo;
@@ -4933,9 +5463,6 @@ void CEasyCashView::OnPrint(CDC* pDC, CPrintInfo* pInfo)
 		di.pm = TRUE;
 		di.pInfo = pInfo;
 		DrawEURechungToDC(pDC, &di);
-		break;
-
-	case IDC_FORMULARDRUCK_FEINJUSTIERUNG:
 		break;
 
 	case 0:
@@ -6940,7 +7467,7 @@ void CEasyCashView::OnViewJournalDatum()
 	GetParent()->ShowWindow(SW_SHOW);
 //VS9
 	if (AfxGetMainWnd() && AfxGetMainWnd()->GetMenu() && AfxGetMainWnd()->GetMenu()->GetSubMenu(3))
-		(AfxGetMainWnd())->GetMenu()->GetSubMenu(3)->CheckMenuRadioItem(ID_VIEW_JOURNAL_DATUM, ID_VIEW_JOURNAL_BESTANDSKONTEN, ID_VIEW_JOURNAL_DATUM, MF_BYCOMMAND);
+		(AfxGetMainWnd())->GetMenu()->GetSubMenu(3)->CheckMenuRadioItem(ID_VIEW_JOURNAL_DATUM, ID_VIEW_JOURNAL_ANLAGENVERZEICHNIS, ID_VIEW_JOURNAL_DATUM, MF_BYCOMMAND);
 	m_nAnzeige = 0;	
 	//RedrawWindow();
 	GetDocument()->UpdateAllViews(NULL);
@@ -6957,7 +7484,7 @@ void CEasyCashView::OnViewJournalKonten()
 	GetParent()->ShowWindow(SW_SHOW);
 //VS9
 	if (AfxGetMainWnd() && AfxGetMainWnd()->GetMenu() && AfxGetMainWnd()->GetMenu()->GetSubMenu(3))
-		(AfxGetMainWnd())->GetMenu()->GetSubMenu(3)->CheckMenuRadioItem(ID_VIEW_JOURNAL_DATUM, ID_VIEW_JOURNAL_BESTANDSKONTEN, ID_VIEW_JOURNAL_KONTEN, MF_BYCOMMAND);
+		(AfxGetMainWnd())->GetMenu()->GetSubMenu(3)->CheckMenuRadioItem(ID_VIEW_JOURNAL_DATUM, ID_VIEW_JOURNAL_ANLAGENVERZEICHNIS, ID_VIEW_JOURNAL_KONTEN, MF_BYCOMMAND);
 	m_nAnzeige = 1;	
 	//RedrawWindow();
 	GetDocument()->UpdateAllViews(NULL);
@@ -7025,8 +7552,25 @@ void CEasyCashView::OnViewJournalBestkonten()
 	GetParent()->ShowWindow(SW_SHOW);
 //VS9
 	if (AfxGetMainWnd() && AfxGetMainWnd()->GetMenu() && AfxGetMainWnd()->GetMenu()->GetSubMenu(3))
-		(AfxGetMainWnd())->GetMenu()->GetSubMenu(3)->CheckMenuRadioItem(ID_VIEW_JOURNAL_DATUM, ID_VIEW_JOURNAL_BESTANDSKONTEN, ID_VIEW_JOURNAL_BESTANDSKONTEN, MF_BYCOMMAND);
+		(AfxGetMainWnd())->GetMenu()->GetSubMenu(3)->CheckMenuRadioItem(ID_VIEW_JOURNAL_DATUM, ID_VIEW_JOURNAL_ANLAGENVERZEICHNIS, ID_VIEW_JOURNAL_BESTANDSKONTEN, MF_BYCOMMAND);
 	m_nAnzeige = 2;	
+	//RedrawWindow();
+	GetDocument()->UpdateAllViews(NULL);
+}
+
+void CEasyCashView::OnViewJournalAnlagenverzeichnis() 
+{
+	// Wenn Plugin aktiv im Fenster, erstmal Plugin deaktivieren
+	DestroyPlugin();
+			
+	// Formularansicht zurücksetzen
+	m_GewaehltesFormular = nSelected = -1;
+
+	GetParent()->ShowWindow(SW_SHOW);
+//VS9
+	if (AfxGetMainWnd() && AfxGetMainWnd()->GetMenu() && AfxGetMainWnd()->GetMenu()->GetSubMenu(3))
+		(AfxGetMainWnd())->GetMenu()->GetSubMenu(3)->CheckMenuRadioItem(ID_VIEW_JOURNAL_DATUM, ID_VIEW_JOURNAL_ANLAGENVERZEICHNIS, ID_VIEW_JOURNAL_ANLAGENVERZEICHNIS, MF_BYCOMMAND);
+	m_nAnzeige = 3;	
 	//RedrawWindow();
 	GetDocument()->UpdateAllViews(NULL);
 }
@@ -7069,6 +7613,7 @@ void CEasyCashView::OnViewJournalSwitch()
 		case 0: OnViewJournalDatum(); break;
 		case 1: OnViewJournalKonten(); break;
 		case 2: OnViewJournalBestkonten(); break;
+		case 3: OnViewJournalAnlagenverzeichnis(); break;
 		}
 	}
 	else
@@ -7080,7 +7625,8 @@ void CEasyCashView::OnViewJournalSwitch()
 		{
 		case 0: OnViewJournalKonten(); break;
 		case 1: OnViewJournalBestkonten(); break;
-		case 2: OnViewJournalDatum(); break;
+		case 2: OnViewJournalAnlagenverzeichnis(); break;
+		case 3: OnViewJournalDatum(); break;
 		}
 	}
 }
@@ -8079,6 +8625,13 @@ BOOL CEasyCashView::OnCmdMsg(UINT nID, int nCode, void* pExtra, AFX_CMDHANDLERIN
 	else if (nID == ID_VIEW_JOURNAL_BESTKONTEN && nCode == CN_UPDATE_COMMAND_UI)
 	{
 		((CCmdUI*)pExtra)->SetCheck(m_nAnzeige == 2);
+		((CCmdUI*)pExtra)->Enable(TRUE);
+		return TRUE;
+	}
+	// Anlagenverzeichnis
+	else if (nID == ID_VIEW_JOURNAL_ANLAGENVERZEICHNIS && nCode == CN_UPDATE_COMMAND_UI)
+	{
+		((CCmdUI*)pExtra)->SetCheck(m_nAnzeige == 3);
 		((CCmdUI*)pExtra)->Enable(TRUE);
 		return TRUE;
 	}

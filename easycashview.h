@@ -54,12 +54,18 @@ public:
 	int spalte_ust_betrag;
 	int spalte_brutto;
 	int spalte_afanr;
+	int spalte_anschaffungskosten;
+	int spalte_buchwert_beginn;
+	int spalte_afa;
+	int spalte_abgaenge;
+	int spalte_buchwert_ende;
 
 	SIZE printer_gesamtgroesse;
 	int fontsize;	//  fontsize ist die max. erlaubte Fontgröße in Punkten
 	float printer_charwidth, printer_charheight;	//  in Pixel
 	int printer_fontsize;	// gleiches für Printer-Metrix
 	long brutto_summe, netto_summe;
+	long buchwert_beginn_summe, buchwert_ende_summe, abgaenge_summe;
 	long vst, ust;
 	CDC *m_pDC;	// device context
 	BOOL zeige_betriebicon, zeige_bestandskontoicon, zeige_steuerspalte, zeige_belegnummernspalte;
@@ -237,16 +243,21 @@ protected:
 	void DrawToDC_Konten(CDC* pDC, DrawInfo *pDrawInfo);
 	BOOL BestandskontoExistiertInBuchungen(CString &bestandskontoname);
 	void DrawToDC_Bestandskonten(CDC* pDC, DrawInfo *pDrawInfo);
+	void DrawToDC_Anlagenverzeichnis(CDC* pDC, DrawInfo *pDrawInfo);
 	void CheckLayout(DrawInfo *pDrawInfo);
+	void CheckAnlagenverzeichnisLayout(DrawInfo *pDrawInfo);
 	bool CheckPlatzFuerBeschreibung(DrawInfo *pDrawInfo);
 	bool DrawToDC_EinnahmenHeader(DrawInfo *pDrawInfo);
 	void DrawToDC_AusgabenHeader(DrawInfo *pDrawInfo);
+	void DrawToDC_AnlagenverzeichnisHeader(DrawInfo *pDrawInfo);
 	bool DrawToDC_BestandskontenHeader(DrawInfo *pDrawInfo, int nIcon, int nAnfangssaldo);
 	void DrawToDC_EinnahmenFooter(DrawInfo *pDrawInfo);
 	void DrawToDC_AusgabenFooter(DrawInfo *pDrawInfo);
 	void DrawToDC_BestandskontenFooter(DrawInfo *pDrawInfo);
+	void DrawToDC_AnlagenverzeichnisFooter(DrawInfo *pDrawInfo);
 	void DrawToDC_EinnahmenLine(DrawInfo *pDrawInfo, CBuchung *p);
 	void DrawToDC_AusgabenLine(DrawInfo *pDrawInfo, CBuchung *p);
+	void DrawToDC_AnlagenverzeichnisLine(DrawInfo *pDrawInfo, CBuchung *p);
 	void DrawToDC_BestandskontenLine(DrawInfo *pDrawInfo, CBuchung *p, char cBuchungsart);
 	void DrawToDC_LineBreak(DrawInfo *pDrawInfo, int n);
 	void DrawToDC_PrintLineNumber(DrawInfo *pDrawInfo);
@@ -320,6 +331,7 @@ protected:
 	afx_msg void OnLButtonDown(UINT nFlags, CPoint point);
 	afx_msg void OnLButtonUp(UINT nFlags, CPoint point);
 	afx_msg void OnViewJournalBestkonten();
+	afx_msg void OnViewJournalAnlagenverzeichnis();
 	//}}AFX_MSG
 	DECLARE_MESSAGE_MAP()
 	afx_msg void OnFilePrint2();

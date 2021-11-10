@@ -199,6 +199,22 @@ char *GetErweiterungKey(CString &csSpeicher, LPCTSTR sErweiterung, LPCTSTR sKey)
 	return cp;
 }
 
+// CString-Version der vorigen Hilfsfunktion
+// return: Pointer auf einen CString, Aufrufer ist verantwortlich für delete.
+CString *GetErweiterungKeyCS(CString &csSpeicher, LPCTSTR sErweiterung, LPCTSTR sKey)
+{
+	CString *ret = new CString("");
+	char *cp = GetErweiterungKey(csSpeicher, sErweiterung, sKey);
+	if (*cp == '|') return ret;
+	char *cp2 = strchr(cp, '|');
+	int n = cp2 - cp;
+	if (n < 0) return ret;
+	char *retBuf = ret->GetBuffer(n + 1);
+	strncpy(retBuf, cp, n);
+	retBuf[n] = '\0';
+	ret->ReleaseBuffer(n + 1);
+	return ret;
+}
 
 // einen Wert im Erweiterungs-Bereich der Dokumentklasse schreiben
 void SetErweiterungKey(CString &csSpeicher, LPCTSTR sErweiterung, LPCTSTR sKey, LPCTSTR sValue)
