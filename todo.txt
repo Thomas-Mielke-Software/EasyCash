@@ -637,6 +637,7 @@ v2.43
 - Titelzeile im CSV-Export
 - neues Feature: Anlagengegenstand aus dem Betriebsvermögen ausscheiden lassen
 - Kosmetik: Doppelte MWSt.-Sätze werden aus dem Buchen-Dialog herausgefiltert.
+- Bei im Filter angewähltem Quartal 2 bis 4 wurde es unten rechts in der Statusleiste nicht korrekt mitgeführt. (Die Summen waren aber richtig.)
 
 !!!!!!!!!!!!!!!!!!!!!
 Vorsteuer, bei Bewirtungen etwa, muss in den Freestyle-Formularen auch einbezogen werden, wenn sie auf "/"-Konten gebucht werden.

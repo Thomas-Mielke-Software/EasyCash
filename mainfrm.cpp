@@ -996,7 +996,7 @@ void CMainFrame::UpdateSaldo(CEasyCashView *pecv)
 	else
 	{
 		if (nMonatsFilterDisplay)
-			cs.Format("Saldo für %d%s/%04d (ohne Finanzamts-Zahlungen): %s (Netto) / %s (Brutto)", nMonatsFilterDisplay <= 12 ? nMonatsFilterDisplay : (nMonatsFilterDisplay-13)/3+1, nMonatsFilterDisplay <= 12 ? "" : "Q", nJahr, buffer2, buffer);
+			cs.Format("Saldo für %d%s/%04d (ohne Finanzamts-Zahlungen): %s (Netto) / %s (Brutto)", nMonatsFilterDisplay <= 12 ? nMonatsFilterDisplay : nMonatsFilterDisplay-12, nMonatsFilterDisplay <= 12 ? "" : "Q", nJahr, buffer2, buffer);
 		else
 			cs.Format("Saldo für %04d (ohne Finanzamts-Zahlungen): %s (Netto) / %s (Brutto)", nJahr, buffer2, buffer);
 	}
