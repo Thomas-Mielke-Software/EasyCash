@@ -906,13 +906,56 @@ void CEasyCashApp::CaptionBox(LPCTSTR str)
 	CaptionBox(str, 0, "", "");
 }
 
+CDocument* CEasyCashApp::GenericGetActiveDocument(CRuntimeClass* pClass)
+{
+    ASSERT(NULL != pClass); // must be not NULL and derived from CDocument.
+    ASSERT(pClass->IsDerivedFrom(RUNTIME_CLASS(CDocument))); 
+
+    CDocument* pDoc = NULL;
+    CWnd* pWndMain = AfxGetMainWnd();
+    if(NULL != pWndMain)
+    {
+        if(pWndMain->IsKindOf(RUNTIME_CLASS(CMDIFrameWnd)))
+        {
+            // MDI application, so first we have to get the active MDI child frame.
+            CFrameWnd* pFrame = ((CMDIFrameWnd*)pWndMain)->MDIGetActive();
+            if(NULL != pFrame)
+            {
+                CDocument* pActiveDoc = pFrame->GetActiveDocument();
+                if((NULL != pActiveDoc) && pActiveDoc->IsKindOf(pClass))
+                {
+                    // The found document is of required type
+                    pDoc = pActiveDoc;
+                }
+            }
+        }
+        else if(pWndMain->IsKindOf(RUNTIME_CLASS(CFrameWnd)))
+        {
+            // SDI appllication so main window is the active frame. 
+            pDoc = ((CFrameWnd*)pWndMain)->GetActiveDocument();
+        }
+        else
+        {
+            ASSERT(FALSE); // Neither MDI nor SDI application.
+        }
+    }
+    return pDoc;
+}
+#define GET_ACTIVE_DOC(x) (x*)GenericGetActiveDocument(RUNTIME_CLASS(x))
+
 void CEasyCashApp::CaptionBox(LPCTSTR str, int id, LPCTSTR buttontext, LPCTSTR tooltiptext)
 {
+	int nDocCount = m_pDocManager->GetOpenDocumentCount();
+	CDocument* pDoc = GET_ACTIVE_DOC(CDocument);
+
 	if (m_pMainWnd && ((CMainFrame*)m_pMainWnd)->GetCaptionBar())
 	{	
 		if (((CMainFrame*)m_pMainWnd)->GetCaptionBar()->m_hWnd == NULL)
 			((CMainFrame*)m_pMainWnd)->CreateCaptionBar();
-		((CMainFrame*)m_pMainWnd)->GetCaptionBar()->SetText(str, CMFCCaptionBar::ALIGN_LEFT);
+		if (nDocCount > 1 && pDoc)
+			((CMainFrame*)m_pMainWnd)->GetCaptionBar()->SetText(pDoc->GetTitle() + ": " + str, CMFCCaptionBar::ALIGN_LEFT);
+		else
+			((CMainFrame*)m_pMainWnd)->GetCaptionBar()->SetText(str, CMFCCaptionBar::ALIGN_LEFT);
 		((CMainFrame*)m_pMainWnd)->GetCaptionBar()->ShowWindow(SW_SHOW);
 		if (id && buttontext != "") 
 		{

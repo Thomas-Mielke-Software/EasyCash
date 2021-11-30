@@ -64,6 +64,7 @@ public:
 	void CaptionBox(LPCTSTR str, int id, LPCTSTR buttontext, LPCTSTR tooltiptext);
 	void CaptionBoxHide();
 	BOOL IsCaptionBoxShown();
+	CDocument* GenericGetActiveDocument(CRuntimeClass* pClass);
 
 	BOOL m_bCrashReportingAktiv;
 };

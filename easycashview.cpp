@@ -2152,9 +2152,9 @@ void CEasyCashView::DrawToDC_AnlagenverzeichnisLine(DrawInfo *pDrawInfo, CBuchun
 		Text(pDrawInfo, pDrawInfo->spalte_afa, pDrawInfo->line, buf);
 
 		// Buchwert zu Jahresende
-		int_to_currency_tausenderpunkt(p->AbschreibungRestwert + netto, 8, buf);
+		int_to_currency_tausenderpunkt(p->AbschreibungRestwert - netto, 8, buf);
 		Text(pDrawInfo, pDrawInfo->spalte_buchwert_ende, pDrawInfo->line, buf);
-		pDrawInfo->buchwert_ende_summe += p->AbschreibungRestwert + netto;
+		pDrawInfo->buchwert_ende_summe += p->AbschreibungRestwert - netto;
 
 		if (p->AbschreibungJahre > 1)
 		{
