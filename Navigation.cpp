@@ -129,9 +129,9 @@ void CNavigation::OnNMClick(NMHDR *pNMHDR, LRESULT *pResult)
 						break;
 					}
 				}
-				break;
-			// Journal nach Konten
-			case 1:
+				break;			
+			case 1:  // Journal nach Konten
+			case 3:  // Anlagenverzeichnis
 				{
 					CString csKonto = GetListCtrl().GetItemText(pNMItemActivate->iItem, 0);
 					BOOL bSucheUnzugewieseneEinnahmenbuchungen = FALSE, bSucheUnzugewieseneAusgabenbuchungen = FALSE;
@@ -142,9 +142,25 @@ void CNavigation::OnNMClick(NMHDR *pNMHDR, LRESULT *pResult)
 					int i;
 					for (i = 0; i < MAX_BUCHUNGEN; i++)
 						if (m_pViewWnd->ppPosBuchungsliste[i])
+						{
+							CString csUrspruenglichesKonto = "";  // AfA-Abgang im Anlagenverzeichnis? Dann nicht das Restbuchwertkonto benutzen, sondern das ursprüngliche Konto
+							if (m_pViewWnd->m_nAnzeige == 3 && (*(m_pViewWnd->ppPosBuchungsliste[i]))->AbschreibungJahre <= 1)
+							{
+								CString *pcsUrspruenglichesKonto = GetErweiterungKeyCS((*(m_pViewWnd->ppPosBuchungsliste[i]))->Erweiterung, "EasyCash", "UrspruenglichesKonto");
+								if (pcsUrspruenglichesKonto->IsEmpty())
+								{
+									delete pcsUrspruenglichesKonto;
+									break;
+								}		
+								csUrspruenglichesKonto = (*pcsUrspruenglichesKonto).GetBuffer();
+								delete pcsUrspruenglichesKonto;
+							}
+							else
+								csUrspruenglichesKonto = (*(m_pViewWnd->ppPosBuchungsliste[i]))->Konto;
+
 							if (((*(m_pViewWnd->ppPosBuchungsliste[i]))->Konto.IsEmpty() && bSucheUnzugewieseneEinnahmenbuchungen && pDoc->BuchungIstEinnahme(*(m_pViewWnd->ppPosBuchungsliste[i])))
 							 || ((*(m_pViewWnd->ppPosBuchungsliste[i]))->Konto.IsEmpty() && bSucheUnzugewieseneAusgabenbuchungen && pDoc->BuchungIstAusgabe(*(m_pViewWnd->ppPosBuchungsliste[i])))
-							 || (*(m_pViewWnd->ppPosBuchungsliste[i]))->Konto == csKonto)
+							 || csUrspruenglichesKonto == csKonto)
 							{
 								if (nGroup == 1 && pDoc->BuchungIstEinnahme(*(m_pViewWnd->ppPosBuchungsliste[i])))  // Wenn Kontoname sowohl in Einnahmen als auch in Ausgaben existiert sicherstellen,
 									continue;																		// dass bei einer Ausgaben-Buchung auch das Ausgaben-Konto gewählt wird
@@ -156,6 +172,7 @@ void CNavigation::OnNMClick(NMHDR *pNMHDR, LRESULT *pResult)
 								((CMainFrame*)AfxGetMainWnd())->SetStatus(csMsg);
 								break;
 							}
+						}
 				}
 				break;
 			// Journal nach Bestandskonten

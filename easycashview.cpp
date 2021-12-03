@@ -789,42 +789,61 @@ void CEasyCashView::OnUpdate(CView* pSender, LPARAM lHint, CObject* pHint)
 	}
 
 	// benutzte E/Ü-Konten und Bestandskonten in Einnahmen finden
-	for (p = pDoc->Einnahmen; p; p = p->next)
-	{
-		for (j = 0; j < 100; j++)
+	if (m_nAnzeige != 3)  // Anlagenverzeichnis braucht nur Ausgaben
+		for (p = pDoc->Einnahmen; p; p = p->next)
 		{
-			if (p->Konto.IsEmpty())
+			for (j = 0; j < 100; j++)
 			{
-				bUnzugewieseneEinnahmenbuchungenExistieren = TRUE;
-				break;
+				if (p->Konto.IsEmpty())
+				{
+					bUnzugewieseneEinnahmenbuchungenExistieren = TRUE;
+					break;
+				}
+
+				// leer? Dann neu übernehmen
+				if (einnahmen_posten_name[j].IsEmpty())
+				{
+					einnahmen_posten_name[j] = p->Konto;
+					break;
+				}
+
+				if (p->Konto == einnahmen_posten_name[j])
+				{
+					break;
+				}
 			}
 
-			// leer? Dann neu übernehmen
-			if (einnahmen_posten_name[j].IsEmpty())
-			{
-				einnahmen_posten_name[j] = p->Konto;
-				break;
-			}
-
-			if (p->Konto == einnahmen_posten_name[j])
-			{
-				break;
-			}
+			for (j = 0; j < csaBestandskontenMitBuchungenUnsortiert.GetSize(); j++)
+				if (csaBestandskontenMitBuchungenUnsortiert[j] == p->Bestandskonto)
+					break;
+			if (j >= csaBestandskontenMitBuchungenUnsortiert.GetSize())
+				csaBestandskontenMitBuchungenUnsortiert.Add(p->Bestandskonto);			
 		}
-
-		for (j = 0; j < csaBestandskontenMitBuchungenUnsortiert.GetSize(); j++)
-			if (csaBestandskontenMitBuchungenUnsortiert[j] == p->Bestandskonto)
-				break;
-		if (j >= csaBestandskontenMitBuchungenUnsortiert.GetSize())
-			csaBestandskontenMitBuchungenUnsortiert.Add(p->Bestandskonto);			
-	}
 
 	// benutzte E/Ü-Konten und Bestandskonten in Ausgaben finden
 	for (p = pDoc->Ausgaben; p; p = p->next)
 	{
+		if (m_nAnzeige == 3 && p->AbschreibungJahre <= 1 && p->Erweiterung.Find("|UrspruenglichesKonto=") == -1)
+			continue;  // wenn Anlagenverzeichnis: nur AfA-Buchungen berücksichtigen
+
 		for (j = 0; j < 100; j++)
 		{
-			if (p->Konto.IsEmpty())
+			CString csKonto = "";  // AfA-Abgang im Anlagenverzeichnis? Dann nicht das Restbuchwertkonto anzeigen, sondern das ursprüngliche Konto
+			if (m_nAnzeige == 3 && p->AbschreibungJahre <= 1)
+			{
+				CString *pcsUrspruenglichesKonto = GetErweiterungKeyCS(p->Erweiterung, "EasyCash", "UrspruenglichesKonto");
+				if (pcsUrspruenglichesKonto->IsEmpty())
+				{
+					delete pcsUrspruenglichesKonto;
+					break;
+				}		
+				csKonto = (*pcsUrspruenglichesKonto).GetBuffer();
+				delete pcsUrspruenglichesKonto;
+			}
+			else
+				csKonto = p->Konto;
+
+			if (csKonto.IsEmpty())
 			{
 				bUnzugewieseneAusgabenbuchungenExistieren = TRUE;
 				break;
@@ -832,14 +851,13 @@ void CEasyCashView::OnUpdate(CView* pSender, LPARAM lHint, CObject* pHint)
 
 			if (ausgaben_posten_name[j].IsEmpty())
 			{
-				ausgaben_posten_name[j] = p->Konto;
+
+				ausgaben_posten_name[j] = csKonto;
 				break;
 			}
 
-			if (p->Konto == ausgaben_posten_name[j])
-			{
+			if (csKonto == ausgaben_posten_name[j])
 				break;
-			}
 		}
 
 		for (j = 0; j < csaBestandskontenMitBuchungenUnsortiert.GetSize(); j++)
@@ -1015,6 +1033,7 @@ void CEasyCashView::OnUpdate(CView* pSender, LPARAM lHint, CObject* pHint)
 		}
 		else if (m_nAnzeige == 3)
 		{
+			lg.iGroupId = 1;
 			lg.pszHeader = L"Anlagengruppen";
 			lg.cchHeader = wcslen(lg.pszHeader);
 			nav.InsertGroup(1, &lg);
@@ -1030,7 +1049,6 @@ void CEasyCashView::OnUpdate(CView* pSender, LPARAM lHint, CObject* pHint)
 		int group;
 		switch (m_GewaehltesFormular >= 0 ? -1 : m_nAnzeige)
 		{
-		case 3: // Anlagenverzeichnis
 		case 0:	// Journal nach Datum 		
 		case 2: // Journal nach Bestandskonten
 			for (group = 0; group < anzahlGroups; group++)
@@ -1048,9 +1066,9 @@ void CEasyCashView::OnUpdate(CView* pSender, LPARAM lHint, CObject* pHint)
 				nav.SetItem(&lvItem);
 			}
 					
-			break;
-		// Journal nach Konten
-		case 1:
+			break;		
+		case 1: // Journal nach Konten
+		case 3: // Anlagenverzeichnis
 			for (i = 0, group = 0; i < m_KontenMitBuchungen.GetSize(); i++)
 			{
 				if (m_KontenMitBuchungen[i] == "<alle Konten>") continue;
