@@ -1092,7 +1092,10 @@ void BuchenDlg::OnCbnSelchangeEurechnungsposten()
 			CString itemText;
 			((CComboBox *)GetDlgItem(IDC_EURECHNUNGSPOSTEN))->GetLBText(n, itemText);
 			if (itemText[0] != ' ')  // nur die Auswahl mit Tab-Zeichen eingerückter Einträge als Konto akzeptieren
+			{
 				((CComboBox *)GetDlgItem(IDC_EURECHNUNGSPOSTEN))->SetCurSel(-1);
+				AfxMessageBox("Die Auswahl einer Unterkategorie als Konto ist nicht möglich. Es können nur die eingerückten Elemente der Liste ausgewählt werden.");
+			}
 		}
 	}
 }
