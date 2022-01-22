@@ -3985,6 +3985,14 @@ void CEasyCashView::DrawEURechungToDC(CDC* pDC, DrawInfo *pDrawInfo)
 		pDrawInfo->pInfo->m_nCurPage = pDrawInfo->pInfo->m_nCurPage;
 	*/
 
+	int nSpaltenzahl = 72;
+	int nZeilenzahl = 63;
+	if (pDrawInfo->printer_gesamtgroesse.cx > pDrawInfo->printer_gesamtgroesse.cy)  // Querformat?
+	{
+		nSpaltenzahl = nSpaltenzahl * 150 / 100; 
+		nZeilenzahl = nZeilenzahl * 100 / 150;
+	}
+
 	pDC->SetTextAlign(TA_LEFT);
 
 	CTime von(pDoc->nJahr, m_vm, m_vt, 0, 0, 0);
@@ -4072,7 +4080,6 @@ void CEasyCashView::DrawEURechungToDC(CDC* pDC, DrawInfo *pDrawInfo)
 			ASSERT(!p->Konto.IsEmpty());
 
 			if (p->Datum < von || p->Datum > bis) continue;
-			if (p->Konto[0] == '/') continue;	// neutrale Konten ignorieren
 			if (!m_BetriebFilterPrinter.IsEmpty() && p->Betrieb != m_BetriebFilterPrinter) continue;	// nur Buchungen für gewählten Betrieb aufsummieren
 
 			for (j = 0; j < 101; j++)
@@ -4089,14 +4096,25 @@ void CEasyCashView::DrawEURechungToDC(CDC* pDC, DrawInfo *pDrawInfo)
 
 					if (einstellungen4->m_ustvst_gesondert)
 					{
-						einnahmen_posten_summe[j] += netto;
-						einnahmen_gesamtsumme += p->Betrag;
+						if (p->Konto[0] != '/')  // neutrale Konten ignorieren
+						{
+							einnahmen_posten_summe[j] += netto;
+							einnahmen_gesamtsumme += p->Betrag;
+						}
 						einnahmen_mwst_summe += mwst_betrag;		// wird zum Schluß in ein Konto UST geschrieben
 					}
 					else
 					{
-						einnahmen_posten_summe[j] += p->Betrag;
-						einnahmen_gesamtsumme += p->Betrag;
+						if (p->Konto[0] != '/')  // neutrale Konten ignorieren
+						{
+							einnahmen_posten_summe[j] += p->Betrag;
+							einnahmen_gesamtsumme += p->Betrag;
+						}
+						else
+						{
+							einnahmen_posten_summe[j] += mwst_betrag;
+							einnahmen_gesamtsumme += mwst_betrag;
+						}
 					}
 
 					break;
@@ -4143,10 +4161,9 @@ void CEasyCashView::DrawEURechungToDC(CDC* pDC, DrawInfo *pDrawInfo)
 
 			if (!einnahmen_posten_name[i].IsEmpty() && einnahmen_posten_summe[i] != 0)
 			{
-				int nMaxText = 72;
-				if (pDrawInfo->printer_gesamtgroesse.cx > pDrawInfo->printer_gesamtgroesse.cy) nMaxText = nMaxText * 150 / 100; // Querformat?
-				if (einnahmen_posten_name[i].GetLength() > nMaxText) 
-					einnahmen_posten_name[i] = einnahmen_posten_name[i].Left(nMaxText) + "...";
+				if (ausgaben_posten_name[i][0] == '/') ausgaben_posten_name[i] += " (nur UST)";
+				if (einnahmen_posten_name[i].GetLength() > nSpaltenzahl) 
+					einnahmen_posten_name[i] = einnahmen_posten_name[i].Left(nSpaltenzahl) + "...";
 				Text(pDrawInfo, indent, line, einnahmen_posten_name[i].GetBuffer(0));
 
 				int_to_currency_tausenderpunkt(einnahmen_posten_summe[i], 10, buffer);
@@ -4177,7 +4194,7 @@ void CEasyCashView::DrawEURechungToDC(CDC* pDC, DrawInfo *pDrawInfo)
 		sprintf(buffer, " %s", (LPCSTR)pDoc->csWaehrung);
 		Text(pDrawInfo, 70, line, buffer);
 
-		if (line > 60)
+		if (line > nZeilenzahl - 3)
 		{
 			pDC->EndPage();
 			pDC->StartPage();
@@ -4197,7 +4214,6 @@ void CEasyCashView::DrawEURechungToDC(CDC* pDC, DrawInfo *pDrawInfo)
 			ASSERT(!p->Konto.IsEmpty());
 
 			if (p->Datum < von || p->Datum > bis) continue;
-			if (p->Konto[0] == '/') continue;	// neutrale Konten ignorieren
 			if (!m_BetriebFilterPrinter.IsEmpty() && p->Betrieb != m_BetriebFilterPrinter) continue;	// nur Buchungen für gewählten Betrieb aufsummieren
 
 			if (p->Konto == "VST-Beträge separat" && einstellungen4->m_ustvst_gesondert)	// separate VST einfach nur mitzählen, weil wir sowieso ein VST-Konto haben zum Schluss
@@ -4226,14 +4242,25 @@ void CEasyCashView::DrawEURechungToDC(CDC* pDC, DrawInfo *pDrawInfo)
 
 						if (einstellungen4->m_ustvst_gesondert)
 						{
-							ausgaben_posten_summe[j] += netto;
-							ausgaben_gesamtsumme += netto + mwst_betrag;
+							if (p->Konto[0] != '/')  // neutrale Konten ignorieren
+							{
+								ausgaben_posten_summe[j] += netto;
+								ausgaben_gesamtsumme += netto + mwst_betrag;
+							}
 							ausgaben_mwst_summe += mwst_betrag;		// wird zum Schluß in ein Konto VST geschrieben
 						}
 						else
 						{
-							ausgaben_posten_summe[j] += netto + mwst_betrag;
-							ausgaben_gesamtsumme += netto + mwst_betrag;
+							if (p->Konto[0] != '/')  // neutrale Konten ignorieren
+							{
+								ausgaben_posten_summe[j] += netto + mwst_betrag;
+								ausgaben_gesamtsumme += netto + mwst_betrag;
+							}
+							else
+							{
+								ausgaben_posten_summe[j] += mwst_betrag;
+								ausgaben_gesamtsumme += mwst_betrag;
+							}
 						}
 
 						break;
@@ -4279,8 +4306,9 @@ void CEasyCashView::DrawEURechungToDC(CDC* pDC, DrawInfo *pDrawInfo)
 
 			if (!ausgaben_posten_name[i].IsEmpty() && ausgaben_posten_summe[i] != 0)
 			{
-				if (ausgaben_posten_name[i].GetLength() > 72) 
-					ausgaben_posten_name[i] = ausgaben_posten_name[i].Left(72) + "...";
+				if (ausgaben_posten_name[i][0] == '/') ausgaben_posten_name[i] += " (nur VST)";
+				if (ausgaben_posten_name[i].GetLength() > nSpaltenzahl) 
+					ausgaben_posten_name[i] = ausgaben_posten_name[i].Left(nSpaltenzahl) + "...";
 				Text(pDrawInfo, indent, line, ausgaben_posten_name[i].GetBuffer(0));
 
 				int_to_currency_tausenderpunkt(ausgaben_posten_summe[i], 10, buffer);
@@ -4292,7 +4320,7 @@ void CEasyCashView::DrawEURechungToDC(CDC* pDC, DrawInfo *pDrawInfo)
 
 				line++;
 
-				if (line > 63)
+				if (line > nZeilenzahl)
 				{
 					pDC->EndPage();
 					pDC->StartPage();

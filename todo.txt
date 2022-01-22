@@ -640,15 +640,11 @@ v2.43
 - Bei im Filter angewähltem Quartal 2 bis 4 wurde es unten rechts in der Statusleiste nicht korrekt mitgeführt. (Die Summen waren aber richtig.)
 - Bei mehr als einem geöffneten Dokument wird bei Benachrichtigungen am oberen Fensterrand jetzt der Dokumentname mit angezeigt
 - Erklärende Meldung beim Versuch beim Buchen eine Konten-Unterkategorie auszuwählen.
+- Vorsteuer, bei Bewirtungen etwa, wird jetzt in der Freestyle-EÜR auch einbezogen, wenn sie auf "/"-Konten gebucht werden.
+- bessere Unterstützung von Querformatdruck bei der Freestyle-EÜR 
 
-!!!!!!!!!!!!!!!!!!!!!
-Vorsteuer, bei Bewirtungen etwa, muss in den Freestyle-Formularen auch einbezogen werden, wenn sie auf "/"-Konten gebucht werden.
 
 !!!!!!!
-> Ich benutze eine registrierte Version von Easy Cash & Tax. Bruhrain ist 
-> der Benutzername, finde allerdings keine weiteren Daten mehr,ansonsten 
-> hätte ich das hier ins Forum geschrieben.
-> 
 > Betreffend des Jahresabschlußes 2020 habe ich Post vom Finanzamt erhalten.
 > 
 > Eine Frage war: „Sie erklären in Ihrer Umsatzsteuererklärung keine 
@@ -1491,6 +1487,9 @@ Grauschattierungen, z.B. der Zwischensummen.
 *Sollte es dazu kommen, würde es mich freuen, wenn Sie die Ausdrucke mit
 einer editierbaren Kopf-/Fußzeile versehen würden.
 
+> Ich hätte eine vorschlag der mir auch helfen würde die Rechnung zu kontrollieren.
+> Ist es möglich hauptsächlich die Einnahmen mit der Belegnummer zu sortieren oder ausdrucken?
+Also es geht um ein Journal, wie "nach Datum", nur dass nicht nach Datum, sondern nach der Belegnummer sortiert wird?
 
 Formulardruck
 -------------
