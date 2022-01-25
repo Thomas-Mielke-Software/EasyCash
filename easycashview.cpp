@@ -132,6 +132,8 @@ BEGIN_MESSAGE_MAP(CEasyCashView, CScrollView)
 	ON_COMMAND(ID_ZOOMFAKTOR_250, &CEasyCashView::OnZoomfaktor250)
 	ON_COMMAND(ID_ZOOMFAKTOR_300, &CEasyCashView::OnZoomfaktor300)
 	ON_WM_MOUSEWHEEL()
+	ON_WM_MBUTTONDOWN()
+	ON_WM_MBUTTONUP()
 END_MESSAGE_MAP()
 
 /////////////////////////////////////////////////////////////////////////////
@@ -4582,8 +4584,18 @@ void CEasyCashView::DrawFormularToDC(CDC* pDC, DrawInfo *pDrawInfo)
 						// nur anzeigen, wenn nicht schon das rote Kästchen des aktuell bearbeiteten Feldes angezeigt wird:
 						if (!(pFormularfeldDlg && pFormularfeldDlg->IsWindowVisible()))
 						{
-							CBrush brush;
-							COLORREF colourFelddarstellung = RGB(0xe0,0x80,0x80);
+							CBrush brush;	
+							COLORREF colourFelddarstellung;
+
+							// Wenn Felder per mittlerer Maustaste für Multiselekt ausgewählt werden, selektierte Felder blau markieren, ansonsten rot
+							colourFelddarstellung = RGB(0xe0,0x80,0x80);
+							if (m_ptFeldMoveMultiselect.GetCount() > 0)
+							{
+								int id = atoi(child->GetAttrValue("id"));
+								for (int i = 0; i < m_ptFeldMoveMultiselect.GetCount(); i++)
+									if (m_ptFeldMoveMultiselect[i] == id)
+										colourFelddarstellung = RGB(0x80,0x80,0xe0);
+							}
 							brush.CreateSolidBrush(colourFelddarstellung);
 							CRect r;
 							LPCTSTR cp;
@@ -6460,6 +6472,7 @@ BOOL CEasyCashView::OnCommand(WPARAM wParam, LPARAM lParam)
 			break;
 		case POPUPFORMULAR_FELDER_ANZEIGEN:
 			m_bFormularfelderAnzeigen = !m_bFormularfelderAnzeigen;
+			if (m_bFormularfelderAnzeigen) ((CMainFrame*)AfxGetMainWnd())->SetStatus("In diesem Modus können Formularfelder bearbeitet werden: drag&drop mit linker Maustaste, Gruppenselektion mit mittlerer Maustaste");
 			GetDocument()->UpdateAllViews(NULL);
 			InvalidateRect(NULL, FALSE);
 			break;
@@ -6651,6 +6664,8 @@ void CEasyCashView::OnLButtonDown(UINT nFlags, CPoint point)
 		ptFeldmarke.x = ptFeldmarke.x * 1000 / (int)((double)(charheight * (VCHARS + PAGE_GAP) * 1000 / 1414));
 		ptFeldmarke.y = ptFeldmarke.y * 1414 / (int)((double)(VCHARS + PAGE_GAP) * charheight);
 	
+		m_ptLinkerMausButtonDown = ptFeldmarke;
+
 		// Formulardefinitionsdatei in xmldoc laden
 		XDoc xmldoc;
 		xmldoc.LoadFile(m_csaFormulare[m_GewaehltesFormular]);
@@ -6701,49 +6716,166 @@ void CEasyCashView::OnLButtonDown(UINT nFlags, CPoint point)
 
 void CEasyCashView::OnLButtonUp(UINT nFlags, CPoint point) 
 {
-	if (m_nFeldMove >= 0 && m_bFormularfelderAnzeigen && m_GewaehltesFormular >= 0)
+	if (m_bFormularfelderAnzeigen && m_GewaehltesFormular >= 0)
 	{
 		//RedrawWindow();
 		GetDocument()->UpdateAllViews(NULL);
+
+		CPoint ptLinkerMausButtonUp = GetScrollPosition() + point;
+		ptLinkerMausButtonUp.x = ptLinkerMausButtonUp.x * 1000 / (int)((double)(charheight * (VCHARS + PAGE_GAP) * 1000 / 1414));
+		ptLinkerMausButtonUp.y = ptLinkerMausButtonUp.y * 1414 / (int)((double)(VCHARS + PAGE_GAP) * charheight);
+		CSize downUpDifferenz = ptLinkerMausButtonUp - m_ptLinkerMausButtonDown;
+
+		if (downUpDifferenz == CSize(0, 0))
+		{
+			m_ptFeldMoveMultiselect.RemoveAll();  // bei einem einfachem Mausklick: Selektion löschen
+			GetDocument()->UpdateAllViews(NULL);
+		}
 
 		// Formulardefinitionsdatei in xmldoc laden
 		XDoc xmldoc;
 		xmldoc.LoadFile(m_csaFormulare[m_GewaehltesFormular]);
 		LPXNode xml = xmldoc.GetRoot();
 		LPXNode felder = NULL;
-		if (xml && felder && (felder = xml->Find("felder")) && felder->GetChildCount() > 0)
+		if (xml && (felder = xml->Find("felder")) && felder->GetChildCount() > 0)  // Multiselect-Gruppe bewegen
 		{
 			LPXNode child;
 
-			if (m_nFeldMove >= 0)
-			{		
-				child = felder->GetChild(m_nFeldMove);
-				if (child)
-				{
-					CString csFromInt;
-					csFromInt = _ultoa((DWORD)ptFeldmarke.y / 1414 + 1, csFromInt.GetBuffer(30), 10);
-					child->GetAttr("seite")->value = csFromInt;
-					csFromInt = _ultoa((DWORD)ptFeldmarke.x, csFromInt.GetBuffer(30), 10);
-					child->GetAttr("horizontal")->value = csFromInt;
-					csFromInt = _ultoa((DWORD)ptFeldmarke.y % 1414, csFromInt.GetBuffer(30), 10);
-					child->GetAttr("vertikal")->value = csFromInt;
-					
-					DISP_OPT opt;
-					opt.newline = true; // no new line
-					if (!xmldoc.SaveFile(m_csaFormulare[m_GewaehltesFormular], &opt))
+			if (m_ptFeldMoveMultiselect.GetCount() > 0)
+			{
+				for(int i = 0; i < felder->GetChildCount(); i++)
+				{			
+					child = felder->GetChild(i);
+					if (child && !child->value.IsEmpty())
 					{
-						AfxMessageBox("Konnte die Änderung der Feldposition nicht in der Formulardatei speichern.");
-						return;
+						int id = atoi(child->GetAttrValue("id"));
+						for (int j = 0; j < m_ptFeldMoveMultiselect.GetCount(); j++)
+							if (m_ptFeldMoveMultiselect[j] == id)
+								MoveFormularfeld(child, downUpDifferenz);
 					}
 				}
 			}
+			else if (m_nFeldMove >= 0)  // einzelnes Feld bewegen
+			{		
+				child = felder->GetChild(m_nFeldMove);
+				if (child && !child->value.IsEmpty())
+					MoveFormularfeld(child, downUpDifferenz);
+			}
+		}
+	
+		DISP_OPT opt;
+		opt.newline = true; // no new line
+		if (!xmldoc.SaveFile(m_csaFormulare[m_GewaehltesFormular], &opt))
+		{
+			AfxMessageBox("Konnte die Änderung der Feldposition nicht in der Formulardatei speichern.");
+			return;
 		}
 
 		m_nFeldMove = -1;
 	}
-
 	
 	CScrollView::OnLButtonUp(nFlags, point);
+}
+
+void CEasyCashView::MoveFormularfeld(LPXNode child, CSize delta)
+{
+	int nAlteSeite = atoi(child->GetAttrValue("seite"));
+	CPoint ptAltePosition, ptNeuePosition;
+	ptAltePosition.x = atoi(child->GetAttrValue("horizontal"));
+	ptAltePosition.y = atoi(child->GetAttrValue("vertikal")) + (nAlteSeite - 1) * 1414;
+	ptNeuePosition = ptAltePosition + delta;
+
+	CString csSeite, csHorizontal, csVertikal;
+	_ultoa((DWORD)ptNeuePosition.y / 1414 + 1, csSeite.GetBuffer(30), 10);
+	_ultoa((DWORD)ptNeuePosition.x, csHorizontal.GetBuffer(30), 10);
+	_ultoa((DWORD)ptNeuePosition.y % 1414, csVertikal.GetBuffer(30), 10);
+
+	 child->GetAttr("seite")->value = csSeite;
+	child->GetAttr("horizontal")->value = csHorizontal;
+	child->GetAttr("vertikal")->value = csVertikal;
+}
+
+void CEasyCashView::OnMButtonDown(UINT nFlags, CPoint point)
+{
+	if (m_bFormularfelderAnzeigen && m_GewaehltesFormular >= 0)
+	{
+		// Position von Mittlerer Mausknopf Down bestimmen...
+		m_ptMittlererMausButtonDown = GetScrollPosition() + point;
+		m_ptMittlererMausButtonDown.x = m_ptMittlererMausButtonDown.x * 1000 / (int)((double)(charheight * (VCHARS + PAGE_GAP) * 1000 / 1414));
+		m_ptMittlererMausButtonDown.y = m_ptMittlererMausButtonDown.y * 1414 / (int)((double)(VCHARS + PAGE_GAP) * charheight);
+	}
+
+	CScrollView::OnMButtonDown(nFlags, point);
+}
+
+void CEasyCashView::OnMButtonUp(UINT nFlags, CPoint point)
+{
+	if (m_bFormularfelderAnzeigen && m_GewaehltesFormular >= 0)
+	{
+		m_ptFeldMoveMultiselect.RemoveAll();  // Array mit den IDs der selektierten Felder
+
+		// Position von Mittlerer Mausknopf Up bestimmen...
+		CPoint ptMittlererMausButtonUp = GetScrollPosition() + point;
+		ptMittlererMausButtonUp.x = ptMittlererMausButtonUp.x * 1000 / (int)((double)(charheight * (VCHARS + PAGE_GAP) * 1000 / 1414));
+		ptMittlererMausButtonUp.y = ptMittlererMausButtonUp.y * 1414 / (int)((double)(VCHARS + PAGE_GAP) * charheight);
+
+		int multi1x, multi2x, multi1y, multi2y;
+		if (m_ptMittlererMausButtonDown.x < ptMittlererMausButtonUp.x)
+		{
+			multi1x = m_ptMittlererMausButtonDown.x;
+			multi2x = ptMittlererMausButtonUp.x;
+		}
+		else
+		{
+			multi2x = m_ptMittlererMausButtonDown.x;
+			multi1x = ptMittlererMausButtonUp.x;
+		}
+		if (m_ptMittlererMausButtonDown.y < ptMittlererMausButtonUp.y)
+		{
+			multi1y = m_ptMittlererMausButtonDown.y;
+			multi2y = ptMittlererMausButtonUp.y;
+		}
+		else
+		{
+			multi2y = m_ptMittlererMausButtonDown.y;
+			multi1y = ptMittlererMausButtonUp.y;
+		}
+
+		// mehr als nur minimale Distanz zwischen MouseUp und MouseDown? Dann Selektion machen.
+		CSize sizeDrag = m_ptMittlererMausButtonDown - ptMittlererMausButtonUp;
+		if (abs(sizeDrag.cx) + abs(sizeDrag.cy) > 10)
+		{
+			// Formulardefinitionsdatei in xmldoc laden
+			XDoc xmldoc;
+			xmldoc.LoadFile(m_csaFormulare[m_GewaehltesFormular]);
+			LPXNode xml = xmldoc.GetRoot();
+			LPXNode felder = NULL;
+			if (xml && (felder = xml->Find("felder")) && felder->GetChildCount() > 0)
+			{
+				LPXNode child;
+
+				// alle Felder im aufgezogenen rect ins array m_ptFeldMoveMultiselect schreiben
+				for(int i = 0; i < felder->GetChildCount(); i++)
+				{
+					child = felder->GetChild(i);
+					if (child)
+					{
+						CString csTemp = child->GetChildValue("name");
+						int x = atoi(child->GetAttrValue("horizontal"));
+						int y = atoi(child->GetAttrValue("vertikal")) + ((atoi(child->GetAttrValue("seite"))-1) * 1414);
+						if (x >= multi1x && x <= multi2x && y >= multi1y && y <= multi2y)
+							m_ptFeldMoveMultiselect.Add(atoi(child->GetAttrValue("id")));
+					}
+				}
+			}
+		}
+		else
+			m_ptFeldMoveMultiselect.RemoveAll();  // ansonsten bei einem einfachen Mittlere-Maustaste-Klick: Selektion löschen
+
+		GetDocument()->UpdateAllViews(NULL);
+	}
+
+	CScrollView::OnMButtonUp(nFlags, point);
 }
 
 void CEasyCashView::OnActivateView(BOOL bActivate, CView* pActivateView, CView* pDeactiveView) 

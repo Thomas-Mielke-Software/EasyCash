@@ -146,7 +146,10 @@ public:
 	CPoint ptFeldmarke;
 	BOOL m_bFeldmarkeRechtsbuendig;
 	CPoint ptLetzteMousePosition;
-	int m_nFeldMove;
+	CPoint m_ptMittlererMausButtonDown;
+	CPoint m_ptLinkerMausButtonDown;
+	int m_nFeldMove;							// enthält die ID beim Bewegen eines Formularfeldes
+	CArray<int> m_ptFeldMoveMultiselect;  // enthält die IDs beim Bewegen mehrerer Formularfelder wähend Multiselect mit mittlerer Maustaste
 	int querformat_faktor;
 
 	// Menü-Krempel
@@ -282,6 +285,7 @@ protected:
 	void DauerbuchungenAusfuehren(int jb, int mb);
 	void CaptionBoxCheckOnUpdate();
 	void SetzeZoomfaktor();
+	void MoveFormularfeld(LPXNode child, CSize delta);
 
 public:
 	void LoadProfile();
@@ -365,6 +369,8 @@ public:
 	afx_msg void OnZoomfaktor250();
 	afx_msg void OnZoomfaktor300();
 	afx_msg BOOL OnMouseWheel(UINT nFlags, short zDelta, CPoint pt);
+	afx_msg void OnMButtonDown(UINT nFlags, CPoint point);
+	afx_msg void OnMButtonUp(UINT nFlags, CPoint point);
 };
 
 #ifndef _DEBUG  // debug version in EasyCashView.cpp

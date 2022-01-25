@@ -1,8 +1,13 @@
 1. nach "bundesfinanzministerium muster eür" googeln!!!
 2. LLL Auflösung auf 1920x1200 Pixel stellen
-3. Sumatra: F11 Vollansicht, dann STRG-Shift-'-' zum Drehen
-3a. Adobe: 90° drehen und CTRL-L Ganzbild, dann Druck-Taste
-3b. Foxit: 90° drehen durch CTRL-Shift-'+' und F11 Ganzbild, dann Druck-Taste
-4. In Photoshop das weiße Ausschneiden (Breite 1190 Pixel in 2007)
-4a. STRL-'+', um auf 100% zu zoomen, dann CTRL-Pos1 und CTRL-Ende zum Selektieren und Ausschneiden benutzen
-5. In Release-Verzeichnis testen (wegen Virtual Store)
+3. Sumatra: F11 Vollansicht, dann STRG-Shift-'-' zum Drehen, STRG-3 für richtigen Zoomlevel, PgDown für nächste Seite (wichtig!), dann Druck-Taste
+5a. In Gimp neue Datei mit breite 1920 und höhe 1080, CTRL-V zum Einfügen, CTRL-H zum Verankern der Ebene -- Windows Paint aber zum Zuschneiden besser geeignet! 
+5b. ALT-B, T, U zum Drehen; '+'-Taste zum Vergrößern; Rechteck kopieren CTRL-C (ggf. CTRL drücken, um Verschieben zu deaktivieren!)
+5c. Datei->Neu, Höhe 1646, Breite 1080, CTRL-V, CTRL-H, CTRL-SHIFT-E: als .png speichern
+6. In Release-Verzeichnis testen (wegen Virtual Store)
+7. screenshot.png 100x100 anfertigen!
+
+LLL 3a. Adobe: 90° drehen und CTRL-L Ganzbild, dann Druck-Taste
+LLL 3b. Foxit: 90° drehen durch CTRL-Shift-'+' und F11 Ganzbild, dann Druck-Taste
+LLL 4. In Photoshop das weiße Ausschneiden (Breite 1190 Pixel in 2007)
+LLL 4a. STRL-'+', um auf 100% zu zoomen, dann CTRL-Pos1 und CTRL-Ende zum Selektieren und Ausschneiden benutzen
