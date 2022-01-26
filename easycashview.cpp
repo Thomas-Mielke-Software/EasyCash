@@ -6803,6 +6803,8 @@ void CEasyCashView::OnMButtonDown(UINT nFlags, CPoint point)
 		m_ptMittlererMausButtonDown = GetScrollPosition() + point;
 		m_ptMittlererMausButtonDown.x = m_ptMittlererMausButtonDown.x * 1000 / (int)((double)(charheight * (VCHARS + PAGE_GAP) * 1000 / 1414));
 		m_ptMittlererMausButtonDown.y = m_ptMittlererMausButtonDown.y * 1414 / (int)((double)(VCHARS + PAGE_GAP) * charheight);
+		
+		m_ptFeldMoveMultiselect.RemoveAll();  // ggf. alter Multi-Selektion löschen
 	}
 
 	CScrollView::OnMButtonDown(nFlags, point);
