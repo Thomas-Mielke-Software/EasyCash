@@ -296,6 +296,7 @@ public:
 	char *GetWaehrungskuerzel();
 	void ScrolleZuBuchung(int b);
 	void ScrolleZuSeite(int s);
+	void AfAAbgang(CBuchung **ppb);
 
 // Generated message map functions
 protected:
@@ -380,10 +381,11 @@ inline CEasyCashDoc* CEasyCashView::GetDocument()
 
 /////////////////////////////////////////////////////////////////////////////
 
-#define POPUP_AENDERN	10000
-#define POPUP_LOESCHEN	10001
-#define POPUP_KOPIEREN	10002
+#define POPUP_AENDERN				10000
+#define POPUP_LOESCHEN				10001
+#define POPUP_KOPIEREN				10002
 #define POPUP_KOPIEREN_BELEGNUMMER	10003
+#define POPUP_AFA_ABGANG			10004
 
 #define POPUPFORMULAR_NEUES_FELD				10010
 #define POPUPFORMULAR_FELDER_BEARBEITEN			10011

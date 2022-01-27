@@ -272,7 +272,8 @@ void CEasyCashView::OnInitialUpdate()
 	PopUp.AppendMenu(MF_STRING, POPUP_AENDERN, "Buchung &ändern");
 	PopUp.AppendMenu(MF_STRING, POPUP_LOESCHEN, "Buchung &löschen");
 	PopUp.AppendMenu(MF_STRING, POPUP_KOPIEREN, "Buchung &kopieren");
-	PopUp.AppendMenu(MF_STRING, POPUP_KOPIEREN_BELEGNUMMER, "Buchung kopieren mit neuer &Belegnummer");		
+	PopUp.AppendMenu(MF_STRING, POPUP_KOPIEREN_BELEGNUMMER, "Buchung kopieren mit neuer &Belegnummer");	
+	PopUp.AppendMenu(MF_STRING, POPUP_AFA_ABGANG, "Anlagengut &ausscheiden lassen");	
 
 	// Popup-Menü aufbauen
 	PopUpFormular.CreatePopupMenu();
@@ -3559,7 +3560,8 @@ void CEasyCashView::DrawToDC_Anlagenverzeichnis(CDC* pDC_par, DrawInfo *pDrawInf
 					if (!pDrawInfo->pm) ppPosBuchungsliste[pDrawInfo->line] = pp;
 					p = *pp;
 					char *cp = GetErweiterungKey(p->Erweiterung, "EasyCash", "UrspruenglichesAnschaffungsdatum");
-					char *cp2 = strchr(cp, '|');					if (p->AbschreibungJahre <= 1 && cp2 - cp != 10) continue;  // keine AfA und auch kein Abgang? dann weitersuchen
+					char *cp2 = strchr(cp, '|');
+					if (p->AbschreibungJahre <= 1 && cp2 - cp != 10) continue;  // keine AfA und auch kein Abgang? dann weitersuchen
 					if (pDrawInfo->pm && (p->Datum < von || p->Datum > bis)) continue;
 					if (pDrawInfo->pm && m_BetriebFilterPrinter != "<alle Betriebe>" && m_BetriebFilterPrinter != p->Betrieb) continue;	
 					if (!pDrawInfo->pm && (m_KontenFilterDisplay != "<alle Konten>" && csKonto.GetLength() && "Einnahmen: " + csKonto != m_KontenFilterDisplay && "Ausgaben: " + csKonto != m_KontenFilterDisplay)) continue;
@@ -6213,13 +6215,22 @@ void CEasyCashView::OnRButtonDown(UINT nFlags, CPoint point)
 	{
 		RECT r;
 		int index = (GetScrollPosition() + point).y / charheight;
-		if (ppPosBuchungsliste[index])
+		CBuchung **ppb = ppPosBuchungsliste[index];
+		if (ppb)
 		{
 			nSelected = index;
 			GetWindowRect(&r);
 			int vpos = index * charheight + charheight/2 - (r.bottom - r.top) / 2;
 			//RedrawWindow();
 			GetDocument()->UpdateAllViews(NULL);
+			PopUp.EnableMenuItem(POPUP_AFA_ABGANG, MF_BYCOMMAND | MF_GRAYED);
+			if ((**ppb).AbschreibungJahre > 1)
+			{
+				char *cp = GetErweiterungKey((**ppb).Erweiterung, "EasyCash", "UrspruenglichesAnschaffungsdatum");
+				char *cp2 = strchr(cp, '|');
+				if (cp2 - cp != 10)  // noch nicht ausgeschieden?
+					PopUp.EnableMenuItem(POPUP_AFA_ABGANG, MF_BYCOMMAND | MF_ENABLED);
+			}
 			PopUp.TrackPopupMenu(TPM_LEFTALIGN|TPM_RIGHTBUTTON, point.x + r.left, point.y + r.top, this);
 		}
 	}
@@ -6235,7 +6246,7 @@ BOOL CEasyCashView::OnCommand(WPARAM wParam, LPARAM lParam)
 	CEasyCashDoc *pDoc = GetDocument();
 
 	// Journalansicht-Menü
-	if (wParam == POPUP_AENDERN || wParam == POPUP_LOESCHEN || wParam == POPUP_KOPIEREN || wParam == POPUP_KOPIEREN_BELEGNUMMER)
+	if (wParam == POPUP_AENDERN || wParam == POPUP_LOESCHEN || wParam == POPUP_KOPIEREN || wParam == POPUP_KOPIEREN_BELEGNUMMER || wParam == POPUP_AFA_ABGANG)
 	{
 		// aus Bildschirm/Scropplosition die Zeilennummer berechnen und 
 		// somit den Pointer in ppPosBuchungsliste
@@ -6340,6 +6351,13 @@ BOOL CEasyCashView::OnCommand(WPARAM wParam, LPARAM lParam)
 						nSelected = -nSelected;	// deselektieren
 						RedrawSelection();
 					}
+				}
+				break;
+
+			case POPUP_AFA_ABGANG:
+				if (*ppb)
+				{
+					AfAAbgang(ppb);
 				}
 				break;
 			}
@@ -6514,6 +6532,62 @@ BOOL CEasyCashView::OnCommand(WPARAM wParam, LPARAM lParam)
 	}
 
 	return CScrollView::OnCommand(wParam, lParam);
+}
+
+void CEasyCashView::AfAAbgang(CBuchung **ppb)
+{
+	CEasyCashDoc *pDoc = GetDocument();
+
+	if (ppb && (*ppb)->AbschreibungNr > 1 && 
+		(AfxMessageBox((CString)"Anlagengegenstand aus dem Betriebsvermögen ausscheiden lassen? (Die AfA-Buchung wird dabei in eine einfache Ausgaben-Buchung über den Restwert umgewandelt.)", MB_YESNO) == IDYES))
+	{
+		CString csRestwertKonto;
+		CString csRestwertFeldnummer = einstellungen2->m_land == 1 ? "9210" : "1135";
+		char *pRestwertKonto = HoleKontoFuerFeld('A', csRestwertFeldnummer);
+		CString csEURoderE1a = einstellungen2->m_land == 1 ? "E1a" : "EÜR";
+		if (!pRestwertKonto)
+		{
+			csRestwertKonto = "Restbuchwert abgegangener Anlagengüter";
+			if (einstellungen2->m_land == 0 || einstellungen2->m_land == 1)
+				AfxMessageBox("Es wurde kein Konto gefunden, das mit dem Formularfeld " + csRestwertFeldnummer + " verknüpft ist. Deshalb wurde in der Buchung provisorisch das Konto '" 
+							  + csRestwertKonto + "' eingetragen. Wenn Sie Formulare benutzen, sollten Sie dieses Ausgabenkonto in den Einstellungen -> E/Ü-Konten anlegen und dem " + csEURoderE1a + "-Feld "
+							  + csRestwertFeldnummer + " zuweisen.");
+		}
+		else
+			csRestwertKonto = pRestwertKonto;
+
+		CTime ctUrspruenglichesAnschaffungsdatum = CTime((*ppb)->Datum.GetYear() - (*ppb)->AbschreibungNr + 1, (*ppb)->Datum.GetMonth(), (*ppb)->Datum.GetDay(), 0, 0, 0);
+		CString csUrspruenglichesAnschaffungsdatum = ctUrspruenglichesAnschaffungsdatum.Format("%d.%m.%Y");
+		char urspruenglicherBetrag[30];
+		int_to_currency((*ppb)->Betrag, 20, urspruenglicherBetrag);
+		char urspruenglicherNettobetrag[30];
+		int_to_currency((*ppb)->GetNetto(), 20, urspruenglicherNettobetrag);
+		CString csUrspruenglicheAbschreibungNr;
+		csUrspruenglicheAbschreibungNr.Format("%d", (*ppb)->AbschreibungNr);
+		CString csUrspruenglicheAbschreibungJahre;
+		csUrspruenglicheAbschreibungNr.Format("%d", (*ppb)->AbschreibungJahre);
+		char urspruenglicherRestwert[30];
+		int_to_currency((*ppb)->AbschreibungRestwert, 20, urspruenglicherRestwert);
+		SetErweiterungKey((*ppb)->Erweiterung, "EasyCash", "UrspruenglichesAnschaffungsdatum", csUrspruenglichesAnschaffungsdatum);	/// benötigt im Anlagenverzeichnis
+		SetErweiterungKey((*ppb)->Erweiterung, "EasyCash", "UrspruenglichesKonto", (*ppb)->Konto);									//
+		SetErweiterungKey((*ppb)->Erweiterung, "EasyCash", "UrspruenglicherBetrag", urspruenglicherBetrag);						//
+		SetErweiterungKey((*ppb)->Erweiterung, "EasyCash", "UrspruenglicherNettobetrag", urspruenglicherNettobetrag);				//
+		SetErweiterungKey((*ppb)->Erweiterung, "EasyCash", "UrspruenglicheAbschreibungNr", csUrspruenglicheAbschreibungNr);		//
+		SetErweiterungKey((*ppb)->Erweiterung, "EasyCash", "UrspruenglicheAbschreibungJahre", csUrspruenglicheAbschreibungJahre);	// TODO: "Abgang rückgängigmachen"-Funktion!
+		SetErweiterungKey((*ppb)->Erweiterung, "EasyCash", "UrspruenglicherRestwert", urspruenglicherRestwert);					//
+		SetErweiterungKey((*ppb)->Erweiterung, "EasyCash", "UrspruenglichesBestandskonto", (*ppb)->Bestandskonto);				//
+		(*ppb)->Datum = CTime(pDoc->nJahr, 1, 1, 0, 0, 0);
+		(*ppb)->Betrag = (*ppb)->AbschreibungRestwert;
+		(*ppb)->MWSt = 0;
+		(*ppb)->AbschreibungRestwert = 0;
+		(*ppb)->AbschreibungNr = 1;
+		(*ppb)->AbschreibungJahre = 1;
+		(*ppb)->Konto = csRestwertKonto;
+		(*ppb)->Bestandskonto = "kalkulatorische Restbuchwerte (bitte ignorieren)";
+		pDoc->SetModifiedFlag("Anlagengut wurde aus dem Betriebsvermögen entnommen. Ggf. müssen Veräußerungserlöse oder Entsorgungskosten noch separat gebucht werden.");
+		pDoc->InkrementBuchungszaehler();
+		pDoc->UpdateAllViews(NULL);
+	}
 }
 
 int CEasyCashView::GetFeldindexFromMausposition(LPXNode felder)
