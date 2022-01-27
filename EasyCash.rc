@@ -627,7 +627,7 @@ BEGIN
     LTEXT           "Hinweis: Die Rechnung erstelle ich grundsätzlich elektronisch. Mit dem Steuervereinfachungs- gesetz 2011 werden elektronische Rechnungen bzgl. Vorsteuerabzug inzwischen in Deutschland ",IDC_STATIC,7,216,288,16
     LTEXT           "grundsätzlich anerkannt. Voraussetzung ist die Prüfung durch den Rechnungsempfängers, ob die ""Echtheit der Herkunft der Rechnung"" und ""die Unversehrtheit ihres Inhalts"" gewährleistet ist (§14 ",IDC_STATIC,7,232,288,16
     LTEXT           "UStG). Um die Prüfung zu vereinfachen, wird die Rechnung mit dem frei verfügbaren PGP-Verfahren signiert. Mehr zum Thema PGP findet sich unter www.easyct.de -> Kontakt.",IDC_STATIC,7,248,288,16
-    LTEXT           "PGP-Fingerprint: BC5A D2D4 3C12 CC29 1CFA 6E19 E062 1713 1A95 1431",IDC_STATIC,7,272,239,8
+    LTEXT           "PGP-Fingerprint: D8AE 2CE4 1CB1 D1A6 1087 165B 95DC 1917 252A D305",IDC_STATIC,7,272,239,8
 END
 
 IDD_REGISTER_DIALOG DIALOG  0, 0, 186, 50

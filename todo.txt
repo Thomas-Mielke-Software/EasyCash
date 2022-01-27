@@ -635,6 +635,7 @@ v2.43
 - PLZ, Ort, E-Mail und Telefonnummer waren im USt-2020-Formular nicht an der richtigen Position
 - Felder 1019 und 1016 im österr. U1-Formular
 - Der CSV-Export hat nun eine Titelzeile mit den Spaltennamen.
+- neues Feature: Anlagenverzeichnis
 - neues Feature: Anlagengegenstand aus dem Betriebsvermögen ausscheiden lassen (Knopf in Buchen-Dialog), alternativ
 - Kontextmenü bei rechter Maustaste auf eine AfA-Buchung enthält nun den Punkt "Anlagengut &ausscheiden lassen".
 - Kosmetik: Doppelte MWSt.-Sätze werden aus dem Buchen-Dialog herausgefiltert.

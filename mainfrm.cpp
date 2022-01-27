@@ -650,7 +650,7 @@ void CMainFrame::Add_Category2()
 	CMFCRibbonPanel* pPanel5 = pCategory->AddPanel(_T("Kontakt\nK"));
 
 	pPanel5->Add(new CMFCRibbonLinkCtrl(ID_EINSTELLUNGEN_EMAIL, _T("E-Mail an den Autor"), _T("mailto:thomas@mielke.software?subject=ECT-Kontakt")));
-	pPanel5->Add(new CMFCRibbonLinkCtrl(ID_EINSTELLUNGEN_PGP, _T("PGP-Schlüssel holen"), _T("https://www.easyct.de/BC5AD2D43C12CC291CFA6E19E06217131A951431.php")));
+	pPanel5->Add(new CMFCRibbonLinkCtrl(ID_EINSTELLUNGEN_PGP, _T("PGP-Schlüssel holen"), _T("https://mielke.software/D8AE2CE41CB1D1A61087165B95DC1917252AD305.php")));
 	pPanel5->Add(new CMFCRibbonLinkCtrl(ID_EINSTELLUNGEN_KONTAKT, _T("Kontaktformular"), _T("https://www.easyct.de/contact.php")));
 	
 	CMFCRibbonPanel* pPanel6 = pCategory->AddPanel(_T("Spende via\nS"));
