@@ -921,7 +921,8 @@ BEGIN
     EDITTEXT        IDC_STATUS,7,205,403,36,ES_MULTILINE | ES_AUTOVSCROLL | ES_READONLY | WS_VSCROLL
     DEFPUSHBUTTON   "Download",IDOK,304,246,50,14
     PUSHBUTTON      "Schlieﬂen",IDCANCEL,360,246,50,14
-    PUSHBUTTON      "Nochmaliger manueller Download von nicht richtig installierten Plugins",IDC_MANUELLER_DOWNLOAD,7,246,294,14
+    PUSHBUTTON      "Manuell installieren",IDC_MANUELLER_DOWNLOAD,134,246,80,14
+    PUSHBUTTON      "Reparaturinstallation",IDC_REPARATURINSTALLATION,219,246,80,14
 END
 
 IDD_RECHNER DIALOG  0, 0, 186, 222
@@ -1197,8 +1198,8 @@ END
 //
 
 VS_VERSION_INFO VERSIONINFO
- FILEVERSION 2,43,0,1
- PRODUCTVERSION 2,43,0,1
+ FILEVERSION 2,44,0,1
+ PRODUCTVERSION 2,44,0,1
  FILEFLAGSMASK 0x3fL
 #ifdef _DEBUG
  FILEFLAGS 0x1L
@@ -1215,12 +1216,12 @@ BEGIN
         BEGIN
             VALUE "CompanyName", "Thomas Mielke Softwareentwicklung"
             VALUE "FileDescription", "EASYCASH_AND_TAX MFC Application"
-            VALUE "FileVersion", "2, 43, 0, 1"
+            VALUE "FileVersion", "2, 44, 0, 1"
             VALUE "InternalName", "EASYCASH_AND_TAX"
             VALUE "LegalCopyright", "© 1998-2022 Thomas Mielke Softwareentwicklung"
             VALUE "OriginalFilename", "EASYCT.EXE"
             VALUE "ProductName", "EASYCASH_AND_TAX Application"
-            VALUE "ProductVersion", "2, 43, 0, 1"
+            VALUE "ProductVersion", "2, 44, 0, 1"
         END
     END
     BLOCK "VarFileInfo"

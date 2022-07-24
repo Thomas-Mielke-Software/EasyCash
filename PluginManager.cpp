@@ -55,6 +55,9 @@ void CPluginManager::DoDataExchange(CDataExchange* pDX)
 	DDX_Text(pDX, IDC_STATUS, m_status);
 	//}}AFX_DATA_MAP
 	DDX_Control(pDX, IDC_MANUELLER_DOWNLOAD, m_btnManuellerDownload);
+	DDX_Control(pDX, IDC_REPARATURINSTALLATION, m_ButtonReparaturinstallation);
+	DDX_Control(pDX, IDOK, m_ButtonDownload);
+	DDX_Control(pDX, IDCANCEL, m_ButtonSchliessen);
 }
 
 
@@ -74,15 +77,39 @@ BEGIN_MESSAGE_MAP(CPluginManager, CDialog)
 		//WM_THEMECHANGED = 0x031A (WM_THEMECHANGED may not be avalible)
 		ON_MESSAGE(0x031A, OnThemeChanged)	
 	#endif
+		ON_BN_CLICKED(IDC_REPARATURINSTALLATION, &CPluginManager::OnBnClickedReparaturinstallation)
 END_MESSAGE_MAP()
 
 /////////////////////////////////////////////////////////////////////////////
 // CPluginManager message handlers
 
+BOOL CPluginManager::PreTranslateMessage(MSG* pMsg)
+{
+     m_ToolTip.RelayEvent(pMsg);
+
+	return CDialog::PreTranslateMessage(pMsg);
+}
+
 BOOL CPluginManager::OnInitDialog() 
 {
 	CDialog::OnInitDialog();
-	
+
+	EnableToolTips();
+
+	//Create the ToolTip control
+	if( !m_ToolTip.Create(this))
+	{
+		 TRACE0("Unable to create the ToolTip!");
+	}
+	else
+	{
+		m_ToolTip.AddTool( &m_ButtonReparaturinstallation, _T("forciert das nochmalige Herunterladen und Installieren der angewählen Module, falls es zuvor bei der Installation Probleme gab oder man andere Formulare installieren möchte"));
+		m_ToolTip.AddTool( &m_ButtonDownload, _T("nur neu angewählte Plugins herunterladen -- und solche, für die es Updates gibt"));
+		m_ToolTip.AddTool( &m_ButtonSchliessen, _T("Dialogfenster schließen, ohne etwas zu tun"));
+
+		m_ToolTip.Activate(TRUE);
+	}  
+
 	ListView_SetExtendedListViewStyleEx(m_liste.m_hWnd, LVS_EX_FULLROWSELECT, LVS_EX_FULLROWSELECT);
 	ListView_SetExtendedListViewStyleEx(m_liste.m_hWnd, LVS_EX_SUBITEMIMAGES , LVS_EX_SUBITEMIMAGES );
 	//ListView_SetExtendedListViewStyleEx(m_liste.m_hWnd, LVS_EX_TRACKSELECT, LVS_EX_TRACKSELECT );
@@ -350,6 +377,16 @@ nicht erreichbar.");
 
 void CPluginManager::OnOK() 
 {
+	Download(FALSE);
+}
+
+void CPluginManager::OnBnClickedReparaturinstallation()
+{
+	Download(TRUE);
+}
+
+void CPluginManager::Download(BOOL bForce)
+{
 	/* alte Updater-Methode mit batch file -- damit auch unter Wine lauffähig: eigene exe statt cmd benutzen!
 	CTime now = CTime::GetCurrentTime();
 	CString csNow = now.Format("\\install%Y%m%d%H%M%S.bat");
@@ -405,7 +442,7 @@ void CPluginManager::OnOK()
 	int i;
 	for (i = m_update.GetNumberAvailable()-1; i >= 0 ; i--)	// Hauptprogramm ggf. als letztes starten
 	{       
-		if (m_update.GetAvailableActionAt(i) != "kein Update nötig" && m_csaCheckedAktuell[i] == "1")
+		if ((m_update.GetAvailableActionAt(i) != "kein Update nötig" || bForce) && m_csaCheckedAktuell[i] == "1")
 		{
 			if (m_update.DownloadAvailable(i))
 			{
