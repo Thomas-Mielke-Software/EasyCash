@@ -632,18 +632,20 @@ v2.42
 - Navigation im Journal nach Datum funktioniert jetzt besser mit Filtern und wenn ein Monat angeklickt wird, für den es keine Buchungen gibt
 
 v2.43
-- PLZ, Ort, E-Mail und Telefonnummer waren im USt-2020-Formular nicht an der richtigen Position
-- Felder 1019 und 1016 im österr. U1-Formular
+- Felder 019 (Grundstücksumsätze) und 016 (Kleinunternehmer) im österr. U1-Formular wurden in Feld 020 nicht korrekt mitsummiert
 - Der CSV-Export hat nun eine Titelzeile mit den Spaltennamen.
-- neues Feature: Anlagenverzeichnis
+- neues Feature: integriertes Anlagenverzeichnis (zu finden im Journal-Menü)
 - neues Feature: Anlagengegenstand aus dem Betriebsvermögen ausscheiden lassen (Knopf in Buchen-Dialog), alternativ
-- Kontextmenü bei rechter Maustaste auf eine AfA-Buchung enthält nun den Punkt "Anlagengut &ausscheiden lassen".
+- Kontextmenü bei rechter Maustaste auf eine AfA-Buchung enthält nun den Punkt "Anlagengut ausscheiden lassen".
 - Kosmetik: Doppelte MWSt.-Sätze werden aus dem Buchen-Dialog herausgefiltert.
 - Bei im Filter angewähltem Quartal 2 bis 4 wurde es unten rechts in der Statusleiste nicht korrekt mitgeführt. (Die Summen waren aber richtig.)
 - Bei mehr als einem geöffneten Dokument wird bei Benachrichtigungen am oberen Fensterrand jetzt der Dokumentname mit angezeigt
-- Erklärende Meldung beim Versuch beim Buchen eine Konten-Unterkategorie auszuwählen.
+- Erklärende Meldung beim Versuch beim Buchen eine Konten-Unterkategorie statt eines tatsächlichen Kontos auszuwählen.
 - Vorsteuer, bei Bewirtungen etwa, wird jetzt in der Freestyle-EÜR auch einbezogen, wenn sie auf "/"-Konten gebucht werden.
 - bessere Unterstützung von Querformatdruck bei der Freestyle-EÜR 
+
+
+!!! "Dialogfenster konnte nicht erzeugt werden"-Meldung abfangen und ggf. Installation reparieren.
 
 !!!!!!!
 > Betreffend des Jahresabschlußes 2020 habe ich Post vom Finanzamt erhalten.
