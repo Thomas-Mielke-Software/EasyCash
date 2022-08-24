@@ -708,7 +708,11 @@ void BuchenDlg::OnOK()
 				m_pDoc->SortSingle(&m_pDoc->Einnahmen, p);
 		}
 
-		InitDlg();
+
+		if (m_ppb || m_bKopieren)
+			CDialog::OnOK();	// bei Ändern: Dialog schließen
+		else
+			InitDlg();			// sonst nächste Buchung
 
 		if (m_pParent->einstellungen1->m_taeglich_buchen)
 			GetDlgItem(IDC_BETRAG)->SetFocus();
@@ -718,9 +722,6 @@ void BuchenDlg::OnOK()
 			((CEdit *)GetDlgItem(IDC_DATUM_TAG))->SetSel(0, -1, FALSE);
 		}
 	}
-
-	if (m_ppb || m_bKopieren)
-		CDialog::OnOK();
 
 	if (m_pParent) 
 	{

@@ -27,6 +27,7 @@
 #include "QuickList.h"
 #include "WebUpdate.h"
 #include "afxlinkctrl.h"
+#include "afxwin.h"
 
 /////////////////////////////////////////////////////////////////////////////
 // CPluginManager dialog
@@ -70,6 +71,7 @@ protected:
 	CTheme m_themeManager;
 #endif
 
+	void Download(BOOL bForce);
 	void UpdateList();
 	void Statusmeldung(CString &text);
 	void Check();
@@ -84,7 +86,13 @@ protected:
 	//}}AFX_MSG
 	DECLARE_MESSAGE_MAP()
 public:
+	afx_msg void OnBnClickedReparaturinstallation();
+	CToolTipCtrl m_ToolTip;
+	virtual BOOL PreTranslateMessage(MSG* pMsg);
 	CMFCLinkCtrl m_btnManuellerDownload;
+	CButton m_ButtonReparaturinstallation;
+	CButton m_ButtonDownload;
+	CButton m_ButtonSchliessen;
 };
 
 //{{AFX_INSERT_LOCATION}}

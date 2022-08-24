@@ -360,6 +360,7 @@
 #define IDC_MANUELLER_DOWNLOAD          1156
 #define IDC_ABGANG_BUCHEN               1156
 #define IDC_Q2                          1157
+#define IDC_MANUELLER_DOWNLOAD2         1157
 #define IDC_M4                          1158
 #define IDC_STATIC_INFO                 1158
 #define IDC_M5                          1159
@@ -385,6 +386,7 @@
 #define IDC_EURECHNUNGSPOSTEN_STATIC    1168
 #define IDC_VORAUSZAHLUNG               1169
 #define IDC_MWST_STATIC                 1169
+#define IDC_REPARATURINSTALLATION       1170
 #define IDC_BUCHUNGSLISTE_BESTANDSKONTEN 1500
 #define ID_VIEW_JOURNAL_MONATE_ALLE     2802
 #define ID_VIEW_JOURNAL_MONATE_JANUAR   2803
@@ -529,7 +531,7 @@
 #define _APS_3D_CONTROLS                     1
 #define _APS_NEXT_RESOURCE_VALUE        437
 #define _APS_NEXT_COMMAND_VALUE         32916
-#define _APS_NEXT_CONTROL_VALUE         1170
+#define _APS_NEXT_CONTROL_VALUE         1171
 #define _APS_NEXT_SYMED_VALUE           110
 #endif
 #endif
