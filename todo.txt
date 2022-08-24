@@ -644,6 +644,12 @@ v2.43
 - Vorsteuer, bei Bewirtungen etwa, wird jetzt in der Freestyle-EÜR auch einbezogen, wenn sie auf "/"-Konten gebucht werden.
 - bessere Unterstützung von Querformatdruck bei der Freestyle-EÜR 
 
+<<<<<<< HEAD
+=======
+v2.44
+- Bugfix: Crash beim Ändern des Buchungsdatums
+- Reparaturinstallations-Option im PluginManager
+>>>>>>> b12ef9ca72b53569321b54b87fe653da3b9d117a
 
 !!! "Dialogfenster konnte nicht erzeugt werden"-Meldung abfangen und ggf. Installation reparieren.
 
