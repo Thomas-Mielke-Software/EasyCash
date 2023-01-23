@@ -651,6 +651,9 @@ v2.44
 - Reparaturinstallations-Option im PluginManager
 >>>>>>> b12ef9ca72b53569321b54b87fe653da3b9d117a
 
+v2.45
+- bei mehreren Betrieben wird jetzt die Betriebssteuernummer auch in der Freestyle-EÜR angezeigt
+
 !!! "Dialogfenster konnte nicht erzeugt werden"-Meldung abfangen und ggf. Installation reparieren.
 
 !!!!!!!

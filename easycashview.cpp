@@ -4052,7 +4052,45 @@ void CEasyCashView::DrawEURechungToDC(CDC* pDC, DrawInfo *pDrawInfo)
 		Text(pDrawInfo, 13, 11,einstellungen2->m_ort.GetBuffer(0));
 		
 		Text(pDrawInfo, 60, 6, "Steuernummer");
-		Text(pDrawInfo, 60, 7, einstellungen3->m_steuernummer.GetBuffer(0));
+		CString csSteuernummer;
+		if (m_BetriebFilterPrinter != "")
+		{
+			char inifile[1000], betriebe[1000]; 
+			GetIniFileName(inifile, sizeof(inifile)); 
+			CString csKey;
+			int iBetriebe;
+			for (iBetriebe = 0; iBetriebe < 100; iBetriebe++)
+			{
+				csKey.Format("Betrieb%02dName", iBetriebe);
+				GetPrivateProfileString("Betriebe", csKey, "", betriebe, sizeof(betriebe), inifile);
+				if (!*betriebe) 
+				{ 
+					csSteuernummer = ""; 
+					break; 
+				}
+				else if (!strcmp(betriebe, m_BetriebFilterPrinter)) 
+				{
+					csKey.Format("Betrieb%02dUnternehmensart", iBetriebe);
+					GetPrivateProfileString("Betriebe", csKey, "", betriebe, sizeof(betriebe), inifile);
+					char *cp = strchr(betriebe, '\t');	// Unternehmensart1, Unternehmensart2 (Rechtsform) und Steuernummer sind durch Tabs getrennt
+					if (cp) cp = strchr(cp+1, '\t');
+					if (!cp || cp[1] == '\0' || cp[1] == '\t')
+					{
+						csSteuernummer = ""; 
+					}
+					else
+					{
+						csSteuernummer = ++cp;
+					}
+					break;
+				}
+			}
+			if (csSteuernummer == "")  // keine Betriebssteuernummer gefunden? dann Hauptsteuernummer benutzen
+				csSteuernummer = einstellungen3->m_steuernummer.GetBuffer(0);
+		}
+		else
+			einstellungen3->m_steuernummer.GetBuffer(0);
+		Text(pDrawInfo, 60, 7, csSteuernummer.GetBuffer(0));
 	}
 
 	int line = 0;
