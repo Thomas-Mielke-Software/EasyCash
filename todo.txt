@@ -652,7 +652,8 @@ v2.44
 >>>>>>> b12ef9ca72b53569321b54b87fe653da3b9d117a
 
 v2.45
-- bei mehreren Betrieben wird jetzt die Betriebssteuernummer auch in der Freestyle-EÜR angezeigt
+- bei mehreren Betrieben wird jetzt die Betriebssteuernummer auch in der Freestyle-EÜR angezeigt/ausgedruckt
+- bei der Bestätigung "Buchung wirklich löschen" wird jetzt der Buchungstext angezeigt, damit sicher ist, dass auch die richtige Buchung gelöscht wird
 
 !!! "Dialogfenster konnte nicht erzeugt werden"-Meldung abfangen und ggf. Installation reparieren.
 
@@ -838,21 +839,6 @@ erhöht.
 statt fließender Schriftgrößen im Buchungstext besser ein- und 
 zweizeilig (halbe Schriftgröße) anbieten, ist übersichtlicher.
 
-#######46
-> Das Finanzamt forderte von mir die Umsatzsteuererkärung für 2002 an.habe dann mit ihrem Steuerprogramm dann den Ausdruck gemacht,leider war 
-> dies lediglich ein formloser Ausdruck,dadurch hatte das Finanzamt diese Erklärung nicht anerkannt.Ich muß die Erklärung auf ein Formblatt vom 
-> Finanzamt durchführen.Warum ist dies nicht möglich mit ihren Steuerprogramm.
-Aber ich könnte den Hinweis mitdrucken, dass die Zahlen in das Originalformular umgetragen werden müssen.
-
-########47
-Hilfreich ware es aber , wenn eine Suchfunktion vorhanden waere, die es
-ermoeglicht bestimmte Buchungen aufzufinden, die z.B. einen bestimmte String
-(wie z.B. den Namen) im Buchungstitel enthalten. Ich koennte mir vorstellen,
-dass das am einfachsten ueber eine entsprechende Filterfunktion zu realisieren
-waere, die dann ja auch vielleicht eine Grundlage fuer statistische
-Feststellungen aller Art boete (z.B. alle Buchungen, die an eine bestimmte Firma
-gehen usw.).
-
 ##########48
 man könnte in den Buchungs-Presets auch auch Privat-Split (def. 0%)
 miterfassen, um z.B. die für HomeOffice anfallenden Kosten sofort auch
@@ -862,18 +848,9 @@ splitten zu lassen.
 Pte.
 ###5  Beim Ausdrucken des Konten-Journals Wiederholung des Kopfes nach
    Seitenwechsel
-###5  Eine eigene Spalte für die Belegnummer reservieren
 ###7  Reisekostenmodul
 ###6  Auto-complete bei Buchungs-Beschreibung
 ###5  editierbare Kopf-/Fußzeile für die Ausdrucke
-
-########50
-> die Anzahl der MwSt.-Sätze sollte erhöht werden. Die drei Vorhandenen reichen nicht aus, wenn ich Einkäufe innerhalb der EU 
-> tätige. Da muß ich die Umsatzsteuer-Sätze des entsprechenden Landes bezahlen und buchen. (Umsatzsteuer-Voranmeldung Zeile 
-> 39)
-> Können Sie hier Abhilfe schaffen? Bitte informieren Sie mich!
-Hallo!
-Das sollte nicht so der große Aufwand sein. Ich habe es auf die ToDo-Liste gesetzt.
 
 
 ###########
@@ -917,17 +894,9 @@ eine Anzeige-Option gut - ähnlich wie beim Drucken, wo man den Zeitraum
 auswählen kann; außerdem wäre es schön, die Listenanzeige entweder von alt nach
 neu oder von neu nach alt sortieren bzw. anzeigen zu lassen.
 
-#####
-> Als Negativpunkt empfinde ich die Betragseingabe. Ich arbeite mit der Währung " Sfr" und finde es schade, dass ich die Nachkommaeingabe mittels 
-> Komma und nicht Punkttaste machen kann.
-Ich werde die entspr. Zeichen mal aus dem Betriebssystem beziehen, um die länderspezifischen Zeichen zu benutzen.
-
 _______________________________
 Menüsystem und Hauptfenster
 ###- Beenden - bitte das "e" unterstreichen,
-#- in der Box "Buchung wirklich löschen" könnte der Text wiederholt
-#  werden, damit man sicher ist, daß auch die richtige Buchung
-#  gelöscht wird
 #- die Buchungsliste kann man nicht mit den Pfeiltasten rollen. In
 #  der Liste könnte mit dem Pfeiltasten ein Balken zu verschieben
 #  sein, dann Ändern/Löschen durch Funktionstasten bzw. "del"

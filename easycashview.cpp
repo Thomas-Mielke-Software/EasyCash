@@ -6334,7 +6334,9 @@ BOOL CEasyCashView::OnCommand(WPARAM wParam, LPARAM lParam)
 					int nDoIt;
 					nSelected = index;
 					RedrawSelection();	// selektieren
-					nDoIt = AfxMessageBox("Buchung wirklich löschen?", MB_YESNO|MB_DEFBUTTON2);
+					CString csText;
+					csText.Format("Buchung '%s' wirklich löschen?", (LPCTSTR)(*ppb)->Beschreibung);
+					nDoIt = AfxMessageBox(csText, MB_YESNO|MB_DEFBUTTON2);
 					nSelected = -nSelected;	// deselektieren
 					RedrawSelection();
 
