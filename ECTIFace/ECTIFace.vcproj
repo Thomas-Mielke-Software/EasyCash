@@ -362,6 +362,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\Startoptionen.cpp"
+				>
+			</File>
+			<File
 				RelativePath="StdAfx.cpp"
 				>
 				<FileConfiguration
@@ -434,6 +438,10 @@
 			</File>
 			<File
 				RelativePath="resource.h"
+				>
+			</File>
+			<File
+				RelativePath=".\Startoptionen.h"
 				>
 			</File>
 			<File

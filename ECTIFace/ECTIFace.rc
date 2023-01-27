@@ -68,14 +68,14 @@ STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
 CAPTION "Buchungsjahr wählen"
 FONT 8, "MS Sans Serif", 0, 0, 0x0
 BEGIN
-    LTEXT           "Für welches Jahr sollen die Buchungen erfolgen?\r\n(Bitte das Jahr vierstellig angeben: z.B. 2014)",IDC_STATIC,7,101,163,19
+    LTEXT           "Für welches Jahr sollen die Buchungen erfolgen?\r\n(Bitte das Jahr vierstellig angeben: z.B. 2022)",IDC_STATIC,7,101,163,19
     EDITTEXT        IDC_JAHR,175,101,27,12,ES_AUTOHSCROLL
     LTEXT           "Währungskürzel (z.B. EUR, SFR)",IDC_STATIC,9,122,158,8
     EDITTEXT        IDC_WAEHRUNG,175,122,27,12,ES_AUTOHSCROLL
     DEFPUSHBUTTON   "OK",IDOK,95,139,50,14
     PUSHBUTTON      "Abbrechen",IDCANCEL,152,139,50,14
     LTEXT           "Hinweis: Wenn bereits eine Jahres-Buchungsdatei (JahrXXXX.eca) für das vorausgehende Jahr existiert, ist es empfehlenswert 'Jahreswechsel' im Applikationsmenü (links oben) zu nutzen, weil dann AfAs und Dauerbuchungen ins neue Jahr übernommen werden.",IDC_STATIC,7,7,195,48
-    LTEXT           "Dazu muss zunächst die bestehende Buchungsdatei geöffnet werden. Wählen Sie dafür jetzt einfach Abbrechen und dann im Applikationsmenü die existierende Buchungsdatei in der Liste der zuletzt geöffneten Dateien oder gehen Sie über 'Datei öffnen'.",IDC_STATIC,7,55,195,42
+    LTEXT           "Dazu muss zunächst die bestehende Buchungsdatei geöffnet werden. Wählen Sie dafür jetzt einfach Abbrechen und dann im Applikationsmenü die existierende Buchungsdatei in der Liste der zuletzt geöffneten Dateien oder gehen Sie über 'Öffnen'.",IDC_STATIC,7,55,195,42
 END
 
 IDD_KONVERTIERUNG DIALOG  0, 0, 313, 213
@@ -132,9 +132,6 @@ BEGIN
     PUSHBUTTON      "Abbrechen",IDCANCEL,259,161,50,14
     LTEXT           "Nachfrageintervall:",IDC_STATIC,7,156,66,8
     LTEXT           "wöchentlich",IDC_INTERVALL,75,156,149,19
-    PUSHBUTTON      "jetzt keine Datensicherung machen (Termin überspringen)",IDC_KEINE2,7,7,302,25
-    PUSHBUTTON      "Datensicherung auf der internen Festplatte",IDC_INTERN2,7,37,302,25
-    PUSHBUTTON      "Datensicherung auf externem Laufwerk oder USB-Stick",IDC_EXTERN2,7,67,302,25
     PUSHBUTTON      "Datensicherung auf CD-r oder DVD-r machen",IDC_DISK2,7,97,302,25
     PUSHBUTTON      "Nachfrage-Wartezeit ändern",IDC_ZEIT2,7,127,302,25
     CONTROL         "jetzt keine Datensicherung machen (Termin überspringen)",IDC_KEINE,
@@ -146,6 +143,31 @@ BEGIN
     CONTROL         "Datensicherung auf CD-r oder DVD-r machen",IDC_DISK,
                     "Button",BS_COMMANDLINK | WS_TABSTOP,7,97,302,25
     CONTROL         "Nachfrage-Wartezeit ändern",IDC_ZEIT,"Button",BS_COMMANDLINK | WS_TABSTOP,7,127,302,25
+    PUSHBUTTON      "jetzt keine Datensicherung machen (Termin überspringen)",IDC_KEINE2,7,7,302,25
+    PUSHBUTTON      "Datensicherung auf der internen Festplatte",IDC_INTERN2,7,37,302,25
+    PUSHBUTTON      "Datensicherung auf externem Laufwerk oder USB-Stick",IDC_EXTERN2,7,67,302,25
+END
+
+IDD_STARTOPTIONEN DIALOGEX 0, 0, 430, 199
+STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Startoptionen"
+FONT 8, "MS Shell Dlg", 400, 0, 0x1
+BEGIN
+    CONTROL         "Datei mit 'Datei Öffnen'-Dialog suchen (z.B. bei Änderung des Dateinamens)",IDC_OEFFNEN,
+                    "Button",BS_COMMANDLINK | WS_TABSTOP,7,19,415,25
+    CONTROL         "Datenverzeichnis neu wählen (z.B. wenn das Datenverzeichnis verschoben wurde)",IDC_DATENVERZEICHNIS,
+                    "Button",BS_COMMANDLINK | WS_TABSTOP,7,51,416,25
+    CONTROL         "mit leerer Buchungsdatei neu starten",IDC_LEER,"Button",BS_COMMANDLINK | WS_TABSTOP,7,79,416,25
+    CONTROL         "Programm ohne Buchungsdatei starten (z.B. für Mandantenfunktion)",IDC_OHNE,
+                    "Button",BS_COMMANDLINK | WS_TABSTOP,7,110,415,25
+    CONTROL         "Programm schließen",IDC_EXIT,"Button",BS_COMMANDLINK | WS_TABSTOP,7,143,415,25
+    PUSHBUTTON      "Datei mit 'Datei Öffnen'-Dialog suchen (z.B. bei Änderung des Dateinamens)",IDC_OEFFNEN2,7,19,415,25
+    PUSHBUTTON      "Datenverzeichnis neu wählen (z.B. wenn das Datenverzeichnis verschoben wurde)",IDC_DATENVERZEICHNIS2,7,50,415,25
+    PUSHBUTTON      "mit leerer Buchungsdatei neu starten",IDC_LEER2,7,81,415,25
+    PUSHBUTTON      "Programm ohne Buchungsdatei starten (z.B. für Mandantenfunktion)",IDC_OHNE2,7,112,415,25
+    PUSHBUTTON      "Programm schließen",IDC_EXIT2,7,143,415,25
+    LTEXT           "Hinweis: Die ersten drei Optionen stehen auch über das Applikationsmenü (der runde Knopf links oben) zur Verfügung.\r\n              Die aktuelle Buchungsdatei lässt sich mit dem kleineren der beiden 'X'-Knöpfe rechts oben schließen.",IDC_STATIC,7,174,415,18
+    LTEXT           "Konnte die zuletzt benutzte Buchungsdatei beim Start nicht automatisch öffnen. Bitte wählen Sie aus folgenden Optionen:",IDC_STATIC,7,7,415,10
 END
 
 
@@ -187,6 +209,14 @@ BEGIN
         RIGHTMARGIN, 309
         TOPMARGIN, 7
         BOTTOMMARGIN, 175
+    END
+
+    IDD_STARTOPTIONEN, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 422
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 192
     END
 END
 #endif    // APSTUDIO_INVOKED

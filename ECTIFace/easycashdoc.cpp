@@ -23,6 +23,7 @@
 
 #include "resource.h"
 #include "Datensicherungsoptionen.h"
+#include "Startoptionen.h"
 #define EXPORT_ECT_DLL
 #include "EasyCashDoc.h"
 #include "BuchungsjahrWaehlen.h"
@@ -687,7 +688,31 @@ habe ich besser eigene Menüpunkte für gemacht...
 	}
 */
 	if (!CDocument::OnOpenDocument(lpszDatenverzeichnis))
-		return FALSE;
+	{
+		int nRet;
+		CStartoptionen dlg;
+		nRet = dlg.DoModal();
+
+		switch (nRet)
+		{
+			case 0: 
+				PostMessage(AfxGetMainWnd()->m_hWnd, WM_COMMAND, ID_FILE_OPEN, 0L);
+				return FALSE;
+			case 1: 
+				PostMessage(AfxGetMainWnd()->m_hWnd, WM_COMMAND, ID_FILE_WAEHLE_DATENVERZEICHNIS, 0L);
+				return FALSE;
+			case 2: 
+				PostMessage(AfxGetMainWnd()->m_hWnd, WM_COMMAND, ID_FILE_NEW, 0L);
+				return FALSE;
+			case 3:
+			default:
+				// tu nichts
+				return FALSE;
+			case 4:
+				PostMessage(AfxGetMainWnd()->m_hWnd, WM_COMMAND, ID_APP_EXIT, 0L);
+				return FALSE;
+		}
+	}
 
 	if (Version == -1) return FALSE;
 

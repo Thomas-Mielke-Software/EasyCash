@@ -2,36 +2,23 @@
 // Microsoft Visual C++ generated include file.
 // Used by ECTIFace.rc
 //
-// Diese Datei ist Bestandteil von EasyCash&Tax, der freien EÜR-Fibu
-//
-// Copyleft (GPLv3) 2020  Thomas Mielke
-// 
-// Dies ist freie Software; Sie dürfen sie unter den Bedingungen der 
-// GNU General Public License, wie von der Free Software Foundation 
-// veröffentlicht, weiterverteilen und/oder modifizieren; entweder gemäß 
-// Version 3 der Lizenz oder (nach Ihrer Option) jeder späteren Version.
-//
-// Diese Software wird in der Hoffnung weiterverbreitet, dass sie nützlich 
-// sein wird, jedoch OHNE IRGENDEINE GARANTIE, auch ohne die implizierte 
-// Garantie der MARKTREIFE oder der VERWENDBARKEIT FÜR EINEN BESTIMMTEN ZWECK.
-// Mehr Details finden Sie in der GNU Lesser General Public License.
-//
-// Sie sollten eine Kopie der GNU General Public License Version 3 zusammen mit 
-// dieser Software erhalten haben; falls nicht, schreiben Sie an die Free 
-// Software Foundation, Inc., 51 Franklin St, 5th Floor, Boston, MA 02110, USA.
-//
 #define IDD_DATENSICHERUNGSOPTIONEN     435
+#define IDD_STARTOPTIONEN               437
 #define IDD_BUCHUNGSJAHR_WAEHLEN        700
 #define IDD_KONVERTIERUNG               701
 #define IDD_AFA_GENAUIGKEIT             702
 #define IDC_TEXT1                       1000
 #define IDC_INTERVALL                   1001
 #define IDC_KEINE2                      1002
+#define IDC_OEFFNEN2                    1002
 #define IDC_INTERN2                     1003
 #define IDC_EXTERN2                     1004
+#define IDC_DATENVERZEICHNIS            1004
 #define IDC_DISK2                       1005
 #define IDC_BUTTON5                     1006
 #define IDC_ZEIT2                       1006
+#define IDC_OHNE2                       1018
+#define IDC_EXIT2                       1019
 #define IDC_JAHR                        1053
 #define IDC_WAEHRUNG                    1054
 #define IDC_WAEHRUNG_AUSWAHL            1059
@@ -53,13 +40,20 @@
 #define IDC_AFA2                        1089
 #define IDC_AFA3                        1090
 #define IDC_KEINE                       1157
+#define IDC_OEFFNEN                     1157
 #define IDC_INTERN                      1158
+#define IDC_DATENVERZEICHNIS2           1158
 #define IDC_EXTERN                      1159
+#define IDC_LEER                        1159
 #define IDC_DISK                        1160
+#define IDC_OHNE                        1160
 #define IDC_ZEIT                        1161
+#define IDC_EXIT                        1161
+#define IDC_LEER2                       1171
 #define ID_FILE_BACKUP                  32833
 #define ID_FILE_BACKUP_EXTERNAL         32883
 #define ID_FILE_BACKUP_SUBFOLDER        32884
+#define ID_FILE_WAEHLE_DATENVERZEICHNIS 32829
 
 // Next default values for new objects
 // 

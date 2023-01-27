@@ -360,7 +360,6 @@
 #define IDC_MANUELLER_DOWNLOAD          1156
 #define IDC_ABGANG_BUCHEN               1156
 #define IDC_Q2                          1157
-#define IDC_MANUELLER_DOWNLOAD2         1157
 #define IDC_M4                          1158
 #define IDC_STATIC_INFO                 1158
 #define IDC_M5                          1159
@@ -529,9 +528,9 @@
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_3D_CONTROLS                     1
-#define _APS_NEXT_RESOURCE_VALUE        437
+#define _APS_NEXT_RESOURCE_VALUE        438
 #define _APS_NEXT_COMMAND_VALUE         32916
-#define _APS_NEXT_CONTROL_VALUE         1171
+#define _APS_NEXT_CONTROL_VALUE         1172
 #define _APS_NEXT_SYMED_VALUE           110
 #endif
 #endif

@@ -487,14 +487,15 @@ BOOL CEasyCashApp::InitInstance()
 	// Dispatch commands specified on the command line
 	if (!ProcessShellCommand(cmdInfo))
 	{
-		if (AfxMessageBox("Soll EasyCash mit einem leeren Dokument gestartet werden?",
+		/*if (AfxMessageBox("Soll EasyCash mit einem leeren Dokument gestartet werden?",
 			MB_ICONQUESTION|MB_YESNO) == IDYES)
 		{
 			cmdInfo.m_nShellCommand = CCommandLineInfo::FileNew;
 			ProcessShellCommand(cmdInfo);
 		}
 		else
-			return FALSE;
+			return FALSE;*/
+		return TRUE;
 	}
 
 	// Registrierungs-Kram
