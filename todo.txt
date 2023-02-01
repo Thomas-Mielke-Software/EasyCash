@@ -652,6 +652,7 @@ v2.44
 >>>>>>> b12ef9ca72b53569321b54b87fe653da3b9d117a
 
 v2.45
+- verbesserte Benutzerführung: Wenn die zuletzt geöffnete Buchungsdatei nicht mehr gefunden wird, gibt es jetzt ein schönes Startoptionen-Menü.
 - bei mehreren Betrieben wird jetzt die Betriebssteuernummer auch in der Freestyle-EÜR angezeigt/ausgedruckt
 - bei der Bestätigung "Buchung wirklich löschen" wird jetzt der Buchungstext angezeigt, damit sicher ist, dass auch die richtige Buchung gelöscht wird
 
