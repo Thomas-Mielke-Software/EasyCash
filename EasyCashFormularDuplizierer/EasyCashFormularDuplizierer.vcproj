@@ -78,7 +78,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				OutputFile="..\EasyCash\Debug/EasyCashFormularDuplizierer.exe"
+				OutputFile=".\Debug/EasyCashFormularDuplizierer.exe"
 				LinkIncremental="2"
 				SuppressStartupBanner="true"
 				GenerateDebugInformation="true"
@@ -173,7 +173,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				OutputFile="..\EasyCash\Release\EasyCashFormularDuplizierer.exe"
+				OutputFile="..\Release\EasyCashFormularDuplizierer.exe"
 				LinkIncremental="1"
 				SuppressStartupBanner="true"
 				ProgramDatabaseFile=".\Release/EasyCashFormularDuplizierer.pdb"

@@ -274,6 +274,20 @@ void CEasyCashFormularDupliziererDlg::OnOK()
 			}
 		}
 		
+		// Dauerfristverlängerung-Feld einbauen im Dezember/4. Quartal --- das gleiche für formatiertes XML und Leerzeichen statt Tabs und nur \n als Zeilentrenner
+		if (i == 12 || i == 16)
+		{
+			char *suchdauerfrist = "<name>Anrechnung (Abzug) der festgesetzten Sondervorauszahlung für Dauerfristverlängerung -- für Dezember/4.Quartal bitte in Erweiterung eintragen: [Dauerfristverlängerung]Sondervorauszahlung$J</name>\n      <erweiterung/>";
+			char *ersetzdauerfrist = "<name>Anrechnung (Abzug) der festgesetzten Sondervorauszahlung für Dauerfristverlängerung</name>\n      <erweiterung>[Dauerfristverlängerung]Sondervorauszahlung$J</erweiterung>";
+			if (kopie.Find(suchdauerfrist) >= 0)
+			{
+				kopie.Replace(suchdauerfrist, ersetzdauerfrist);
+				CString Zeitraum = (i == 12 ? "Dezember" : "4. Quartal");
+				AfxMessageBox("Dauerfristfeld für " + Zeitraum + " ersetzt");
+				nDauerfristErsetzt++;
+			}
+		}
+
 		GetDlgItemText(IDC_DATEI, s);
 		if (i <= 12)
 			replace.Format("-%-02.2d.ecf", i);

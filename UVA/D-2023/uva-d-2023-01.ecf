@@ -185,7 +185,7 @@
       <name>Übertrag</name>
       <erweiterung>1081+1086+36+80+1189+1193+98+96+47+74+85</erweiterung>
     </feld>
-    <feld id="2001" typ="Einstellungsdaten" seite="2" horizontal="195" vertikal="47" ausrichtung="linksbuendig" anteil="netto" nachkommaanteil="ohne" >
+    <feld id="2001" typ="Einstellungsdaten" seite="2" horizontal="195" vertikal="32" ausrichtung="linksbuendig" anteil="netto" nachkommaanteil="ohne" >
       <name>Steuernummer nochmal</name>
       <erweiterung>fsteuernummer</erweiterung>
     </feld>
