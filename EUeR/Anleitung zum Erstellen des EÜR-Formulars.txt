@@ -1,4 +1,5 @@
-1. nach "bundesfinanzministerium muster eür" googeln!!!
+1. nach "bundesfinanzministerium muster eür" oder besser
+        "Standardisierte Einnahmenüberschussrechnung nach § 60 Absatz 4 EStDV; Anlage EÜR 202X" googeln!!!
 2. LLL Auflösung auf 1920x1200 Pixel stellen
 3. Sumatra: F11 Vollansicht, dann STRG-Shift-'-' zum Drehen, STRG-3 für richtigen Zoomlevel, PgDown für nächste Seite (wichtig!), dann Druck-Taste
 5a. In Gimp neue Datei mit breite 1920 und höhe 1080, CTRL-V zum Einfügen, CTRL-H zum Verankern der Ebene -- Windows Paint aber zum Zuschneiden besser geeignet! 
