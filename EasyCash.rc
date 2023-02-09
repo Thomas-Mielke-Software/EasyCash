@@ -1191,6 +1191,24 @@ BEGIN
     LTEXT           "für das Jahr geleistete Sondervorauszahlung",IDC_STATIC,87,259,147,8
 END
 
+IDD_FORMULARABSCHNITT DIALOGEX 0, 0, 130, 102
+STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION
+CAPTION "Neuer Formularabschnitt"
+FONT 8, "MS Sans Serif", 0, 0, 0x0
+BEGIN
+    LTEXT           "Name (wie er im Navigationsbereich erscheinen soll)",-1,7,7,116,18
+    EDITTEXT        IDC_NAME,7,26,106,12,ES_AUTOHSCROLL
+    GROUPBOX        "Position",-1,7,42,116,34
+    LTEXT           "Seite",-1,14,55,17,8
+    EDITTEXT        IDC_SEITE,34,53,21,12,ES_AUTOHSCROLL
+    CONTROL         "Spin2",IDC_SEITE_SPIN,"msctls_updown32",UDS_ARROWKEYS,55,53,8,13
+    LTEXT           "Vert.",-1,72,55,16,8
+    EDITTEXT        IDC_VERTIKAL,89,53,21,12,ES_AUTOHSCROLL
+    CONTROL         "Spin2",IDC_VERTIKAL_SPIN,"msctls_updown32",UDS_ARROWKEYS,111,53,8,13
+    DEFPUSHBUTTON   "Speichern",IDOK,17,81,50,14
+    PUSHBUTTON      "Abbrechen",IDCANCEL,73,81,50,14
+END
+
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -1466,6 +1484,14 @@ BEGIN
         TOPMARGIN, 7
         BOTTOMMARGIN, 346
     END
+
+    IDD_FORMULARABSCHNITT, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 123
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 95
+    END
 END
 #endif    // APSTUDIO_INVOKED
 
@@ -1586,6 +1612,13 @@ BEGIN
     0
 END
 
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// HTML
+//
+
+IDR_HTML_FORMULARABSCHNITT HTML                    "Formularabschnitt.htm"
 
 /////////////////////////////////////////////////////////////////////////////
 //

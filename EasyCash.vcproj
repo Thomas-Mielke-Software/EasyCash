@@ -573,6 +573,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\Formularabschnitt.cpp"
+				>
+			</File>
+			<File
 				RelativePath="Formularfeld.cpp"
 				>
 				<FileConfiguration
@@ -1342,6 +1346,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\Formularabschnitt.h"
+				>
+			</File>
+			<File
 				RelativePath="Formularfeld.h"
 				>
 			</File>
@@ -1757,6 +1765,11 @@
 		</Filter>
 		<File
 			RelativePath=".\RES\EasyCash32x32.png"
+			>
+		</File>
+		<File
+			RelativePath=".\Formularabschnitt.htm"
+			DeploymentContent="true"
 			>
 		</File>
 		<File

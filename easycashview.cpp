@@ -35,6 +35,7 @@
 #include "oleidl.h"
 #include "comdef.h"
 #include "NeuesFormular.h"
+#include "Formularabschnitt.h"
 #include "XFolderDialog.h"
 #include "IconAuswahlBestandskonto.h"
 #include "IconAuswahlBetrieb.h"
@@ -278,6 +279,7 @@ void CEasyCashView::OnInitialUpdate()
 	// Popup-Menü aufbauen
 	PopUpFormular.CreatePopupMenu();
 	PopUpFormular.AppendMenu(MF_STRING, POPUPFORMULAR_NEUES_FELD, "&Neues Feld hier erzeugen");
+	PopUpFormular.AppendMenu(MF_STRING, POPUPFORMULAR_NEUER_ABSCHNITT, "Neuen Ab&schnitt hier erzeugen");
 	PopUpFormular.AppendMenu(MF_STRING, POPUPFORMULAR_FELDER_BEARBEITEN, "&Feld bearbeiten");
 	//PopUpFormular.AppendMenu(MF_STRING|MF_GRAYED, POPUPFORMULAR_KALKULATION_BEARBEITEN, "&Kalkulation bearbeiten");
 	PopUpFormular.AppendMenu(MF_STRING, POPUPFORMULAR_FOLMULARDATEI_OEFFNEN, "Formulardatei im &Editor öffnen");
@@ -6409,7 +6411,7 @@ BOOL CEasyCashView::OnCommand(WPARAM wParam, LPARAM lParam)
 		}
 	}
 	// Popup-Menü für Formularansicht
-	else if (wParam == POPUPFORMULAR_NEUES_FELD || wParam == POPUPFORMULAR_FELDER_BEARBEITEN 
+	else if (wParam == POPUPFORMULAR_NEUES_FELD || wParam == POPUPFORMULAR_NEUER_ABSCHNITT || wParam == POPUPFORMULAR_FELDER_BEARBEITEN 
 		|| wParam == POPUPFORMULAR_KALKULATION_BEARBEITEN || wParam == POPUPFORMULAR_FOLMULARDATEI_OEFFNEN
 		|| wParam == POPUPFORMULAR_FELDER_ANZEIGEN || POPUPFORMULAR_FELDWERT_KOPIEREN)
 	{
@@ -6445,6 +6447,54 @@ BOOL CEasyCashView::OnCommand(WPARAM wParam, LPARAM lParam)
 				pFormularfeldDlg->m_horizontal = ptFeldmarke.x;
 				pFormularfeldDlg->UpdateData(FALSE);
 				//pFormularfeldDlg->ShowWindow(SW_SHOW);
+			}
+			break;
+		case POPUPFORMULAR_NEUER_ABSCHNITT:
+			{				
+				// Feldmarkierung einblenden
+				ptFeldmarke = PopUpPosition;
+				ptFeldmarke.x = ptFeldmarke.x * 1000 / (int)((double)(charheight * (VCHARS + PAGE_GAP) * 1000 / 1414)) / querformat_faktor;
+				ptFeldmarke.y = ptFeldmarke.y * 1414 / (int)((double)(VCHARS + PAGE_GAP) * charheight);
+			
+				// Formulareigenschaften anzeigen
+				CFormularabschnitt dlg;
+				dlg.m_seite = ptFeldmarke.y / 1414 + 1;
+				dlg.m_vertikal = ptFeldmarke.y - ((dlg.m_seite-1) * 1414);
+
+				if (dlg.DoModal() == IDOK)
+				{
+					// Formulardefinitionsdatei in xmldoc laden
+					XDoc xmldoc;
+					xmldoc.LoadFile(m_csaFormulare[m_GewaehltesFormular]);
+					LPXNode xml = xmldoc.GetRoot();
+					LPXNode abschnitte = NULL;
+					if (xml)
+					{
+						 abschnitte = xml->Find("abschnitte");
+						 if (!abschnitte)  // ggf. Abschnitte-Node erzeugen
+							abschnitte = xml->AppendChild("abschnitte");
+						 if (abschnitte)
+						 {
+							LPXNode child = abschnitte->AppendChild("abschnitt");	// Abschnitt-Node in 'Abschnitte' erzeugen
+							if (child)
+							{
+								CString csFromInt;
+								child->AppendAttr("name", dlg.m_name);
+								_ultoa((DWORD)dlg.m_seite, csFromInt.GetBuffer(30), 10);
+								child->AppendAttr("seite", csFromInt);
+								_ultoa((DWORD)dlg.m_vertikal, csFromInt.GetBuffer(30), 10);
+								child->AppendAttr("vertikal", csFromInt);
+
+								DISP_OPT opt;
+								opt.newline = false; // no new line
+								if (!xmldoc.SaveFile(m_csaFormulare[m_GewaehltesFormular], &opt))
+								{
+									AfxMessageBox("Konnte den Abschnitt nicht in der Formulardatei speichern.");
+								}
+							}
+						}
+					}
+				}
 			}
 			break;
 		case POPUPFORMULAR_FELDER_BEARBEITEN:

@@ -26,6 +26,7 @@
 #define IDS_EASYRTX_INSTABIL            111
 #define IDS_EASYCTX_FEHLT               112
 #define IDS_CAPTION_IMAGE_TIP           113
+#define IDR_HTML_FORMULARABSCHNITT      114
 #define IDR_MAINFRAME                   128
 #define IDR_EASYCATYPE                  129
 #define IDD_BUCHUNG                     130
@@ -90,6 +91,7 @@
 #define IDD_DATENVERZEICHNIS            412
 #define IDB_DATENVERZEICHNIS            413
 #define IDD_USTVORAUSZAHLUNGEN          414
+#define IDD_FORMULARABSCHNITT           415
 #define IDB_TOOLBAR_16                  419
 #define IDB_TOOLBAR_32                  420
 #define IDR_DAUERBUCHUNGEN_AUSFUEHREN_MONATE 421
@@ -531,6 +533,6 @@
 #define _APS_NEXT_RESOURCE_VALUE        438
 #define _APS_NEXT_COMMAND_VALUE         32916
 #define _APS_NEXT_CONTROL_VALUE         1172
-#define _APS_NEXT_SYMED_VALUE           110
+#define _APS_NEXT_SYMED_VALUE           115
 #endif
 #endif
