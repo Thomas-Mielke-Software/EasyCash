@@ -273,6 +273,7 @@ protected:
 	void DrawFormularToDC(CDC* pDC, DrawInfo *pDrawInfo);
 	void OnFind(int nIncrement);
 	void ShowFindToolbar(int nShowstate = SW_SHOW);
+	void UpdateFormularMenu();
 	void UpdateBetriebeMenu();
 	void UpdateBestandskontenMenu();
 	void UpdateBetriebe();

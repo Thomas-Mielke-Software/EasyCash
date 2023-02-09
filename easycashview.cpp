@@ -346,151 +346,7 @@ Für den Fall, dass die Daten verschoben wurden, ändern Sie bitte das Datenverzei
 		}
 
 	// Formulare in Menü laden
-	LadeECFormulare(m_csaFormulare);
-	m_csaFormularnamen.RemoveAll();
-	m_csaFormularfilter.RemoveAll();
-	int nPos = 0;
-	char inifile[1000], betriebe_existieren[1000]; 
-	GetIniFileName(inifile, sizeof(inifile)); 
-	GetPrivateProfileString("Betriebe", "Betrieb00Name", "", betriebe_existieren, sizeof(betriebe_existieren), inifile);
-	if (AfxGetMainWnd() && AfxGetMainWnd()->GetMenu() && AfxGetMainWnd()->GetMenu()->GetSubMenu(4))	//VS9
-		while (AfxGetMainWnd()->GetMenu()->GetSubMenu(4)->GetMenuItemCount())
-			AfxGetMainWnd()->GetMenu()->GetSubMenu(4)->DeleteMenu(0, MF_BYPOSITION);
-	CArray<CMFCRibbonBaseElement* ,CMFCRibbonBaseElement*> arAnsichtFormulareButtons;
-	CMFCRibbonBar *pRibbon = ((CMDIFrameWndEx*) AfxGetMainWnd())->GetRibbonBar();
-	pRibbon->GetElementsByID(ID_ANSICHT_FORMULARE, arAnsichtFormulareButtons);
-//	CMFCRibbonButton* pBtnAnsichtFormular;
-	int i;
-/*	for(i = 0; i < arAnsichtFormulareButtons.GetSize(); i++)
-		if (pBtnAnsichtFormular = DYNAMIC_DOWNCAST(CMFCRibbonButton, arAnsichtFormulareButtons[i]))
-			pBtnAnsichtFormular->RemoveAllSubItems();
-*/	CMFCRibbonButton* pBtnAnsichtFormulare = ((CMainFrame*)AfxGetMainWnd())->m_pAnsichtFormulareButton;
-	if (pBtnAnsichtFormulare)	// Dummy von Ribbon-Button Menü entfernen	// XXXXXXXXXXXXX
-		pBtnAnsichtFormulare->RemoveAllSubItems();							// XXXXXXXXXXXXX
-	CMFCRibbonButton* pArrBtnSubmenus[200];	// für das Gruppieren von Voranmeldungsformularen
-	for (i = 0; i < 200; i++)
-		pArrBtnSubmenus[i] = NULL;
-	for (i = 0; i < m_csaFormulare.GetSize(); i++)
-	{
-		XDoc xmldoc;
-		xmldoc.LoadFile(m_csaFormulare[i]);
-		LPXNode xml = xmldoc.GetRoot();
-		if (xml) 
-		{
-			LPCTSTR attr_name = xml->GetAttrValue("name");
-			LPCTSTR attr_anzeigename = xml->GetAttrValue("anzeigename");
-			LPCTSTR attr_filter = xml->GetAttrValue("filter");
-//TRACE1("%s:\r\n", attr_anzeigename);
-			if (attr_name) 
-			{
-				
-				if (!attr_anzeigename) attr_anzeigename = attr_name;
-				if (attr_filter && !stricmp(attr_filter, "betrieb") && *betriebe_existieren)
-				{
-					int iBetrieb = 0;
-					char betrieb[1000];
-					while (TRUE)
-					{
-						CString csKey;
-						csKey.Format("Betrieb%02dName", iBetrieb);
-						GetPrivateProfileString("Betriebe", csKey, "", betrieb, sizeof(betrieb), inifile);
-						if (!*betrieb || iBetrieb > 100) { if (iBetrieb>0) i--; break; }
-						CString csMenuText = (CString)attr_anzeigename + " für " + betrieb;
-						if (AfxGetMainWnd() && AfxGetMainWnd()->GetMenu() && AfxGetMainWnd()->GetMenu()->GetSubMenu(4)) //VS9
-							AfxGetMainWnd()->GetMenu()->GetSubMenu(4)->InsertMenu(nPos++, MF_BYPOSITION, ID_FORMULAR_BASE+i, csMenuText);
-						if (pBtnAnsichtFormulare)	// Ribbon-Button Menü aufbauen
-						{
-							if (!strncmp(attr_anzeigename, "Umsatzsteuer-Voranmeldung ", 26) || !strncmp(attr_anzeigename, "U30 ", 4))	// Extrawurst für UST-VA: Submenüs für die entspr. Jahre
-							{
-								int nStringlength = !strncmp(attr_anzeigename, "U30 ", 4) ? 4 : 26;
-								int nOesterreichOffset = nStringlength == 4 ? 100 : 0;
-								int nJahr = atoi(attr_anzeigename + nStringlength) % 100;	// kleine Hashmap der Jahre, für die USt-VA-Formulare existieren
-								if (!pArrBtnSubmenus[nJahr+nOesterreichOffset])
-								{
-									pArrBtnSubmenus[nJahr+nOesterreichOffset] = new CMFCRibbonButton(ID_ANSICHT_FORMULARE, (LPCTSTR)csMenuText.Left(nStringlength+4), 21);
-									pBtnAnsichtFormulare->AddSubItem(pArrBtnSubmenus[nJahr+nOesterreichOffset]);
-									pArrBtnSubmenus[nJahr+nOesterreichOffset]->SetMenu(IDR_ANSICHT_FORMULARE);
-									pArrBtnSubmenus[nJahr+nOesterreichOffset]->RemoveAllSubItems();
-								}
-								CString csZeitraum = csMenuText.Mid(nStringlength+4);
-								if (csZeitraum.Right(4) == " (D)") csZeitraum = csZeitraum.Mid(0, csZeitraum.GetLength()-4);
-								if (csZeitraum.Right(5) == " (AT)") csZeitraum = csZeitraum.Mid(0, csZeitraum.GetLength()-5);
-								pArrBtnSubmenus[nJahr+nOesterreichOffset]->AddSubItem(new CMFCRibbonButton(ID_FORMULAR_BASE + i, (LPCTSTR)csZeitraum));
-							}
-							else if (!strncmp(attr_anzeigename, "E/Ü-Rechnung ", 13))
-								pBtnAnsichtFormulare->AddSubItem(new CMFCRibbonButton(ID_FORMULAR_BASE + i, (LPCTSTR)csMenuText, 23));
-							else if (!strncmp(attr_anzeigename, "Umsatzsteuererklärung ", 22))
-								pBtnAnsichtFormulare->AddSubItem(new CMFCRibbonButton(ID_FORMULAR_BASE + i, (LPCTSTR)csMenuText, 24));
-							else 
-								pBtnAnsichtFormulare->AddSubItem(new CMFCRibbonButton(ID_FORMULAR_BASE + i, (LPCTSTR)csMenuText));
-						}
-
-						m_csaFormularnamen.Add(attr_name);
-						m_csaFormularfilter.Add(betrieb);
-						if (iBetrieb>0)
-						{
-							csKey = m_csaFormulare[i-1];
-							m_csaFormulare.InsertAt(i, csKey);	// m_csaFormulare muss erweitert werden, wenn es mehr als einen Betrieb gibt!	
-						}
-						i++;
-						iBetrieb++;
-					} 
-				}
-				else
-				{
-					if (AfxGetMainWnd() && AfxGetMainWnd()->GetMenu() && AfxGetMainWnd()->GetMenu()->GetSubMenu(4))	//VS9
-						AfxGetMainWnd()->GetMenu()->GetSubMenu(4)->InsertMenu(nPos++, MF_BYPOSITION, ID_FORMULAR_BASE+i, attr_anzeigename);
-					if (pBtnAnsichtFormulare)	// Ribbon-Button Menü aufbauen
-					{
-						if (!strncmp(attr_anzeigename, "Umsatzsteuer-Voranmeldung ", 26) || !strncmp(attr_anzeigename, "U30 ", 4))
-						{
-							int nStringlength = !strncmp(attr_anzeigename, "U30 ", 4) ? 4 : 26;
-							int nOesterreichOffset = nStringlength == 4 ? 100 : 0;
-							int nJahr = atoi(attr_anzeigename + nStringlength) % 100;	// kleine Hashmap der Jahre, für die USt-VA-Formulare existieren
-							if (!pArrBtnSubmenus[nJahr+nOesterreichOffset])
-							{
-								pArrBtnSubmenus[nJahr+nOesterreichOffset] = new CMFCRibbonButton(ID_ANSICHT_FORMULARE, (LPCTSTR)((CString)attr_anzeigename).Left(nStringlength+4), 21);
-								pBtnAnsichtFormulare->AddSubItem(pArrBtnSubmenus[nJahr+nOesterreichOffset]);
-								pArrBtnSubmenus[nJahr+nOesterreichOffset]->SetMenu(IDR_ANSICHT_FORMULARE);
-								pArrBtnSubmenus[nJahr+nOesterreichOffset]->RemoveAllSubItems();
-							}
-							CString csZeitraum = attr_anzeigename + nStringlength+4;
-							if (csZeitraum.Right(4) == " (D)") csZeitraum = csZeitraum.Mid(0, csZeitraum.GetLength()-4);
-							if (csZeitraum.Right(5) == " (AT)") csZeitraum = csZeitraum.Mid(0, csZeitraum.GetLength()-5);
-							pArrBtnSubmenus[nJahr+nOesterreichOffset]->AddSubItem(new CMFCRibbonButton(ID_FORMULAR_BASE + i, (LPCTSTR)csZeitraum));
-						}
-						else if (!strncmp(attr_anzeigename, "E/Ü-Rechnung ", 13))
-							pBtnAnsichtFormulare->AddSubItem(new CMFCRibbonButton(ID_FORMULAR_BASE + i, (LPCTSTR)attr_anzeigename, 23));
-						else if (!strncmp(attr_anzeigename, "Umsatzsteuererklärung ", 22))
-							pBtnAnsichtFormulare->AddSubItem(new CMFCRibbonButton(ID_FORMULAR_BASE + i, (LPCTSTR)attr_anzeigename, 24));
-						else 
-							pBtnAnsichtFormulare->AddSubItem(new CMFCRibbonButton(ID_FORMULAR_BASE + i, (LPCTSTR)attr_anzeigename));
-					}
-					m_csaFormularnamen.Add(attr_anzeigename);
-					m_csaFormularfilter.Add("");
-				}
-			}
-			else
-			{
-				m_csaFormularnamen.Add("");
-				m_csaFormularfilter.Add("");
-			}
-		}
-		//int ii;
-		//for (ii = 0; ii < m_csaFormularnamen.GetSize(); ii++)
-		//	TRACE("%02d: %s // %s // %s\r\n", ii, (LPCTSTR)m_csaFormularnamen[ii], (LPCTSTR)m_csaFormularfilter[ii], (LPCTSTR)m_csaFormulare[ii]);
-	}
-	if (AfxGetMainWnd() && AfxGetMainWnd()->GetMenu() && AfxGetMainWnd()->GetMenu()->GetSubMenu(4)) //VS9
-		AfxGetMainWnd()->GetMenu()->GetSubMenu(4)->InsertMenu(AfxGetMainWnd()->GetMenu()->GetSubMenu(4)->GetMenuItemCount(), MF_BYPOSITION, ID_FORMULAR_NEU, "<neues Formular erzeugen>");
-	else
-	{
-		if (pBtnAnsichtFormulare) pBtnAnsichtFormulare->AddSubItem(new CMFCRibbonButton(ID_FORMULAR_INFO, "<weitere Formulare ...>"));
-		if (pBtnAnsichtFormulare) pBtnAnsichtFormulare->AddSubItem(new CMFCRibbonButton(ID_FORMULAR_NEU, "<eigenes Formular erzeugen>"));
-	}
-
-	ASSERT(m_csaFormulare.GetSize() == m_csaFormularnamen.GetSize());
-	ASSERT(m_csaFormulare.GetSize() == m_csaFormularfilter.GetSize());
-	TRACE3("m_csaFormulare: %d  m_csaFormularnamen: %d  m_csaFormularfilter: %d\r\n", m_csaFormulare.GetSize(), m_csaFormularnamen.GetSize(), m_csaFormularfilter.GetSize());
+	UpdateFormularMenu();
 
 	m_cbmIcons.LoadBitmap(IDB_ICONS);
 	m_tbiIcons.SetImageSize(CSize(32, 32));
@@ -636,6 +492,155 @@ SendMessage(WM_COMMAND, ID_FILE_SAVE, 0L);
 */
 
 //SetTimer(0, 10000, NULL);
+}
+
+void CEasyCashView::UpdateFormularMenu()
+{
+	LadeECFormulare(m_csaFormulare);
+	m_csaFormularnamen.RemoveAll();
+	m_csaFormularfilter.RemoveAll();
+	int nPos = 0;
+	char inifile[1000], betriebe_existieren[1000]; 
+	GetIniFileName(inifile, sizeof(inifile)); 
+	GetPrivateProfileString("Betriebe", "Betrieb00Name", "", betriebe_existieren, sizeof(betriebe_existieren), inifile);
+	if (AfxGetMainWnd() && AfxGetMainWnd()->GetMenu() && AfxGetMainWnd()->GetMenu()->GetSubMenu(4))	//VS9
+		while (AfxGetMainWnd()->GetMenu()->GetSubMenu(4)->GetMenuItemCount())
+			AfxGetMainWnd()->GetMenu()->GetSubMenu(4)->DeleteMenu(0, MF_BYPOSITION);
+	CArray<CMFCRibbonBaseElement* ,CMFCRibbonBaseElement*> arAnsichtFormulareButtons;
+	CMFCRibbonBar *pRibbon = ((CMDIFrameWndEx*) AfxGetMainWnd())->GetRibbonBar();
+	pRibbon->GetElementsByID(ID_ANSICHT_FORMULARE, arAnsichtFormulareButtons);
+//	CMFCRibbonButton* pBtnAnsichtFormular;
+	int i;
+/*	for(i = 0; i < arAnsichtFormulareButtons.GetSize(); i++)
+		if (pBtnAnsichtFormular = DYNAMIC_DOWNCAST(CMFCRibbonButton, arAnsichtFormulareButtons[i]))
+			pBtnAnsichtFormular->RemoveAllSubItems();
+*/	CMFCRibbonButton* pBtnAnsichtFormulare = ((CMainFrame*)AfxGetMainWnd())->m_pAnsichtFormulareButton;
+	if (pBtnAnsichtFormulare)	// Dummy von Ribbon-Button Menü entfernen	// XXXXXXXXXXXXX
+		pBtnAnsichtFormulare->RemoveAllSubItems();							// XXXXXXXXXXXXX
+	CMFCRibbonButton* pArrBtnSubmenus[200];	// für das Gruppieren von Voranmeldungsformularen
+	for (i = 0; i < 200; i++)
+		pArrBtnSubmenus[i] = NULL;
+	for (i = 0; i < m_csaFormulare.GetSize(); i++)
+	{
+		XDoc xmldoc;
+		xmldoc.LoadFile(m_csaFormulare[i]);
+		LPXNode xml = xmldoc.GetRoot();
+		if (xml) 
+		{
+			LPCTSTR attr_name = xml->GetAttrValue("name");
+			LPCTSTR attr_anzeigename = xml->GetAttrValue("anzeigename");
+			LPCTSTR attr_filter = xml->GetAttrValue("filter");
+//TRACE1("%s:\r\n", attr_anzeigename);
+			if (attr_name) 
+			{
+				
+				if (!attr_anzeigename) attr_anzeigename = attr_name;
+				if (attr_filter && !stricmp(attr_filter, "betrieb") && *betriebe_existieren)
+				{
+					int iBetrieb = 0;
+					char betrieb[1000];
+					while (TRUE)
+					{
+						CString csKey;
+						csKey.Format("Betrieb%02dName", iBetrieb);
+						GetPrivateProfileString("Betriebe", csKey, "", betrieb, sizeof(betrieb), inifile);
+						if (!*betrieb || iBetrieb > 100) { if (iBetrieb>0) i--; break; }
+						CString csMenuText = (CString)attr_anzeigename + " für " + betrieb;
+						if (AfxGetMainWnd() && AfxGetMainWnd()->GetMenu() && AfxGetMainWnd()->GetMenu()->GetSubMenu(4)) //VS9
+							AfxGetMainWnd()->GetMenu()->GetSubMenu(4)->InsertMenu(nPos++, MF_BYPOSITION, ID_FORMULAR_BASE+i, csMenuText);
+						if (pBtnAnsichtFormulare)	// Ribbon-Button Menü aufbauen
+						{
+							if (!strncmp(attr_anzeigename, "Umsatzsteuer-Voranmeldung ", 26) || !strncmp(attr_anzeigename, "U30 ", 4))	// Extrawurst für UST-VA: Submenüs für die entspr. Jahre
+							{
+								int nStringlength = !strncmp(attr_anzeigename, "U30 ", 4) ? 4 : 26;
+								int nOesterreichOffset = nStringlength == 4 ? 100 : 0;
+								int nJahr = atoi(attr_anzeigename + nStringlength) % 100;	// kleine Hashmap der Jahre, für die USt-VA-Formulare existieren
+								if (!pArrBtnSubmenus[nJahr+nOesterreichOffset])
+								{
+									pArrBtnSubmenus[nJahr+nOesterreichOffset] = new CMFCRibbonButton(ID_ANSICHT_FORMULARE, (LPCTSTR)csMenuText.Left(nStringlength+4), 21);
+									pBtnAnsichtFormulare->AddSubItem(pArrBtnSubmenus[nJahr+nOesterreichOffset]);
+									pArrBtnSubmenus[nJahr+nOesterreichOffset]->SetMenu(IDR_ANSICHT_FORMULARE);
+									pArrBtnSubmenus[nJahr+nOesterreichOffset]->RemoveAllSubItems();
+								}
+								CString csZeitraum = csMenuText.Mid(nStringlength+4);
+								if (csZeitraum.Right(4) == " (D)") csZeitraum = csZeitraum.Mid(0, csZeitraum.GetLength()-4);
+								if (csZeitraum.Right(5) == " (AT)") csZeitraum = csZeitraum.Mid(0, csZeitraum.GetLength()-5);
+								pArrBtnSubmenus[nJahr+nOesterreichOffset]->AddSubItem(new CMFCRibbonButton(ID_FORMULAR_BASE + i, (LPCTSTR)csZeitraum));
+							}
+							else if (!strncmp(attr_anzeigename, "E/Ü-Rechnung ", 13))
+								pBtnAnsichtFormulare->AddSubItem(new CMFCRibbonButton(ID_FORMULAR_BASE + i, (LPCTSTR)csMenuText, 23));
+							else if (!strncmp(attr_anzeigename, "Umsatzsteuererklärung ", 22))
+								pBtnAnsichtFormulare->AddSubItem(new CMFCRibbonButton(ID_FORMULAR_BASE + i, (LPCTSTR)csMenuText, 24));
+							else 
+								pBtnAnsichtFormulare->AddSubItem(new CMFCRibbonButton(ID_FORMULAR_BASE + i, (LPCTSTR)csMenuText));
+						}
+
+						m_csaFormularnamen.Add(attr_name);
+						m_csaFormularfilter.Add(betrieb);
+						if (iBetrieb>0)
+						{
+							csKey = m_csaFormulare[i-1];
+							m_csaFormulare.InsertAt(i, csKey);	// m_csaFormulare muss erweitert werden, wenn es mehr als einen Betrieb gibt!	
+						}
+						i++;
+						iBetrieb++;
+					} 
+				}
+				else
+				{
+					if (AfxGetMainWnd() && AfxGetMainWnd()->GetMenu() && AfxGetMainWnd()->GetMenu()->GetSubMenu(4))	//VS9
+						AfxGetMainWnd()->GetMenu()->GetSubMenu(4)->InsertMenu(nPos++, MF_BYPOSITION, ID_FORMULAR_BASE+i, attr_anzeigename);
+					if (pBtnAnsichtFormulare)	// Ribbon-Button Menü aufbauen
+					{
+						if (!strncmp(attr_anzeigename, "Umsatzsteuer-Voranmeldung ", 26) || !strncmp(attr_anzeigename, "U30 ", 4))
+						{
+							int nStringlength = !strncmp(attr_anzeigename, "U30 ", 4) ? 4 : 26;
+							int nOesterreichOffset = nStringlength == 4 ? 100 : 0;
+							int nJahr = atoi(attr_anzeigename + nStringlength) % 100;	// kleine Hashmap der Jahre, für die USt-VA-Formulare existieren
+							if (!pArrBtnSubmenus[nJahr+nOesterreichOffset])
+							{
+								pArrBtnSubmenus[nJahr+nOesterreichOffset] = new CMFCRibbonButton(ID_ANSICHT_FORMULARE, (LPCTSTR)((CString)attr_anzeigename).Left(nStringlength+4), 21);
+								pBtnAnsichtFormulare->AddSubItem(pArrBtnSubmenus[nJahr+nOesterreichOffset]);
+								pArrBtnSubmenus[nJahr+nOesterreichOffset]->SetMenu(IDR_ANSICHT_FORMULARE);
+								pArrBtnSubmenus[nJahr+nOesterreichOffset]->RemoveAllSubItems();
+							}
+							CString csZeitraum = attr_anzeigename + nStringlength+4;
+							if (csZeitraum.Right(4) == " (D)") csZeitraum = csZeitraum.Mid(0, csZeitraum.GetLength()-4);
+							if (csZeitraum.Right(5) == " (AT)") csZeitraum = csZeitraum.Mid(0, csZeitraum.GetLength()-5);
+							pArrBtnSubmenus[nJahr+nOesterreichOffset]->AddSubItem(new CMFCRibbonButton(ID_FORMULAR_BASE + i, (LPCTSTR)csZeitraum));
+						}
+						else if (!strncmp(attr_anzeigename, "E/Ü-Rechnung ", 13))
+							pBtnAnsichtFormulare->AddSubItem(new CMFCRibbonButton(ID_FORMULAR_BASE + i, (LPCTSTR)attr_anzeigename, 23));
+						else if (!strncmp(attr_anzeigename, "Umsatzsteuererklärung ", 22))
+							pBtnAnsichtFormulare->AddSubItem(new CMFCRibbonButton(ID_FORMULAR_BASE + i, (LPCTSTR)attr_anzeigename, 24));
+						else 
+							pBtnAnsichtFormulare->AddSubItem(new CMFCRibbonButton(ID_FORMULAR_BASE + i, (LPCTSTR)attr_anzeigename));
+					}
+					m_csaFormularnamen.Add(attr_anzeigename);
+					m_csaFormularfilter.Add("");
+				}
+			}
+			else
+			{
+				m_csaFormularnamen.Add("");
+				m_csaFormularfilter.Add("");
+			}
+		}
+		//int ii;
+		//for (ii = 0; ii < m_csaFormularnamen.GetSize(); ii++)
+		//	TRACE("%02d: %s // %s // %s\r\n", ii, (LPCTSTR)m_csaFormularnamen[ii], (LPCTSTR)m_csaFormularfilter[ii], (LPCTSTR)m_csaFormulare[ii]);
+	}
+	if (AfxGetMainWnd() && AfxGetMainWnd()->GetMenu() && AfxGetMainWnd()->GetMenu()->GetSubMenu(4)) //VS9
+		AfxGetMainWnd()->GetMenu()->GetSubMenu(4)->InsertMenu(AfxGetMainWnd()->GetMenu()->GetSubMenu(4)->GetMenuItemCount(), MF_BYPOSITION, ID_FORMULAR_NEU, "<neues Formular erzeugen>");
+	else
+	{
+		if (pBtnAnsichtFormulare) pBtnAnsichtFormulare->AddSubItem(new CMFCRibbonButton(ID_FORMULAR_INFO, "<weitere Formulare ...>"));
+		if (pBtnAnsichtFormulare) pBtnAnsichtFormulare->AddSubItem(new CMFCRibbonButton(ID_FORMULAR_NEU, "<eigenes Formular erzeugen>"));
+	}
+
+	ASSERT(m_csaFormulare.GetSize() == m_csaFormularnamen.GetSize());
+	ASSERT(m_csaFormulare.GetSize() == m_csaFormularfilter.GetSize());
+	TRACE3("m_csaFormulare: %d  m_csaFormularnamen: %d  m_csaFormularfilter: %d\r\n", m_csaFormulare.GetSize(), m_csaFormularnamen.GetSize(), m_csaFormularfilter.GetSize());
 }
 
 static int timerzaehler = 0;
@@ -9328,6 +9333,7 @@ void CEasyCashView::OnFormularNeu()
 {
 	CNeuesFormular dlg;
 	dlg.m_name = "Mein Formular";
+	dlg.m_anzeigename = "Mein Formular (Sommersaison)";
 	dlg.m_dateiname = "MeinFormular.ecf";
 	dlg.m_seiten = 2;
 	dlg.m_schriftart = "Courier New";
@@ -9384,10 +9390,11 @@ void CEasyCashView::OnFormularNeu()
 			f.WriteString("</formular>\r\n");
 			f.Close();
 //VS9
-			if (AfxGetMainWnd() && AfxGetMainWnd()->GetMenu() && AfxGetMainWnd()->GetMenu()->GetSubMenu(4))
-				AfxGetMainWnd()->GetMenu()->GetSubMenu(4)->InsertMenu(AfxGetMainWnd()->GetMenu()->GetSubMenu(4)->GetMenuItemCount()-1, MF_BYPOSITION, ID_FORMULAR_BASE+m_csaFormularnamen.GetSize(), dlg.m_name);
-			m_csaFormularnamen.Add(dlg.m_name);
-			m_csaFormulare.Add(csPfad);
+			//if (AfxGetMainWnd() && AfxGetMainWnd()->GetMenu() && AfxGetMainWnd()->GetMenu()->GetSubMenu(4))
+			//	AfxGetMainWnd()->GetMenu()->GetSubMenu(4)->InsertMenu(AfxGetMainWnd()->GetMenu()->GetSubMenu(4)->GetMenuItemCount()-1, MF_BYPOSITION, ID_FORMULAR_BASE+m_csaFormularnamen.GetSize(), dlg.m_name);
+			//m_csaFormularnamen.Add(dlg.m_name);
+			//m_csaFormulare.Add(csPfad);
+			UpdateFormularMenu();  // <- besser so als die letzten vier Zeilen...
 		}
 		break;
 
