@@ -201,4 +201,12 @@
 		<seite nr="3" >U30-AT-2023-3.png</seite>
 		<seite nr="4" >U30-AT-2023-4.png</seite>
 	</seiten>
+  <abschnitte>
+    <abschnitt name="1. Steuernummer" seite="1" vertikal="302" />
+    <abschnitt name="2. Zeitraum" seite="1" vertikal="314" />
+    <abschnitt name="3. Angaben zum Unternehmen" seite="1" vertikal="504" />
+    <abschnitt name="4. Berechnung der Umsatzsteuer" seite="1" vertikal="955" />
+    <abschnitt name="5. Berechnung der abziehbaren Vorsteuer" seite="3" vertikal="1099" />
+    <abschnitt name="6. Sonstige Berichtigungen" seite="4" vertikal="885" />
+  </abschnitte>
 </formular>
