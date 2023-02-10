@@ -1172,8 +1172,8 @@ void CEasyCashView::OnUpdate(CView* pSender, LPARAM lHint, CObject* pHint)
 						int vertikal = atoi(child->GetAttrValue("vertikal"));
 
 						CString csItemText;
-						csItemText.Format("%s%s", csName, CString(_T(' '), SPACES_ZU_ITEMS_HINZUFUEGEN).GetString());
-						int iItem = nav.InsertItem(i, csItemText);
+						//csItemText.Format("%s%s", csName, CString(_T(' '), SPACES_ZU_ITEMS_HINZUFUEGEN).GetString());
+						int iItem = nav.InsertItem(i, csName);
 						m_cuiaScrollPos[iItem] = (seite - 1) * 1414 + vertikal;
 
 						LVITEM lvItem = {0};
