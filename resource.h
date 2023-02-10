@@ -519,6 +519,8 @@
 #define ID_FORMULAR_INFO                32913
 #define ID_ANLAGENVERZEICHNIS           32914
 #define ID_VIEW_JOURNAL_ANLAGENVERZEICHNIS 32915
+#define ID_FORMULARE_                   32916
+#define ID_FORMULAR_MENUUPDATE          32917
 #define ID_CMD_CUSTOM_MRU               48000
 #define ID_STATUS                       61445
 #define ID_SALDO                        61446
@@ -531,7 +533,7 @@
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_3D_CONTROLS                     1
 #define _APS_NEXT_RESOURCE_VALUE        438
-#define _APS_NEXT_COMMAND_VALUE         32916
+#define _APS_NEXT_COMMAND_VALUE         32918
 #define _APS_NEXT_CONTROL_VALUE         1172
 #define _APS_NEXT_SYMED_VALUE           115
 #endif

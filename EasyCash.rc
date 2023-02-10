@@ -299,6 +299,7 @@ BEGIN
     POPUP "For&mulare"
     BEGIN
         MENUITEM "<neues Formular erzeugen>",   ID_FORMULAR_NEU
+        MENUITEM "<Formular-Menü aktualisieren>", ID_FORMULAR_MENUUPDATE
     END
     POPUP "&Fenster"
     BEGIN

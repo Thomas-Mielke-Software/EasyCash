@@ -87,6 +87,7 @@ BEGIN_MESSAGE_MAP(CEasyCashView, CScrollView)
 	ON_WM_LBUTTONDBLCLK()
 	ON_COMMAND(ID_FORMULAR_INFO, OnFormularInfo)
 	ON_COMMAND(ID_FORMULAR_NEU, OnFormularNeu)
+	ON_COMMAND(ID_FORMULAR_MENUUPDATE, OnFormularMenuUpdate)
 	ON_COMMAND(ID_FILE_PRINT_PREVIEW, OnFilePrintPreview)
 	ON_COMMAND(ID_NEXT, OnFindNext)
 	ON_COMMAND(ID_PREV, OnFindPrev)
@@ -638,6 +639,7 @@ void CEasyCashView::UpdateFormularMenu()
 	{
 		if (pBtnAnsichtFormulare) pBtnAnsichtFormulare->AddSubItem(new CMFCRibbonButton(ID_FORMULAR_INFO, "<weitere Formulare ...>"));
 		if (pBtnAnsichtFormulare) pBtnAnsichtFormulare->AddSubItem(new CMFCRibbonButton(ID_FORMULAR_NEU, "<eigenes Formular erzeugen>"));
+		if (pBtnAnsichtFormulare) pBtnAnsichtFormulare->AddSubItem(new CMFCRibbonButton(ID_FORMULAR_MENUUPDATE, "<Formular-Menü aktualisieren>"));
 	}
 
 	ASSERT(m_csaFormulare.GetSize() == m_csaFormularnamen.GetSize());
@@ -9515,8 +9517,12 @@ void CEasyCashView::OnFormularNeu()
 		break;
 
 cont:	;
-	}
-	
+	}	
+}
+
+void CEasyCashView::OnFormularMenuUpdate()
+{
+	UpdateFormularMenu();
 }
 
 #define ONKEY_WASDOWNBEFORE	0x4000
