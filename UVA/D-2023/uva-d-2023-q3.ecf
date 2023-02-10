@@ -287,4 +287,16 @@
     <seite nr="2" >uva-d-2023-2.png</seite>
     <seite nr="3" >uva-d-2023-3.png</seite>
   </seiten>
+  <abschnitte>
+    <abschnitt name="A. Steuerpflichtige Lieferungen und Leistungen" seite="1" vertikal="775" />
+    <abschnitt name="B. Steuerfreie Lieferungen und Leistungen" seite="1" vertikal="1124" />
+    <abschnitt name="C. Innergemeinschaftliche Erwerbe" seite="2" vertikal="287" />
+    <abschnitt name="D. Leistungsempfänger als Steuerschuldner" seite="2" vertikal="631" />
+    <abschnitt name="E. Ergänzende Angaben zu Umsätzen" seite="2" vertikal="819" />
+    <abschnitt name="F. Abziehbare Vorsteuerbeträge und Berichtigungen" seite="2" vertikal="1076" />
+    <abschnitt name="G. Andere Steuerbeträge" seite="3" vertikal="307" />
+    <abschnitt name="H. Vorauszahlung/Überschuss" seite="3" vertikal="469" />
+    <abschnitt name="I. Ergänzende Angaben zu Minderungen nach §17 ..." seite="3" vertikal="679" />
+    <abschnitt name="J. Sonstige Angaben" seite="3" vertikal="862" />
+  </abschnitte>
 </formular>
