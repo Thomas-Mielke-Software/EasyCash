@@ -217,7 +217,10 @@ void CNavigation::OnNMClick(NMHDR *pNMHDR, LRESULT *pResult)
 		else  // Formular: zu Seite scrollen
 		{
 			int item = pNMItemActivate->iItem;
-			m_pViewWnd->ScrolleZuSeite(item + 1);
+			if (!m_pViewWnd->m_cuiaScrollPos.GetSize())
+				m_pViewWnd->ScrolleZuSeite(item + 1);  // keine Abschnitte? dann item index == Seite
+			else
+				m_pViewWnd->ScrolleZuSeite(m_pViewWnd->m_cuiaScrollPos[item] / 1414 + 1, m_pViewWnd->m_cuiaScrollPos[item] % 1414);
 		}
 	}
 

@@ -296,8 +296,9 @@ public:
 	char *GetLandeskuerzel(); 
 	char *GetWaehrungskuerzel();
 	void ScrolleZuBuchung(int b);
-	void ScrolleZuSeite(int s);
+	void ScrolleZuSeite(int s, int vertikal = 0);
 	void AfAAbgang(CBuchung **ppb);
+	CUIntArray m_cuiaScrollPos;	// Array von uints für Formular-Abschnittsnavigation
 
 // Generated message map functions
 protected:

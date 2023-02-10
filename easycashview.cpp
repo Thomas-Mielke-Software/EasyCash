@@ -982,6 +982,8 @@ void CEasyCashView::OnUpdate(CView* pSender, LPARAM lHint, CObject* pHint)
 			pBtnFilterKonto->AddSubItem(new CMFCRibbonButton(ID_VIEW_JOURNAL_FUER_KONTO_BASE + i, (LPCTSTR)m_KontenMitBuchungen[i]));
 	}
 	
+#define SPACES_ZU_ITEMS_HINZUFUEGEN 20
+
 	// Navigationsleiste aktualisieren
 	if (m_pNavigationWnd)
 	{
@@ -1002,10 +1004,46 @@ void CEasyCashView::OnUpdate(CView* pSender, LPARAM lHint, CObject* pHint)
 		lg.mask = LVGF_GROUPID | LVGF_HEADER | LVGF_STATE | LVGF_ALIGN;
 		if (m_GewaehltesFormular >= 0)
 		{
-			lg.iGroupId = 0;
-			lg.pszHeader = L"Seiten";	
-			lg.cchHeader = wcslen(lg.pszHeader);
-			nav.InsertGroup(0, &lg);
+			// wenn Abschnitte vorhanden, einzelne Seiten als Group
+			if (m_csaFormulare.GetSize() > 0)
+			{
+				// Formulardefinitionsdatei in xmldoc laden
+				XDoc xmldoc;
+				xmldoc.LoadFile(m_csaFormulare[m_GewaehltesFormular]);
+				LPXNode xml = xmldoc.GetRoot();
+				if (xml)
+				{
+					CString csAnzahlSeiten = xml->GetAttrValue("seiten");
+					m_anzahl_formularseiten = atoi(csAnzahlSeiten);
+					LPXNode abschnitte = NULL;
+					abschnitte = xml->Find("abschnitte");
+
+					if (abschnitte && abschnitte->GetChildCount() > 0)  // Abschnitte-Sektion vorhanden?...
+					{
+						for (i = 0; i < m_anzahl_formularseiten; i++)
+						{
+							CString csGroupText;
+							csGroupText.Format("Seite %d", i + 1);
+
+							lg.iGroupId = i;
+							WCHAR wcTemp[1000];
+							if (!MultiByteToWideChar(CP_ACP, 0, csGroupText, (int)csGroupText.GetLength(), wcTemp, sizeof(wcTemp)))
+								continue;
+							wcTemp[csGroupText.GetLength()] = L'\0';
+							lg.pszHeader = wcTemp;	
+							lg.cchHeader = wcslen(lg.pszHeader);
+							nav.InsertGroup(i, &lg);
+						}
+					}
+					else  // ... ansonsten nur eine einzelne Group "Seiten" und deren Nummern als Items darunter
+					{
+						lg.iGroupId = 0;
+						lg.pszHeader = L"Seiten";	
+						lg.cchHeader = wcslen(lg.pszHeader);
+						nav.InsertGroup(0, &lg);					
+					}
+				}
+			}
 		}
 		else if (m_nAnzeige < 2)
 		{
@@ -1055,7 +1093,6 @@ void CEasyCashView::OnUpdate(CView* pSender, LPARAM lHint, CObject* pHint)
 		nav.DeleteAllItems();
 		nav.SetRedraw(TRUE);	
 
-#define SPACES_ZU_ITEMS_HINZUFUEGEN 20
 		int group;
 		switch (m_GewaehltesFormular >= 0 ? -1 : m_nAnzeige)
 		{
@@ -1111,29 +1148,58 @@ void CEasyCashView::OnUpdate(CView* pSender, LPARAM lHint, CObject* pHint)
 		default:
 			if (m_csaFormulare.GetSize() > 0)
 			{
-				// Formulardefinitionsdatei in xmldoc laden
+				// noch mal Formulardefinitionsdatei in xmldoc laden
 				XDoc xmldoc;
 				xmldoc.LoadFile(m_csaFormulare[m_GewaehltesFormular]);
 				LPXNode xml = xmldoc.GetRoot();
 				if (!xml) break;
-				LPXNode seiten = NULL;
-				seiten = xml->Find("seiten");
+				LPXNode abschnitte = NULL;
+				abschnitte = xml->Find("abschnitte");
 				CString csAnzahlSeiten = xml->GetAttrValue("seiten");
 				m_anzahl_formularseiten = atoi(csAnzahlSeiten);
-
-				for (i = 0; i < m_anzahl_formularseiten; i++)
+				
+				m_cuiaScrollPos.RemoveAll();
+				if (abschnitte && abschnitte->GetChildCount() > 0)  // Abschnitte-Sektion vorhanden?
 				{
-					CString csItemText;
-					csItemText.Format("%d%s", i + 1, CString(_T(' '), SPACES_ZU_ITEMS_HINZUFUEGEN).GetString());
-					int iItem = nav.InsertItem(i, csItemText);
+					m_cuiaScrollPos.SetSize(abschnitte->GetChildCount());
 
-					LVITEM lvItem = {0};
-					lvItem.mask = LVIF_GROUPID;
-					lvItem.iItem = iItem;
-					lvItem.iSubItem = 0;
-					lvItem.iGroupId = 0;
-					nav.SetItem(&lvItem);
-				}	
+					// Abschnitte in Seiten-Groups einsortieren
+					for (i = 0; i < abschnitte->GetChildCount(); i++)
+					{
+						LPXNode child = abschnitte->GetChild(i);
+						CString csName = child->GetAttrValue("name");
+						int seite = atoi(child->GetAttrValue("seite"));					 
+						int vertikal = atoi(child->GetAttrValue("vertikal"));
+
+						CString csItemText;
+						csItemText.Format("%s%s", csName, CString(_T(' '), SPACES_ZU_ITEMS_HINZUFUEGEN).GetString());
+						int iItem = nav.InsertItem(i, csItemText);
+						m_cuiaScrollPos[iItem] = (seite - 1) * 1414 + vertikal;
+
+						LVITEM lvItem = {0};
+						lvItem.mask = LVIF_GROUPID;
+						lvItem.iItem = iItem;
+						lvItem.iSubItem = 0;
+						lvItem.iGroupId = seite - 1;
+						nav.SetItem(&lvItem);
+					}
+				}
+				else  // nur Seitennummern auflisten
+				{
+					for (i = 0; i < m_anzahl_formularseiten; i++)
+					{
+						CString csItemText;
+						csItemText.Format("%d%s", i + 1, CString(_T(' '), SPACES_ZU_ITEMS_HINZUFUEGEN).GetString());
+						int iItem = nav.InsertItem(i, csItemText);
+
+						LVITEM lvItem = {0};
+						lvItem.mask = LVIF_GROUPID;
+						lvItem.iItem = iItem;
+						lvItem.iSubItem = 0;
+						lvItem.iGroupId = 0;
+						nav.SetItem(&lvItem);
+					}	
+				}
 			}		
 		}
 	}
@@ -6181,12 +6247,12 @@ void CEasyCashView::ScrolleZuBuchung(int b)
 	GetDocument()->UpdateAllViews(NULL);
 }
 
-void CEasyCashView::ScrolleZuSeite(int s)
+void CEasyCashView::ScrolleZuSeite(int s, int vertikal)
 {	
 	if (m_GewaehltesFormular >= 0 && s >= 1 && s <= m_anzahl_formularseiten)
 	{
 		CPoint scrollpos;
-		scrollpos.SetPoint(0, (s - 1) * charheight * (PAGE_GAP + VCHARS));
+		scrollpos.SetPoint(0, (s - 1) * charheight * (PAGE_GAP + VCHARS) + vertikal);
 		ScrollToPosition(scrollpos);
 	}
 }
