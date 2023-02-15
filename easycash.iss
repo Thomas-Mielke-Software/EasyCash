@@ -3,7 +3,7 @@
 
 [Setup]
 AppName=EasyCash&Tax
-AppVerName=EasyCash&Tax 2.45
+AppVerName=EasyCash&Tax 2.46
 DiskSpanning=no
 AppPublisher=tm
 AppPublisherURL=http://www.easyct.de
@@ -79,7 +79,8 @@ Source: D:\Work\EasyCash\UST\D-2022\ust-d-2022-6.png; DestDir: {app}; Flags: ign
 ;Source: D:\Work\EasyCash\UST\D-2023\ust-d-2023-5.png; DestDir: {app}; Flags: ignoreversion; Components: BRDFormular
 ;Source: D:\Work\EasyCash\UST\D-2023\ust-d-2023-6.png; DestDir: {app}; Flags: ignoreversion; Components: BRDFormular   
 Source: D:\Work\EasyCash\UVA\D-2023\uva-d-2023-1.png; DestDir: {app}; Flags: ignoreversion; Components: BRDFormular
-Source: D:\Work\EasyCash\UVA\D-2023\uva-d-2023-2.png; DestDir: {app}; Flags: ignoreversion; Components: BRDFormular
+Source: D:\Work\EasyCash\UVA\D-2023\uva-d-2023-2.png; DestDir: {app}; Flags: ignoreversion; Components: BRDFormular   
+Source: D:\Work\EasyCash\UVA\D-2023\uva-d-2023-3.png; DestDir: {app}; Flags: ignoreversion; Components: BRDFormular
 Source: D:\Work\EasyCash\UVA\D-2023\uva-d-2023-01.ecf; DestDir: {app}; Flags: ignoreversion; Components: BRDFormular
 Source: D:\Work\EasyCash\UVA\D-2023\uva-d-2023-02.ecf; DestDir: {app}; Flags: ignoreversion; Components: BRDFormular
 Source: D:\Work\EasyCash\UVA\D-2023\uva-d-2023-03.ecf; DestDir: {app}; Flags: ignoreversion; Components: BRDFormular
