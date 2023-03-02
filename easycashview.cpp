@@ -3168,11 +3168,12 @@ void CEasyCashView::DrawToDC_Bestandskonten(CDC* pDC_par, DrawInfo *pDrawInfo)
 		// erst einmal reguläre Bestandskonten mit der gewohnten Sortierung aus den Einstellungen inkl. Icons/Salden auflisten
 		for (i = 0, bestandskonten_anzahl = 0; i < m_csaBestandskontenNamen.GetSize(); i++)
 		{
-			if (BestandskontoExistiertInBuchungen(m_csaBestandskontenNamen[i]))
+			int anfangssaldo = currency_to_int(m_csaBestandskontenSalden[i].GetBuffer(0));
+			if (BestandskontoExistiertInBuchungen(m_csaBestandskontenNamen[i]) || anfangssaldo != 0)
 			{
 				bestandskonto_name[bestandskonten_anzahl] = m_csaBestandskontenNamen[i];
 				bestandskonto_icon[bestandskonten_anzahl] = atoi(m_csaBestandskontenIcons[i]);
-				bestandskonto_anfangssaldo[bestandskonten_anzahl] = currency_to_int(m_csaBestandskontenSalden[i].GetBuffer(0));	
+				bestandskonto_anfangssaldo[bestandskonten_anzahl] = anfangssaldo;	
 				TRACE2("\r\nreguläres Bestandskonto %d: %s", bestandskonten_anzahl, m_csaBestandskontenNamen[bestandskonten_anzahl]);
 				bestandskonten_anzahl++;
 			}

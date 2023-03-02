@@ -657,6 +657,13 @@ v2.45
 - Bei mehreren Betrieben wird jetzt die Betriebssteuernummer auch in der Freestyle-EÜR angezeigt/ausgedruckt.
 - Bei der Bestätigung "Buchung wirklich löschen" wird jetzt der Buchungstext angezeigt, damit sicher ist, dass auch die richtige Buchung gelöscht wird.
 
+v2.46
+- USt.-VA 3. Seite Hintergrundgrafik fehlte
+
+v2.47
+- Bestandskonten ohne Buchungen werden nun im Journal dann angezeit, wenn sie einen Saldo aufweisen, der nicht null ist.
+
+
 !!! "Dialogfenster konnte nicht erzeugt werden"-Meldung abfangen und ggf. Installation reparieren.
 
 !!!!!!!
