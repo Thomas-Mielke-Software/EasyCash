@@ -2293,113 +2293,136 @@ CString CEasyCashDoc::GetFormularwertByIndex(XDoc *pFormular, int nIndex, LPCSTR
 		}
 		else if (!stricmp(child->GetAttrValue("typ"), "Einstellungsdaten"))
 		{
-			CString ID = child->GetChildValue("erweiterung");
+			CString IDs = child->GetChildValue("erweiterung");
+			CString csFeldinhalte = "";  // für Verkettung von mehreren Einstellungsdaten, getrennt durch Leerzeichen
 
-			if (ID == "unternehmensart1" && *sFilter)
+			do
 			{
-				char inifile[1000], betriebe[1000]; 
-				GetIniFileName(inifile, sizeof(inifile)); 
-				CString csKey;
-				int iBetriebe;
-				for (iBetriebe = 0; iBetriebe < 100; iBetriebe++)
+				CString ID;
+				int posTrenner = IDs.Find(' ');
+				if (posTrenner < 0)
 				{
-					csKey.Format("Betrieb%02dName", iBetriebe);
-					GetPrivateProfileString("Betriebe", csKey, "", betriebe, sizeof(betriebe), inifile);
-					if (!*betriebe) 
-					{ 
-						csFeldinhalt = "<Unternehmensart für Betrieb nicht gefunden>"; 
-						break; 
-					}
-					else if (!strcmp(betriebe, sFilter)) 
+					ID = IDs;  // kein Trenner (Leerzeichen) enthalten? Erweiterung == Einstellungs-ID
+					IDs = "";
+				}
+				else
+				{
+					ID = IDs.Left(posTrenner);  // Trenner (Leerzeichen) enthalten? Mehrere Einstellungs-IDs in Erweiterung-String enthalten
+					IDs = IDs.Mid(posTrenner + 1);
+				}
+				if (ID == "unternehmensart1" && *sFilter)
+				{
+					char inifile[1000], betriebe[1000]; 
+					GetIniFileName(inifile, sizeof(inifile)); 
+					CString csKey;
+					int iBetriebe;
+					for (iBetriebe = 0; iBetriebe < 100; iBetriebe++)
 					{
-						csKey.Format("Betrieb%02dUnternehmensart", iBetriebe);
+						csKey.Format("Betrieb%02dName", iBetriebe);
 						GetPrivateProfileString("Betriebe", csKey, "", betriebe, sizeof(betriebe), inifile);
-						char *cp = strchr(betriebe, '\t');	// Unternehmensart1, Unternehmensart2 (Rechtsform) und Steuernummer sind durch Tabs getrennt
-						if (cp)
-							*cp = '\0';
-						csFeldinhalt = betriebe;
-						break;
+						if (!*betriebe) 
+						{ 
+							csFeldinhalt = "<Unternehmensart für Betrieb nicht gefunden>"; 
+							break; 
+						}
+						else if (!strcmp(betriebe, sFilter)) 
+						{
+							csKey.Format("Betrieb%02dUnternehmensart", iBetriebe);
+							GetPrivateProfileString("Betriebe", csKey, "", betriebe, sizeof(betriebe), inifile);
+							char *cp = strchr(betriebe, '\t');	// Unternehmensart1, Unternehmensart2 (Rechtsform) und Steuernummer sind durch Tabs getrennt
+							if (cp)
+								*cp = '\0';
+							csFeldinhalt = betriebe;
+							break;
+						}
 					}
 				}
-			}
-			else if (ID == "unternehmensart2" && *sFilter)
-			{
-				char inifile[1000], betriebe[1000]; 
-				GetIniFileName(inifile, sizeof(inifile)); 
-				CString csKey;
-				int iBetriebe;
-				for (iBetriebe = 0; iBetriebe < 100; iBetriebe++)
+				else if (ID == "unternehmensart2" && *sFilter)
 				{
-					csKey.Format("Betrieb%02dName", iBetriebe);
-					GetPrivateProfileString("Betriebe", csKey, "", betriebe, sizeof(betriebe), inifile);
-					if (!*betriebe) 
-					{ 
-						csFeldinhalt = ""; 
-						break; 
-					}
-					else if (!strcmp(betriebe, sFilter)) 
+					char inifile[1000], betriebe[1000]; 
+					GetIniFileName(inifile, sizeof(inifile)); 
+					CString csKey;
+					int iBetriebe;
+					for (iBetriebe = 0; iBetriebe < 100; iBetriebe++)
 					{
-						csKey.Format("Betrieb%02dUnternehmensart", iBetriebe);
+						csKey.Format("Betrieb%02dName", iBetriebe);
 						GetPrivateProfileString("Betriebe", csKey, "", betriebe, sizeof(betriebe), inifile);
-						char *cp = strchr(betriebe, '\t');	// Unternehmensart1, Unternehmensart2 (Rechtsform) und Steuernummer sind durch Tabs getrennt
-						if (!cp || cp[1] == '\0' || cp[1] == '\t')
-						{
-							GetPrivateProfileString(IniSektion((LPCSTR)ID), !strcmp(IniSektion((LPCSTR)ID), "Finanzamt") || !strcmp(IniSektion((LPCSTR)ID), "EinnahmenRechnungsposten") || !strcmp(IniSektion((LPCSTR)ID), "AusgabenRechnungsposten")? ((LPCSTR)ID)+1 : (LPCSTR)ID, "", csFeldinhalt.GetBuffer(10000), 10000, inifile);
-							csFeldinhalt.ReleaseBuffer();
+						if (!*betriebe) 
+						{ 
+							csFeldinhalt = ""; 
+							break; 
 						}
-						else
+						else if (!strcmp(betriebe, sFilter)) 
 						{
-							char *cp2 = strchr(++cp, '\t');
-							if (cp2)
-								*cp2 = '\0';
-							csFeldinhalt = cp;
+							csKey.Format("Betrieb%02dUnternehmensart", iBetriebe);
+							GetPrivateProfileString("Betriebe", csKey, "", betriebe, sizeof(betriebe), inifile);
+							char *cp = strchr(betriebe, '\t');	// Unternehmensart1, Unternehmensart2 (Rechtsform) und Steuernummer sind durch Tabs getrennt
+							if (!cp || cp[1] == '\0' || cp[1] == '\t')
+							{
+								GetPrivateProfileString(IniSektion((LPCSTR)ID), !strcmp(IniSektion((LPCSTR)ID), "Finanzamt") || !strcmp(IniSektion((LPCSTR)ID), "EinnahmenRechnungsposten") || !strcmp(IniSektion((LPCSTR)ID), "AusgabenRechnungsposten")? ((LPCSTR)ID)+1 : (LPCSTR)ID, "", csFeldinhalt.GetBuffer(10000), 10000, inifile);
+								csFeldinhalt.ReleaseBuffer();
+							}
+							else
+							{
+								char *cp2 = strchr(++cp, '\t');
+								if (cp2)
+									*cp2 = '\0';
+								csFeldinhalt = cp;
+							}
+							break;
 						}
-						break;
 					}
 				}
-			}
-			else if (ID == "fsteuernummer" && *sFilter)
-			{
-				char inifile[1000], betriebe[1000]; 
-				GetIniFileName(inifile, sizeof(inifile)); 
-				CString csKey;
-				int iBetriebe;
-				for (iBetriebe = 0; iBetriebe < 100; iBetriebe++)
+				else if (ID == "fsteuernummer" && *sFilter)
 				{
-					csKey.Format("Betrieb%02dName", iBetriebe);
-					GetPrivateProfileString("Betriebe", csKey, "", betriebe, sizeof(betriebe), inifile);
-					if (!*betriebe) 
-					{ 
-						csFeldinhalt = ""; 
-						break; 
-					}
-					else if (!strcmp(betriebe, sFilter)) 
+					char inifile[1000], betriebe[1000]; 
+					GetIniFileName(inifile, sizeof(inifile)); 
+					CString csKey;
+					int iBetriebe;
+					for (iBetriebe = 0; iBetriebe < 100; iBetriebe++)
 					{
-						csKey.Format("Betrieb%02dUnternehmensart", iBetriebe);
+						csKey.Format("Betrieb%02dName", iBetriebe);
 						GetPrivateProfileString("Betriebe", csKey, "", betriebe, sizeof(betriebe), inifile);
-						char *cp = strchr(betriebe, '\t');	// Unternehmensart1, Unternehmensart2 (Rechtsform) und Steuernummer sind durch Tabs getrennt
-						if (cp) cp = strchr(cp+1, '\t');
-						if (!cp || cp[1] == '\0' || cp[1] == '\t')
-						{
-							GetPrivateProfileString(IniSektion((LPCSTR)ID), !strcmp(IniSektion((LPCSTR)ID), "Finanzamt") || !strcmp(IniSektion((LPCSTR)ID), "EinnahmenRechnungsposten") || !strcmp(IniSektion((LPCSTR)ID), "AusgabenRechnungsposten")? ((LPCSTR)ID)+1 : (LPCSTR)ID, "", csFeldinhalt.GetBuffer(10000), 10000, inifile);
-							csFeldinhalt.ReleaseBuffer();
+						if (!*betriebe) 
+						{ 
+							csFeldinhalt = ""; 
+							break; 
 						}
-						else
+						else if (!strcmp(betriebe, sFilter)) 
 						{
-							csFeldinhalt = ++cp;
+							csKey.Format("Betrieb%02dUnternehmensart", iBetriebe);
+							GetPrivateProfileString("Betriebe", csKey, "", betriebe, sizeof(betriebe), inifile);
+							char *cp = strchr(betriebe, '\t');	// Unternehmensart1, Unternehmensart2 (Rechtsform) und Steuernummer sind durch Tabs getrennt
+							if (cp) cp = strchr(cp+1, '\t');
+							if (!cp || cp[1] == '\0' || cp[1] == '\t')
+							{
+								GetPrivateProfileString(IniSektion((LPCSTR)ID), !strcmp(IniSektion((LPCSTR)ID), "Finanzamt") || !strcmp(IniSektion((LPCSTR)ID), "EinnahmenRechnungsposten") || !strcmp(IniSektion((LPCSTR)ID), "AusgabenRechnungsposten")? ((LPCSTR)ID)+1 : (LPCSTR)ID, "", csFeldinhalt.GetBuffer(10000), 10000, inifile);
+								csFeldinhalt.ReleaseBuffer();
+							}
+							else
+							{
+								csFeldinhalt = ++cp;
+							}
+							break;
 						}
-						break;
 					}
 				}
+				else 
+				{
+					char EasyCashIniFilenameBuffer[1000];
+					GetIniFileName(EasyCashIniFilenameBuffer, sizeof(EasyCashIniFilenameBuffer));
+					GetPrivateProfileString(IniSektion((LPCSTR)ID), !strcmp(IniSektion((LPCSTR)ID), "Finanzamt") || !strcmp(IniSektion((LPCSTR)ID), "EinnahmenRechnungsposten") || !strcmp(IniSektion((LPCSTR)ID), "AusgabenRechnungsposten")? ((LPCSTR)ID)+1 : (LPCSTR)ID, "", csFeldinhalt.GetBuffer(10000), 10000, EasyCashIniFilenameBuffer);
+					csFeldinhalt.ReleaseBuffer();
+				}
+
+				if (csFeldinhalte == "")
+					csFeldinhalte = csFeldinhalt;
+				else
+					csFeldinhalte += " " + csFeldinhalt;
 			}
-			else 
-			{
-				char EasyCashIniFilenameBuffer[1000];
-				GetIniFileName(EasyCashIniFilenameBuffer, sizeof(EasyCashIniFilenameBuffer));
-				GetPrivateProfileString(IniSektion((LPCSTR)ID), !strcmp(IniSektion((LPCSTR)ID), "Finanzamt") || !strcmp(IniSektion((LPCSTR)ID), "EinnahmenRechnungsposten") || !strcmp(IniSektion((LPCSTR)ID), "AusgabenRechnungsposten")? ((LPCSTR)ID)+1 : (LPCSTR)ID, "", csFeldinhalt.GetBuffer(10000), 10000, EasyCashIniFilenameBuffer);
-				csFeldinhalt.ReleaseBuffer();
-			}
-			
+			while (IDs != "");
+			csFeldinhalt = csFeldinhalte;
+
 			if (nID >= 0 && nID < 10000) m_laFeldWerte[nID] = currency_to_int(csFeldinhalt.GetBuffer(0));
 		}
 		else if (!stricmp(child->GetAttrValue("typ"), "Dokumentdaten"))

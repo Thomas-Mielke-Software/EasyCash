@@ -11,11 +11,7 @@
     </feld>
     <feld id="3" typ="Einstellungsdaten" seite="1" horizontal="110" vertikal="388" ausrichtung="linksbuendig" anteil="netto" nachkommaanteil="ohne" nullwertdarstellung="nein" veraltet="nein" >
       <name>Name</name>
-      <erweiterung>name</erweiterung>
-    </feld>
-    <feld id="4" typ="Einstellungsdaten" seite="1" horizontal="509" vertikal="388" ausrichtung="linksbuendig" anteil="netto" nachkommaanteil="ohne" nullwertdarstellung="nein" veraltet="nein" >
-      <name>Vorname </name>
-      <erweiterung>vorname</erweiterung>
+      <erweiterung>vorname name</erweiterung>
     </feld>
     <feld id="5" typ="Einstellungsdaten" seite="1" horizontal="110" vertikal="429" ausrichtung="linksbuendig" anteil="netto" nachkommaanteil="ohne" nullwertdarstellung="nein" veraltet="nein" >
       <name>Unternehmensart</name>

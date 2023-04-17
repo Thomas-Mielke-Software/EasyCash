@@ -19,11 +19,11 @@
     </feld>
     <feld id="5" typ="Einstellungsdaten" seite="1" horizontal="1076" vertikal="239" ausrichtung="linksbuendig" anteil="netto" nachkommaanteil="ohne" nullwertdarstellung="nein" veraltet="nein" >
       <name>fplz</name>
-      <erweiterung>fplz</erweiterung>
+      <erweiterung>fplz fort</erweiterung>
     </feld>
     <feld id="6" typ="Einstellungsdaten" seite="1" horizontal="115" vertikal="287" ausrichtung="linksbuendig" anteil="netto" nachkommaanteil="ohne" nullwertdarstellung="nein" veraltet="nein" >
       <name>name</name>
-      <erweiterung>name</erweiterung>
+      <erweiterung>vorname name</erweiterung>
     </feld>
     <feld id="7" typ="Einstellungsdaten" seite="1" horizontal="115" vertikal="332" ausrichtung="linksbuendig" anteil="netto" nachkommaanteil="ohne" nullwertdarstellung="nein" veraltet="nein" >
       <name>strasse</name>
@@ -31,7 +31,7 @@
     </feld>
     <feld id="8" typ="Einstellungsdaten" seite="1" horizontal="115" vertikal="372" ausrichtung="linksbuendig" anteil="netto" nachkommaanteil="ohne" nullwertdarstellung="nein" veraltet="nein" >
       <name>plz</name>
-      <erweiterung>plz</erweiterung>
+      <erweiterung>plz ort</erweiterung>
 
     </feld>
     <feld id="41" typ="Einnahmen" seite="1" horizontal="704" vertikal="1266" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="ohne" nullwertdarstellung="nein" veraltet="nein" >
@@ -156,7 +156,7 @@
       <name>Leistungen eines im Ausland ansässigen Unternehmers (Steuer-Anteil)</name>
       <erweiterung/>
     </feld>
-    <feld id="73" typ="Ausgaben" seite="2" horizontal="666" vertikal="798" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="ohne" nullwertdarstellung="nein" veraltet="nein" >
+    <feld id="73" typ="Ausgaben" seite="2" horizontal="666" vertikal="756" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="ohne" nullwertdarstellung="nein" veraltet="nein" >
       <name>Lieferungen sicherungsübereigneter Gegenstände und Umsätze, die unter das GrEStG fallen (Netto-Anteil)</name>
       <erweiterung/>
     </feld>
@@ -172,7 +172,7 @@
       <name>Lieferung von Mobilfunkgeräten und integrierten Schaltkreisen (Steuer-Anteil)</name>
       <erweiterung/>
     </feld>
-    <feld id="84" typ="Ausgaben" seite="2" horizontal="666" vertikal="756" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="ohne" nullwertdarstellung="nein" veraltet="nein" >
+    <feld id="84" typ="Ausgaben" seite="2" horizontal="666" vertikal="798" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="ohne" nullwertdarstellung="nein" veraltet="nein" >
       <name>Andere Leistungen nach § 13b Abs. 2 (Netto-Anteil)</name>
       <erweiterung/>
     </feld>
@@ -264,14 +264,6 @@
     <feld id="9" typ="Freitext" seite="1" horizontal="250" vertikal="501" ausrichtung="linksbuendig" anteil="netto" nachkommaanteil="ohne" nullwertdarstellung="nein" veraltet="nein" >
       <name>Voranmeldungszeitraum Kreuzchen</name>
       <erweiterung>X</erweiterung>
-    </feld>
-    <feld id="10" typ="Einstellungsdaten" seite="1" horizontal="1188" vertikal="239" ausrichtung="linksbuendig" anteil="netto" nachkommaanteil="ohne" nullwertdarstellung="nein" veraltet="nein" >
-      <name>fort</name>
-      <erweiterung>fort</erweiterung>
-    </feld>
-    <feld id="11" typ="Einstellungsdaten" seite="1" horizontal="222" vertikal="372" ausrichtung="linksbuendig" anteil="netto" nachkommaanteil="ohne" nullwertdarstellung="nein" veraltet="nein" >
-      <name>ort</name>
-      <erweiterung>ort</erweiterung>
     </feld>
     <feld id="39" typ="Dokumentdaten" seite="3" horizontal="931" vertikal="589" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="ohne" nullwertdarstellung="nein" veraltet="nein" >
       <name>Anrechnung (Abzug) der festgesetzten Sondervorauszahlung für Dauerfristverlängerung -- für Dezember/4.Quartal bitte in Erweiterung eintragen: [Dauerfristverlängerung]Sondervorauszahlung$J</name>

@@ -662,7 +662,7 @@ v2.46
 
 v2.47
 - Bestandskonten ohne Buchungen werden nun im Journal dann angezeit, wenn sie einen Saldo aufweisen, der nicht null ist.
-
+- Auf den USt.-Formularen werden Vor- und Nachnamen jetzt direkt hintereinandergeschrieben.
 
 !!!!!!!!!!!!!! 
 Ja, das USt.-Voranm.-Formular ist ein bisschen eingedampft worden im Vergleich mit 2022 und es gibt kein separates Feld für den Vornamen mehr. Um die Gefahr einer Uberschneidung bei langen Namen zu vermeiden, habe ich den Vornahmen weggelassen. Ich überlege eine neue Feldart "Kombinationsfeld" einzuführen, um Vor- und Nachnamen in einem Feld zusammenzufügen. Das wäre auch für PLZ und Ort sinnvoll -- müsste ich aber erst mal programmieren.
