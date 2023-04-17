@@ -153,12 +153,12 @@ Source: D:\Work\EasyCash\EUeR\AT-2022\E1a-K-AT-2022.ecf; DestDir: {app}; Flags: 
 Source: D:\Work\EasyCash\EUeR\AT-2022\E1a-K-AT-2022-1.png; DestDir: {app}; Flags: ignoreversion; Components: ATFormular
 Source: D:\Work\EasyCash\EUeR\AT-2022\E1a-K-AT-2022-2.png; DestDir: {app}; Flags: ignoreversion; Components: ATFormular
 Source: D:\Work\EasyCash\EUeR\AT-2022\E1a-K-AT-2022-3.png; DestDir: {app}; Flags: ignoreversion; Components: ATFormular   
-Source: D:\Work\EasyCash\EUeR\AT-2022\E6a-K-AT-2022.ecf; DestDir: {app}; Flags: ignoreversion; Components: ATFormular
-Source: D:\Work\EasyCash\EUeR\AT-2022\E6a-K-AT-2022-1.png; DestDir: {app}; Flags: ignoreversion; Components: ATFormular       
-Source: D:\Work\EasyCash\EUeR\AT-2022\E6a-K-AT-2022-2.png; DestDir: {app}; Flags: ignoreversion; Components: ATFormular        
-Source: D:\Work\EasyCash\EUeR\AT-2022\E6a-K-AT-2022-3.png; DestDir: {app}; Flags: ignoreversion; Components: ATFormular
-Source: D:\Work\EasyCash\EUeR\AT-2022\E6a-K-AT-2022-4.png; DestDir: {app}; Flags: ignoreversion; Components: ATFormular
-Source: D:\Work\EasyCash\EUeR\AT-2022\E6a-K-AT-2022-5.png; DestDir: {app}; Flags: ignoreversion; Components: ATFormular
+Source: D:\Work\EasyCash\EUeR\AT-2022\E6a-AT-2022.ecf; DestDir: {app}; Flags: ignoreversion; Components: ATFormular
+Source: D:\Work\EasyCash\EUeR\AT-2022\E6a-AT-2022-1.png; DestDir: {app}; Flags: ignoreversion; Components: ATFormular       
+Source: D:\Work\EasyCash\EUeR\AT-2022\E6a-AT-2022-2.png; DestDir: {app}; Flags: ignoreversion; Components: ATFormular        
+Source: D:\Work\EasyCash\EUeR\AT-2022\E6a-AT-2022-3.png; DestDir: {app}; Flags: ignoreversion; Components: ATFormular
+Source: D:\Work\EasyCash\EUeR\AT-2022\E6a-AT-2022-4.png; DestDir: {app}; Flags: ignoreversion; Components: ATFormular
+Source: D:\Work\EasyCash\EUeR\AT-2022\E6a-AT-2022-5.png; DestDir: {app}; Flags: ignoreversion; Components: ATFormular
 
 [Registry]
 Root: HKCU; Subkey: Software\Tools; Flags: uninsdeletekeyifempty
