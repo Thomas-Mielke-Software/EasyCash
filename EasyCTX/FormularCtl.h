@@ -74,6 +74,7 @@ protected:
 	afx_msg BSTR HoleFeldwertUeberID(long FeldID);
 	afx_msg BSTR HoleFeldbeschreibungUeberID(long FeldID);
 	afx_msg long HoleVoranmeldungszeitraum();
+	afx_msg BSTR HoleVerknuepfteKonten(long FeldID);
 	//}}AFX_DISPATCH
 	DECLARE_DISPATCH_MAP()
 
@@ -102,6 +103,7 @@ public:
 	dispidHoleFeldwertUeberID = 9L,
 	dispidHoleFeldbeschreibungUeberID = 10L,
 	dispidHoleVoranmeldungszeitraum = 11L,
+	dispidHoleVerknuepfteKonten = 12L,
 	//}}AFX_DISP_ID
 	};
 private:
