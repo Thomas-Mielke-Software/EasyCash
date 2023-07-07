@@ -38,7 +38,7 @@
 
 #include <afxcontrolbars.h>	// MFC support for ribbon and control bars
 
-#include <D:\Work\EasyCash\TipDlg.h>
+#include "TipDlg.h"
 
 // eingefügt wg. Namenskonflikten: .... hat auch nichts gebracht. Immer noch Exception wg. ASSERT(m_dwRef <= 1); in ~CCmdTarget
 /*
