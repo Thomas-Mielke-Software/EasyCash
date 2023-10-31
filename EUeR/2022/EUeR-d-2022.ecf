@@ -21,11 +21,11 @@
       <name>Rechtsform</name>
       <erweiterung>unternehmensart2</erweiterung>
     </feld>
-    <feld id="1111" typ="Einnahmen" seite="1" horizontal="1173" vertikal="554" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" nullwertdarstellung="nein" >
+    <feld id="1111" typ="Einnahmen" seite="1" horizontal="1173" vertikal="554" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" nullwertdarstellung="nein" elsterfeldname="BEin/Kleinunternehmer/Sum/E6000101" >
       <name>Betriebseinnahmen als umsatzsteuerlicher Kleinunternehmer ohne Umsätze aus §19 Abs. 3 Nr. 1 und Nr. 2</name>
       <erweiterung/> 
     </feld>
-    <feld id="119" typ="Einnahmen" seite="1" horizontal="629" vertikal="583" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" nullwertdarstellung="nein" >
+    <feld id="119" typ="Einnahmen" seite="1" horizontal="629" vertikal="583" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" nullwertdarstellung="nein" elsterfeldname="BEin/Umsatz_nicht_steuerbar/Sum/E6000201" >
       <name>Betriebseinnahmen als umsatzsteuerlicher Kleinunternehmer aus Umsätzen gemäß §19 Abs. 3 Nr. 1 und Nr. 2</name>
       <erweiterung/>
     </feld>
@@ -33,15 +33,15 @@
       <name>Betriebseinnamen als steuerl. Kleinunternehmer gesamt</name>
       <erweiterung>119+1111</erweiterung>
     </feld>
-    <feld id="1104" typ="Einnahmen" seite="1" horizontal="962" vertikal="633" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" nullwertdarstellung="nein" veraltet="nein" >
+    <feld id="1104" typ="Einnahmen" seite="1" horizontal="962" vertikal="633" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" nullwertdarstellung="nein" veraltet="nein" elsterfeldname="BEin/Land_Forst/Sum/E6000301" >
       <name>Betriebseinnahmen aus Land- und Forstwirtschaft nach §24 UStG</name>
       <erweiterung/> 
     </feld>
-    <feld id="1112" typ="Einnahmen" seite="1" horizontal="962" vertikal="674" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" nullwertdarstellung="nein" veraltet="nein" >
+    <feld id="1112" typ="Einnahmen" seite="1" horizontal="962" vertikal="674" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" nullwertdarstellung="nein" veraltet="nein" elsterfeldname="BEin/USt_StPflicht/Sum/E6000401" >
       <name>Umsatzsteuerpflichtige Betriebseinnahmen</name>
       <erweiterung/> 
     </feld>
-    <feld id="1103" typ="Einnahmen" seite="1" horizontal="962" vertikal="707" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" nullwertdarstellung="nein" veraltet="nein" >
+    <feld id="1103" typ="Einnahmen" seite="1" horizontal="962" vertikal="707" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" nullwertdarstellung="nein" veraltet="nein" elsterfeldname="BEin/USt_StFrei/Sum/E6000501" >
       <name>Umsatzsteuerfreie, nicht umsatzsteuerbare Betriebseinnahmen sowie Betriebseinnahmen, für die der Leistungsempfänger die Umsatzsteuer nach § 13 b UStG schuldet</name>
       <erweiterung/>
     </feld>
@@ -53,79 +53,79 @@
       <name>UST §13b USTG Lieferung Ausland</name>
       <erweiterung/>
     </feld>
-    <feld id="1140" typ="Einnahmen" seite="1" horizontal="1174" vertikal="738" ausrichtung="rechtsbuendig" anteil="brutto" nachkommaanteil="mit" nullwertdarstellung="nein" veraltet="nein" >
+    <feld id="1140" typ="Einnahmen" seite="1" horizontal="1174" vertikal="738" ausrichtung="rechtsbuendig" anteil="brutto" nachkommaanteil="mit" nullwertdarstellung="nein" veraltet="nein" elsterfeldname="BEin/USt_Vereinnahmt_Unentgeltl/Sum/E6000601" >
       <name>Vereinnahmte Umsatzsteuer sowie Umsatzsteuer auf unentgeltliche Wertabgaben</name>
       <erweiterung/> 
     </feld>
-    <feld id="1141" typ="Einnahmen" seite="1" horizontal="962" vertikal="778" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" nullwertdarstellung="nein" veraltet="nein" >
+    <feld id="1141" typ="Einnahmen" seite="1" horizontal="962" vertikal="778" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" nullwertdarstellung="nein" veraltet="nein" elsterfeldname="BEin/USt_Erstattet_Verrechnet/Sum/E6000701" >
       <name>Vom Finanzamt erstattete und ggf. verrechnete Umsatzsteuer</name>
       <erweiterung/> 
     </feld>
-    <feld id="1102" typ="Einnahmen" seite="1" horizontal="962" vertikal="810" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" nullwertdarstellung="nein" veraltet="nein" >
+    <feld id="1102" typ="Einnahmen" seite="1" horizontal="962" vertikal="810" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" nullwertdarstellung="nein" veraltet="nein" elsterfeldname="BEin/Anlagevermoegen/Sum/E6000801" >
       <name>Veräußerung oder Entnahme von Anlagevermögen</name>
       <erweiterung/> 
     </feld>
-    <feld id="1106" typ="Einnahmen" seite="1" horizontal="962" vertikal="841" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" nullwertdarstellung="nein" veraltet="nein" >
+    <feld id="1106" typ="Einnahmen" seite="1" horizontal="962" vertikal="841" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" nullwertdarstellung="nein" veraltet="nein" elsterfeldname="BEin/Nutzung_Priv_Kfz/Sum/E6000901" >
       <name>Private KFZ-Nutzung</name>
       <erweiterung/> 
     </feld>
-    <feld id="1108" typ="Einnahmen" seite="1" horizontal="962" vertikal="872" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" nullwertdarstellung="nein" veraltet="nein" >
+    <feld id="1108" typ="Einnahmen" seite="1" horizontal="962" vertikal="872" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" nullwertdarstellung="nein" veraltet="nein" elsterfeldname="BEin/Entnahme_Sonst/Sum/E6001001" >
       <name>Sonstige Sach-, Nutzungs- und Leistungsentnahmen</name>
       <erweiterung>Sonstige Sach-, Nutzungs- und Leistungsentnahmen (z.B. private Telefonnutzung)</erweiterung>
     </feld>
-    <feld id="1195" typ="Ausgaben" seite="1" horizontal="961" vertikal="1039" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" nullwertdarstellung="nein" veraltet="nein" unterkategorie="Hauptsächliche Betriebsausgaben" >
+    <feld id="1195" typ="Ausgaben" seite="1" horizontal="961" vertikal="1039" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" nullwertdarstellung="nein" veraltet="nein" elsterfeldname="EUER/BAus/E6002304" unterkategorie="Hauptsächliche Betriebsausgaben" >
       <name>Betriebsausgabenpauschale für bestimmte Berufsgruppen</name>
       <erweiterung/> 
     </feld>
-    <feld id="1126" typ="Ausgaben" seite="1" horizontal="961" vertikal="1070" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="ohne" nullwertdarstellung="nein" veraltet="nein" >
+    <feld id="1126" typ="Ausgaben" seite="1" horizontal="961" vertikal="1070" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="ohne" nullwertdarstellung="nein" veraltet="nein" elsterfeldname="" >
       <name>Richtbeträge für Betriebsausgaben im Weinbau (Anlage LuF)</name>
       <erweiterung/> 
     </feld>
-    <feld id="1322" typ="Ausgaben" seite="1" horizontal="961" vertikal="1101" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="ohne" nullwertdarstellung="nein" veraltet="nein" >
+    <feld id="1322" typ="Ausgaben" seite="1" horizontal="961" vertikal="1101" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="ohne" nullwertdarstellung="nein" veraltet="nein" elsterfeldname="" >
       <name>Pauschale Betriebsausgaben in der Forstwirtschaft (Anlage LuF)</name>
       <erweiterung/> 
     </feld>
-    <feld id="1100" typ="Ausgaben" seite="1" horizontal="961" vertikal="1132" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" nullwertdarstellung="nein" veraltet="nein" >
+    <feld id="1100" typ="Ausgaben" seite="1" horizontal="961" vertikal="1132" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" nullwertdarstellung="nein" veraltet="nein" elsterfeldname="EUER/BAus/Ware_Rohstoff_Hilfsstoff/Sum/E6001601" >
       <name>Waren, Rohstoffe und Hilfsstoffe einschl. der Nebenkosten</name>
       <erweiterung/> 
     </feld>
-    <feld id="1110" typ="Ausgaben" seite="1" horizontal="961" vertikal="1163" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" nullwertdarstellung="nein" veraltet="nein" >
+    <feld id="1110" typ="Ausgaben" seite="1" horizontal="961" vertikal="1163" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" nullwertdarstellung="nein" veraltet="nein" elsterfeldname="EUER/BAus/Fremdleistung/Sum/E6001701" >
       <name>Bezogene Leistungen</name>
       <erweiterung/> 
     </feld>
-    <feld id="1120" typ="Ausgaben" seite="1" horizontal="961" vertikal="1194" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" nullwertdarstellung="nein" veraltet="nein" >
+    <feld id="1120" typ="Ausgaben" seite="1" horizontal="961" vertikal="1194" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" nullwertdarstellung="nein" veraltet="nein" elsterfeldname="EUER/BAus/Personal/Sum/E6001801" >
       <name>Ausgaben für eigenes Personal</name>
       <erweiterung/> 
     </feld>
-    <feld id="1136" typ="Ausgaben" seite="1" horizontal="962" vertikal="1244" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" nullwertdarstellung="nein" veraltet="nein" unterkategorie="Absetzung für Abnutzung (AfA)" >
+    <feld id="1136" typ="Ausgaben" seite="1" horizontal="962" vertikal="1244" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" nullwertdarstellung="nein" veraltet="nein" elsterfeldname="EUER/BAus/AfA/E6001901" unterkategorie="Absetzung für Abnutzung (AfA)" >
       <name>AfA auf unbewegliche Wirtschaftsgüter</name>
       <erweiterung/> 
     </feld>
-    <feld id="1131" typ="Ausgaben" seite="1" horizontal="962" vertikal="1277" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" nullwertdarstellung="nein" veraltet="nein" >
+    <feld id="1131" typ="Ausgaben" seite="1" horizontal="962" vertikal="1277" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" nullwertdarstellung="nein" veraltet="nein" elsterfeldname="EUER/BAus/AfA/E6002001" >
       <name>AfA auf immaterielle Wirtschaftsgüter</name>
       <erweiterung/> 
     </feld>
-    <feld id="1130" typ="Ausgaben" seite="1" horizontal="962" vertikal="1307" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" nullwertdarstellung="nein" veraltet="nein" >
+    <feld id="1130" typ="Ausgaben" seite="1" horizontal="962" vertikal="1307" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" nullwertdarstellung="nein" veraltet="nein" elsterfeldname="EUER/BAus/AfA/E6002101" >
       <name>AfA auf bewegliche Wirtschaftsgüter</name>
       <erweiterung/> 
     </feld>
-    <feld id="1134" typ="Ausgaben" seite="2" horizontal="903" vertikal="130" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" nullwertdarstellung="nein" veraltet="nein" >
+    <feld id="1134" typ="Ausgaben" seite="2" horizontal="903" vertikal="130" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" nullwertdarstellung="nein" veraltet="nein" elsterfeldname="EUER/BAus/AfA/E6002201" >
       <name>Sonderabschreibungen nach § 7g Abs. 1 und 2 EStG</name>
       <erweiterung/> 
     </feld>
-    <feld id="1138" typ="Ausgaben" seite="2" horizontal="903" vertikal="163" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" nullwertdarstellung="nein" veraltet="nein" >
+    <feld id="1138" typ="Ausgaben" seite="2" horizontal="903" vertikal="163" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" nullwertdarstellung="nein" veraltet="nein" elsterfeldname="EUER/BAus/AfA/Herabsetzung_P7g/Sum/E6003102" >
       <name>Herabsetzungsbeträge nach §7g Abs. 2 EStG</name>
       <erweiterung/>
     </feld>
-    <feld id="1132" typ="Ausgaben" seite="2" horizontal="903" vertikal="195" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" nullwertdarstellung="nein" veraltet="nein" >
+    <feld id="1132" typ="Ausgaben" seite="2" horizontal="903" vertikal="195" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" nullwertdarstellung="nein" veraltet="nein" elsterfeldname="EUER/BAus/AfA/Wirtschaftsgut_geringwertig/Sum/E6002301" >
       <name>Aufwendungen für geringwertige Wirtschaftsgüter</name>
       <erweiterung/> 
     </feld>
-    <feld id="1137" typ="Ausgaben" seite="2" horizontal="903" vertikal="227" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" nullwertdarstellung="nein" veraltet="nein" >
+    <feld id="1137" typ="Ausgaben" seite="2" horizontal="903" vertikal="227" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" nullwertdarstellung="nein" veraltet="nein" elsterfeldname="EUER/BAus/AfA/Weitere_Angabe/E6003302" >
       <name>Auflösung Sammelposten nach §6 Abs. 2a EStG</name>
       <erweiterung/>
     </feld>
-    <feld id="1135" typ="Ausgaben" seite="2" horizontal="903" vertikal="260" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" nullwertdarstellung="nein" veraltet="nein" >
+    <feld id="1135" typ="Ausgaben" seite="2" horizontal="903" vertikal="260" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" nullwertdarstellung="nein" veraltet="nein" elsterfeldname="EUER/BAus/AfA/Weitere_Angabe/E6002401" >
       <name>Restbuchwert der im Kalenderjahr/Wirtschaftsjahr ausgeschiedenen Anlagegüter</name>
       <erweiterung/> 
     </feld>
@@ -137,75 +137,75 @@
       <name>Übertrag aus Zeile 34</name>
       <erweiterung>34</erweiterung>
     </feld>
-    <feld id="1150" typ="Ausgaben" seite="2" horizontal="901" vertikal="320" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" nullwertdarstellung="nein" veraltet="nein" unterkategorie="Raumkosten und sonstige Grundstücksaufwendungen" >
+    <feld id="1150" typ="Ausgaben" seite="2" horizontal="901" vertikal="320" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" nullwertdarstellung="nein" veraltet="nein" elsterfeldname="EUER/BAus/Raumkosten_u_sonst/Miete_Pacht/Sum/E6003201" unterkategorie="Raumkosten und sonstige Grundstücksaufwendungen" >
       <name>Miete/Pacht für Geschäftsräume und betrieblich genutzte Grundstücke</name>
       <erweiterung/>
     </feld>
-    <feld id="1152" typ="Ausgaben" seite="2" horizontal="901" vertikal="353" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" nullwertdarstellung="nein" veraltet="nein" >
+    <feld id="1152" typ="Ausgaben" seite="2" horizontal="901" vertikal="353" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" nullwertdarstellung="nein" veraltet="nein" elsterfeldname="EUER/BAus/Raumkosten_u_sonst/DHHF/Sum/E6003703" >
       <name>Miete/Aufwendungen für doppelte Haushaltsführung</name>
       <erweiterung/>
     </feld>
-    <feld id="1151" typ="Ausgaben" seite="2" horizontal="901" vertikal="385" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" nullwertdarstellung="nein" veraltet="nein" >
+    <feld id="1151" typ="Ausgaben" seite="2" horizontal="901" vertikal="385" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" nullwertdarstellung="nein" veraltet="nein" elsterfeldname="EUER/BAus/Raumkosten_u_sonst/Sonst_Aufw_betr_Grund/Sum/E6003301" >
       <name>Aufwendungen für betrieblich genutzte Grundstücke</name>
       <erweiterung/>
     </feld>
-    <feld id="1280" typ="Ausgaben" seite="2" horizontal="902" vertikal="432" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" nullwertdarstellung="nein" veraltet="nein" unterkategorie="Sonstige unbeschränkt abziehbare Betriebsausgaben" >
+    <feld id="1280" typ="Ausgaben" seite="2" horizontal="902" vertikal="432" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" nullwertdarstellung="nein" veraltet="nein" elsterfeldname="EUER/BAus/Sonst_unbeschraenkt/Kommunikation/Sum/E6003901" unterkategorie="Sonstige unbeschränkt abziehbare Betriebsausgaben" >
       <name>Aufwendungen für Telekommunikation (z.B. Telefon)</name>
       <erweiterung/>
     </feld>
-    <feld id="1221" typ="Ausgaben" seite="2" horizontal="902" vertikal="463" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" nullwertdarstellung="nein" veraltet="nein" >
+    <feld id="1221" typ="Ausgaben" seite="2" horizontal="902" vertikal="463" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" nullwertdarstellung="nein" veraltet="nein" elsterfeldname="EUER/BAus/Sonst_unbeschraenkt/Auswertstaetigkeit/Sum/E6004004" >
       <name>Übernachtungs- und Reisekosten bei Geschäftsreisen des Steuerpflichtigen</name>
       <erweiterung/>
     </feld>
-    <feld id="1281" typ="Ausgaben" seite="2" horizontal="902" vertikal="493" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" nullwertdarstellung="nein" veraltet="nein" >
+    <feld id="1281" typ="Ausgaben" seite="2" horizontal="902" vertikal="493" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" nullwertdarstellung="nein" veraltet="nein" elsterfeldname="EUER/BAus/Sonst_unbeschraenkt/Fortbildung/Sum/E6004003" >
       <name>Fortbildungskosten</name>
       <erweiterung/>
     </feld>
-    <feld id="1194" typ="Ausgaben" seite="2" horizontal="902" vertikal="525" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" nullwertdarstellung="nein" veraltet="nein" >
+    <feld id="1194" typ="Ausgaben" seite="2" horizontal="902" vertikal="525" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" nullwertdarstellung="nein" veraltet="nein" elsterfeldname="EUER/BAus/Sonst_unbeschraenkt/Rechtsberatung_StB_Buchf/Sum/E6004801" >
       <name>Rechts- und Steuerberatung, Buchführung</name>
       <erweiterung/>
     </feld>
-    <feld id="1222" typ="Ausgaben" seite="2" horizontal="902" vertikal="555" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" nullwertdarstellung="nein" veraltet="nein" >
+    <feld id="1222" typ="Ausgaben" seite="2" horizontal="902" vertikal="555" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" nullwertdarstellung="nein" veraltet="nein" elsterfeldname="EUER/BAus/Sonst_unbeschraenkt/Miete_Leasing_bewegl_WG/Sum/E6004304" >
       <name>Miete/Leasing für bewegliche Wirtschaftsgüter</name>
       <erweiterung/>
     </feld>
-    <feld id="1225" typ="Ausgaben" seite="2" horizontal="902" vertikal="586" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" nullwertdarstellung="nein" veraltet="nein" >
+    <feld id="1225" typ="Ausgaben" seite="2" horizontal="902" vertikal="586" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" nullwertdarstellung="nein" veraltet="nein" elsterfeldname="EUER/BAus/Sonst_unbeschraenkt/Erhaltungsaufwand/Sum/E6004313" >
       <name>Erhaltungsaufwendungen</name>
       <erweiterung/>
     </feld>
-    <feld id="1223" typ="Ausgaben" seite="2" horizontal="902" vertikal="619" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" nullwertdarstellung="nein" veraltet="nein" >
+    <feld id="1223" typ="Ausgaben" seite="2" horizontal="902" vertikal="619" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" nullwertdarstellung="nein" veraltet="nein" elsterfeldname="EUER/BAus/Sonst_unbeschraenkt/Beitrag_Gebuehr_Abgabe_Versicherung/Sum/E6004402" >
       <name>Beiträge, Gebühren, Abgaben und Versicherungen</name>
       <erweiterung/>
     </feld>
-    <feld id="1228" typ="Ausgaben" seite="2" horizontal="902" vertikal="649" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" nullwertdarstellung="nein" veraltet="nein" >
+    <feld id="1228" typ="Ausgaben" seite="2" horizontal="902" vertikal="649" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" nullwertdarstellung="nein" veraltet="nein" elsterfeldname="EUER/BAus/Sonst_unbeschraenkt/EDV/Sum/E6004405" >
       <name>Laufende EDV-Kosten</name>
       <erweiterung/>
     </feld>
-    <feld id="1229" typ="Ausgaben" seite="2" horizontal="902" vertikal="680" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" nullwertdarstellung="nein" veraltet="nein" >
+    <feld id="1229" typ="Ausgaben" seite="2" horizontal="902" vertikal="680" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" nullwertdarstellung="nein" veraltet="nein" elsterfeldname="EUER/BAus/Sonst_unbeschraenkt/Arbeitsmittel/Sum/E6004408" >
       <name>Arbeitsmittel</name>
       <erweiterung/>
     </feld>
-    <feld id="1226" typ="Ausgaben" seite="2" horizontal="902" vertikal="711" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" nullwertdarstellung="nein" veraltet="nein" >
+    <feld id="1226" typ="Ausgaben" seite="2" horizontal="902" vertikal="711" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" nullwertdarstellung="nein" veraltet="nein" elsterfeldname="EUER/BAus/Sonst_unbeschraenkt/Abfall/Sum/E6004411" >
       <name>Kosten für Abfallbeseitigung und Entsorgung</name>
       <erweiterung/>
     </feld>
-    <feld id="1227" typ="Ausgaben" seite="2" horizontal="902" vertikal="742" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" nullwertdarstellung="nein" veraltet="nein" >
+    <feld id="1227" typ="Ausgaben" seite="2" horizontal="902" vertikal="742" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" nullwertdarstellung="nein" veraltet="nein" elsterfeldname="EUER/BAus/Sonst_unbeschraenkt/Verpackung_Transport/Sum/E6004414" >
       <name>Kosten für Verpackung und Transport</name>
       <erweiterung/>
     </feld>
-    <feld id="1224" typ="Ausgaben" seite="2" horizontal="902" vertikal="772" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" nullwertdarstellung="nein" veraltet="nein" >
+    <feld id="1224" typ="Ausgaben" seite="2" horizontal="902" vertikal="772" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" nullwertdarstellung="nein" veraltet="nein" elsterfeldname="EUER/BAus/Sonst_unbeschraenkt/Werbung/Sum/E6004501" >
       <name>Werbekosten</name>
       <erweiterung/>
     </feld>
-    <feld id="1232" typ="Ausgaben" seite="2" horizontal="902" vertikal="801" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" nullwertdarstellung="nein" veraltet="nein" >
+    <feld id="1232" typ="Ausgaben" seite="2" horizontal="902" vertikal="801" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" nullwertdarstellung="nein" veraltet="nein" elsterfeldname="EUER/BAus/Sonst_unbeschraenkt/Schuldzins_AnlageVerm/Sum/E6004202" >
       <name>Schuldzinsen zur Finanzierung von Anschaffungs- und Herstellungskosten von Wirtschaftsgütern des Anlagevermögens</name>
       <erweiterung/>
     </feld>
-    <feld id="1234" typ="Ausgaben" seite="2" horizontal="902" vertikal="831" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" nullwertdarstellung="nein" veraltet="nein" >
+    <feld id="1234" typ="Ausgaben" seite="2" horizontal="902" vertikal="831" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" nullwertdarstellung="nein" veraltet="nein" elsterfeldname="EUER/BAus/Sonst_unbeschraenkt/Schuldzins_Uebrige/Sum/E6004303" >
       <name>Übrige Schuldzinsen</name>
       <erweiterung/>
     </feld>
-    <feld id="43" typ="Summe" seite="2" horizontal="902" vertikal="862" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" nullwertdarstellung="nein" veraltet="nein" >
+    <feld id="43" typ="Summe" seite="2" horizontal="902" vertikal="862" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" nullwertdarstellung="nein" veraltet="nein" elsterfeldname="EUER/BAus/Sonst_unbeschraenkt/Vorsteuer/Sum/E6005001" >
       <name>Gezahlte Vorsteuerbeträge (Summe)</name>
       <erweiterung>mwst(a:1190)+mwst(a:1191)+mwst(a:1100)+mwst(a:1110)+mwst(a:1120)+mwst(a:1136)+mwst(a:1131)+mwst(a:1130)+mwst(a:1134)+mwst(a:1138)+mwst(a:1132)+mwst(a:1137)+mwst(a:1135)+mwst(a:1150)+mwst(a:1152)+mwst(a:1151)+mwst(a:1280)+mwst(a:1221)+mwst(a:1281)+mwst(a:1194)+mwst(a:1222)+mwst(a:1225)+mwst(a:1223)+mwst(a:1228)+mwst(a:1229)+mwst(a:1226)+mwst(a:1227)+mwst(a:1224)+mwst(a:1232)+mwst(a:1234)+mwst(a:1186)+mwst(a:2120)+mwst(a:2125)+mwst(a:2124)+mwst(a:1183)+mwst(a:1164)+mwst(a:1174)+mwst(a:1165)+mwst(a:1175)+mwst(a:1171)+mwst(a:1162)+mwst(a:1172)+mwst(a:1168)+mwst(a:1177)+mwst(a:1144)+mwst(a:1145)+mwst(a:1146)+mwst(a:1147)+mwst(a:142)+mwst(a:1176)+brutto(a:1185)</erweiterung>
     </feld>
@@ -213,51 +213,51 @@
       <name>Gezahlte Vorsteuerbeträge</name>
       <erweiterung/> 
     </feld>
-    <feld id="1186" typ="Ausgaben" seite="2" horizontal="902" vertikal="893" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" nullwertdarstellung="nein" veraltet="nein" >
+    <feld id="1186" typ="Ausgaben" seite="2" horizontal="902" vertikal="893" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" nullwertdarstellung="nein" veraltet="nein" elsterfeldname="EUER/BAus/Sonst_unbeschraenkt/USt/Sum/E6005101" >
       <name>An das Finanzamt gezahlte und ggf. verrechnete Umsatzsteuer</name>
       <erweiterung/> 
     </feld>
-    <feld id="52" typ="Summe" seite="2" horizontal="902" vertikal="924" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" nullwertdarstellung="nein" veraltet="nein" >
+    <feld id="52" typ="Summe" seite="2" horizontal="902" vertikal="924" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" nullwertdarstellung="nein" veraltet="nein" elsterfeldname="EUER/BAus/Sonst_unbeschraenkt/Rueckl_stille_Rerserve_Ausgleichsp/E6005201" >
       <name>Bildung von Rücklagen und/oder Ansparabschreibungen</name>
       <erweiterung>2190</erweiterung> 
     </feld>
-    <feld id="1183" typ="Ausgaben" seite="2" horizontal="902" vertikal="956" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" nullwertdarstellung="nein" veraltet="nein" >
+    <feld id="1183" typ="Ausgaben" seite="2" horizontal="902" vertikal="956" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" nullwertdarstellung="nein" veraltet="nein" elsterfeldname="EUER/BAus/Sonst_unbeschraenkt/Sonst_unbeschr_abziehbar/Sum/E6004901" >
       <name>Übrige Betriebsausgaben</name>
       <erweiterung/> 
     </feld>
-    <feld id="1164" typ="Ausgaben" seite="2" horizontal="571" vertikal="1027" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" nullwertdarstellung="nein" veraltet="nein" unterkategorie="Beschränkt abziehbare Betriebsausgaben" >
+    <feld id="1164" typ="Ausgaben" seite="2" horizontal="571" vertikal="1027" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" nullwertdarstellung="nein" veraltet="nein" elsterfeldname="EUER/BAus/Beschr_abziehbar/Nicht_abziehbar/Geschenke/Sum/E6004001" unterkategorie="Beschränkt abziehbare Betriebsausgaben" >
       <name>/Nicht abziehbare Aufwendungen für Geschenke</name>
       <erweiterung/> 
     </feld>
-    <feld id="1174" typ="Ausgaben" seite="2" horizontal="903" vertikal="1027" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" nullwertdarstellung="nein" veraltet="nein" >
+    <feld id="1174" typ="Ausgaben" seite="2" horizontal="903" vertikal="1027" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" nullwertdarstellung="nein" veraltet="nein" elsterfeldname="EUER/BAus/Beschr_abziehbar/Abziehbar/Geschenke/Sum/E6004002" >
       <name>Abziehbare Aufwendungen für Geschenke</name>
       <erweiterung/> 
     </feld>
-    <feld id="1165" typ="Ausgaben" seite="2" horizontal="571" vertikal="1059" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" nullwertdarstellung="nein" veraltet="nein" >
+    <feld id="1165" typ="Ausgaben" seite="2" horizontal="571" vertikal="1059" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" nullwertdarstellung="nein" veraltet="nein" elsterfeldname="EUER/BAus/Beschr_abziehbar/Nicht_abziehbar/Bewirtung/Sum/E6004101" >
       <name>/Nicht abziehbare Aufwendungen für Bewirtung</name>
       <erweiterung/> 
     </feld>
-    <feld id="1175" typ="Ausgaben" seite="2" horizontal="903" vertikal="1059" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" nullwertdarstellung="nein" veraltet="nein" >
+    <feld id="1175" typ="Ausgaben" seite="2" horizontal="903" vertikal="1059" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" nullwertdarstellung="nein" veraltet="nein" elsterfeldname="EUER/BAus/Beschr_abziehbar/Abziehbar/Bewirtung/Sum/E6004102" >
       <name>Abziehbare Aufwendungen für Bewirtung</name>
       <erweiterung/> 
     </feld>
-    <feld id="1171" typ="Ausgaben" seite="2" horizontal="903" vertikal="1091" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" nullwertdarstellung="nein" veraltet="nein" >
+    <feld id="1171" typ="Ausgaben" seite="2" horizontal="903" vertikal="1091" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" nullwertdarstellung="nein" veraltet="nein" elsterfeldname="EUER/BAus/Beschr_abziehbar/Abziehbar/Verpflegung/Sum/E6005002" >
       <name>Verpflegungsmehraufwendungen</name>
       <erweiterung/>
     </feld>
-    <feld id="162" typ="Ausgaben" seite="2" horizontal="571" vertikal="1125" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" nullwertdarstellung="nein" veraltet="nein" >
+    <feld id="162" typ="Ausgaben" seite="2" horizontal="571" vertikal="1125" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" nullwertdarstellung="nein" veraltet="nein" elsterfeldname="EUER/BAus/Beschr_abziehbar/Nicht_abziehbar/Arbeitszimmer/Sum/E6005102" >
       <name>/Nicht abziehbare Aufwendungen für ein häusliches Arbeitszimmer</name>
       <erweiterung/>
     </feld>
-    <feld id="1172" typ="Ausgaben" seite="2" horizontal="903" vertikal="1125" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" nullwertdarstellung="nein" veraltet="nein" >
+    <feld id="1172" typ="Ausgaben" seite="2" horizontal="903" vertikal="1125" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" nullwertdarstellung="nein" veraltet="nein" elsterfeldname="EUER/BAus/Beschr_abziehbar/Abziehbar/Arbeitszimmer/Sum/E6003101" >
       <name>Abziehbare Aufwendungen für ein häusliches Arbeitszimmer</name>
       <erweiterung/>
     </feld>
-    <feld id="1168" typ="Ausgaben" seite="2" horizontal="571" vertikal="1159" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" nullwertdarstellung="nein" veraltet="nein" >
+    <feld id="1168" typ="Ausgaben" seite="2" horizontal="571" vertikal="1159" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" nullwertdarstellung="nein" veraltet="nein" elsterfeldname="EUER/BAus/Beschr_abziehbar/Nicht_abziehbar/Sonst/Sum/E6004301" >
       <name>/Sonstige nicht abziehbare Betriebsausgaben</name>
       <erweiterung/> 
     </feld>
-    <feld id="1177" typ="Ausgaben" seite="2" horizontal="903" vertikal="1160" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" nullwertdarstellung="nein" veraltet="nein" >
+    <feld id="1177" typ="Ausgaben" seite="2" horizontal="903" vertikal="1160" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" nullwertdarstellung="nein" veraltet="nein" elsterfeldname="EUER/BAus/Beschr_abziehbar/Abziehbar/Sonst/Sum/E6004302" >
       <name>Sonstige abziehbare Betriebsausgaben</name>
       <erweiterung/> 
     </feld>
@@ -269,31 +269,31 @@
       <name>Übertrag auf Seite 3</name>
       <erweiterung>54</erweiterung>
     </feld>
-    <feld id="1144" typ="Ausgaben" seite="3" horizontal="964" vertikal="115" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" nullwertdarstellung="nein" veraltet="nein" unterkategorie="Kraftfahrzeugkosten und andere Fahrtkosten" >
+    <feld id="1144" typ="Ausgaben" seite="3" horizontal="964" vertikal="115" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" nullwertdarstellung="nein" veraltet="nein" elsterfeldname="EUER/BAus/KFZ_u_Fahrtkosten/Leasing/Sum/E6005801" unterkategorie="Kraftfahrzeugkosten und andere Fahrtkosten" >
       <name>Leasingkosten für Kraftfahrzeuge</name>
       <erweiterung/>
     </feld>
-    <feld id="1145" typ="Ausgaben" seite="3" horizontal="964" vertikal="148" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" nullwertdarstellung="nein" veraltet="nein" >
+    <feld id="1145" typ="Ausgaben" seite="3" horizontal="964" vertikal="148" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" nullwertdarstellung="nein" veraltet="nein" elsterfeldname="EUER/BAus/KFZ_u_Fahrtkosten/Steuer_Versicherung_Maut/Sum/E6005903" >
       <name>Steuern, Versicherungen und Maut für Kraftfahrzeuge</name>
       <erweiterung/>
     </feld>
-    <feld id="1146" typ="Ausgaben" seite="3" horizontal="964" vertikal="181" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" nullwertdarstellung="nein" veraltet="nein" >
+    <feld id="1146" typ="Ausgaben" seite="3" horizontal="964" vertikal="181" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" nullwertdarstellung="nein" veraltet="nein" elsterfeldname="EUER/BAus/KFZ_u_Fahrtkosten/Sonst/Sum/E6006003" >
       <name>Sonstige tatsächliche Fahrtkosten ohne AfA und Zinsen</name>
       <erweiterung/>
     </feld>
-    <feld id="1147" typ="Ausgaben" seite="3" horizontal="964" vertikal="215" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" nullwertdarstellung="nein" veraltet="nein" >
+    <feld id="1147" typ="Ausgaben" seite="3" horizontal="964" vertikal="215" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" nullwertdarstellung="nein" veraltet="nein" elsterfeldname="EUER/BAus/KFZ_u_Fahrtkosten/Fahrtkosten_Nutzungseinlage/Sum/E6006103" >
       <name>Fahrtkosten für nicht zum Betriebsvermögen gehörende Fahrzeuge</name>
       <erweiterung/>
     </feld>
-    <feld id="142" typ="Ausgaben" seite="3" horizontal="964" vertikal="248" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" nullwertdarstellung="nein" veraltet="nein" >
+    <feld id="142" typ="Ausgaben" seite="3" horizontal="964" vertikal="248" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" nullwertdarstellung="nein" veraltet="nein" elsterfeldname="EUER/BAus/KFZ_u_Fahrtkosten/Fahrtkosten_Arbeitsweg/Sum/E6002701" >
       <name>Kraftfahrzeugkosten für Wege zwischen Wohnung und Betriebsstätte</name>
       <erweiterung>Achtung: auf dieses Konto nur negative Beträge buchen!</erweiterung>
     </feld>
-    <feld id="1176" typ="Ausgaben" seite="3" horizontal="964" vertikal="279" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" nullwertdarstellung="nein" veraltet="nein" >
+    <feld id="1176" typ="Ausgaben" seite="3" horizontal="964" vertikal="279" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" nullwertdarstellung="nein" veraltet="nein" elsterfeldname="EUER/BAus/KFZ_u_Fahrtkosten/Entfernungspausch_Familienheimfahrt/Sum/E6003702" >
       <name>Abziehbare Aufwendungen für Wege zwischen Wohnung und Betriebsstätte</name>
       <erweiterung/> 
     </feld>
-    <feld id="1139" typ="Ausgaben" seite="3" horizontal="964" vertikal="319" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" nullwertdarstellung="nein" veraltet="nein" >
+    <feld id="1139" typ="Ausgaben" seite="3" horizontal="964" vertikal="319" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" nullwertdarstellung="nein" veraltet="nein" elsterfeldname="EUER/BAus/Nicht_abziehbar/Sum/E6003601" >
       <name>Nicht abziehbare AfA- und Restbuchwert-Beträge</name>
       <erweiterung>Achtung: auf dieses Konto nur negative Beträge buchen!</erweiterung>
     </feld>
@@ -309,7 +309,7 @@
       <name>Hinweis negativ 142</name>
       <erweiterung>und 142 buchen!</erweiterung>
     </feld>
-    <feld id="1199" typ="Summe" seite="3" horizontal="964" vertikal="356" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" nullwertdarstellung="nein" veraltet="nein" >
+    <feld id="1199" typ="Summe" seite="3" horizontal="964" vertikal="356" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" nullwertdarstellung="nein" veraltet="nein" elsterfeldname="EUER/BAus/Summe_BAus/E6005301" >
       <name>Summe Betriebsausgaben</name>
       <erweiterung>53+1144+1145+1146+1147+142+1176+1139</erweiterung> 
     </feld>
@@ -361,119 +361,119 @@
       <name>Sachliche Bebauungskostenpauschale/Betriebsausgabenpauschale für Land- und Forstwirte</name>
       <erweiterung/> 
     </feld>
-    <feld id="140" typ="Ausgaben" seite="2" horizontal="1161" vertikal="1196" veraltet="ja" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" nullwertdarstellung="nein" >
+    <feld id="140" typ="Ausgaben" seite="2" horizontal="1161" vertikal="1196" veraltet="ja" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" nullwertdarstellung="nein" veraltet="nein" >
       <name>Laufende und feste Kraftfahrzeugkosten (ohne AfA und Zinsen)</name>
       <erweiterung/>
     </feld>
-    <feld id="55" typ="Summe" seite="3" horizontal="966" vertikal="421" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" nullwertdarstellung="nein" veraltet="nein" >
-      <name>Summe der Betriebseinnahmen (Übertrag aus Zeile 13)</name>
+    <feld id="55" typ="Summe" seite="3" horizontal="966" vertikal="421" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" nullwertdarstellung="nein" veraltet="nein" elsterfeldname="EUER/Ermittlung_Gewinn/Uebertrag/E6005501" >
+      <name>Summe der Betriebseinnahmen (Übertrag aus Zeile 22)</name>
       <erweiterung>1159</erweiterung> 
     </feld>
-    <feld id="56" typ="Summe" seite="3" horizontal="966" vertikal="455" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" nullwertdarstellung="nein" veraltet="nein" >
-      <name>abzüglich Summe der Betriebsausgaben (Übertrag aus Zeile 53)</name>
+    <feld id="56" typ="Summe" seite="3" horizontal="966" vertikal="455" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" nullwertdarstellung="nein" veraltet="nein" elsterfeldname="EUER/Ermittlung_Gewinn/Uebertrag/E6005601" >
+      <name>abzüglich Summe der Betriebsausgaben (Übertrag aus Zeile 88)</name>
       <erweiterung>1199</erweiterung> 
     </feld>
     <feld id="1240" typ="Ausgaben" seite="3" horizontal="966" vertikal="488" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" nullwertdarstellung="nein" veraltet="nein" unterkategorie="Korrektur des Gewinns" >
       <name>Gewinnminderung wegen steuerfreier Einnahmen aus § 3 Nr. 26, 26a, oder 26b EStG</name>
       <erweiterung/>
     </feld>
-    <feld id="1241" typ="Ausgaben" seite="3" horizontal="966" vertikal="520" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" nullwertdarstellung="nein" veraltet="nein" >
+    <feld id="1241" typ="Ausgaben" seite="3" horizontal="966" vertikal="520" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" nullwertdarstellung="nein" veraltet="nein" elsterfeldname="EUER/Ermittlung_Gewinn/P3_26_26a_26b_abziehbar/Sum/E6007203" >
       <name>Gewinnminderung wegen steuerfreier Einnahmen aus § 3 ohne Nr. 26, 26a, oder 26b EStG</name>
       <erweiterung/>
     </feld>
-    <feld id="1242" typ="Ausgaben" seite="3" horizontal="966" vertikal="551" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" nullwertdarstellung="nein" veraltet="nein" >
+    <feld id="1242" typ="Ausgaben" seite="3" horizontal="966" vertikal="551" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" nullwertdarstellung="nein" veraltet="nein" elsterfeldname="EUER/Ermittlung_Gewinn/P3_sonst/Sum/E6007204" >
       <name>Gewinnminderung wegen steuerfreier Einnahmen aus § 3a</name>
       <erweiterung/>
     </feld>
-    <feld id="1243" typ="Einnahmen" seite="3" horizontal="966" vertikal="587" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" nullwertdarstellung="nein" veraltet="nein" >
+    <feld id="1243" typ="Einnahmen" seite="3" horizontal="966" vertikal="587" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" nullwertdarstellung="nein" veraltet="nein" elsterfeldname="EUER/Ermittlung_Gewinn/P3_26_26a_26b_nicht_abziehbar/Sum/E6007206" >
       <name>Gewinnerhöhung wegen nicht abziehbarer Betriebsausgaben aus § 3 Nr. 26, 26a, oder 26b EStG</name>
       <erweiterung/>
     </feld>
-    <feld id="1244" typ="Einnahmen" seite="3" horizontal="966" vertikal="620" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" nullwertdarstellung="nein" veraltet="nein" >
+    <feld id="1244" typ="Einnahmen" seite="3" horizontal="966" vertikal="620" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" nullwertdarstellung="nein" veraltet="nein" elsterfeldname="EUER/Ermittlung_Gewinn/P3c_1/Sum/E6007207" >
       <name>Gewinnerhöhung wegen nicht abziehbarer Betriebsausgaben aus § 3c Abs. 1 EStG</name>
       <erweiterung/>
     </feld>
-    <feld id="1245" typ="Einnahmen" seite="3" horizontal="966" vertikal="652" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" nullwertdarstellung="nein" veraltet="nein" >
+    <feld id="1245" typ="Einnahmen" seite="3" horizontal="966" vertikal="652" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" nullwertdarstellung="nein" veraltet="nein" elsterfeldname="EUER/Ermittlung_Gewinn/P3c_4/E6007208" >
       <name>Gewinnerhöhung wegen nicht abziehbarer Betriebsausgaben aus § 3c Abs. 4 EStG</name>
       <erweiterung/>
     </feld>
-    <feld id="1180" typ="Einnahmen" seite="3" horizontal="965" vertikal="802" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" nullwertdarstellung="nein" veraltet="nein" >
+    <feld id="1180" typ="Einnahmen" seite="3" horizontal="965" vertikal="802" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" nullwertdarstellung="nein" veraltet="nein" elsterfeldname="EUER/Ermittlung_Gewinn/InvestAbzugsbetrag_P7g_VZm3/Sum/E6007302" >
       <name>Hinzurechnung der Investitionsabzugsbeträge nach §7g Abs. 2 EStG aus dem vorvorletzten Jahr</name>
       <erweiterung/>
     </feld>
-    <feld id="1188" typ="Einnahmen" seite="3" horizontal="1178" vertikal="882" veraltet="ja" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" nullwertdarstellung="nein" >
+    <feld id="1188" typ="Einnahmen" seite="3" horizontal="1178" vertikal="882" veraltet="ja" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" nullwertdarstellung="nein" elsterfeldname="EUER/" >
       <name>Hinzurechnung der Investitionsabzugsbeträge nach §7g Abs. 2 EStG von 2013</name>
       <erweiterung/>
     </feld>
-    <feld id="1277" typ="Einnahmen" seite="3" horizontal="965" vertikal="696" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" nullwertdarstellung="nein" veraltet="nein" >
+    <feld id="1277" typ="Einnahmen" seite="3" horizontal="965" vertikal="696" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" nullwertdarstellung="nein" veraltet="nein" elsterfeldname="EUER/Ermittlung_Gewinn/InvestAbzugsbetrag_P7g_VZm6/Sum/E6009612" >
       <name>Hinzurechnung der Investitionsabzugsbeträge nach §7g Abs. 2 EStG von vor sechs Jahren</name>
       <erweiterung/>
     </feld>
-    <feld id="1278" typ="Einnahmen" seite="3" horizontal="965" vertikal="736" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" nullwertdarstellung="nein" veraltet="nein" >
+    <feld id="1278" typ="Einnahmen" seite="3" horizontal="965" vertikal="736" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" nullwertdarstellung="nein" veraltet="nein" elsterfeldname="EUER/Ermittlung_Gewinn/InvestAbzugsbetrag_P7g_VZm5/Sum/E6009607" >
       <name>Hinzurechnung der Investitionsabzugsbeträge nach §7g Abs. 2 EStG von vor fünf Jahren</name>
       <erweiterung/>
     </feld>
-    <feld id="1279" typ="Einnahmen" seite="3" horizontal="965" vertikal="770" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" nullwertdarstellung="nein" veraltet="nein" >
+    <feld id="1279" typ="Einnahmen" seite="3" horizontal="965" vertikal="770" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" nullwertdarstellung="nein" veraltet="nein" elsterfeldname="EUER/Ermittlung_Gewinn/InvestAbzugsbetrag_P7g_VZm4/Sum/E6009606" >
       <name>Hinzurechnung der Investitionsabzugsbeträge nach §7g Abs. 2 EStG von vor vier Jahren</name>
       <erweiterung/>
     </feld>
-    <feld id="1181" typ="Einnahmen" seite="3" horizontal="965" vertikal="833" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" nullwertdarstellung="nein" veraltet="nein" >
+    <feld id="1181" typ="Einnahmen" seite="3" horizontal="965" vertikal="833" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" nullwertdarstellung="nein" veraltet="nein" elsterfeldname="EUER/Ermittlung_Gewinn/InvestAbzugsbetrag_P7g_VZm2/Sum/E6007402" >
       <name>Hinzurechnung der Investitionsabzugsbeträge nach §7g Abs. 2 EStG aus dem vorletzten Jahr</name>
       <erweiterung/>
     </feld>
-    <feld id="1182" typ="Einnahmen" seite="3" horizontal="965" vertikal="866" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" nullwertdarstellung="nein" veraltet="nein" >
+    <feld id="1182" typ="Einnahmen" seite="3" horizontal="965" vertikal="866" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" nullwertdarstellung="nein" veraltet="nein" elsterfeldname="EUER/Ermittlung_Gewinn/InvestAbzugsbetrag_P7g_VZm1/Sum/E6007502" >
       <name>Hinzurechnung der Investitionsabzugsbeträge nach §7g Abs. 2 EStG aus dem letzten Jahr</name>
       <erweiterung/>
     </feld>
-    <feld id="1123" typ="Einnahmen" seite="3" horizontal="965" vertikal="897" ausrichtung="rechtsbuendig" anteil="brutto" nachkommaanteil="mit" nullwertdarstellung="nein" veraltet="nein" >
+    <feld id="1123" typ="Einnahmen" seite="3" horizontal="965" vertikal="897" ausrichtung="rechtsbuendig" anteil="brutto" nachkommaanteil="mit" nullwertdarstellung="nein" veraltet="nein" elsterfeldname="EUER/Zus_Angabe_EinzelUntern/Entnahme_Einlage/Einlage/Sum/E6006701" >
       <name>Gewinnzuschlag nach §6b Abs. 7 und 10 EStG</name>
       <erweiterung/>
     </feld>
-    <feld id="1184" typ="Ausgaben" seite="3" horizontal="1196" vertikal="490" veraltet="ja" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" nullwertdarstellung="nein" >
+    <feld id="1184" typ="Ausgaben" seite="3" horizontal="1196" vertikal="490" veraltet="ja" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" nullwertdarstellung="nein" elsterfeldname="EUER/" >
       <name>erwerbsbedingte Kinderbetreuungskosten3</name>
       <erweiterung/>
     </feld>
-    <feld id="1187" typ="Ausgaben" seite="3" horizontal="965" vertikal="930" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" nullwertdarstellung="nein" veraltet="nein" >
+    <feld id="1187" typ="Ausgaben" seite="3" horizontal="965" vertikal="930" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" nullwertdarstellung="nein" veraltet="nein" elsterfeldname="EUER/Ermittlung_Gewinn/InvestAbzugsbetrag_P7g/Sum/E6004804" >
       <name>Investitionsabzugsbeträge nach §7g EStG</name>
       <erweiterung/>
     </feld>
-    <feld id="1255" typ="Einnahmen" seite="3" horizontal="965" vertikal="996" ausrichtung="rechtsbuendig" anteil="brutto" nachkommaanteil="mit" nullwertdarstellung="nein" veraltet="nein" >
+    <feld id="1255" typ="Einnahmen" seite="3" horizontal="965" vertikal="996" ausrichtung="rechtsbuendig" anteil="brutto" nachkommaanteil="mit" nullwertdarstellung="nein" veraltet="nein" elsterfeldname="EUER/Ermittlung_Gewinn/Ergebnisanteil_Bet_PersG/Sum/E6006703" >
       <name>Ergebnisanteile aus Beteiligungen an Personengesellschaften</name>
       <erweiterung/>
     </feld>
-    <feld id="1290" typ="Summe" seite="3" horizontal="966" vertikal="1037" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" nullwertdarstellung="nein" veraltet="nein" >
+    <feld id="1290" typ="Summe" seite="3" horizontal="966" vertikal="1037" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" nullwertdarstellung="nein" veraltet="nein" elsterfeldname="EUER/Ermittlung_Gewinn/Korrektur_GuV/E6006801" >
       <name>Gewinn/Verlust</name>
       <erweiterung>55-56-1240-1241-1242+1243+1244+1245+1277+1278+1279+1180+1181+1182+1123-1187+1250+1255</erweiterung> 
     </feld>
-    <feld id="1263" typ="Einnahmen" seite="3" horizontal="609" vertikal="1087" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" nullwertdarstellung="nein" veraltet="nein" >
+    <feld id="1263" typ="Einnahmen" seite="3" horizontal="609" vertikal="1087" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" nullwertdarstellung="nein" veraltet="nein" elsterfeldname="EUER/Ermittlung_Gewinn/Teilfreistellung_InvStG/Sum/E6008104" >
       <name>/Bereits berücksichtigte Beträge, für die Teilfreistellungen nach InvStG gelten (Gesamtbetrag)</name>
       <erweiterung/>
     </feld>
-    <feld id="1264" typ="Einnahmen" seite="3" horizontal="966" vertikal="1088" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" nullwertdarstellung="nein" veraltet="nein" >
+    <feld id="1264" typ="Einnahmen" seite="3" horizontal="966" vertikal="1088" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" nullwertdarstellung="nein" veraltet="nein" elsterfeldname="EUER/Ermittlung_Gewinn/Teilfreistellung_InvStG/Sum/E6008105" >
       <name>Bereits berücksichtigte Beträge, für die Teilfreistellungen nach InvStG gelten (Korrekturbetrag)</name>
       <erweiterung/>
     </feld>
-    <feld id="1261" typ="Einnahmen" seite="3" horizontal="609" vertikal="1127" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" nullwertdarstellung="nein" veraltet="nein" >
+    <feld id="1261" typ="Einnahmen" seite="3" horizontal="609" vertikal="1127" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" nullwertdarstellung="nein" veraltet="nein" elsterfeldname="EUER/Ermittlung_Gewinn/Teileinkuenfte_P8b/Sum/E6006902" >
       <name>/Bereits berücksichtigte Beträge, für die das Teileinkünfteverfahren bzw. § 8b KStG gilt (Gesamtbetrag)</name>
       <erweiterung/>
     </feld>
-    <feld id="1262" typ="Einnahmen" seite="3" horizontal="966" vertikal="1129" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" nullwertdarstellung="nein" veraltet="nein" >
+    <feld id="1262" typ="Einnahmen" seite="3" horizontal="966" vertikal="1129" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" nullwertdarstellung="nein" veraltet="nein" elsterfeldname="EUER/Ermittlung_Gewinn/Teileinkuenfte_P8b/Sum/E6006903" >
       <name>Bereits berücksichtigte Beträge, für die das Teileinkünfteverfahren bzw. § 8b KStG gilt (Korrekturbetrag)</name>
       <erweiterung/>
     </feld>
-    <feld id="1250" typ="Einnahmen" seite="3" horizontal="965" vertikal="964" ausrichtung="rechtsbuendig" anteil="brutto" nachkommaanteil="mit" nullwertdarstellung="nein" veraltet="nein" >
+    <feld id="1250" typ="Einnahmen" seite="3" horizontal="965" vertikal="964" ausrichtung="rechtsbuendig" anteil="brutto" nachkommaanteil="mit" nullwertdarstellung="nein" veraltet="nein" elsterfeldname="EUER/Ermittlung_Gewinn/Wechsel_Gewinnermittlung/Sum/E6006702" >
       <name>Hinzurechnung und Abrechnung bei Wechsel der Gewinnermittlungsart</name>
       <erweiterung/>
     </feld>
-    <feld id="1293" typ="Summe" seite="3" horizontal="966" vertikal="1170" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" nullwertdarstellung="nein" veraltet="nein" >
+    <feld id="1293" typ="Summe" seite="3" horizontal="966" vertikal="1170" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" nullwertdarstellung="nein" veraltet="nein" elsterfeldname="EUER/Ermittlung_Gewinn/Stpfl_GuV/E6007002" >
       <name>Steuerpflichtiger Gewinn/Verlust vor Anwendung des §4 Abs. 4a EStG</name>
       <erweiterung>1290+1264+1262</erweiterung>
     </feld>
-    <feld id="1271" typ="Einnahmen" seite="3" horizontal="965" vertikal="1202" ausrichtung="rechtsbuendig" anteil="brutto" nachkommaanteil="mit" nullwertdarstellung="nein" veraltet="nein" >
+    <feld id="1271" typ="Einnahmen" seite="3" horizontal="965" vertikal="1202" ausrichtung="rechtsbuendig" anteil="brutto" nachkommaanteil="mit" nullwertdarstellung="nein" veraltet="nein" elsterfeldname="EUER/Ermittlung_Gewinn/Stpfl_GuV/E6007102" >
       <name>Hinzurechnungsbetragnach §4 Abs. 4a EStG</name>
       <erweiterung/>
     </feld>
-    <feld id="1219" typ="Summe" seite="3" horizontal="966" vertikal="1244" ausrichtung="rechtsbuendig" anteil="brutto" nachkommaanteil="mit" nullwertdarstellung="nein" veraltet="nein" >
+    <feld id="1219" typ="Summe" seite="3" horizontal="966" vertikal="1244" ausrichtung="rechtsbuendig" anteil="brutto" nachkommaanteil="mit" nullwertdarstellung="nein" veraltet="nein" elsterfeldname="EUER/Ermittlung_Gewinn/Stpfl_GuV/E6007202" >
       <name>Steuerpflichtiger Gewinn/Verlust</name>
       <erweiterung>1293+1271</erweiterung>
     </feld>
@@ -489,19 +489,19 @@
       <name>rechte Seitenbegrenzung!</name>
       <erweiterung/>
     </feld>
-    <feld id="2187" typ="Ausgaben" seite="4" horizontal="599" vertikal="177" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" nullwertdarstellung="nein" veraltet="nein" unterkategorie="Rücklagen und stille Reserven" >
+    <feld id="2187" typ="Ausgaben" seite="4" horizontal="599" vertikal="177" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" nullwertdarstellung="nein" veraltet="nein" elsterfeldname="EUER/Erg_Angabe/Rueckl_stille_Reserve/Bildung_Uebertragung/Ruecklage_P6c_P6b/Sum/E6005901" unterkategorie="Rücklagen und stille Reserven" >
       <name>Bildung von Rücklagen nach § 6c i.V.m. § 6b EStG, R 35 EStR</name>
       <erweiterung/> 
     </feld>
-    <feld id="2120" typ="Einnahmen" seite="4" horizontal="904" vertikal="177" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" nullwertdarstellung="nein" veraltet="nein" >
+    <feld id="2120" typ="Einnahmen" seite="4" horizontal="904" vertikal="177" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" nullwertdarstellung="nein" veraltet="nein" elsterfeldname="EUER/Erg_Angabe/Rueckl_stille_Reserve/Aufloesung/Ruecklage_P6c_P6b/Sum/E6005902" >
       <name>Auflösung von Rücklagen nach § 6c i.V.m. § 6b EStG, R 35 EStR</name>
       <erweiterung/> 
     </feld>
-    <feld id="2170" typ="Ausgaben" seite="4" horizontal="599" vertikal="211" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" nullwertdarstellung="nein" veraltet="nein" >
+    <feld id="2170" typ="Ausgaben" seite="4" horizontal="599" vertikal="211" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" nullwertdarstellung="nein" veraltet="nein" elsterfeldname="EUER/Erg_Angabe/Rueckl_stille_Reserve/Bildung_Uebertragung/Rueckl_P6c_P6b/Sum/E6006901" >
       <name>Übertragung von stillen Reserven nach §6c i.V.m. §6b EStG, R6.6 EStR</name>
       <erweiterung/>
     </feld>
-    <feld id="2122" typ="Einnahmen" seite="3" horizontal="1178" vertikal="774" veraltet="ja" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" >
+    <feld id="2122" typ="Einnahmen" seite="3" horizontal="1178" vertikal="774" veraltet="ja" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" elsterfeldname="EUER/Zus_Angabe_EinzelUntern/Entnahme_Einlage/Entnahme/Sum/E6006601" >
       <name>Auflösung von Ansparabschreibungen nach § 7g Abs. 7 und 8 EStG</name>
       <erweiterung/> 
     </feld>
@@ -521,27 +521,27 @@
       <name>Auflösung des Gewinnzuschlags nach § 6c i.V.m. § 6b Abs. 7 und 10, §7 Abs. 5 und 6 EStG</name>
       <erweiterung/> 
     </feld>
-    <feld id="2191" typ="Ausgaben" seite="4" horizontal="599" vertikal="247" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" nullwertdarstellung="nein" veraltet="nein" >
+    <feld id="2191" typ="Ausgaben" seite="4" horizontal="599" vertikal="247" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" nullwertdarstellung="nein" veraltet="nein" elsterfeldname="EUER/Erg_Angabe/Rueckl_stille_Reserve/Bildung_Uebertragung/Ausgleichsposten_P4g/Sum/E6005401" >
       <name>Bildung von Ausgleichsposten nach § 4g EStG</name>
       <erweiterung/>
     </feld>
-    <feld id="2125" typ="Einnahmen" seite="4" horizontal="904" vertikal="247" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" nullwertdarstellung="nein" veraltet="nein" >
+    <feld id="2125" typ="Einnahmen" seite="4" horizontal="904" vertikal="247" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" nullwertdarstellung="nein" veraltet="nein" elsterfeldname="EUER/Erg_Angabe/Rueckl_stille_Reserve/Aufloesung/Ausgleichsposten_P4g/Sum/E6005402" >
       <name>Auslösung von Ausgleichsposten nach § 4g EStG</name>
       <erweiterung/>
     </feld>
-    <feld id="2190" typ="Summe" seite="4" horizontal="599" vertikal="291" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" nullwertdarstellung="nein" veraltet="nein" >
+    <feld id="2190" typ="Summe" seite="4" horizontal="599" vertikal="291" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" nullwertdarstellung="nein" veraltet="nein" elsterfeldname="EUER/Erg_Angabe/Rueckl_stille_Reserve/Bildung_Uebertragung/GesamtSum/E6006301" >
       <name>Summe Bildung von Rücklagen</name>
       <erweiterung>2187+2170+2191</erweiterung> 
     </feld>
-    <feld id="2124" typ="Summe" seite="4" horizontal="904" vertikal="291" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" nullwertdarstellung="nein" veraltet="nein" >
+    <feld id="2124" typ="Summe" seite="4" horizontal="904" vertikal="291" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" nullwertdarstellung="nein" veraltet="nein" elsterfeldname="EUER/Erg_Angabe/Rueckl_stille_Reserve/Aufloesung/GesamtSum/E6006302" >
       <name>Summe Auflösung von Rücklagen</name>
       <erweiterung>2120+2122+2125</erweiterung> 
     </feld>
-    <feld id="122" typ="Ausgaben" seite="4" horizontal="904" vertikal="423" ausrichtung="rechtsbuendig" anteil="brutto" nachkommaanteil="mit" nullwertdarstellung="nein" veraltet="nein" unterkategorie="Entnahmen" >
+    <feld id="122" typ="Ausgaben" seite="4" horizontal="904" vertikal="423" ausrichtung="rechtsbuendig" anteil="brutto" nachkommaanteil="mit" nullwertdarstellung="nein" veraltet="nein" elsterfeldname="EUER/Zus_Angabe_EinzelUntern/Entnahme_Einlage/Entnahme/Sum/E6006601" unterkategorie="Entnahmen" >
       <name>/Privatentnahmen</name>
       <erweiterung>Entnahmen einschl. Sach-, Leistungs- und Nutzungsentnahmen</erweiterung>
     </feld>
-    <feld id="123" typ="Einnahmen" seite="4" horizontal="904" vertikal="457" ausrichtung="rechtsbuendig" anteil="brutto" nachkommaanteil="mit" nullwertdarstellung="nein" veraltet="nein" >
+    <feld id="123" typ="Einnahmen" seite="4" horizontal="904" vertikal="457" ausrichtung="rechtsbuendig" anteil="brutto" nachkommaanteil="mit" nullwertdarstellung="nein" veraltet="nein" elsterfeldname="EUER/Zus_Angabe_EinzelUntern/Entnahme_Einlage/Einlage/Sum/E6006701" >
       <name>/Privateinlagen</name>
       <erweiterung>Einlagen einschl. Sach-, Leistungs- und Nutzungseinlagen</erweiterung>
     </feld>
