@@ -21,11 +21,11 @@
       <name>Rechtsform</name>
       <erweiterung>unternehmensart2</erweiterung>
     </feld>
-    <feld id="1111" typ="Einnahmen" seite="1" horizontal="1173" vertikal="554" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" nullwertdarstellung="nein" elsterfeldname="BEin/Kleinunternehmer/Sum/E6000101" >
+    <feld id="1111" typ="Einnahmen" seite="1" horizontal="1173" vertikal="554" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" nullwertdarstellung="nein" elsterfeldname="EUER/BEin/Kleinunternehmer/Sum/E6000101" >
       <name>Betriebseinnahmen als umsatzsteuerlicher Kleinunternehmer ohne Umsätze aus §19 Abs. 3 Nr. 1 und Nr. 2</name>
       <erweiterung/> 
     </feld>
-    <feld id="119" typ="Einnahmen" seite="1" horizontal="629" vertikal="583" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" nullwertdarstellung="nein" elsterfeldname="BEin/Umsatz_nicht_steuerbar/Sum/E6000201" >
+    <feld id="119" typ="Einnahmen" seite="1" horizontal="629" vertikal="583" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" nullwertdarstellung="nein" elsterfeldname="EUER/BEin/Umsatz_nicht_steuerbar/Sum/E6000201" >
       <name>Betriebseinnahmen als umsatzsteuerlicher Kleinunternehmer aus Umsätzen gemäß §19 Abs. 3 Nr. 1 und Nr. 2</name>
       <erweiterung/>
     </feld>
@@ -33,19 +33,19 @@
       <name>Betriebseinnamen als steuerl. Kleinunternehmer gesamt</name>
       <erweiterung>119+1111</erweiterung>
     </feld>
-    <feld id="1104" typ="Einnahmen" seite="1" horizontal="962" vertikal="633" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" nullwertdarstellung="nein" veraltet="nein" elsterfeldname="BEin/Land_Forst/Sum/E6000301" >
+    <feld id="1104" typ="Einnahmen" seite="1" horizontal="962" vertikal="633" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" nullwertdarstellung="nein" veraltet="nein" elsterfeldname="EUER/BEin/Land_Forst/Sum/E6000301" >
       <name>Betriebseinnahmen aus Land- und Forstwirtschaft nach §24 UStG</name>
       <erweiterung/> 
     </feld>
-    <feld id="1112" typ="Einnahmen" seite="1" horizontal="962" vertikal="674" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" nullwertdarstellung="nein" veraltet="nein" elsterfeldname="BEin/USt_StPflicht/Sum/E6000401" >
+    <feld id="1112" typ="Einnahmen" seite="1" horizontal="962" vertikal="674" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" nullwertdarstellung="nein" veraltet="nein" elsterfeldname="EUER/BEin/USt_StPflicht/Sum/E6000401" >
       <name>Umsatzsteuerpflichtige Betriebseinnahmen</name>
       <erweiterung/> 
     </feld>
-    <feld id="1103" typ="Einnahmen" seite="1" horizontal="962" vertikal="707" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" nullwertdarstellung="nein" veraltet="nein" elsterfeldname="BEin/USt_StFrei/Sum/E6000501" >
+    <feld id="1103" typ="Einnahmen" seite="1" horizontal="962" vertikal="707" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" nullwertdarstellung="nein" veraltet="nein" elsterfeldname="EUER/BEin/USt_StFrei/Sum/E6000501" >
       <name>Umsatzsteuerfreie, nicht umsatzsteuerbare Betriebseinnahmen sowie Betriebseinnahmen, für die der Leistungsempfänger die Umsatzsteuer nach § 13 b UStG schuldet</name>
       <erweiterung/>
     </feld>
-    <feld id="7" typ="Summe" seite="1" horizontal="962" vertikal="740" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" nullwertdarstellung="nein" veraltet="nein" >
+    <feld id="7" typ="Summe" seite="1" horizontal="962" vertikal="740" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" nullwertdarstellung="nein" veraltet="nein" elsterfeldname="BEin/USt_Vereinnahmt_Unentgeltl/Sum/E6000601" >
       <name>Vereinnahmte Umsatzsteuer sowie Umsatzsteuer auf unentgeltliche Wertabgaben (Summe)</name>
       <erweiterung>mwst(e:1111)+mwst(e:1104)+mwst(e:1112)+mwst(e:1103)+mwst(e:1141)+mwst(e:1102)+mwst(e:1106)+mwst(e:1108)+brutto(e:1140)+brutto(e:8)</erweiterung> 
     </feld>
@@ -53,25 +53,29 @@
       <name>UST §13b USTG Lieferung Ausland</name>
       <erweiterung/>
     </feld>
-    <feld id="1140" typ="Einnahmen" seite="1" horizontal="1174" vertikal="738" ausrichtung="rechtsbuendig" anteil="brutto" nachkommaanteil="mit" nullwertdarstellung="nein" veraltet="nein" elsterfeldname="BEin/USt_Vereinnahmt_Unentgeltl/Sum/E6000601" >
+    <feld id="1140" typ="Einnahmen" seite="1" horizontal="1174" vertikal="738" ausrichtung="rechtsbuendig" anteil="brutto" nachkommaanteil="mit" nullwertdarstellung="nein" veraltet="nein" elsterfeldname="EUER/BEin/USt_Vereinnahmt_Unentgeltl/Sum/E6000601" >
       <name>Vereinnahmte Umsatzsteuer sowie Umsatzsteuer auf unentgeltliche Wertabgaben</name>
       <erweiterung/> 
     </feld>
-    <feld id="1141" typ="Einnahmen" seite="1" horizontal="962" vertikal="778" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" nullwertdarstellung="nein" veraltet="nein" elsterfeldname="BEin/USt_Erstattet_Verrechnet/Sum/E6000701" >
+    <feld id="1141" typ="Einnahmen" seite="1" horizontal="962" vertikal="778" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" nullwertdarstellung="nein" veraltet="nein" elsterfeldname="EUER/BEin/USt_Erstattet_Verrechnet/Sum/E6000701" >
       <name>Vom Finanzamt erstattete und ggf. verrechnete Umsatzsteuer</name>
       <erweiterung/> 
     </feld>
-    <feld id="1102" typ="Einnahmen" seite="1" horizontal="962" vertikal="810" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" nullwertdarstellung="nein" veraltet="nein" elsterfeldname="BEin/Anlagevermoegen/Sum/E6000801" >
+    <feld id="1102" typ="Einnahmen" seite="1" horizontal="962" vertikal="810" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" nullwertdarstellung="nein" veraltet="nein" elsterfeldname="EUER/BEin/Anlagevermoegen/Sum/E6000801" >
       <name>Veräußerung oder Entnahme von Anlagevermögen</name>
       <erweiterung/> 
     </feld>
-    <feld id="1106" typ="Einnahmen" seite="1" horizontal="962" vertikal="841" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" nullwertdarstellung="nein" veraltet="nein" elsterfeldname="BEin/Nutzung_Priv_Kfz/Sum/E6000901" >
+    <feld id="1106" typ="Einnahmen" seite="1" horizontal="962" vertikal="841" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" nullwertdarstellung="nein" veraltet="nein" elsterfeldname="EUER/BEin/Nutzung_Priv_Kfz/Sum/E6000901" >
       <name>Private KFZ-Nutzung</name>
       <erweiterung/> 
     </feld>
-    <feld id="1108" typ="Einnahmen" seite="1" horizontal="962" vertikal="872" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" nullwertdarstellung="nein" veraltet="nein" elsterfeldname="BEin/Entnahme_Sonst/Sum/E6001001" >
+    <feld id="1108" typ="Einnahmen" seite="1" horizontal="962" vertikal="872" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" nullwertdarstellung="nein" veraltet="nein" elsterfeldname="EUER/BEin/Entnahme_Sonst/Sum/E6001001" >
       <name>Sonstige Sach-, Nutzungs- und Leistungsentnahmen</name>
       <erweiterung>Sonstige Sach-, Nutzungs- und Leistungsentnahmen (z.B. private Telefonnutzung)</erweiterung>
+    </feld>
+    <feld id="1159" typ="Summe" seite="1" horizontal="962" vertikal="944" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" nullwertdarstellung="nein" veraltet="nein" elsterfeldname="EUER/BEin/Weitere_Angabe/E6001201" >
+      <name>Summe Betriebseinnahmen</name>
+      <erweiterung>1111+119+1104+1112+1103+7+1141+1102+1106+1108+20</erweiterung> 
     </feld>
     <feld id="1195" typ="Ausgaben" seite="1" horizontal="961" vertikal="1039" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" nullwertdarstellung="nein" veraltet="nein" elsterfeldname="EUER/BAus/E6002304" unterkategorie="Hauptsächliche Betriebsausgaben" >
       <name>Betriebsausgabenpauschale für bestimmte Berufsgruppen</name>
@@ -341,10 +345,6 @@
       <name>Übertrag von Zeile 77</name>
       <erweiterung>2124</erweiterung> 
     </feld>
-    <feld id="1159" typ="Summe" seite="1" horizontal="962" vertikal="944" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" nullwertdarstellung="nein" veraltet="nein" >
-      <name>Summe Betriebseinnahmen</name>
-      <erweiterung>1111+119+1104+1112+1103+7+1141+1102+1106+1108+20</erweiterung> 
-    </feld>
     <feld id="30" typ="Einstellungsdaten" seite="2" horizontal="224" vertikal="33" ausrichtung="linksbuendig" anteil="netto" nachkommaanteil="ohne" >
       <name>Steuernummer1</name>
       <erweiterung>fsteuernummer</erweiterung> 
@@ -361,7 +361,7 @@
       <name>Sachliche Bebauungskostenpauschale/Betriebsausgabenpauschale für Land- und Forstwirte</name>
       <erweiterung/> 
     </feld>
-    <feld id="140" typ="Ausgaben" seite="2" horizontal="1161" vertikal="1196" veraltet="ja" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" nullwertdarstellung="nein" veraltet="nein" >
+    <feld id="140" typ="Ausgaben" seite="2" horizontal="1161" vertikal="1196" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" nullwertdarstellung="nein" veraltet="ja" >
       <name>Laufende und feste Kraftfahrzeugkosten (ohne AfA und Zinsen)</name>
       <erweiterung/>
     </feld>
@@ -537,11 +537,11 @@
       <name>Summe Auflösung von Rücklagen</name>
       <erweiterung>2120+2122+2125</erweiterung> 
     </feld>
-    <feld id="122" typ="Ausgaben" seite="4" horizontal="904" vertikal="423" ausrichtung="rechtsbuendig" anteil="brutto" nachkommaanteil="mit" nullwertdarstellung="nein" veraltet="nein" elsterfeldname="EUER/Zus_Angabe_EinzelUntern/Entnahme_Einlage/Entnahme/Sum/E6006601" unterkategorie="Entnahmen" >
+    <feld id="122" typ="Ausgaben" seite="4" horizontal="904" vertikal="423" ausrichtung="rechtsbuendig" anteil="brutto" nachkommaanteil="mit" nullwertdarstellung="ja" veraltet="nein" elsterfeldname="EUER/Zus_Angabe_EinzelUntern/Entnahme_Einlage/Entnahme/Sum/E6006601" unterkategorie="Entnahmen" >
       <name>/Privatentnahmen</name>
       <erweiterung>Entnahmen einschl. Sach-, Leistungs- und Nutzungsentnahmen</erweiterung>
     </feld>
-    <feld id="123" typ="Einnahmen" seite="4" horizontal="904" vertikal="457" ausrichtung="rechtsbuendig" anteil="brutto" nachkommaanteil="mit" nullwertdarstellung="nein" veraltet="nein" elsterfeldname="EUER/Zus_Angabe_EinzelUntern/Entnahme_Einlage/Einlage/Sum/E6006701" >
+    <feld id="123" typ="Einnahmen" seite="4" horizontal="904" vertikal="457" ausrichtung="rechtsbuendig" anteil="brutto" nachkommaanteil="mit" nullwertdarstellung="ja" veraltet="nein" elsterfeldname="EUER/Zus_Angabe_EinzelUntern/Entnahme_Einlage/Einlage/Sum/E6006701" >
       <name>/Privateinlagen</name>
       <erweiterung>Einlagen einschl. Sach-, Leistungs- und Nutzungseinlagen</erweiterung>
     </feld>
@@ -554,12 +554,14 @@
   </seiten>
   <abschnitte>
     <abschnitt name="Betriebseinnahmen" seite="1" vertikal="495" />
+    <abschnitt name="Summe Betriebseinnahmen" seite="1" vertikal="943" />
     <abschnitt name="Waren, Roh- und Hilfsstoffe, Fremdleistungen" seite="1" vertikal="975" />
     <abschnitt name="Absetzung für Abnutzumg (AFA)" seite="1" vertikal="1211" />
     <abschnitt name="Raumkosten und sonstige Grundstücksaufwendungen" seite="2" vertikal="280" />
     <abschnitt name="Sonstige unbeschränkt abziehbare Betriebsausgaben" seite="2" vertikal="403" />
     <abschnitt name="Beschränkt abziehbare Betriebsausgaben" seite="2" vertikal="980" />
     <abschnitt name="Kraftfahrzeugkosten und andere Fahrtkosten" seite="3" vertikal="94" />
+    <abschnitt name="Summe Betriebsausgaben" seite="3" vertikal="350" />
     <abschnitt name="Ermittlung des Gewinns" seite="3" vertikal="384" />
     <abschnitt name="Ergänzende Angaben" seite="4" vertikal="89" />
     <abschnitt name="Zusätzliche Angaben bei Einzelunternehmen" seite="4" vertikal="350" />
