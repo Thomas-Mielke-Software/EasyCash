@@ -74,6 +74,8 @@ protected:
 	afx_msg BSTR HoleFeldwertUeberID(long FeldID);
 	afx_msg BSTR HoleFeldbeschreibungUeberID(long FeldID);
 	afx_msg long HoleVoranmeldungszeitraum();
+	afx_msg BSTR HoleVerknuepfteKonten(long FeldID);
+	afx_msg void WaehleFormularUndBetrieb(LPCTSTR Formular, LPCTSTR Betrieb);
 	//}}AFX_DISPATCH
 	DECLARE_DISPATCH_MAP()
 
@@ -102,6 +104,8 @@ public:
 	dispidHoleFeldwertUeberID = 9L,
 	dispidHoleFeldbeschreibungUeberID = 10L,
 	dispidHoleVoranmeldungszeitraum = 11L,
+	dispidHoleVerknuepfteKonten = 12L,
+	dispidWaehleFormularUndBetrieb = 13L,
 	//}}AFX_DISP_ID
 	};
 private:
@@ -109,6 +113,7 @@ private:
 	CEasyCashDoc *m_pDoc;
 	int m_FeldIDs[10000];
 	CString m_Formular;
+	CString m_Betrieb;
 };
 
 //{{AFX_INSERT_LOCATION}}

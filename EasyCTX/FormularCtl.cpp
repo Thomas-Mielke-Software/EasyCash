@@ -63,6 +63,7 @@ BEGIN_DISPATCH_MAP(CFormularCtrl, COleControl)
 	DISP_FUNCTION(CFormularCtrl, "HoleFeldwertUeberID", HoleFeldwertUeberID, VT_BSTR, VTS_I4)
 	DISP_FUNCTION(CFormularCtrl, "HoleFeldbeschreibungUeberID", HoleFeldbeschreibungUeberID, VT_BSTR, VTS_I4)
 	DISP_FUNCTION(CFormularCtrl, "HoleVoranmeldungszeitraum", HoleVoranmeldungszeitraum, VT_I4, VTS_NONE)
+	DISP_FUNCTION(CFormularCtrl, "HoleVerknuepfteKonten", HoleVerknuepfteKonten, VT_BSTR, VTS_I4)
 	//}}AFX_DISPATCH_MAP
 	DISP_FUNCTION_ID(CFormularCtrl, "AboutBox", DISPID_ABOUTBOX, AboutBox, VT_EMPTY, VTS_NONE)
 END_DISPATCH_MAP()
@@ -310,4 +311,21 @@ BSTR CFormularCtrl::HoleFeldbeschreibungUeberID(long FeldID)
 long CFormularCtrl::HoleVoranmeldungszeitraum() 
 {
 	return m_pDoc->m_nZeitraum;
+}
+
+BSTR CFormularCtrl::HoleVerknuepfteKonten(long FeldID) 
+{
+	// TODO: Implement!
+
+	//if (FeldID/*Index >= 0 && Index < m_csaFormularfeldwerte.GetSize()*/)
+	//	return m_csaFormularfeldwerte[Index].AllocSysString();
+	//else 
+		return ((CString)"").AllocSysString();
+}
+
+void CFormularCtrl::WaehleFormularUndBetrieb(LPCTSTR Formular, LPCTSTR Betrieb)  
+{
+	m_Formular = Formular;
+	m_Betrieb = Betrieb;
+	m_pDoc->BerechneFormularfeldwerte(m_Formular, m_csaFormularfeldwerte, m_FeldIDs, &m_csaFormularfeldbeschreibungen, m_Betrieb);
 }
