@@ -1,0 +1,551 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{b51ef210-b950-4d3f-9675-6690b197a06e}</UniqueIdentifier>
+      <Extensions>cpp;c;cxx;rc;def;r;odl;idl;hpj;bat;for;f90</Extensions>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{b8e9d093-7835-4b02-bddc-e4db913de89b}</UniqueIdentifier>
+      <Extensions>h;hpp;hxx;hm;inl;fi;fd</Extensions>
+    </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{c1897e30-4b0c-49d1-8ee2-a8a07b044d45}</UniqueIdentifier>
+      <Extensions>ico;cur;bmp;dlg;rc2;rct;bin;cnt;rtf;gif;jpg;jpeg;jpe</Extensions>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="2DArray.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="AnfangssaldoDlg.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="BuchenDlg.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ChildFrm.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="DatenverzeichnisDlg.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="DauBuchAusfuehren.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="DauerbuchungenDlg.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="DruckauswahlDlg.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="DSAMessageBox.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="EasyCash.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="EasyCashView.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Einstellungen1.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Einstellungen2.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Einstellungen3.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Einstellungen4.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="einstellungen5.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ExtSplitter.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Formularabschnitt.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Formularfeld.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="getprogramversion.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="IconAuswahl.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="IconAuswahlBestandskonto.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="IconAuswahlBetrieb.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="IconAuswahlMandant.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="MainFrm.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="MandantName.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="MyListView.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Navigation.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="nbMessageBox.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="NeuesFormular.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="NeuesKonto.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="PluginManager.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="QuickEdit.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="QuickList.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="RechnDlg.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="RegDlg.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="RegistrierenDlg.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="StdAfx.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Tip.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="TipDlg.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ToolBarEx.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="UnternehmensartDlg.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="UstVorauszahlungenDlg.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="VCalcParser.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="VCalcParserException.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="VoranmeldezeitraumDlg.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="VoranmeldungszeitraumDroplist.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="WebUpdate.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="WinVer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="XFileOpenListView.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="XFolderDialog.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="XHistoryCombo.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="EasyCash.rc">
+      <Filter>Source Files</Filter>
+    </ResourceCompile>
+    <ResourceCompile Include="XFolderDialog.rc">
+      <Filter>Source Files</Filter>
+    </ResourceCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="AnfangssaldoDlg.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="buchendlg.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="childfrm.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="DatenverzeichnisDlg.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="daubuchausfuehren.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="dauerbuchungendlg.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="druckauswahldlg.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="DSAMessageBox.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="easycash.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="easycashview.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="einstellungen1.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="einstellungen2.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="einstellungen3.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="einstellungen4.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Einstellungen5.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Formularabschnitt.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Formularfeld.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="getprogramversion.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="IconAuswahl.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="IconAuswahlBestandskonto.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="IconAuswahlBetrieb.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="IconAuswahlMandant.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="mainfrm.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="MandantName.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="MyListView.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Navigation.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="nbMessageBox.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="NeuesFormular.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="neueskonto.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="PluginManager.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="QuickEdit.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="QuickList.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="RechnDlg.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="regdlg.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="registrierendlg.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="resource.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Schemadef.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Separator.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="sha1.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="StdAfx.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Tip.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="TipDlg.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Tmschema.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="UnternehmensartDlg.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="UstVorauszahlungenDlg.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Uxtheme.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="VCalcParser.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="VCalcParserException.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="VCalcParserTypes.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="VisualStylesXP.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="voranmeldezeitraumdlg.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="VoranmeldungszeitraumDroplist.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="WebUpdate.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="XFileOpenListView.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="XFolderDialog.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="XFolderDialogRes.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="XHistoryCombo.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="RES\01.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="RES\02.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="RES\03.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="RES\04.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="RES\05.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="RES\06.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="RES\07.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="RES\08.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="RES\09.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Res\31ster.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="RES\big_icon_checkmark.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="RES\bitmap1.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Res\bmp00001.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Res\bmp31ste.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Res\button1.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Res\button2.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Res\button3.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Res\button4.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Res\button5.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="RES\button6.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Res\clock.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="RES\datenverzeichnis.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="RES\easycash.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Res\easycash.ico">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="RES\EasyCash32x32.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Res\easycashdoc.ico">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="RES\FACE01.ICO">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="RES\FACE02.ICO">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="RES\FACE03.ICO">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="RES\find.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="gray.ico">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="green.ico">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="RES\icon01.ico">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="RES\icons.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="RES\icons_bestandskonten.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="RES\imglist16.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="RES\imglist32.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="RES\info.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Res\infosign.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="RES\litebulb.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Res\pie.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="RES\plugin.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="RES\plugin_platzhalter.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="RES\Rechner.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="red.ico">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Res\spanner.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Res\spike.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Res\spike1.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Res\spike2.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Res\stop.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Res\toolbar.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="RES\toolbar1.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="RES\toolbar2_hicolor_32.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="RES\toolbar_einstellungen_16.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="RES\toolbar_einstellungen_32.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="RES\toolbar_hicolor.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="RES\toolbar_hicolor_16.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="RES\toolbar_hicolor_32.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="RES\toolbar_hicolor_disabled.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="RES\toolbar_hicolor_hot.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="RES\EasyCash32x32.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Res\easycash.rc2">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="Formularabschnitt.htm" />
+    <None Include="README.md" />
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="LIZENZ.txt" />
+    <Text Include="tipps.txt" />
+    <Text Include="ToDo.txt" />
+  </ItemGroup>
+</Project>

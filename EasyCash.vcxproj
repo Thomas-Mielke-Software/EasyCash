@@ -1,0 +1,476 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{38F2C362-8383-4743-808F-F9D924DCBE9B}</ProjectGuid>
+    <RootNamespace>EasyCash</RootNamespace>
+    <Keyword>MFCProj</Keyword>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <PlatformToolset>v141</PlatformToolset>
+    <UseOfMfc>Dynamic</UseOfMfc>
+    <CharacterSet>MultiByte</CharacterSet>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <PlatformToolset>v141</PlatformToolset>
+    <UseOfMfc>Dynamic</UseOfMfc>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="$(VCTargetsPath)Microsoft.CPP.UpgradeFromVC60.props" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="$(VCTargetsPath)Microsoft.CPP.UpgradeFromVC60.props" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup>
+    <_ProjectFileVersion>15.0.28307.799</_ProjectFileVersion>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <OutDir>.\Debug\</OutDir>
+    <IntDir>.\Debug\</IntDir>
+    <LinkIncremental>true</LinkIncremental>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <OutDir>.\Release\</OutDir>
+    <IntDir>.\Release\</IntDir>
+    <LinkIncremental>false</LinkIncremental>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <Midl>
+      <PreprocessorDefinitions>_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <MkTypLibCompatible>true</MkTypLibCompatible>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <TargetEnvironment>Win32</TargetEnvironment>
+      <TypeLibraryName>.\Debug/EasyCash.tlb</TypeLibraryName>
+      <HeaderFileName />
+    </Midl>
+    <ClCompile>
+      <Optimization>Disabled</Optimization>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <MinimalRebuild>true</MinimalRebuild>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeaderFile>stdafx.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderOutputFile>.\Debug/EasyCash.pch</PrecompiledHeaderOutputFile>
+      <AssemblerListingLocation>.\Debug/</AssemblerListingLocation>
+      <ObjectFileName>.\Debug/</ObjectFileName>
+      <ProgramDataBaseFileName>.\Debug/</ProgramDataBaseFileName>
+      <BrowseInformation>true</BrowseInformation>
+      <WarningLevel>Level3</WarningLevel>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
+      <DisableSpecificWarnings>4996;4018;%(DisableSpecificWarnings)</DisableSpecificWarnings>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <Culture>0x0407</Culture>
+    </ResourceCompile>
+    <Link>
+      <AdditionalDependencies>ECTIFace\Debug\ECTIFace.lib;../GrafLib/png/Debug/png.lib;../GrafLib/jpeg/Debug/jpeg.lib;../GrafLib/zlib/Debug/zlib.lib;../GrafLib/cimage/Debug/cimage.lib;rpcrt4.lib;Wininet.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <OutputFile>.\Debug\EasyCT.exe</OutputFile>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <ProgramDatabaseFile>.\Debug/EasyCT.pdb</ProgramDatabaseFile>
+      <SubSystem>Windows</SubSystem>
+      <StackReserveSize>10485760</StackReserveSize>
+      <RandomizedBaseAddress>false</RandomizedBaseAddress>
+      <DataExecutionPrevention />
+      <TargetMachine>MachineX86</TargetMachine>
+    </Link>
+    <Bscmake>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <OutputFile>.\Debug/EasyCash.bsc</OutputFile>
+    </Bscmake>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <CustomBuildStep>
+      <Command>copy ..\EasyCash\Release\CrashSender1402.exe .\Release
+copy ..\EasyCash\Release\crashrpt_lang.ini .\Release
+</Command>
+      <Outputs>.\Release\CrashSender1402.exe;.\Release\crashrpt_lang.ini;%(Outputs)</Outputs>
+    </CustomBuildStep>
+    <Midl>
+      <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <MkTypLibCompatible>true</MkTypLibCompatible>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <TargetEnvironment>Win32</TargetEnvironment>
+      <TypeLibraryName>.\Release/EasyCash.tlb</TypeLibraryName>
+      <HeaderFileName />
+    </Midl>
+    <ClCompile>
+      <Optimization>Disabled</Optimization>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <WholeProgramOptimization>true</WholeProgramOptimization>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeaderFile>stdafx.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderOutputFile>.\Release/EasyCash.pch</PrecompiledHeaderOutputFile>
+      <AssemblerListingLocation>.\Release/</AssemblerListingLocation>
+      <ObjectFileName>.\Release/</ObjectFileName>
+      <ProgramDataBaseFileName>.\Release/</ProgramDataBaseFileName>
+      <BrowseInformation />
+      <BrowseInformationFile>.\Release/</BrowseInformationFile>
+      <WarningLevel>Level3</WarningLevel>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <DisableSpecificWarnings>4996;4018;%(DisableSpecificWarnings)</DisableSpecificWarnings>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <Culture>0x0407</Culture>
+    </ResourceCompile>
+    <Link>
+      <AdditionalDependencies>ECTIFace\Release\ECTIFace.lib;..\GrafLib\cimage\Release\cimage.lib;..\GrafLib\jpeg\Release\jpeg.lib;..\GrafLib\png\Release\png.lib;..\GrafLib\zlib\Release\zlib.lib;rpcrt4.lib;Wininet.lib;D:\Work\CrashRpt\reporting\crashrpt\bin\Release\CrashRptLIB.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <OutputFile>.\Release\EasyCT.exe</OutputFile>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <ProgramDatabaseFile>.\Release/EasyCT.pdb</ProgramDatabaseFile>
+      <SubSystem>Windows</SubSystem>
+      <StackReserveSize>10485760</StackReserveSize>
+      <OptimizeReferences>true</OptimizeReferences>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <LinkTimeCodeGeneration>UseLinkTimeCodeGeneration</LinkTimeCodeGeneration>
+      <RandomizedBaseAddress>false</RandomizedBaseAddress>
+      <DataExecutionPrevention>true</DataExecutionPrevention>
+      <TargetMachine>MachineX86</TargetMachine>
+    </Link>
+    <Bscmake>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <OutputFile>.\Release/EasyCash.bsc</OutputFile>
+    </Bscmake>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClCompile Include="2DArray.cpp" />
+    <ClCompile Include="AnfangssaldoDlg.cpp">
+      <Optimization Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Disabled</Optimization>
+    </ClCompile>
+    <ClCompile Include="BuchenDlg.cpp">
+      <Optimization Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Disabled</Optimization>
+    </ClCompile>
+    <ClCompile Include="ChildFrm.cpp">
+      <Optimization Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Disabled</Optimization>
+    </ClCompile>
+    <ClCompile Include="DatenverzeichnisDlg.cpp">
+      <Optimization Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Disabled</Optimization>
+    </ClCompile>
+    <ClCompile Include="DauBuchAusfuehren.cpp">
+      <Optimization Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Disabled</Optimization>
+    </ClCompile>
+    <ClCompile Include="DauerbuchungenDlg.cpp">
+      <Optimization Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Disabled</Optimization>
+    </ClCompile>
+    <ClCompile Include="DruckauswahlDlg.cpp">
+      <Optimization Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Disabled</Optimization>
+    </ClCompile>
+    <ClCompile Include="DSAMessageBox.cpp">
+      <Optimization Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Disabled</Optimization>
+    </ClCompile>
+    <ClCompile Include="EasyCash.cpp">
+      <Optimization Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Disabled</Optimization>
+    </ClCompile>
+    <ClCompile Include="EasyCashView.cpp">
+      <Optimization Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Disabled</Optimization>
+    </ClCompile>
+    <ClCompile Include="Einstellungen1.cpp">
+      <Optimization Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Disabled</Optimization>
+    </ClCompile>
+    <ClCompile Include="Einstellungen2.cpp">
+      <Optimization Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Disabled</Optimization>
+    </ClCompile>
+    <ClCompile Include="Einstellungen3.cpp">
+      <Optimization Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Disabled</Optimization>
+    </ClCompile>
+    <ClCompile Include="Einstellungen4.cpp">
+      <Optimization Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Disabled</Optimization>
+    </ClCompile>
+    <ClCompile Include="einstellungen5.cpp">
+      <Optimization Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Disabled</Optimization>
+    </ClCompile>
+    <ClCompile Include="ExtSplitter.cpp" />
+    <ClCompile Include="Formularabschnitt.cpp" />
+    <ClCompile Include="Formularfeld.cpp">
+      <Optimization Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Disabled</Optimization>
+    </ClCompile>
+    <ClCompile Include="getprogramversion.cpp">
+      <Optimization Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Disabled</Optimization>
+    </ClCompile>
+    <ClCompile Include="IconAuswahl.cpp">
+      <Optimization Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Disabled</Optimization>
+    </ClCompile>
+    <ClCompile Include="IconAuswahlBestandskonto.cpp">
+      <Optimization Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Disabled</Optimization>
+    </ClCompile>
+    <ClCompile Include="IconAuswahlBetrieb.cpp">
+      <Optimization Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Disabled</Optimization>
+    </ClCompile>
+    <ClCompile Include="IconAuswahlMandant.cpp">
+      <Optimization Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Disabled</Optimization>
+    </ClCompile>
+    <ClCompile Include="MainFrm.cpp">
+      <Optimization Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Disabled</Optimization>
+    </ClCompile>
+    <ClCompile Include="MandantName.cpp">
+      <Optimization Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Disabled</Optimization>
+    </ClCompile>
+    <ClCompile Include="MyListView.cpp" />
+    <ClCompile Include="Navigation.cpp" />
+    <ClCompile Include="nbMessageBox.cpp">
+      <Optimization Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Disabled</Optimization>
+    </ClCompile>
+    <ClCompile Include="NeuesFormular.cpp">
+      <Optimization Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Disabled</Optimization>
+    </ClCompile>
+    <ClCompile Include="NeuesKonto.cpp">
+      <Optimization Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Disabled</Optimization>
+    </ClCompile>
+    <ClCompile Include="PluginManager.cpp">
+      <Optimization Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Disabled</Optimization>
+    </ClCompile>
+    <ClCompile Include="QuickEdit.cpp">
+      <Optimization Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Disabled</Optimization>
+    </ClCompile>
+    <ClCompile Include="QuickList.cpp">
+      <Optimization Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Disabled</Optimization>
+    </ClCompile>
+    <ClCompile Include="RechnDlg.cpp">
+      <Optimization Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Disabled</Optimization>
+    </ClCompile>
+    <ClCompile Include="RegDlg.cpp">
+      <Optimization Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Disabled</Optimization>
+    </ClCompile>
+    <ClCompile Include="RegistrierenDlg.cpp">
+      <Optimization Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Disabled</Optimization>
+    </ClCompile>
+    <ClCompile Include="StdAfx.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
+      <Optimization Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Disabled</Optimization>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="Tip.cpp">
+      <Optimization Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Disabled</Optimization>
+    </ClCompile>
+    <ClCompile Include="TipDlg.cpp">
+      <Optimization Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Disabled</Optimization>
+    </ClCompile>
+    <ClCompile Include="ToolBarEx.cpp">
+      <Optimization Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Disabled</Optimization>
+    </ClCompile>
+    <ClCompile Include="UnternehmensartDlg.cpp">
+      <Optimization Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Disabled</Optimization>
+    </ClCompile>
+    <ClCompile Include="UstVorauszahlungenDlg.cpp">
+      <Optimization Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Disabled</Optimization>
+    </ClCompile>
+    <ClCompile Include="VCalcParser.cpp">
+      <Optimization Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Disabled</Optimization>
+    </ClCompile>
+    <ClCompile Include="VCalcParserException.cpp">
+      <Optimization Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Disabled</Optimization>
+    </ClCompile>
+    <ClCompile Include="VoranmeldezeitraumDlg.cpp">
+      <Optimization Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Disabled</Optimization>
+    </ClCompile>
+    <ClCompile Include="VoranmeldungszeitraumDroplist.cpp">
+      <Optimization Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Disabled</Optimization>
+    </ClCompile>
+    <ClCompile Include="WebUpdate.cpp">
+      <Optimization Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Disabled</Optimization>
+    </ClCompile>
+    <ClCompile Include="WinVer.cpp">
+      <Optimization Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Disabled</Optimization>
+    </ClCompile>
+    <ClCompile Include="XFileOpenListView.cpp">
+      <Optimization Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Disabled</Optimization>
+    </ClCompile>
+    <ClCompile Include="XFolderDialog.cpp">
+      <Optimization Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Disabled</Optimization>
+    </ClCompile>
+    <ClCompile Include="XHistoryCombo.cpp">
+      <Optimization Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Disabled</Optimization>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="EasyCash.rc" />
+    <ResourceCompile Include="XFolderDialog.rc">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+    </ResourceCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="AnfangssaldoDlg.h" />
+    <ClInclude Include="buchendlg.h" />
+    <ClInclude Include="childfrm.h" />
+    <ClInclude Include="DatenverzeichnisDlg.h" />
+    <ClInclude Include="daubuchausfuehren.h" />
+    <ClInclude Include="dauerbuchungendlg.h" />
+    <ClInclude Include="druckauswahldlg.h" />
+    <ClInclude Include="DSAMessageBox.h" />
+    <ClInclude Include="easycash.h" />
+    <ClInclude Include="easycashview.h" />
+    <ClInclude Include="einstellungen1.h" />
+    <ClInclude Include="einstellungen2.h" />
+    <ClInclude Include="einstellungen3.h" />
+    <ClInclude Include="einstellungen4.h" />
+    <ClInclude Include="Einstellungen5.h" />
+    <ClInclude Include="Formularabschnitt.h" />
+    <ClInclude Include="Formularfeld.h" />
+    <ClInclude Include="getprogramversion.h" />
+    <ClInclude Include="IconAuswahl.h" />
+    <ClInclude Include="IconAuswahlBestandskonto.h" />
+    <ClInclude Include="IconAuswahlBetrieb.h" />
+    <ClInclude Include="IconAuswahlMandant.h" />
+    <ClInclude Include="mainfrm.h" />
+    <ClInclude Include="MandantName.h" />
+    <ClInclude Include="MyListView.h" />
+    <ClInclude Include="Navigation.h" />
+    <ClInclude Include="nbMessageBox.h" />
+    <ClInclude Include="NeuesFormular.h" />
+    <ClInclude Include="neueskonto.h" />
+    <ClInclude Include="PluginManager.h" />
+    <ClInclude Include="QuickEdit.h" />
+    <ClInclude Include="QuickList.h" />
+    <ClInclude Include="RechnDlg.h" />
+    <ClInclude Include="regdlg.h" />
+    <ClInclude Include="registrierendlg.h" />
+    <ClInclude Include="resource.h" />
+    <ClInclude Include="Schemadef.h" />
+    <ClInclude Include="Separator.h" />
+    <ClInclude Include="sha1.h" />
+    <ClInclude Include="StdAfx.h" />
+    <ClInclude Include="Tip.h" />
+    <ClInclude Include="TipDlg.h" />
+    <ClInclude Include="Tmschema.h" />
+    <ClInclude Include="UnternehmensartDlg.h" />
+    <ClInclude Include="UstVorauszahlungenDlg.h" />
+    <ClInclude Include="Uxtheme.h" />
+    <ClInclude Include="VCalcParser.h" />
+    <ClInclude Include="VCalcParserException.h" />
+    <ClInclude Include="VCalcParserTypes.h" />
+    <ClInclude Include="VisualStylesXP.h" />
+    <ClInclude Include="voranmeldezeitraumdlg.h" />
+    <ClInclude Include="VoranmeldungszeitraumDroplist.h" />
+    <ClInclude Include="WebUpdate.h" />
+    <ClInclude Include="XFileOpenListView.h" />
+    <ClInclude Include="XFolderDialog.h" />
+    <ClInclude Include="XFolderDialogRes.h" />
+    <ClInclude Include="XHistoryCombo.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="gray.ico" />
+    <Image Include="green.ico" />
+    <Image Include="red.ico" />
+    <Image Include="RES\01.bmp" />
+    <Image Include="RES\02.bmp" />
+    <Image Include="RES\03.bmp" />
+    <Image Include="RES\04.bmp" />
+    <Image Include="RES\05.bmp" />
+    <Image Include="RES\06.bmp" />
+    <Image Include="RES\07.bmp" />
+    <Image Include="RES\08.bmp" />
+    <Image Include="RES\09.bmp" />
+    <Image Include="Res\31ster.bmp" />
+    <Image Include="RES\big_icon_checkmark.bmp" />
+    <Image Include="RES\bitmap1.bmp" />
+    <Image Include="Res\bmp00001.bmp" />
+    <Image Include="Res\bmp31ste.bmp" />
+    <Image Include="Res\button1.bmp" />
+    <Image Include="Res\button2.bmp" />
+    <Image Include="Res\button3.bmp" />
+    <Image Include="Res\button4.bmp" />
+    <Image Include="Res\button5.bmp" />
+    <Image Include="RES\button6.bmp" />
+    <Image Include="Res\clock.bmp" />
+    <Image Include="RES\datenverzeichnis.bmp" />
+    <Image Include="RES\easycash.bmp" />
+    <Image Include="Res\easycash.ico" />
+    <Image Include="RES\EasyCash32x32.bmp" />
+    <Image Include="RES\EasyCash32x32.png" />
+    <Image Include="Res\easycashdoc.ico" />
+    <Image Include="RES\FACE01.ICO" />
+    <Image Include="RES\FACE02.ICO" />
+    <Image Include="RES\FACE03.ICO" />
+    <Image Include="RES\find.bmp" />
+    <Image Include="RES\icon01.ico" />
+    <Image Include="RES\icons.bmp" />
+    <Image Include="RES\icons_bestandskonten.bmp" />
+    <Image Include="RES\imglist16.bmp" />
+    <Image Include="RES\imglist32.bmp" />
+    <Image Include="RES\info.bmp" />
+    <Image Include="Res\infosign.bmp" />
+    <Image Include="RES\litebulb.bmp" />
+    <Image Include="Res\pie.bmp" />
+    <Image Include="RES\plugin.bmp" />
+    <Image Include="RES\plugin_platzhalter.bmp" />
+    <Image Include="RES\Rechner.bmp" />
+    <Image Include="Res\spanner.bmp" />
+    <Image Include="Res\spike.bmp" />
+    <Image Include="Res\spike1.bmp" />
+    <Image Include="Res\spike2.bmp" />
+    <Image Include="Res\stop.bmp" />
+    <Image Include="Res\toolbar.bmp" />
+    <Image Include="RES\toolbar1.bmp" />
+    <Image Include="RES\toolbar2_hicolor_32.bmp" />
+    <Image Include="RES\toolbar_einstellungen_16.bmp" />
+    <Image Include="RES\toolbar_einstellungen_32.bmp" />
+    <Image Include="RES\toolbar_hicolor.bmp" />
+    <Image Include="RES\toolbar_hicolor_16.bmp" />
+    <Image Include="RES\toolbar_hicolor_32.bmp" />
+    <Image Include="RES\toolbar_hicolor_disabled.bmp" />
+    <Image Include="RES\toolbar_hicolor_hot.bmp" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Formularabschnitt.htm">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
+    <None Include="README.md" />
+    <None Include="Res\easycash.rc2" />
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="LIZENZ.txt" />
+    <Text Include="tipps.txt" />
+    <Text Include="ToDo.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="EasyCTXP\EasyCTXP.vcxproj">
+      <Project>{9bd9bb2d-46b3-4517-b493-952e591c2c58}</Project>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+    </ProjectReference>
+    <ProjectReference Include="EasyCTX\EasyCTX.vcxproj">
+      <Project>{8d716f09-9a93-41f7-a9aa-d89a5bbe3fce}</Project>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+    </ProjectReference>
+    <ProjectReference Include="ECTIFace\ECTIFace.vcxproj">
+      <Project>{07e9d768-f7ce-48e3-963d-0e52111af4f9}</Project>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+  <ProjectExtensions>
+    <VisualStudio>
+      <UserProperties RESOURCE_FILE="EasyCash.rc" />
+    </VisualStudio>
+  </ProjectExtensions>
+</Project>

@@ -660,7 +660,25 @@ v2.46
 v2.47
 - Bestandskonten ohne Buchungen werden nun im Journal dann angezeit, wenn sie einen Saldo aufweisen, der nicht null ist.
 - Auf den USt.-Formularen werden Vor- und Nachnamen jetzt direkt hintereinandergeschrieben.
+!!!!!!!!!!!!!!!!!!!!!!!!!
+> anbei ein Beispiel für das 2. Quartal.
+> Wie beschrieben ist die Anzeige für das 3. und 4. Quartal auch fehlerhaft.
+Ah, Du hast keine Buchungen für das Quartal? Dann gibt es tatsächlich den Effekt, wenn Du filterst. Bei einem normalen Quartal, wo es auch Buchungen gibt, wird die Quartalsnummer im Saldo-Bereich korrekt angezeigt.
+!!!!!!!!!!!!!!!!!!!!!!!!!
 
+Wäre es möglich in den Algorithmus eine Möglichkeit einzubauen welche es erlaubt
+Doppelbuchungen zu finden ? Habe am jedem buchungstechnischen Jahresende eine
+größere Menge von Buchungen in den einzelnen Konten, welche ich manuell visuell
+auf Doppelbuchungen überprüfe, die leider ab und zu vorkommen.
+
+> ich habe seit diesem Jahr die MAC OS Version, aktuell v.2.46, im 
+> Einsatz. Eine tolle Funktion ist die Navigationsleiste auf der rechten 
+> Seite, leider funktioniert die Direktanwahl nur bei den Einnahmen und 
+> nicht bei den Ausgaben !? Muss hier eventuell etwas in den Setting 
+> eingestellt werden?
+Ah, das ist blöd. Die Navigation ist ein Listen-Steuerelement; unter MacOS funktioniert die Gruppierung von Listen leider nicht. Unter Windows wären die Konten dort unter "Einnahmen" und "Ausgaben" subsummiert.
+
+Ich muss mal schauen, dass ich das für Mac und Linux irgendwie umbiege...
 !!!!!!!!!!!!!! 
 > Wie kann ich die Formulare besser blocken
 > Wenn alle E1 ...... wie die U30 pro Jahr ein Ordner wären und ich dann runter scrolle auf das Jahr

@@ -1,23 +1,17 @@
 ﻿
-Microsoft Visual Studio Solution File, Format Version 10.00
-# Visual Studio 2008
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ECTIFace", "ECTIFace\ECTIFace.vcproj", "{07E9D768-F7CE-48E3-963D-0E52111AF4F9}"
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.33801.198
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ECTIFace", "ECTIFace\ECTIFace.vcxproj", "{07E9D768-F7CE-48E3-963D-0E52111AF4F9}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "EasyCTX", "EasyCTX\EasyCTX.vcproj", "{8D716F09-9A93-41F7-A9AA-D89A5BBE3FCE}"
-	ProjectSection(ProjectDependencies) = postProject
-		{07E9D768-F7CE-48E3-963D-0E52111AF4F9} = {07E9D768-F7CE-48E3-963D-0E52111AF4F9}
-	EndProjectSection
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "EasyCTX", "EasyCTX\EasyCTX.vcxproj", "{8D716F09-9A93-41F7-A9AA-D89A5BBE3FCE}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "EasyCash", "EasyCash.vcproj", "{38F2C362-8383-4743-808F-F9D924DCBE9B}"
-	ProjectSection(ProjectDependencies) = postProject
-		{8D716F09-9A93-41F7-A9AA-D89A5BBE3FCE} = {8D716F09-9A93-41F7-A9AA-D89A5BBE3FCE}
-		{9BD9BB2D-46B3-4517-B493-952E591C2C58} = {9BD9BB2D-46B3-4517-B493-952E591C2C58}
-		{07E9D768-F7CE-48E3-963D-0E52111AF4F9} = {07E9D768-F7CE-48E3-963D-0E52111AF4F9}
-	EndProjectSection
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "EasyCash", "EasyCash.vcxproj", "{38F2C362-8383-4743-808F-F9D924DCBE9B}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "EasyCTXP", "EasyCTXP\EasyCTXP.vcproj", "{9BD9BB2D-46B3-4517-B493-952E591C2C58}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "EasyCTXP", "EasyCTXP\EasyCTXP.vcxproj", "{9BD9BB2D-46B3-4517-B493-952E591C2C58}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ECTUpdater", "ECTUpdater\ECTUpdater.vcproj", "{2F0CA23B-145A-4EEB-8027-282267E1FE8E}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ECTUpdater", "ECTUpdater\ECTUpdater.vcxproj", "{2F0CA23B-145A-4EEB-8027-282267E1FE8E}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -70,5 +64,8 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {811CCB22-3C01-4D1D-B4B2-1ED1675F90F2}
 	EndGlobalSection
 EndGlobal
