@@ -177,6 +177,8 @@ library EASYCTXLib
 			[id(9)] BSTR HoleFeldwertUeberID(long FeldID);
 			[id(10)] BSTR HoleFeldbeschreibungUeberID(long FeldID);
 			[id(11)] long HoleVoranmeldungszeitraum();
+			[id(12)] BSTR HoleVerknuepfteKonten(long FeldID);
+			[id(13)] void WaehleFormularUndBetrieb(LPCTSTR Formular, LPCTSTR Betrieb);
 			//}}AFX_ODL_METHOD
 
 			[id(DISPID_ABOUTBOX)] void AboutBox();
