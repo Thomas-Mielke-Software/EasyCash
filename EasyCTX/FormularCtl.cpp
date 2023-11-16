@@ -64,6 +64,8 @@ BEGIN_DISPATCH_MAP(CFormularCtrl, COleControl)
 	DISP_FUNCTION(CFormularCtrl, "HoleFeldbeschreibungUeberID", HoleFeldbeschreibungUeberID, VT_BSTR, VTS_I4)
 	DISP_FUNCTION(CFormularCtrl, "HoleVoranmeldungszeitraum", HoleVoranmeldungszeitraum, VT_I4, VTS_NONE)
 	DISP_FUNCTION(CFormularCtrl, "HoleVerknuepfteKonten", HoleVerknuepfteKonten, VT_BSTR, VTS_I4)
+	DISP_FUNCTION(CFormularCtrl, "WaehleFormularUndBetrieb", WaehleFormularUndBetrieb, VT_EMPTY, VTS_BSTR VTS_BSTR)
+
 	//}}AFX_DISPATCH_MAP
 	DISP_FUNCTION_ID(CFormularCtrl, "AboutBox", DISPID_ABOUTBOX, AboutBox, VT_EMPTY, VTS_NONE)
 END_DISPATCH_MAP()
