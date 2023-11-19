@@ -165,7 +165,7 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <CustomBuildStep>
       <Message>Registering ActiveX Control...</Message>
-      <Command>regsvr32 /s /c "$(TargetPath)"
+      <Command>echo DISABLED: regsvr32 /s /c "$(TargetPath)"
 echo regsvr32 exec. time &gt; "$(OutDir)regsvr32.trg"
 </Command>
       <Outputs>$(OutDir)regsvr32.trg;%(Outputs)</Outputs>
@@ -228,7 +228,7 @@ echo regsvr32 exec. time &gt; "$(OutDir)regsvr32.trg"
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <CustomBuildStep>
       <Message>Registering ActiveX Control...</Message>
-      <Command>regsvr32 /s /c "$(TargetPath)"
+      <Command>echo DISABLED: regsvr32 /s /c "$(TargetPath)"
 echo regsvr32 exec. time &gt; "$(OutDir)regsvr32.trg"
 </Command>
       <Outputs>$(OutDir)regsvr32.trg;%(Outputs)</Outputs>
@@ -253,13 +253,17 @@ echo regsvr32 exec. time &gt; "$(OutDir)regsvr32.trg"
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>stdafx.h</PrecompiledHeaderFile>
       <PrecompiledHeaderOutputFile>.\Release/EasyCTX.pch</PrecompiledHeaderOutputFile>
-      <AssemblerListingLocation>.\Release/</AssemblerListingLocation>
-      <ObjectFileName>.\Release/</ObjectFileName>
-      <ProgramDataBaseFileName>.\Release/</ProgramDataBaseFileName>
+      <AssemblerListingLocation>.\Release_x64/</AssemblerListingLocation>
+      <ObjectFileName>.\Release_x64\obj\</ObjectFileName>
+      <ProgramDataBaseFileName>.\Release_x64/</ProgramDataBaseFileName>
       <WarningLevel>Level3</WarningLevel>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <DisableSpecificWarnings>4996;4018;%(DisableSpecificWarnings)</DisableSpecificWarnings>
+      <ModuleOutputFile>.\Release_x64/</ModuleOutputFile>
+      <ModuleDependenciesFile>.\Release_x64/</ModuleDependenciesFile>
+      <XMLDocumentationFileName>.\Release_x64/</XMLDocumentationFileName>
+      <SourceDependenciesFile>.\Release_x64/</SourceDependenciesFile>
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -268,7 +272,7 @@ echo regsvr32 exec. time &gt; "$(OutDir)regsvr32.trg"
     </ResourceCompile>
     <Link>
       <AdditionalDependencies>..\ECTIFace\Release\ECTIFace.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <OutputFile>..\x64\Release/EasyCTX.ocx</OutputFile>
+      <OutputFile>..\Release_x64/EasyCTX.ocx</OutputFile>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <ModuleDefinitionFile>.\EasyCTX.def</ModuleDefinitionFile>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -396,7 +400,7 @@ echo regsvr32 exec. time &gt; "$(OutDir)regsvr32.trg"
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <CustomBuildStep>
       <Message>Registering ActiveX Control...</Message>
-      <Command>regsvr32 /s /c "$(TargetPath)"
+      <Command>echo DISABLED: regsvr32 /s /c "$(TargetPath)"
 echo regsvr32 exec. time &gt; "$(OutDir)regsvr32.trg"
 </Command>
       <Outputs>$(OutDir)regsvr32.trg;%(Outputs)</Outputs>
@@ -454,8 +458,8 @@ echo regsvr32 exec. time &gt; "$(OutDir)regsvr32.trg"
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <CustomBuildStep>
-      <Message>Registering ActiveX Control...</Message>
-      <Command>regsvr32 /s /c "$(TargetPath)"
+      <Message>Registering ActiveX Control... XXXX disabled!</Message>
+      <Command>echo DISABLED: regsvr32 /s /c "$(TargetPath)"
 echo regsvr32 exec. time &gt; "$(OutDir)regsvr32.trg"
 </Command>
       <Outputs>$(OutDir)regsvr32.trg;%(Outputs)</Outputs>
@@ -476,14 +480,18 @@ echo regsvr32 exec. time &gt; "$(OutDir)regsvr32.trg"
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>stdafx.h</PrecompiledHeaderFile>
       <PrecompiledHeaderOutputFile>.\Debug/EasyCTX.pch</PrecompiledHeaderOutputFile>
-      <AssemblerListingLocation>.\Debug/</AssemblerListingLocation>
-      <ObjectFileName>.\Debug/</ObjectFileName>
-      <ProgramDataBaseFileName>.\Debug/</ProgramDataBaseFileName>
+      <AssemblerListingLocation>.\Debug_x64/</AssemblerListingLocation>
+      <ObjectFileName>.\Debug_x64\obj\</ObjectFileName>
+      <ProgramDataBaseFileName>.\Debug_x64/</ProgramDataBaseFileName>
       <BrowseInformation>true</BrowseInformation>
       <WarningLevel>Level3</WarningLevel>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <DisableSpecificWarnings>4996;4018;%(DisableSpecificWarnings)</DisableSpecificWarnings>
+      <ModuleOutputFile>.\Debug_x64/</ModuleOutputFile>
+      <ModuleDependenciesFile>.\Debug_x64/</ModuleDependenciesFile>
+      <XMLDocumentationFileName>.\Debug_x64/</XMLDocumentationFileName>
+      <SourceDependenciesFile>.\Debug_x64/</SourceDependenciesFile>
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -502,7 +510,7 @@ echo regsvr32 exec. time &gt; "$(OutDir)regsvr32.trg"
       </DataExecutionPrevention>
       <ImportLibrary>.\Debug/EasyCTX.lib</ImportLibrary>
       <ImageHasSafeExceptionHandlers>false</ImageHasSafeExceptionHandlers>
-      <OutputFile>.\x64\Debug/EasyCTX.ocx</OutputFile>
+      <OutputFile>.\Debug_x64/EasyCTX.ocx</OutputFile>
     </Link>
     <Bscmake>
       <SuppressStartupBanner>true</SuppressStartupBanner>

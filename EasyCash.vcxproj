@@ -153,9 +153,9 @@
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>stdafx.h</PrecompiledHeaderFile>
       <PrecompiledHeaderOutputFile>.\Debug/EasyCash.pch</PrecompiledHeaderOutputFile>
-      <AssemblerListingLocation>.\Debug/</AssemblerListingLocation>
-      <ObjectFileName>.\Debug/</ObjectFileName>
-      <ProgramDataBaseFileName>.\Debug/</ProgramDataBaseFileName>
+      <AssemblerListingLocation>.\Debug_x64/</AssemblerListingLocation>
+      <ObjectFileName>.\Debug_x64\obj\</ObjectFileName>
+      <ProgramDataBaseFileName>.\Debug_x64/</ProgramDataBaseFileName>
       <BrowseInformation>true</BrowseInformation>
       <WarningLevel>Level3</WarningLevel>
       <SuppressStartupBanner>true</SuppressStartupBanner>
@@ -168,7 +168,7 @@
     </ResourceCompile>
     <Link>
       <AdditionalDependencies>ECTIFace\Debug\ECTIFace.lib;../GrafLib/png/Debug/png.lib;../GrafLib/jpeg/Debug/jpeg.lib;../GrafLib/zlib/Debug/zlib.lib;../GrafLib/cimage/Debug/cimage.lib;rpcrt4.lib;Wininet.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <OutputFile>.\x64\Debug\EasyCT.exe</OutputFile>
+      <OutputFile>.\Debug_x64\EasyCT.exe</OutputFile>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <ProgramDatabaseFile>.\Debug/EasyCT.pdb</ProgramDatabaseFile>
@@ -268,9 +268,9 @@ copy ..\EasyCash\Release\crashrpt_lang.ini .\Release
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>stdafx.h</PrecompiledHeaderFile>
       <PrecompiledHeaderOutputFile>.\Release/EasyCash.pch</PrecompiledHeaderOutputFile>
-      <AssemblerListingLocation>.\Release/</AssemblerListingLocation>
-      <ObjectFileName>.\Release/</ObjectFileName>
-      <ProgramDataBaseFileName>.\Release/</ProgramDataBaseFileName>
+      <AssemblerListingLocation>.\Release_x64/</AssemblerListingLocation>
+      <ObjectFileName>.\Release_x64\obj\</ObjectFileName>
+      <ProgramDataBaseFileName>.\Release_x64/</ProgramDataBaseFileName>
       <BrowseInformation>
       </BrowseInformation>
       <BrowseInformationFile>.\Release/</BrowseInformationFile>
@@ -285,7 +285,7 @@ copy ..\EasyCash\Release\crashrpt_lang.ini .\Release
     </ResourceCompile>
     <Link>
       <AdditionalDependencies>ECTIFace\Release\ECTIFace.lib;..\GrafLib\cimage\Release\cimage.lib;..\GrafLib\jpeg\Release\jpeg.lib;..\GrafLib\png\Release\png.lib;..\GrafLib\zlib\Release\zlib.lib;rpcrt4.lib;Wininet.lib;D:\Work\CrashRpt\reporting\crashrpt\bin\Release\CrashRptLIB.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <OutputFile>.\x64\Release\EasyCT.exe</OutputFile>
+      <OutputFile>.\Release_x64\EasyCT.exe</OutputFile>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <ProgramDatabaseFile>.\Release/EasyCT.pdb</ProgramDatabaseFile>

@@ -161,9 +161,9 @@ copy ..\Release\ECTIFace.dll .\Release\ECTIFace.dll
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>stdafx.h</PrecompiledHeaderFile>
       <PrecompiledHeaderOutputFile>.\Release/ECTIFace.pch</PrecompiledHeaderOutputFile>
-      <AssemblerListingLocation>.\Release/</AssemblerListingLocation>
-      <ObjectFileName>.\Release/</ObjectFileName>
-      <ProgramDataBaseFileName>.\Release/</ProgramDataBaseFileName>
+      <AssemblerListingLocation>.\Release_x64/</AssemblerListingLocation>
+      <ObjectFileName>.\Release_x64\obj\</ObjectFileName>
+      <ProgramDataBaseFileName>.\Release_x64/</ProgramDataBaseFileName>
       <WarningLevel>Level3</WarningLevel>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
@@ -174,7 +174,7 @@ copy ..\Release\ECTIFace.dll .\Release\ECTIFace.dll
       <Culture>0x0407</Culture>
     </ResourceCompile>
     <Link>
-      <OutputFile>..\x64\Release\ECTIFace.dll</OutputFile>
+      <OutputFile>..\Release_x64/\ECTIFace.dll</OutputFile>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <ModuleDefinitionFile>.\ECTIFace.def</ModuleDefinitionFile>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -264,9 +264,9 @@ copy ..\Debug\ECTIFace.dll ..\EasyCTX\Debug\ECTIFace.dll
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>stdafx.h</PrecompiledHeaderFile>
       <PrecompiledHeaderOutputFile>.\Debug/ECTIFace.pch</PrecompiledHeaderOutputFile>
-      <AssemblerListingLocation>.\Debug/</AssemblerListingLocation>
-      <ObjectFileName>.\Debug/</ObjectFileName>
-      <ProgramDataBaseFileName>.\Debug/</ProgramDataBaseFileName>
+      <AssemblerListingLocation>.\Debug_x64/</AssemblerListingLocation>
+      <ObjectFileName>.\Debug_x64\obj\</ObjectFileName>
+      <ProgramDataBaseFileName>.\Debug_x64/</ProgramDataBaseFileName>
       <BrowseInformation>true</BrowseInformation>
       <WarningLevel>Level3</WarningLevel>
       <SuppressStartupBanner>true</SuppressStartupBanner>
@@ -278,7 +278,7 @@ copy ..\Debug\ECTIFace.dll ..\EasyCTX\Debug\ECTIFace.dll
       <Culture>0x0407</Culture>
     </ResourceCompile>
     <Link>
-      <OutputFile>..\x64\Debug\ECTIFace.dll</OutputFile>
+      <OutputFile>..\Debug_x64\ECTIFace.dll</OutputFile>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <ModuleDefinitionFile>.\ECTIFace.def</ModuleDefinitionFile>
       <GenerateDebugInformation>true</GenerateDebugInformation>

@@ -125,6 +125,12 @@
       <PrecompiledHeader>Use</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <AssemblerListingLocation>$(IntDir)_x64</AssemblerListingLocation>
+      <ModuleOutputFile>$(IntDir)_x64</ModuleOutputFile>
+      <ModuleDependenciesFile>$(IntDir)_x64</ModuleDependenciesFile>
+      <ObjectFileName>$(IntDir)_x64\obj\</ObjectFileName>
+      <XMLDocumentationFileName>$(IntDir)_x64</XMLDocumentationFileName>
+      <SourceDependenciesFile>$(IntDir)_x64</SourceDependenciesFile>
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -182,6 +188,12 @@
       <PrecompiledHeader>Use</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <AssemblerListingLocation>$(IntDir)_x64</AssemblerListingLocation>
+      <ModuleOutputFile>$(IntDir)_x64</ModuleOutputFile>
+      <ModuleDependenciesFile>$(IntDir)_x64</ModuleDependenciesFile>
+      <ObjectFileName>$(IntDir)_x64\obj\</ObjectFileName>
+      <XMLDocumentationFileName>$(IntDir)_x64</XMLDocumentationFileName>
+      <SourceDependenciesFile>$(IntDir)_x64</SourceDependenciesFile>
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
