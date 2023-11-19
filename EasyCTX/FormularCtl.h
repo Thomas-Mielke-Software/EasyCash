@@ -67,15 +67,15 @@ protected:
 	afx_msg BSTR HoleFormularnamen(long Index, LPCTSTR Filter);
 	afx_msg BSTR HoleFormularpfad(long Index);
 	afx_msg long HoleFormularanzahl();
-	afx_msg void WaehleFormular(LPCTSTR Formular);
+	afx_msg void WaehleFormular(LPCTSTR Formularpfad);
 	afx_msg long HoleFeldanzahl();
 	afx_msg long HoleFeldIDUeberIndex(long Index);
 	afx_msg BSTR HoleFeldwertUeberIndex(long Index);
 	afx_msg BSTR HoleFeldwertUeberID(long FeldID);
 	afx_msg BSTR HoleFeldbeschreibungUeberID(long FeldID);
 	afx_msg long HoleVoranmeldungszeitraum();
-	afx_msg BSTR HoleVerknuepfteKonten(long FeldID);
-	afx_msg void WaehleFormularUndBetrieb(LPCTSTR Formular, LPCTSTR Betrieb);
+	afx_msg BSTR HoleVerknuepfteKonten(LPCTSTR Formularname, long FeldID);
+	afx_msg void WaehleFormularUndBetrieb(LPCTSTR Formularpfad, LPCTSTR Betrieb);
 	//}}AFX_DISPATCH
 	DECLARE_DISPATCH_MAP()
 

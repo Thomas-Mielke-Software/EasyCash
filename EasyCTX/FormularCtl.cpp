@@ -63,9 +63,8 @@ BEGIN_DISPATCH_MAP(CFormularCtrl, COleControl)
 	DISP_FUNCTION(CFormularCtrl, "HoleFeldwertUeberID", HoleFeldwertUeberID, VT_BSTR, VTS_I4)
 	DISP_FUNCTION(CFormularCtrl, "HoleFeldbeschreibungUeberID", HoleFeldbeschreibungUeberID, VT_BSTR, VTS_I4)
 	DISP_FUNCTION(CFormularCtrl, "HoleVoranmeldungszeitraum", HoleVoranmeldungszeitraum, VT_I4, VTS_NONE)
-	DISP_FUNCTION(CFormularCtrl, "HoleVerknuepfteKonten", HoleVerknuepfteKonten, VT_BSTR, VTS_I4)
+	DISP_FUNCTION(CFormularCtrl, "HoleVerknuepfteKonten", HoleVerknuepfteKonten, VT_BSTR, VTS_BSTR VTS_I4)
 	DISP_FUNCTION(CFormularCtrl, "WaehleFormularUndBetrieb", WaehleFormularUndBetrieb, VT_EMPTY, VTS_BSTR VTS_BSTR)
-
 	//}}AFX_DISPATCH_MAP
 	DISP_FUNCTION_ID(CFormularCtrl, "AboutBox", DISPID_ABOUTBOX, AboutBox, VT_EMPTY, VTS_NONE)
 END_DISPATCH_MAP()
@@ -315,14 +314,31 @@ long CFormularCtrl::HoleVoranmeldungszeitraum()
 	return m_pDoc->m_nZeitraum;
 }
 
-BSTR CFormularCtrl::HoleVerknuepfteKonten(long FeldID) 
+// gibt alle mit einer bestimmte Formular/FeldID-Kombination verknüpften Konten als tabulator-getrennte Liste zurück, 'E' oder 'A' ist den Kontennamen vorangestellt
+BSTR CFormularCtrl::HoleVerknuepfteKonten(LPCTSTR Formularname, long FeldID) 
 {
-	// TODO: Implement!
+	m_pDoc->ReadKontenCache();
+	struct Kontenart 
+	{
+		char *typ;  // 'E' für Einnahmen, 'A' für Ausgaben
+		CStringArray *konto;
+		CStringArray *feldzuweisungen;
+	} Kontenarten[] = 
+	{
+		"E", &m_pDoc->m_csEinnahmenKonten, &m_pDoc->m_csEinnahmenFeldzuweisungen,
+		"A", &m_pDoc->m_csAusgabenKonten, &m_pDoc->m_csAusgabenFeldzuweisungen
+	};
 
-	//if (FeldID/*Index >= 0 && Index < m_csaFormularfeldwerte.GetSize()*/)
-	//	return m_csaFormularfeldwerte[Index].AllocSysString();
-	//else 
-		return ((CString)"").AllocSysString();
+	CString csVerknuepfteKonten = "";
+	for (int k = 0; k < 1; k++)
+		for (int i = 0; i < Kontenarten[k].feldzuweisungen->GetSize() && !Kontenarten[k].konto[i].IsEmpty(); i++)
+		{
+			CString csTemp = GetErweiterungKey((*Kontenarten[k].feldzuweisungen)[i], "ECT", Formularname);
+			if (FeldID == atol(csTemp))
+				csVerknuepfteKonten += Kontenarten[k].typ + (*Kontenarten[k].konto)[i] + "\t";
+		}
+
+	return csVerknuepfteKonten.AllocSysString();
 }
 
 void CFormularCtrl::WaehleFormularUndBetrieb(LPCTSTR Formular, LPCTSTR Betrieb)  
