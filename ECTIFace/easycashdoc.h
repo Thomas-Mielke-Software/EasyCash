@@ -133,6 +133,8 @@ public:
 //#define AFX_DATA AFX_EXT_DATA	// in DECLARE_SERIAL mit im- bzw. exportiert
 class AFX_EXT_CLASS CEasyCashDoc : public CDocument
 {
+	friend class CFormularCtrl;
+
 protected: // create from serialization only
 	CEasyCashDoc();
 

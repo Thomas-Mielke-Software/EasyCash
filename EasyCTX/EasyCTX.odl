@@ -170,15 +170,15 @@ library EASYCTXLib
 			[id(2)] BSTR HoleFormularnamen(long Index, BSTR Filter);
 			[id(3)] BSTR HoleFormularpfad(long Index);
 			[id(4)] long HoleFormularanzahl();
-			[id(5)] void WaehleFormular(BSTR Formular);
+			[id(5)] void WaehleFormular(BSTR Formularpfad);
 			[id(6)] long HoleFeldanzahl();
 			[id(7)] long HoleFeldIDUeberIndex(long Index);
 			[id(8)] BSTR HoleFeldwertUeberIndex(long Index);
 			[id(9)] BSTR HoleFeldwertUeberID(long FeldID);
 			[id(10)] BSTR HoleFeldbeschreibungUeberID(long FeldID);
 			[id(11)] long HoleVoranmeldungszeitraum();
-			[id(12)] BSTR HoleVerknuepfteKonten(long FeldID);
-			[id(13)] void WaehleFormularUndBetrieb(BSTR Formular, BSTR Betrieb);
+			[id(12)] BSTR HoleVerknuepfteKonten(BSTR Formularname, long FeldID);
+			[id(13)] void WaehleFormularUndBetrieb(BSTR Formularpfad, BSTR Betrieb);
 			//}}AFX_ODL_METHOD
 
 			[id(DISPID_ABOUTBOX)] void AboutBox();
