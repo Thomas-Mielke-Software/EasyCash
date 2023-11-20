@@ -186,10 +186,10 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <CustomBuildStep>
-      <Command>copy ..\EasyCash\Release\CrashSender1402.exe .\Release
-copy ..\EasyCash\Release\crashrpt_lang.ini .\Release
-</Command>
-      <Outputs>.\Release\CrashSender1402.exe;.\Release\crashrpt_lang.ini;%(Outputs)</Outputs>
+      <Command>copy ..\CrashRpt\bin\CrashSender1403.exe .\Release
+copy ..\CrashRpt\bin\CrashRpt1403.dll  .\Release
+copy ..\CrashRpt\lang_files\crashrpt_lang_DE.ini .\Release\crashrpt_lang.ini</Command>
+      <Outputs>.\Release\CrashSender1403.exe;.\Release\crashrpt_lang.ini;%(Outputs)</Outputs>
     </CustomBuildStep>
     <Midl>
       <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -224,7 +224,7 @@ copy ..\EasyCash\Release\crashrpt_lang.ini .\Release
       <Culture>0x0407</Culture>
     </ResourceCompile>
     <Link>
-      <AdditionalDependencies>ECTIFace\Release\ECTIFace.lib;..\GrafLib\cimage\Release\cimage.lib;..\GrafLib\jpeg\Release\jpeg.lib;..\GrafLib\png\Release\png.lib;..\GrafLib\zlib\Release\zlib.lib;rpcrt4.lib;Wininet.lib;D:\Work\CrashRpt\reporting\crashrpt\bin\Release\CrashRptLIB.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>ECTIFace\Release\ECTIFace.lib;..\GrafLib\cimage\Release\cimage.lib;..\GrafLib\jpeg\Release\jpeg.lib;..\GrafLib\png\Release\png.lib;..\GrafLib\zlib\Release\zlib.lib;rpcrt4.lib;Wininet.lib;..\crashrpt\lib\CrashRpt1403.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>.\Release\EasyCT.exe</OutputFile>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <GenerateDebugInformation>true</GenerateDebugInformation>

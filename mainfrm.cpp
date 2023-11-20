@@ -416,6 +416,8 @@ BOOL CMainFrame::CreateRibbonBar()
 	// Add "About" button to the right of tabs:
 	m_wndRibbonBar.AddToTabs (new CMFCRibbonButton (ID_APP_ABOUT, _T("Info\ni"), m_PanelImages32.ExtractIcon(13), 0, m_PanelImages16.ExtractIcon(13)));
 
+	// m_wndRibbonBar.SaveToXMLFile("res\\ribbon.mfcribbon-ms");
+
 	return TRUE;
 }
 
