@@ -28,6 +28,7 @@
 #include "IconAuswahlMandant.h"
 #include "XFolderDialog.h"
 #include "RegistrierenDlg.h"
+#include <memory>
 
 
 #ifdef _DEBUG

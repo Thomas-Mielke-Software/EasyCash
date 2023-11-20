@@ -446,7 +446,7 @@ echo regsvr32 exec. time &gt; "$(OutDir)regsvr32.trg"
       <ImportLibrary>.\Debug/EasyCTX.lib</ImportLibrary>
       <TargetMachine>MachineX86</TargetMachine>
       <ImageHasSafeExceptionHandlers>false</ImageHasSafeExceptionHandlers>
-      <OutputFile>.\Debug/EasyCTX.ocx</OutputFile>
+      <OutputFile>..\Debug/EasyCTX.ocx</OutputFile>
     </Link>
     <Bscmake>
       <SuppressStartupBanner>true</SuppressStartupBanner>
@@ -510,7 +510,7 @@ echo regsvr32 exec. time &gt; "$(OutDir)regsvr32.trg"
       </DataExecutionPrevention>
       <ImportLibrary>.\Debug/EasyCTX.lib</ImportLibrary>
       <ImageHasSafeExceptionHandlers>false</ImageHasSafeExceptionHandlers>
-      <OutputFile>.\Debug_x64/EasyCTX.ocx</OutputFile>
+      <OutputFile>..\Debug_x64/EasyCTX.ocx</OutputFile>
     </Link>
     <Bscmake>
       <SuppressStartupBanner>true</SuppressStartupBanner>

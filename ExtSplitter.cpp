@@ -3,6 +3,7 @@
 #include "stdafx.h"
 #include "EasyCash.h"
 #include "Msp.h"
+#include <functional>
 #include "ExtSplitter.h"
 
 #ifdef _DEBUG
