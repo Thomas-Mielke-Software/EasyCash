@@ -110,6 +110,7 @@
 #define IDB_EASYCASH_32                 433
 #define IDB_INFO                        434
 #define IDR_ZOOMFAKTOR                  436
+#define IDR_RIBBON             			438
 #define IDC_DATUM_TAG                   1000
 #define IDC_BULB                        1000
 #define IDC_DATUM_MONAT                 1001
@@ -532,7 +533,7 @@
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_3D_CONTROLS                     1
-#define _APS_NEXT_RESOURCE_VALUE        438
+#define _APS_NEXT_RESOURCE_VALUE        439
 #define _APS_NEXT_COMMAND_VALUE         32918
 #define _APS_NEXT_CONTROL_VALUE         1172
 #define _APS_NEXT_SYMED_VALUE           115

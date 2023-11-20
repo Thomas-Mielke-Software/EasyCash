@@ -96,8 +96,8 @@ BOOL CEasyCashApp::InitInstance()
 	char last_file[300];
 	CString csInitalStatusText;
 	
-	//CoInitialize(0);
-	// AfxOleInit();  führte zu heap corruption, den bug habe ich monatelang gesucht!
+	CoInitialize(0);
+	AfxOleInit();  // führte mal zu heap corruption
 
 	// Version abholen
 	HMODULE hExe = GetModuleHandle("EASYCT.EXE");
