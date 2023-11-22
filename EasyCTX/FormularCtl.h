@@ -80,9 +80,6 @@ protected:
 	DECLARE_DISPATCH_MAP()
 
 	afx_msg void AboutBox();
-	CStringArray m_csaFormulare;			// enthält die Dateinamen der verfügbaren Formulare
-	CStringArray m_csaFormularfeldwerte;	// Cache-Speicher für die Formularwerte
-	CStringArray m_csaFormularfeldbeschreibungen;	// ... und Feldbeschreibungen
 
 // Event maps
 	//{{AFX_EVENT(CFormularCtrl)

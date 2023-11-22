@@ -542,6 +542,7 @@
     </None>
     <None Include="Formularabschnitt.htm" />
     <None Include="README.md" />
+    <None Include="res\ribbon.mfcribbon-ms" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="LIZENZ.txt" />

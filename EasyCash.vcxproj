@@ -638,6 +638,7 @@ copy ..\EasyCash\Release\crashrpt_lang.ini .\Release
     </None>
     <None Include="README.md" />
     <None Include="Res\easycash.rc2" />
+    <None Include="res\ribbon.mfcribbon-ms" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="LIZENZ.txt" />

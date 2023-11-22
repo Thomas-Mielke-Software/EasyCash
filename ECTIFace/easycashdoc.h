@@ -217,6 +217,10 @@ private:
 	long m_laFeldWerte[10000];
 	BOOL m_bFeldWertGueltig[10000];
 	CString m_csBetriebFuerFormular;
+	// für Formular-ActiveX-Control:
+	CStringArray m_csaFormulare;					// enthält die Dateinamen der verfügbaren Formulare
+	CStringArray m_csaFormularfeldwerte;			// Cache-Speicher für die Formularwerte
+	CStringArray m_csaFormularfeldbeschreibungen;	// ... und Feldbeschreibungen
 
 // weitere Operations
 public:

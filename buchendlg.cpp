@@ -89,6 +89,13 @@ BuchenDlg::BuchenDlg(CEasyCashDoc *pDoc, BOOL ausgaben,
 	m_bNeueBelegnummer = bNeueBelegnummer;
 	m_UpdateBeschreibung = TRUE;
 	m_nGewaehlterSplit = -1;
+
+	char inifile[1000], betriebe[2], bestandskonten[2];
+	GetIniFileName(inifile, sizeof(inifile));
+	GetPrivateProfileString("Betriebe", "Betrieb00Name", "", betriebe, sizeof(betriebe), inifile);
+	GetPrivateProfileString("Bestandskonten", "Bestandskonto00Name", "", bestandskonten, sizeof(bestandskonten), inifile);
+	//if (*betriebe && *bestandskonten)
+		EnableDynamicLayout(TRUE);
 }
 
 
@@ -781,7 +788,7 @@ void BuchenDlg::InitDlg(BOOL bBelasseEinigeFelder)
 			&& m_ausgaben == m_pParent->einstellungen1->Buchungsposten[i].Ausgaben)
 		{
 			sprintf(buffer, "%02d %s",
-				i, m_pParent->einstellungen1->Buchungsposten[i].Beschreibung);
+				i, (LPCTSTR)m_pParent->einstellungen1->Buchungsposten[i].Beschreibung);
 			int n = ((CComboBox *)GetDlgItem(IDC_BESCHREIBUNG))->AddString(buffer);
 			((CComboBox *)GetDlgItem(IDC_BESCHREIBUNG))->SetItemData(n, i);
 		}
@@ -1129,25 +1136,30 @@ void BuchenDlg::OnTimer(UINT nIDEvent)
 	}
 	else if (nIDEvent == 101)
 	{
-		int x = 0, y = 0;
+		int x = 0, y = 0, cx = -1, cy = -1;
 		RECT rWnd;
 		RECT rScreen;
 
 		GetWindowRect(&rWnd);
 		GetDesktopWindow()->GetWindowRect(&rScreen);
+
+		char inifile[1000], betriebe[2], bestandskonten[2];
+		GetIniFileName(inifile, sizeof(inifile));
+		GetPrivateProfileString("Betriebe", "Betrieb00Name", "", betriebe, sizeof(betriebe), inifile);
+		GetPrivateProfileString("Bestandskonten", "Bestandskonto00Name", "", bestandskonten, sizeof(bestandskonten), inifile);
 		
 		x = theApp.GetProfileInt("Fenster", "BuchenPosX", 150);
 		y = theApp.GetProfileInt("Fenster", "BuchenPosY", 100);
+		if (*betriebe && *bestandskonten)  // wenn beide aktiv: dynamisches layout aktivieren (TODO: ListCtrls nach unten und horizontal anordenen, damit dynamisches layout auch ermöglicht wird, wenn ListCtrls ausgeblendet sein sollen)
+		{
+			cx = theApp.GetProfileInt("Fenster", "BuchenSizeX", -1);
+			cy = theApp.GetProfileInt("Fenster", "BuchenSizeY", -1);
+		}
 
 		if (x > rScreen.right-(rWnd.right-rWnd.left)) x = rScreen.right-(rWnd.right-rWnd.left);
 		if (x < 0) x = 0;
 		if (y > rScreen.bottom-(rWnd.bottom-rWnd.top)) y = rScreen.bottom-(rWnd.bottom-rWnd.top);
 		if (y < 0) y = 0;
-
-		char inifile[1000], betriebe[2], bestandskonten[2]; 
-		GetIniFileName(inifile, sizeof(inifile)); 
-		GetPrivateProfileString("Betriebe", "Betrieb00Name", "", betriebe, sizeof(betriebe), inifile);
-		GetPrivateProfileString("Bestandskonten", "Bestandskonto00Name", "", bestandskonten, sizeof(bestandskonten), inifile);
 
 		if (!*betriebe || !*bestandskonten)
 		{
@@ -1186,6 +1198,8 @@ void BuchenDlg::OnTimer(UINT nIDEvent)
 			}
 			SetWindowPos(NULL, x, y, rWnd.right-rWnd.left-(*betriebe ? 0 : width_betriebe_bestandskonten)-(*bestandskonten ? 0 : width_betriebe_bestandskonten), rWnd.bottom-rWnd.top, SWP_NOACTIVATE|SWP_NOOWNERZORDER|SWP_NOZORDER);
 		}
+		else if (*betriebe && *bestandskonten && cx > 0 && cy > 0)  // wenn beide aktiv: dynamisches layout aktivieren
+			SetWindowPos(NULL, x, y, cx, cy, SWP_NOACTIVATE | SWP_NOOWNERZORDER | SWP_NOZORDER);
 		else
 			SetWindowPos(NULL, x, y, 0, 0, SWP_NOACTIVATE|SWP_NOOWNERZORDER|SWP_NOSIZE|SWP_NOZORDER);
 		
@@ -1462,6 +1476,8 @@ void BuchenDlg::OnDestroy()
 		
 	theApp.WriteProfileInt("Fenster", "BuchenPosX", r.left);
 	theApp.WriteProfileInt("Fenster", "BuchenPosY", r.top);
+	theApp.WriteProfileInt("Fenster", "BuchenSizeX", r.right - r.left);
+	theApp.WriteProfileInt("Fenster", "BuchenSizeY", r.bottom - r.top);
 }
 
 void BuchenDlg::OnChangeDatumTag() 

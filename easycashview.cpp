@@ -6297,16 +6297,16 @@ void CEasyCashView::OnDestroy()
 {
 	CScrollView::OnDestroy();
 	
-	if (buchenDlg) 
+	if (buchenDlg)
 	{
-		buchenDlg->DestroyWindow(); 
+		if (buchenDlg->m_hWnd) buchenDlg->DestroyWindow();
 		delete buchenDlg;
 		buchenDlg = NULL;
 	}
 
 	if (dauerbuchungenDlg) 
 	{
-		dauerbuchungenDlg->DestroyWindow(); 
+		if (dauerbuchungenDlg->m_hWnd) dauerbuchungenDlg->DestroyWindow();
 		delete dauerbuchungenDlg;
 		dauerbuchungenDlg = NULL;
 	}
