@@ -94,4 +94,6 @@ public:
 	CComboBox m_ctrlFinanzamtszahlungen2;
 	afx_msg void OnCbnSelchangeFinanzamtszahlungen1();
 	afx_msg void OnCbnSelchangeFinanzamtszahlungen2();
+	afx_msg void OnSize(UINT nType, int cx, int cy);
+	afx_msg void OnTimer(UINT_PTR nIDEvent);
 };

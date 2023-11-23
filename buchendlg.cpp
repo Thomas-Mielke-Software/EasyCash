@@ -94,7 +94,7 @@ BuchenDlg::BuchenDlg(CEasyCashDoc *pDoc, BOOL ausgaben,
 	GetIniFileName(inifile, sizeof(inifile));
 	GetPrivateProfileString("Betriebe", "Betrieb00Name", "", betriebe, sizeof(betriebe), inifile);
 	GetPrivateProfileString("Bestandskonten", "Bestandskonto00Name", "", bestandskonten, sizeof(bestandskonten), inifile);
-	//if (*betriebe && *bestandskonten)
+	if (*betriebe && *bestandskonten)
 		EnableDynamicLayout(TRUE);
 }
 

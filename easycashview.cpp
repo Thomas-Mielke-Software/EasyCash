@@ -288,6 +288,7 @@ void CEasyCashView::OnInitialUpdate()
 	PopUpFormular.AppendMenu(MF_STRING, POPUPFORMULAR_FELDWERT_KOPIEREN, "Feldwert in die &Zwischenablage kopieren");	
 
 	propdlg = new CPropertySheet("EasyCash Einstellungen", this);
+	// propdlg->EnableDynamicLayout(TRUE); Sheet-Fenster vergrößert sich bei jedem DoModal() :(
 	einstellungen1 = new CEinstellungen1();
 	einstellungen1->m_pDoc = GetDocument();
 	einstellungen1->m_pView = this;

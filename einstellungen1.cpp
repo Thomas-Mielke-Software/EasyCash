@@ -52,6 +52,7 @@ CEinstellungen1::CEinstellungen1() : CPropertyPage(CEinstellungen1::IDD)
 	m_bErzeugeLaufendeBuchungsnummernFuerBank = FALSE;
 	m_bErzeugeLaufendeBuchungsnummernFuerKasse = FALSE;
 	//}}AFX_DATA_INIT
+	EnableDynamicLayout(TRUE);
 }
 
 CEinstellungen1::~CEinstellungen1()

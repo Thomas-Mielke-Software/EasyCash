@@ -47,6 +47,8 @@ CEinstellungen4::CEinstellungen4() : CPropertyPage(CEinstellungen4::IDD)
 	m_aktFormular = NULL;
 
 	m_ButtonsNotYetSet = TRUE;
+
+	EnableDynamicLayout(TRUE);
 }
 
 CEinstellungen4::~CEinstellungen4()
@@ -88,6 +90,8 @@ BEGIN_MESSAGE_MAP(CEinstellungen4, CPropertyPage)
 	#endif
 		ON_CBN_SELCHANGE(IDC_FINANZAMTSZAHLUNGEN1, &CEinstellungen4::OnCbnSelchangeFinanzamtszahlungen1)
 		ON_CBN_SELCHANGE(IDC_FINANZAMTSZAHLUNGEN2, &CEinstellungen4::OnCbnSelchangeFinanzamtszahlungen2)
+	ON_WM_SIZE()
+	ON_WM_TIMER()
 END_MESSAGE_MAP()
 
 /////////////////////////////////////////////////////////////////////////////
@@ -656,6 +660,7 @@ void CEinstellungen4::OnDestroy()
 void CEinstellungen4::OnSelchangeKontenkategorie() 
 {
 	UpdateList();	
+	SetTimer(1, 1, NULL);
 }
 
 void CEinstellungen4::OnDblclkListe(NMHDR* pNMHDR, LRESULT* pResult) 
@@ -681,6 +686,7 @@ void CEinstellungen4::OnSelchangeFormular()
 			if (m_aktFormular) delete m_aktFormular;
 			m_aktFormular = new XDoc;
 			m_aktFormular->LoadFile(m_csaFormulare[n]);
+			SetTimer(1, 1, NULL);
 		}
 	}
 }
@@ -697,4 +703,28 @@ void CEinstellungen4::OnCbnSelchangeFinanzamtszahlungen2()
 	int nSel = m_ctrlFinanzamtszahlungen2.GetCurSel();
 	if (nSel >= 0)
 		m_ctrlFinanzamtszahlungen2.GetLBText(nSel, m_finanzamtszahlungen);
+}
+
+
+void CEinstellungen4::OnSize(UINT nType, int cx, int cy)
+{
+	CPropertyPage::OnSize(nType, cx, cy);
+
+	SetTimer(1, 1, NULL);
+}
+
+
+void CEinstellungen4::OnTimer(UINT_PTR nIDEvent)
+{
+	KillTimer(1);
+
+	// wieviel Platz haben wir?
+	RECT r;
+	m_liste.GetWindowRect(&r);
+	int nListeBreite = r.right - r.left - 21;
+
+	m_liste.SetColumnWidth(0, nListeBreite / 2);
+	m_liste.SetColumnWidth(1, nListeBreite / 2);
+
+	CPropertyPage::OnTimer(nIDEvent);
 }

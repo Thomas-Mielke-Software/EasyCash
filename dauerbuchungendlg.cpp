@@ -43,6 +43,8 @@ DauerbuchungenDlg::DauerbuchungenDlg(CEasyCashDoc *pDoc, BOOL ausgaben, CEasyCas
 
 	m_pDoc = pDoc;
 	m_pParent = pParent;
+	
+	EnableDynamicLayout(TRUE);
 }
 
 
@@ -704,7 +706,7 @@ void DauerbuchungenDlg::OnTimer(UINT nIDEvent)
 {
 	if (nIDEvent == 101)
 	{
-		int x = 0, y = 0;
+		int x = 0, y = 0, cx = -1, cy = -1;
 		RECT rWnd;
 		RECT rScreen;
 
@@ -713,13 +715,18 @@ void DauerbuchungenDlg::OnTimer(UINT nIDEvent)
 		
 		x = theApp.GetProfileInt("Fenster", "DauerbuchungenPosX", 100);
 		y = theApp.GetProfileInt("Fenster", "DauerbuchungenPosY", 50);
+		cx = theApp.GetProfileInt("Fenster", "DauerbuchungenSizeX", -1);
+		cy = theApp.GetProfileInt("Fenster", "DauerbuchungenSizeY", -1);
 
 		if (x > rScreen.right-(rWnd.right-rWnd.left)) x = rScreen.right-(rWnd.right-rWnd.left);
 		if (x < 0) x = 0;
 		if (y > rScreen.bottom-(rWnd.bottom-rWnd.top)) y = rScreen.bottom-(rWnd.bottom-rWnd.top);
 		if (y < 0) y = 0;
 
-		SetWindowPos(NULL, x, y, 0, 0, SWP_NOACTIVATE|SWP_NOOWNERZORDER|SWP_NOSIZE|SWP_NOZORDER);
+		if (cx > 0 && cy > 0)  // wenn beide aktiv: dynamisches layout aktivieren
+			SetWindowPos(NULL, x, y, cx, cy, SWP_NOACTIVATE | SWP_NOOWNERZORDER | SWP_NOZORDER);
+		else
+			SetWindowPos(NULL, x, y, 0, 0, SWP_NOACTIVATE|SWP_NOOWNERZORDER|SWP_NOSIZE|SWP_NOZORDER);
 		
 		KillTimer(nIDEvent);
 	}
@@ -736,22 +743,13 @@ void DauerbuchungenDlg::OnDestroy()
 {
 	CDialog::OnDestroy();
 	
-	HKEY hKey;
-	char buffer2[256];
 	RECT r;
-
 	GetWindowRect(&r);
 
-	if (RegOpenKey(HKEY_CURRENT_USER, "Software\\Tools\\EasyCash", &hKey) == ERROR_SUCCESS)
-	{
-		sprintf(buffer2, "%d", r.left);
-		RegSetValueEx(hKey, "DauerbuchungenPosX", (ULONG)0, (ULONG)REG_SZ, (LPBYTE)buffer2, (ULONG)strlen(buffer2));
-		
-		sprintf(buffer2, "%d", r.top);
-		RegSetValueEx(hKey, "DauerbuchungenPosY", (ULONG)0, (ULONG)REG_SZ, (LPBYTE)buffer2, (ULONG)strlen(buffer2));
-		
-		RegCloseKey(hKey);
-	}
+	theApp.WriteProfileInt("Fenster", "DauerbuchungenPosX", r.left);
+	theApp.WriteProfileInt("Fenster", "DauerbuchungenPosY", r.top);
+	theApp.WriteProfileInt("Fenster", "DauerbuchungenSizeX", r.right - r.left);
+	theApp.WriteProfileInt("Fenster", "DauerbuchungenSizeY", r.bottom - r.top);
 }
 
 void DauerbuchungenDlg::OnSelchangeBeschreibung() 
