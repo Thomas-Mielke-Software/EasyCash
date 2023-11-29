@@ -45,7 +45,7 @@
       <name>Umsatzsteuerfreie, nicht umsatzsteuerbare Betriebseinnahmen sowie Betriebseinnahmen, für die der Leistungsempfänger die Umsatzsteuer nach § 13 b UStG schuldet</name>
       <erweiterung/>
     </feld>
-    <feld id="7" typ="Summe" seite="1" horizontal="962" vertikal="740" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" nullwertdarstellung="nein" veraltet="nein" elsterfeldname="BEin/USt_Vereinnahmt_Unentgeltl/Sum/E6000601" >
+    <feld id="7" typ="Summe" seite="1" horizontal="962" vertikal="740" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" nullwertdarstellung="nein" veraltet="nein" elsterfeldname="EUER/BEin/USt_Vereinnahmt_Unentgeltl/Sum/E6000601" >
       <name>Vereinnahmte Umsatzsteuer sowie Umsatzsteuer auf unentgeltliche Wertabgaben (Summe)</name>
       <erweiterung>mwst(e:1111)+mwst(e:1104)+mwst(e:1112)+mwst(e:1103)+mwst(e:1141)+mwst(e:1102)+mwst(e:1106)+mwst(e:1108)+brutto(e:1140)+brutto(e:8)</erweiterung> 
     </feld>
