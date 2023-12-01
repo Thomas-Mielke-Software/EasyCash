@@ -48,7 +48,9 @@ CEinstellungen4::CEinstellungen4() : CPropertyPage(CEinstellungen4::IDD)
 
 	m_ButtonsNotYetSet = TRUE;
 
+#if (_MSC_VER >= 1600)
 	EnableDynamicLayout(TRUE);
+#endif
 }
 
 CEinstellungen4::~CEinstellungen4()

@@ -44,7 +44,9 @@ DauerbuchungenDlg::DauerbuchungenDlg(CEasyCashDoc *pDoc, BOOL ausgaben, CEasyCas
 	m_pDoc = pDoc;
 	m_pParent = pParent;
 	
+#if (_MSC_VER >= 1600)
 	EnableDynamicLayout(TRUE);
+#endif
 }
 
 

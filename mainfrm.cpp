@@ -1120,22 +1120,30 @@ void CMainFrame::OnAppLook(UINT id)
 			break;
 		}
 
+#if (_MSC_VER >= 1600)
 		m_wndRibbonBar.SetWindows7Look(FALSE);
+#endif
 		CMFCVisualManager::SetDefaultManager (RUNTIME_CLASS (CMFCVisualManagerOffice2007));
 		CDockingManager::SetDockingMode (DT_SMART);
 		break;
 
 
 	case ID_VIEW_APPLOOK_2003:
+#if (_MSC_VER >= 1600)
 		m_wndRibbonBar.SetWindows7Look(FALSE);
+#endif
 		CMFCVisualManager::SetDefaultManager(RUNTIME_CLASS(CMFCVisualManagerOffice2003));
 		CDockingManager::SetDockingMode (DT_SMART);
 		break;
 
 	case ID_VIEW_APPLOOK_2005:  // Windows7
+#if (_MSC_VER >= 1600)
 		CMFCVisualManager::SetDefaultManager(RUNTIME_CLASS(CMFCVisualManagerWindows7));
+#endif
 		CDockingManager::SetDockingMode (DT_SMART);
+#if (_MSC_VER >= 1601)
 		m_wndRibbonBar.SetWindows7Look(TRUE);
+#endif
 		break;
 
 	default:
