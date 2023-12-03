@@ -438,8 +438,8 @@ void CMainFrame::Add_MainPanel()
 	
 	pMainPanel->Add (new CMFCRibbonButton (ID_FILE_NEW, "&Neu\nStrg+N", 0, 0));
 	pMainPanel->Add (new CMFCRibbonButton (ID_FILE_OPEN, "Ö&ffnen...\nStrg+O", 1, 1));
-	/*pMainPanel->Add (new CMFCRibbonButton (ID_FILE_SAVE, "&Speichern\nStrg+S", 2, 2));
-	*/
+	pMainPanel->Add (new CMFCRibbonButton (ID_FILE_SAVE, "&Speichern\nStrg+S", 2, 2));
+
 	pMainPanel->Add (new CMFCRibbonButton (ID_FILE_SAVE_AS, "Speichern &unter\nStrg+U", 2, 2));
 
 	pMainPanel->Add (new CMFCRibbonButton (ID_FILE_EXPORT, "&Export...", 26, 26));
