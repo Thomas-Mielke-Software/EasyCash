@@ -13,11 +13,13 @@
 #undef APSTUDIO_READONLY_SYMBOLS
 
 /////////////////////////////////////////////////////////////////////////////
-// Deutsch (Deutschland) resources
+// German (Germany) resources
 
 #if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_DEU)
+#ifdef _WIN32
 LANGUAGE LANG_GERMAN, SUBLANG_GERMAN
 #pragma code_page(1252)
+#endif //_WIN32
 
 #ifdef APSTUDIO_INVOKED
 /////////////////////////////////////////////////////////////////////////////
@@ -69,15 +71,10 @@ END
 // Icon with lowest ID value placed first to ensure application icon
 // remains consistent on all systems.
 IDR_MAINFRAME           ICON                    "res\\EasyCash.ico"
-
 IDR_EASYCATYPE          ICON                    "res\\EasyCashDoc.ico"
-
 IDI_FACE1               ICON                    "RES\\FACE01.ICO"
-
 IDI_FACE2               ICON                    "RES\\FACE02.ICO"
-
 IDI_FACE3               ICON                    "RES\\FACE03.ICO"
-
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -85,86 +82,49 @@ IDI_FACE3               ICON                    "RES\\FACE03.ICO"
 //
 
 IDR_MAINFRAME           BITMAP                  "res\\Toolbar.bmp"
-
 IDB_BUTTON1             BITMAP                  "res\\button1.bmp"
-
 IDB_STOP                BITMAP                  "res\\stop.bmp"
-
 IDB_SPIKE               BITMAP                  "res\\spike.bmp"
-
 IDB_31STER              BITMAP                  "res\\31ster.bmp"
-
 IDB_31STER_AUSHUEHREN   BITMAP                  "res\\bmp31ste.bmp"
-
 IDB_31STER_AUSFUEHREN_GROSS BITMAP                  "res\\bmp00001.bmp"
-
 IDB_INFOSIGN            BITMAP                  "res\\infosign.bmp"
-
 IDB_SPIKE_PLUS          BITMAP                  "res\\spike1.bmp"
-
 IDB_SPIKE_MINUS         BITMAP                  "res\\spike2.bmp"
-
 IDB_CLOCK               BITMAP                  "res\\clock.bmp"
-
 IDB_SPANNER             BITMAP                  "res\\spanner.bmp"
-
 IDB_UP                  BITMAP                  "res\\button2.bmp"
-
 IDB_DOWN                BITMAP                  "res\\button3.bmp"
-
 IDB_PLUS                BITMAP                  "res\\button4.bmp"
-
 IDB_MINUS               BITMAP                  "res\\button5.bmp"
-
 IDB_PIE                 BITMAP                  "RES\\pie.bmp"
-
 IDB_LIGHTBULB           BITMAP                  "res\\litebulb.bmp"
-
 IDB_AENDERN             BITMAP                  "RES\\button6.bmp"
-
 IDR_PLUGIN              BITMAP                  "res\\plugin.bmp"
-
 IDB_PLUGIN_PLATZHALTER  BITMAP                  "RES\\plugin_platzhalter.bmp"
-
 IDB_EASYCASH            BITMAP                  "RES\\easycash.bmp"
-
 IDB_RECHNER             BITMAP                  "RES\\Rechner.bmp"
-
 IDR_FIND                BITMAP                  "res\\find.bmp"
-
 IDB_ICONS               BITMAP                  "RES\\icons.bmp"
-
 IDB_HICOLOR_TOOLBAR     BITMAP                  "RES\\toolbar_hicolor.bmp"
-
 IDB_HICOLOR_TOOLBAR_DISABLED BITMAP                  "RES\\toolbar_hicolor_disabled.bmp"
-
 IDB_HICOLOR_TOOLBAR_HOT BITMAP                  "RES\\toolbar_hicolor_hot.bmp"
-
 IDB_ICONS_BESTANDSKONTEN BITMAP                  "RES\\icons_bestandskonten.bmp"
-
 IDB_DATENVERZEICHNIS    BITMAP                  "RES\\datenverzeichnis.bmp"
-
 IDB_TOOLBAR_16          BITMAP                  "RES\\toolbar_hicolor_16.bmp"
-
 IDB_TOOLBAR_32          BITMAP                  "RES\\toolbar_hicolor_32.bmp"
-
 IDB_BIG_ICON_CHECKMARK  BITMAP                  "RES\\big_icon_checkmark.bmp"
-
 IDB_TOOLBAR_EINSTELLUNGEN_32 BITMAP                  "RES\\toolbar_einstellungen_32.bmp"
-
 IDB_TOOLBAR_EINSTELLUNGEN_16 BITMAP                  "RES\\toolbar_einstellungen_16.bmp"
-
 IDB_EASYCASH_32         BITMAP                  "RES\\EasyCash32x32.bmp"
-
 IDB_INFO                BITMAP                  "RES\\info.bmp"
-
 
 /////////////////////////////////////////////////////////////////////////////
 //
 // Toolbar
 //
 
-IDR_MAINFRAME TOOLBAR 32, 32
+IDR_MAINFRAME TOOLBAR  32, 32
 BEGIN
     BUTTON      ID_FILE_NEW
     BUTTON      ID_FILE_OPEN
@@ -186,12 +146,12 @@ BEGIN
     BUTTON      ID_APP_ABOUT
 END
 
-IDR_PLUGIN TOOLBAR 32, 32
+IDR_PLUGIN TOOLBAR  32, 32
 BEGIN
     BUTTON      ID_FILE_PLUGINMANAGER
 END
 
-IDR_FIND TOOLBAR 16, 15
+IDR_FIND TOOLBAR  16, 15
 BEGIN
     BUTTON      ID_BUTTON32822
     SEPARATOR
@@ -205,7 +165,7 @@ END
 // Menu
 //
 
-IDR_MAINFRAME MENU
+IDR_MAINFRAME MENU 
 BEGIN
     POPUP "&Datei"
     BEGIN
@@ -244,7 +204,7 @@ BEGIN
     END
 END
 
-IDR_EASYCATYPE MENU
+IDR_EASYCATYPE MENU 
 BEGIN
     POPUP "&Datei"
     BEGIN
@@ -354,7 +314,7 @@ BEGIN
     END
 END
 
-IDR_DAUERBUCHUNGEN_AUSFUEHREN_MONATE MENU
+IDR_DAUERBUCHUNGEN_AUSFUEHREN_MONATE MENU 
 BEGIN
     MENUITEM "Januar",                      ID_BUCHEN_DAUAUS_JANUAR
     MENUITEM "Februar",                     ID_BUCHEN_DAUAUS_FEBRUAR
@@ -370,7 +330,7 @@ BEGIN
     MENUITEM "Dezember",                    ID_BUCHEN_DAUAUS_DEZEMBER
 END
 
-IDR_JOURNALANSICHT MENU
+IDR_JOURNALANSICHT MENU 
 BEGIN
     MENUITEM "Journal nach &Datum",         ID_VIEW_JOURNAL_DATUM
     MENUITEM "Journal nach &Konten",        ID_VIEW_JOURNAL_KONTEN
@@ -378,7 +338,7 @@ BEGIN
     MENUITEM "&Anlagenverzeichnis",         ID_VIEW_JOURNAL_ANLAGENVERZEICHNIS
 END
 
-IDR_FILTER_MONAT MENU
+IDR_FILTER_MONAT MENU 
 BEGIN
     MENUITEM "<alle Monate>",               ID_VIEW_JOURNAL_MONATE_ALLE
     MENUITEM "Januar",                      ID_VIEW_JOURNAL_MONATE_JANUAR
@@ -399,29 +359,29 @@ BEGIN
     MENUITEM "4. Quartal",                  ID_VIEW_JOURNAL_MONATE_QUARTAL4
 END
 
-IDR_FILTER_KONTO MENU
+IDR_FILTER_KONTO MENU 
 BEGIN
     MENUITEM "Dummy",                       IDC_DUMMY
 END
 
-IDR_JOURNALDRUCK MENU
+IDR_JOURNALDRUCK MENU 
 BEGIN
     MENUITEM "&Drucken...\tStrg+P",         ID_FILE_PRINT2
     MENUITEM "Sei&tenansicht",              ID_FILE_PRINT_PREVIEW
     MENUITEM "Druckerein&richtung...",      ID_FILE_PRINT_SETUP
 END
 
-IDR_ANSICHT_FORMULARE MENU
+IDR_ANSICHT_FORMULARE MENU 
 BEGIN
     MENUITEM "Dummy",                       ID_DUMMY
 END
 
-IDR_ANSICHT_PLUGINS MENU
+IDR_ANSICHT_PLUGINS MENU 
 BEGIN
     MENUITEM "Dummy",                       IDC_DUMMY
 END
 
-IDR_THEME_MENU MENU
+IDR_THEME_MENU MENU 
 BEGIN
     MENUITEM "&Onyx",                       ID_VIEW_APPLOOK_2007_1
     MENUITEM "&Silber",                     ID_VIEW_APPLOOK_2007_2
@@ -431,7 +391,7 @@ BEGIN
     MENUITEM "&Grau",                       ID_VIEW_APPLOOK_2005
 END
 
-IDR_ZOOMFAKTOR MENU
+IDR_ZOOMFAKTOR MENU 
 BEGIN
     MENUITEM "Ver&größern (Strg-'+')",      ID_ZOOMFAKTOR_VERGROESSERN
     MENUITEM "Ver&kleinern (Strg-'-')",     ID_ZOOMFAKTOR_VERKLEINERN
@@ -453,7 +413,7 @@ END
 // Accelerator
 //
 
-IDR_MAINFRAME ACCELERATORS
+IDR_MAINFRAME ACCELERATORS 
 BEGIN
     "A",            ID_EDIT_AUSGABE_BUCHEN, VIRTKEY, CONTROL, NOINVERT
     "C",            ID_EDIT_COPY,           VIRTKEY, CONTROL, NOINVERT
@@ -492,7 +452,7 @@ FONT 8, "MS Sans Serif", 0, 0, 0x0
 BEGIN
     DEFPUSHBUTTON   "OK",IDOK,259,18,50,14,WS_GROUP
     PUSHBUTTON      "&Registrieren",IDC_REGISTER,259,36,50,14
-    CONTROL         IDB_INFOSIGN,IDC_STATIC_INFO,"Static",SS_BITMAP | SS_NOTIFY,13,25,27,25
+    CONTROL         333,IDC_STATIC_INFO,"Static",SS_BITMAP | SS_NOTIFY,13,25,27,25
     LTEXT           "EasyCash&Tax Version 1.0",IDC_VERSION,53,19,165,8,SS_NOPREFIX
     LTEXT           "© 1998-2020 Thomas Mielke (GNU GPL v3)",IDC_STATIC,53,34,188,8
     LTEXT           "E-Mail:",IDC_STATIC,53,49,24,8
@@ -560,7 +520,7 @@ BEGIN
     CONTROL         "&Ausgaben buchen",IDC_AUSGABEN,"Button",BS_AUTORADIOBUTTON,7,19,170,12
     PUSHBUTTON      "&Rechner",IDC_RECHNER,140,48,13,12,BS_BITMAP
     PUSHBUTTON      "&Privat Split",IDC_SPLIT,160,48,13,12,BS_BITMAP
-    CONTROL         IDB_SPIKE,IDC_STATIC,"Static",SS_BITMAP | NOT WS_VISIBLE,267,7,21,20
+    CONTROL         326,IDC_STATIC,"Static",SS_BITMAP | NOT WS_VISIBLE,267,7,21,20
     PUSHBUTTON      "&Konvertieren: ",IDC_KONVERTIEREN,300,48,16,12,NOT WS_VISIBLE
     PUSHBUTTON      "&1",IDC_ALT1,353,7,12,12
     PUSHBUTTON      "&2",IDC_ALT2,366,7,12,12
@@ -618,7 +578,7 @@ BEGIN
     PUSHBUTTON      "&Verwerfen",IDC_VERWERFEN,128,288,50,14
     DEFPUSHBUTTON   "Übernehmen",IDOK,185,288,50,14
     PUSHBUTTON      "Schließen",IDCANCEL,243,288,50,14
-    CONTROL         IDB_31STER,IDC_STATIC,"Static",SS_BITMAP | NOT WS_VISIBLE,263,94,21,20
+    CONTROL         329,IDC_STATIC,"Static",SS_BITMAP | NOT WS_VISIBLE,263,94,21,20
 END
 
 IDD_DAUERBUCHUNGEN_AUSFUEHREN DIALOGEX 0, 0, 211, 44
@@ -632,10 +592,10 @@ BEGIN
     EDITTEXT        IDC_DATUM_BIS_JAHR,113,15,29,12,ES_AUTOHSCROLL
     DEFPUSHBUTTON   "Ausführen",IDOK,151,9,24,22,BS_BITMAP
     PUSHBUTTON      "Schließen",IDCANCEL,180,9,24,22,BS_BITMAP
-    CONTROL         IDB_31STER_AUSFUEHREN_GROSS,IDC_STATIC,"Static",SS_BITMAP | NOT WS_VISIBLE,52,5,32,30
+    CONTROL         332,IDC_STATIC,"Static",SS_BITMAP | NOT WS_VISIBLE,52,5,32,30
 END
 
-IDD_REGISTRIEREN DIALOG 0, 0, 302, 287
+IDD_REGISTRIEREN DIALOG  0, 0, 302, 287
 STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
 CAPTION "Spenden-Registrierung"
 FONT 8, "MS Sans Serif"
@@ -671,7 +631,7 @@ BEGIN
     LTEXT           "PGP-Fingerprint: D8AE 2CE4 1CB1 D1A6 1087 165B 95DC 1917 252A D305",IDC_STATIC,7,272,239,8
 END
 
-IDD_REGISTER_DIALOG DIALOG 0, 0, 186, 50
+IDD_REGISTER_DIALOG DIALOG  0, 0, 186, 50
 STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
 CAPTION "Registrieren"
 FONT 8, "MS Sans Serif"
@@ -828,7 +788,7 @@ BEGIN
     DEFPUSHBUTTON   "Ausführen",IDOK,164,11,24,22,BS_BITMAP
     PUSHBUTTON      "Schließen",IDCANCEL,194,11,24,22,BS_BITMAP
     LTEXT           ".",IDC_PUNKT,117,18,8,8
-    CONTROL         IDB_CLOCK,IDC_STATIC,"Static",SS_BITMAP,7,11,21,20
+    CONTROL         346,IDC_STATIC,"Static",SS_BITMAP,7,11,21,20
     LTEXT           "Hinweis: Der Voranmeldungszeitraum kann unter Menü->Einstellungen->Allgemein geändert werden.",IDC_STATIC,43,51,173,18
 END
 
@@ -920,7 +880,7 @@ BEGIN
     LTEXT           "Betrieblich genutzte Privatgegenstände werden als einfache Ausgabenbuchung erfasst.\r\nDer Privatsplit wird mit dem Tortendiagramm-Knopf neben dem Betragsfeld ausgewählt.",IDC_STATIC,7,179,348,19
 END
 
-IDD_VOTE DIALOG 0, 0, 407, 221
+IDD_VOTE DIALOG  0, 0, 407, 221
 STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION
 CAPTION "Erweiterungsvorschläge"
 FONT 8, "MS Sans Serif"
@@ -949,7 +909,7 @@ BEGIN
     CONTROL         "Tipps beim Start &anzeigen",IDC_STARTUP,"Button",BS_AUTOCHECKBOX | WS_GROUP | WS_TABSTOP,15,147,96,10
     PUSHBUTTON      "&Nächster Tipp",IDC_NEXTTIP,143,144,50,14,WS_GROUP
     DEFPUSHBUTTON   "&Schließen",IDOK,202,144,50,14,WS_GROUP
-    CONTROL         IDB_LIGHTBULB,IDC_BULB,"Static",SS_BITMAP,20,17,27,33
+    CONTROL         102,IDC_BULB,"Static",SS_BITMAP,20,17,27,33
 END
 
 IDD_PLUGIN_MANAGER DIALOGEX 0, 0, 417, 267
@@ -966,7 +926,7 @@ BEGIN
     PUSHBUTTON      "Reparaturinstallation",IDC_REPARATURINSTALLATION,219,246,80,14
 END
 
-IDD_RECHNER DIALOG 0, 0, 186, 222
+IDD_RECHNER DIALOG  0, 0, 186, 222
 STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
 CAPTION "Dialog"
 FONT 8, "MS Sans Serif"
@@ -1006,7 +966,7 @@ BEGIN
     LTEXT           "Tipp: Mit Alt-R und dann Alt-0 bis Alt-9 kann man die Formeln aus dem Buchen-Dialog heraus benutzen. Zum Speichern einer Formel diese erst in das Eingabefeld eingeben und dann einen der Knöpfe oben drücken.",IDC_STATIC,9,215,286,25
 END
 
-IDD_NEUES_FORMULAR DIALOG 0, 0, 235, 226
+IDD_NEUES_FORMULAR DIALOG  0, 0, 235, 226
 STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
 CAPTION "Dialog"
 FONT 8, "MS Sans Serif"
@@ -1085,7 +1045,7 @@ BEGIN
     COMBOBOX        IDC_COMBO,0,0,90,160,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
 END
 
-IDD_ICONAUSWAHL_MANDANT DIALOG 0, 0, 320, 218
+IDD_ICONAUSWAHL_MANDANT DIALOG  0, 0, 320, 218
 STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
 CAPTION "Icon für neuen Mandanten auswählen"
 FONT 8, "MS Sans Serif"
@@ -1100,7 +1060,7 @@ BEGIN
     PUSHBUTTON      "&Mandantenverzeichnis wählen",IDC_PROPERTY,182,179,131,14,NOT WS_VISIBLE
 END
 
-IDD_MANDANT_NAME DIALOG 0, 0, 186, 46
+IDD_MANDANT_NAME DIALOG  0, 0, 186, 46
 STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION
 CAPTION "Mandant Name"
 FONT 8, "MS Sans Serif"
@@ -1110,7 +1070,7 @@ BEGIN
     PUSHBUTTON      "Cancel",IDCANCEL,129,24,50,14
 END
 
-IDD_ICONAUSWAHL_BETRIEB DIALOG 0, 0, 320, 218
+IDD_ICONAUSWAHL_BETRIEB DIALOG  0, 0, 320, 218
 STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
 CAPTION "Icon für neuen Betrieb auswählen"
 FONT 8, "MS Sans Serif"
@@ -1125,7 +1085,7 @@ BEGIN
     PUSHBUTTON      "&Unternehmensart eingeben",IDC_PROPERTY,174,179,139,14,NOT WS_VISIBLE
 END
 
-IDD_ICONAUSWAHL_BESTANDSKONTO DIALOG 0, 0, 320, 218
+IDD_ICONAUSWAHL_BESTANDSKONTO DIALOG  0, 0, 320, 218
 STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
 CAPTION "Icon für neues Bestandskonto auswählen"
 FONT 8, "MS Sans Serif"
@@ -1140,7 +1100,7 @@ BEGIN
     PUSHBUTTON      "&Anfangssaldo setzen",IDC_PROPERTY,201,179,112,14,NOT WS_VISIBLE
 END
 
-IDD_UNTERNEHMENSART DIALOG 0, 0, 300, 96
+IDD_UNTERNEHMENSART DIALOG  0, 0, 300, 96
 STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
 CAPTION "Beschreibung des Betriebs"
 FONT 8, "MS Sans Serif"
@@ -1156,7 +1116,7 @@ BEGIN
     EDITTEXT        IDC_STEUERNUMMER,70,38,223,12,ES_AUTOHSCROLL
 END
 
-IDD_ANFANGSSALDO DIALOG 0, 0, 226, 44
+IDD_ANFANGSSALDO DIALOG  0, 0, 226, 44
 STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
 CAPTION "Anfangssaldo"
 FONT 8, "MS Sans Serif"
@@ -1167,14 +1127,14 @@ BEGIN
     LTEXT           "Anfangssaldo bzw. Übertrag aus dem Vorjahr:",IDC_STATIC,7,9,151,8
 END
 
-IDD_DATENVERZEICHNIS DIALOG 0, 0, 409, 329
+IDD_DATENVERZEICHNIS DIALOG  0, 0, 409, 329
 STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
 CAPTION "Wichtige Hinweise zum Datenverzeichnis"
 FONT 8, "MS Sans Serif"
 BEGIN
     DEFPUSHBUTTON   "OK",IDOK,352,308,50,14
     LTEXT           "Im Datenverzeichnis werden sämtliche Einstellungen des Programms in der Datei easyct.ini abgelegt und alle Buchungsdateien (JahrXXXX.eca) sollten hier direkt gespeichert werden -- auch wenn man sonst Unterordner für die einzelnen Jahre anlegt.",IDC_STATIC,7,7,395,26
-    CONTROL         IDB_DATENVERZEICHNIS,IDC_STATIC,"Static",SS_BITMAP,7,55,395,199
+    CONTROL         413,IDC_STATIC,"Static",SS_BITMAP,7,55,395,199
     LTEXT           "Die BackupXXXX-Verzeichnisse werden von EC&&T beim Jahreswechsel automatisch angelegt als Datensicherung. Für elektronische Belege, PDF-Ausdrucke und alle sonstigen Dateien empfiehlt es sich für die einzelnen Buchungsjahre Unterverzeichnisse anzulegen.",IDC_STATIC,7,261,395,26
     LTEXT           "Hier ein Beispiel für ein in 'Eigene Dateien\\Steuer' angelegtes Datenverzeichnis: ",IDC_STATIC,7,37,395,8
     LTEXT           "Aber wie gesagt: Die Buchungsdateien (.eca) und Einstellungsdaten (easyct.ini) müssen immer im Basis-Datenverzeichnis liegen. ",IDC_STATIC,7,291,395,17
@@ -1257,8 +1217,8 @@ END
 //
 
 VS_VERSION_INFO VERSIONINFO
- FILEVERSION 2,48,0,1
- PRODUCTVERSION 2,48,0,1
+ FILEVERSION 2,49,0,1
+ PRODUCTVERSION 2,49,0,1
  FILEFLAGSMASK 0x3fL
 #ifdef _DEBUG
  FILEFLAGS 0x1L
@@ -1275,12 +1235,12 @@ BEGIN
         BEGIN
             VALUE "CompanyName", "Thomas Mielke Softwareentwicklung"
             VALUE "FileDescription", "EASYCASH_AND_TAX MFC Application"
-            VALUE "FileVersion", "2, 48, 0, 1"
+            VALUE "FileVersion", "2, 49, 0, 1"
             VALUE "InternalName", "EASYCASH_AND_TAX"
             VALUE "LegalCopyright", "© 1998-2023 Thomas Mielke Softwareentwicklung"
             VALUE "OriginalFilename", "EASYCT.EXE"
             VALUE "ProductName", "EASYCASH_AND_TAX Application"
-            VALUE "ProductVersion", "2, 48, 0, 1"
+            VALUE "ProductVersion", "2, 49, 0, 1"
         END
     END
     BLOCK "VarFileInfo"
@@ -1296,7 +1256,7 @@ END
 //
 
 #ifdef APSTUDIO_INVOKED
-GUIDELINES DESIGNINFO
+GUIDELINES DESIGNINFO 
 BEGIN
     IDD_ABOUTBOX, DIALOG
     BEGIN
@@ -1656,264 +1616,142 @@ END
 
 /////////////////////////////////////////////////////////////////////////////
 //
-// Ribbon
+// RT_RIBBON_XML
 //
 
 IDR_RIBBON              RT_RIBBON_XML           "res\\ribbon.mfcribbon-ms"
-
 
 /////////////////////////////////////////////////////////////////////////////
 //
 // AFX_DIALOG_LAYOUT
 //
 
-IDD_BUCHUNG AFX_DIALOG_LAYOUT
+IDD_BUCHUNG AFX_DIALOG_LAYOUT 
 BEGIN
-    0,
-    0, 0, 0, 0,
-    0, 0, 0, 0,
-    0, 0, 0, 0,
-    0, 0, 0, 0,
-    0, 0, 0, 0,
-    0, 0, 0, 0,
-    0, 0, 0, 0,
-    0, 0, 0, 0,
-    0, 0, 0, 0,
-    0, 0, 100, 0,
-    0, 0, 0, 0,
-    0, 0, 0, 0,
-    0, 0, 0, 0,
-    0, 0, 100, 0,
-    0, 0, 0, 0,
-    0, 0, 0, 0,
-    0, 0, 0, 0,
-    0, 0, 0, 0,
-    0, 0, 0, 0,
-    0, 0, 0, 0,
-    0, 0, 0, 0,
-    0, 0, 100, 0,
-    0, 0, 0, 0,
-    0, 0, 0, 0,
-    0, 0, 0, 0,
-    100, 0, 0, 0,
-    100, 0, 0, 100,
-    100, 0, 0, 0,
-    100, 0, 0, 100,
-    0, 0, 0, 0,
-    0, 0, 100, 0,
-    0, 0, 0, 0,
-    100, 100, 0, 0,
-    100, 100, 0, 0,
-    0, 0, 0, 0,
-    0, 0, 0, 0,
-    0, 0, 0, 0,
-    0, 0, 0, 0,
-    100, 0, 0, 0,
-    0, 0, 0, 0,
-    100, 0, 0, 0,
-    100, 0, 0, 0,
-    100, 0, 0, 0,
-    100, 0, 0, 0,
-    100, 0, 0, 0,
-    100, 0, 0, 0
+    0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 
+    0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 
+    0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 
+    0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 
+    0x0000, 0x0000, 0x0000, 0x0064, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 
+    0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 
+    0x0000, 0x0064, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 
+    0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 
+    0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 
+    0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0064, 0x0000, 0x0000, 
+    0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 
+    0x0000, 0x0000, 0x0064, 0x0000, 0x0000, 0x0000, 0x0064, 0x0000, 0x0000, 
+    0x0064, 0x0064, 0x0000, 0x0000, 0x0000, 0x0064, 0x0000, 0x0000, 0x0064, 
+    0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0064, 0x0000, 0x0000, 
+    0x0000, 0x0000, 0x0000, 0x0064, 0x0064, 0x0000, 0x0000, 0x0064, 0x0064, 
+    0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 
+    0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 
+    0x0064, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0064, 
+    0x0000, 0x0000, 0x0000, 0x0064, 0x0000, 0x0000, 0x0000, 0x0064, 0x0000, 
+    0x0000, 0x0000, 0x0064, 0x0000, 0x0000, 0x0000, 0x0064, 0x0000, 0x0000, 
+    0x0000, 0x0064, 0x0000, 0x0000, 0x0000
 END
 
-IDD_EINSTELLUNGEN1 AFX_DIALOG_LAYOUT
+IDD_EINSTELLUNGEN1 AFX_DIALOG_LAYOUT 
 BEGIN
-    0,
-    0, 0, 0, 0,
-    0, 0, 0, 0,
-    0, 0, 0, 0,
-    0, 0, 0, 0,
-    0, 0, 0, 0,
-    0, 0, 0, 0,
-    0, 0, 0, 0,
-    0, 0, 0, 0,
-    0, 0, 100, 0,
-    0, 0, 0, 0,
-    0, 0, 0, 0,
-    0, 0, 0, 0,
-    0, 0, 0, 0,
-    0, 0, 0, 0,
-    0, 0, 0, 0,
-    0, 0, 0, 0,
-    0, 0, 0, 0,
-    0, 0, 0, 0,
-    0, 0, 0, 0,
-    0, 0, 0, 0,
-    0, 0, 0, 0,
-    0, 0, 0, 0,
-    0, 0, 0, 0,
-    0, 0, 0, 0,
-    0, 0, 0, 0,
-    0, 0, 0, 0,
-    0, 0, 0, 0,
-    0, 0, 100, 100,
-    0, 100, 0, 0,
-    0, 100, 0, 0,
-    0, 100, 0, 0,
-    0, 100, 0, 0,
-    0, 100, 0, 0,
-    0, 0, 100, 100,
-    0, 100, 0, 0,
-    0, 100, 0, 0,
-    0, 100, 0, 0,
-    0, 100, 0, 0,
-    0, 100, 100, 0,
-    0, 100, 0, 0,
-    0, 100, 100, 0
+    0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 
+    0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 
+    0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 
+    0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0064, 
+    0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 
+    0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 
+    0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 
+    0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 
+    0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 
+    0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 
+    0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 
+    0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 
+    0x0000, 0x0000, 0x0000, 0x0064, 0x0064, 0x0000, 0x0064, 0x0000, 0x0000, 
+    0x0000, 0x0064, 0x0000, 0x0000, 0x0000, 0x0064, 0x0000, 0x0000, 0x0000, 
+    0x0064, 0x0000, 0x0000, 0x0000, 0x0064, 0x0000, 0x0000, 0x0000, 0x0000, 
+    0x0064, 0x0064, 0x0000, 0x0064, 0x0000, 0x0000, 0x0000, 0x0064, 0x0000, 
+    0x0000, 0x0000, 0x0064, 0x0000, 0x0000, 0x0000, 0x0064, 0x0000, 0x0000, 
+    0x0000, 0x0064, 0x0064, 0x0000, 0x0000, 0x0064, 0x0000, 0x0000, 0x0000, 
+    0x0064, 0x0064, 0x0000
 END
 
-IDD_EINSTELLUNGEN2 AFX_DIALOG_LAYOUT
+IDD_EINSTELLUNGEN2 AFX_DIALOG_LAYOUT 
 BEGIN
-    0,
-    0, 0, 0, 0,
-    0, 0, 100, 0,
-    0, 0, 0, 0,
-    0, 0, 100, 0,
-    0, 0, 0, 0,
-    0, 0, 100, 0,
-    0, 0, 0, 0,
-    0, 0, 100, 0,
-    0, 0, 0, 0,
-    0, 0, 100, 0,
-    0, 0, 0, 0,
-    0, 0, 0, 0,
-    0, 0, 100, 0,
-    0, 0, 0, 0,
-    0, 0, 0, 0,
-    0, 0, 0, 0,
-    0, 0, 0, 0,
-    0, 0, 0, 0,
-    0, 0, 0, 0,
-    0, 0, 0, 0,
-    0, 0, 0, 0,
-    0, 0, 0, 0
+    0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0064, 0x0000, 
+    0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0064, 0x0000, 0x0000, 
+    0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0064, 0x0000, 0x0000, 0x0000, 
+    0x0000, 0x0000, 0x0000, 0x0000, 0x0064, 0x0000, 0x0000, 0x0000, 0x0000, 
+    0x0000, 0x0000, 0x0000, 0x0064, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 
+    0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0064, 0x0000, 0x0000, 
+    0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 
+    0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 
+    0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 
+    0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000
 END
 
-IDD_EINSTELLUNGEN3 AFX_DIALOG_LAYOUT
+IDD_EINSTELLUNGEN3 AFX_DIALOG_LAYOUT 
 BEGIN
-    0,
-    0, 0, 0, 0,
-    0, 0, 0, 0,
-    0, 0, 0, 0,
-    0, 0, 0, 0,
-    0, 0, 100, 0,
-    0, 0, 100, 0,
-    0, 0, 100, 0,
-    0, 0, 0, 0,
-    0, 0, 100, 0,
-    0, 0, 0, 0,
-    0, 0, 0, 0
+    0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 
+    0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 
+    0x0000, 0x0064, 0x0000, 0x0000, 0x0000, 0x0064, 0x0000, 0x0000, 0x0000, 
+    0x0064, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0064, 
+    0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000
+
 END
 
-IDD_EINSTELLUNGEN4 AFX_DIALOG_LAYOUT
+IDD_EINSTELLUNGEN4 AFX_DIALOG_LAYOUT 
 BEGIN
-    0,
-    0, 0, 0, 0,
-    0, 0, 100, 0,
-    0, 0, 100, 100,
-    0, 100, 0, 0,
-    0, 100, 0, 0,
-    0, 100, 0, 0,
-    0, 100, 0, 0,
-    0, 100, 0, 0,
-    0, 100, 0, 0,
-    0, 100, 0, 0,
-    0, 100, 100, 0,
-    0, 100, 100, 0,
-    0, 100, 100, 0,
-    0, 100, 0, 0
+    0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0064, 0x0000, 
+    0x0000, 0x0000, 0x0064, 0x0064, 0x0000, 0x0064, 0x0000, 0x0000, 0x0000, 
+    0x0064, 0x0000, 0x0000, 0x0000, 0x0064, 0x0000, 0x0000, 0x0000, 0x0064, 
+    0x0000, 0x0000, 0x0000, 0x0064, 0x0000, 0x0000, 0x0000, 0x0064, 0x0000, 
+    0x0000, 0x0000, 0x0064, 0x0000, 0x0000, 0x0000, 0x0064, 0x0064, 0x0000, 
+    0x0000, 0x0064, 0x0064, 0x0000, 0x0000, 0x0064, 0x0064, 0x0000, 0x0000, 
+    0x0064, 0x0000, 0x0000
 END
 
-IDD_EINSTELLUNGEN5 AFX_DIALOG_LAYOUT
+IDD_EINSTELLUNGEN5 AFX_DIALOG_LAYOUT 
 BEGIN
-    0,
-    0, 0, 0, 0,
-    100, 0, 0, 0,
-    100, 0, 0, 0,
-    0, 0, 100, 0,
-    100, 0, 0, 0,
-    100, 0, 0, 0,
-    0, 0, 100, 0,
-    100, 0, 0, 0,
-    100, 0, 0, 0,
-    0, 0, 100, 0,
-    100, 0, 0, 0,
-    100, 0, 0, 0,
-    0, 0, 100, 0,
-    100, 0, 0, 0,
-    100, 0, 0, 0,
-    0, 0, 100, 0,
-    100, 0, 0, 0,
-    100, 0, 0, 0,
-    0, 0, 100, 0,
-    100, 0, 0, 0,
-    100, 0, 0, 0,
-    0, 0, 100, 0,
-    100, 0, 0, 0,
-    100, 0, 0, 0,
-    0, 0, 100, 0,
-    100, 0, 0, 0,
-    100, 0, 0, 0,
-    0, 0, 100, 0,
-    100, 0, 0, 0,
-    100, 0, 0, 0,
-    0, 0, 100, 0,
-    100, 0, 0, 0,
-    100, 0, 0, 0,
-    0, 0, 0, 0,
-    0, 0, 100, 0,
-    0, 0, 100, 0
+    0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0064, 0x0000, 0x0000, 0x0000, 
+    0x0064, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0064, 0x0000, 0x0064, 
+    0x0000, 0x0000, 0x0000, 0x0064, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 
+    0x0064, 0x0000, 0x0064, 0x0000, 0x0000, 0x0000, 0x0064, 0x0000, 0x0000, 
+    0x0000, 0x0000, 0x0000, 0x0064, 0x0000, 0x0064, 0x0000, 0x0000, 0x0000, 
+    0x0064, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0064, 0x0000, 0x0064, 
+    0x0000, 0x0000, 0x0000, 0x0064, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 
+    0x0064, 0x0000, 0x0064, 0x0000, 0x0000, 0x0000, 0x0064, 0x0000, 0x0000, 
+    0x0000, 0x0000, 0x0000, 0x0064, 0x0000, 0x0064, 0x0000, 0x0000, 0x0000, 
+    0x0064, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0064, 0x0000, 0x0064, 
+    0x0000, 0x0000, 0x0000, 0x0064, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 
+    0x0064, 0x0000, 0x0064, 0x0000, 0x0000, 0x0000, 0x0064, 0x0000, 0x0000, 
+    0x0000, 0x0000, 0x0000, 0x0064, 0x0000, 0x0064, 0x0000, 0x0000, 0x0000, 
+    0x0064, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0064, 0x0000, 0x0064, 
+    0x0000, 0x0000, 0x0000, 0x0064, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 
+    0x0000, 0x0000, 0x0000, 0x0000, 0x0064, 0x0000, 0x0000, 0x0000, 0x0064, 
+    0x0000
 END
 
-IDD_DAUERBUCHUNGEN AFX_DIALOG_LAYOUT
+IDD_DAUERBUCHUNGEN AFX_DIALOG_LAYOUT 
 BEGIN
-    0,
-    0, 0, 100, 100,
-    0, 100, 0, 0,
-    0, 100, 0, 0,
-    0, 100, 0, 0,
-    100, 100, 0, 0,
-    100, 100, 0, 0,
-    100, 100, 0, 0,
-    100, 100, 0, 0,
-    100, 100, 0, 0,
-    100, 100, 0, 0,
-    100, 100, 0, 0,
-    0, 100, 0, 0,
-    0, 100, 0, 0,
-    0, 100, 0, 0,
-    0, 100, 100, 0,
-    0, 100, 0, 0,
-    0, 100, 0, 0,
-    0, 100, 0, 0,
-    0, 100, 100, 0,
-    0, 100, 0, 0,
-    0, 100, 0, 0,
-    0, 100, 0, 0,
-    0, 100, 0, 0,
-    0, 100, 0, 0,
-    0, 100, 100, 0,
-    0, 100, 0, 0,
-    0, 100, 100, 0,
-    0, 100, 0, 0,
-    0, 100, 100, 0,
-    0, 100, 0, 0,
-    0, 100, 100, 0,
-    100, 100, 0, 0,
-    0, 100, 0, 0,
-    0, 100, 100, 0,
-    0, 100, 0, 0,
-    0, 100, 0, 0,
-    0, 100, 0, 0,
-    0, 100, 100, 0,
-    0, 100, 0, 0,
-    0, 100, 100, 0,
-    100, 100, 0, 0,
-    100, 100, 0, 0,
-    100, 100, 0, 0,
-    100, 100, 0, 0
+    0x0000, 0x0000, 0x0000, 0x0064, 0x0064, 0x0000, 0x0064, 0x0000, 0x0000, 
+    0x0000, 0x0064, 0x0000, 0x0000, 0x0000, 0x0064, 0x0000, 0x0000, 0x0064, 
+    0x0064, 0x0000, 0x0000, 0x0064, 0x0064, 0x0000, 0x0000, 0x0064, 0x0064, 
+    0x0000, 0x0000, 0x0064, 0x0064, 0x0000, 0x0000, 0x0064, 0x0064, 0x0000, 
+    0x0000, 0x0064, 0x0064, 0x0000, 0x0000, 0x0064, 0x0064, 0x0000, 0x0000, 
+    0x0000, 0x0064, 0x0000, 0x0000, 0x0000, 0x0064, 0x0000, 0x0000, 0x0000, 
+    0x0064, 0x0000, 0x0000, 0x0000, 0x0064, 0x0064, 0x0000, 0x0000, 0x0064, 
+    0x0000, 0x0000, 0x0000, 0x0064, 0x0000, 0x0000, 0x0000, 0x0064, 0x0000, 
+    0x0000, 0x0000, 0x0064, 0x0064, 0x0000, 0x0000, 0x0064, 0x0000, 0x0000, 
+    0x0000, 0x0064, 0x0000, 0x0000, 0x0000, 0x0064, 0x0000, 0x0000, 0x0000, 
+    0x0064, 0x0000, 0x0000, 0x0000, 0x0064, 0x0000, 0x0000, 0x0000, 0x0064, 
+    0x0064, 0x0000, 0x0000, 0x0064, 0x0000, 0x0000, 0x0000, 0x0064, 0x0064, 
+    0x0000, 0x0000, 0x0064, 0x0000, 0x0000, 0x0000, 0x0064, 0x0064, 0x0000, 
+    0x0000, 0x0064, 0x0000, 0x0000, 0x0000, 0x0064, 0x0064, 0x0000, 0x0064, 
+    0x0064, 0x0000, 0x0000, 0x0000, 0x0064, 0x0000, 0x0000, 0x0000, 0x0064, 
+    0x0064, 0x0000, 0x0000, 0x0064, 0x0000, 0x0000, 0x0000, 0x0064, 0x0000, 
+    0x0000, 0x0000, 0x0064, 0x0000, 0x0000, 0x0000, 0x0064, 0x0064, 0x0000, 
+    0x0000, 0x0064, 0x0000, 0x0000, 0x0000, 0x0064, 0x0064, 0x0000, 0x0064, 
+    0x0064, 0x0000, 0x0000, 0x0064, 0x0064, 0x0000, 0x0000, 0x0064, 0x0064, 
+    0x0000, 0x0000, 0x0064, 0x0064, 0x0000, 0x0000
 END
 
 
@@ -1922,20 +1760,20 @@ END
 // String Table
 //
 
-STRINGTABLE
+STRINGTABLE 
 BEGIN
     IDR_MAINFRAME           "EasyCash&&Tax"
     IDR_EASYCATYPE          "\nEasyCa\nEasyCa\nEasyCash&Tax Buchungsjahr (*.eca)\n.eca;.ecareg\nEasyCashAndTax.Document\nEasyCash&Tax Buchungsjahr"
     IDR_EASYCAREGTYPE       "\nEasyCaReg\nEasyCaReg\nEasyCash&Tax Registrierungsinformationen (*.ecareg)\n.ecareg\nEasyCashAndTax.Registrierungsinformationen\nEasyCash&Tax Registrierungsinformationen"
 END
 
-STRINGTABLE
+STRINGTABLE 
 BEGIN
     AFX_IDS_APP_TITLE       "EasyCash&Tax"
     AFX_IDS_IDLEMESSAGE     "Bereit"
 END
 
-STRINGTABLE
+STRINGTABLE 
 BEGIN
     ID_INDICATOR_EXT        "ER"
     ID_INDICATOR_CAPS       "UF"
@@ -1945,7 +1783,7 @@ BEGIN
     ID_INDICATOR_REC        "MA"
 END
 
-STRINGTABLE
+STRINGTABLE 
 BEGIN
     ID_FILE_NEW             "Erstellt ein neue Jahresbuchungdatei.\nNeu"
     ID_FILE_OPEN            "Öffnet eine bestehende Jahresbuchungdatei.\nÖffnen"
@@ -1958,13 +1796,13 @@ BEGIN
     ID_FILE_PRINT_PREVIEW   "Zeigt eine Druckvorschau an.\nSeitenansicht"
 END
 
-STRINGTABLE
+STRINGTABLE 
 BEGIN
     ID_APP_ABOUT            "Zeigt Programm-Informationen, Versionsnummer und Copyright an.\nInfo"
     ID_APP_EXIT             "Verläßt die Anwendung; fragt, ob Dokumente gespeichert werden sollen.\nBeenden"
 END
 
-STRINGTABLE
+STRINGTABLE 
 BEGIN
     ID_FILE_MRU_FILE1       "Öffnet dieses Dokument."
     ID_FILE_MRU_FILE2       "Öffnet dieses Dokument."
@@ -1984,13 +1822,13 @@ BEGIN
     ID_FILE_MRU_FILE16      "Öffnet dieses Dokument."
 END
 
-STRINGTABLE
+STRINGTABLE 
 BEGIN
     ID_NEXT_PANE            "Wechselt zum nächsten Fensterausschnitt.\nNächster Ausschnitt"
     ID_PREV_PANE            "Springt zum vorherigen Fensterausschnitt zurück.\nVorheriger Ausschnitt"
 END
 
-STRINGTABLE
+STRINGTABLE 
 BEGIN
     ID_WINDOW_NEW           "Öffnet ein weiteres Fenster für das aktive Dokument.\nNeues Fenster"
     ID_WINDOW_ARRANGE       "Ordnet die Symbole im unteren Bereich des Fensters an.\nSymbole anordnen"
@@ -2000,7 +1838,7 @@ BEGIN
     ID_WINDOW_SPLIT         "Teilt das aktive Fenster in Ausschnitte.\nTeilen"
 END
 
-STRINGTABLE
+STRINGTABLE 
 BEGIN
     ID_EDIT_CLEAR           "Löscht die Markierung.\nLöschen"
     ID_EDIT_CLEAR_ALL       "Löscht alles.\nAlles löschen"
@@ -2015,13 +1853,13 @@ BEGIN
     ID_EDIT_REDO            "Wiederholt die vorher rückgängig gemachte Aktion.\nWiederherstellen"
 END
 
-STRINGTABLE
+STRINGTABLE 
 BEGIN
     ID_VIEW_TOOLBAR         "Blendet die Symbolleiste ein oder aus.\nSymbolleiste ein-/ausschalten"
     ID_VIEW_STATUS_BAR      "Blendet die Statusleiste ein oder aus.\nStatusleiste ein-/ausschalten"
 END
 
-STRINGTABLE
+STRINGTABLE 
 BEGIN
     AFX_IDS_SCSIZE          "Ändert die Fenstergröße."
     AFX_IDS_SCMOVE          "Ändert die Position des Fensters."
@@ -2032,14 +1870,14 @@ BEGIN
     AFX_IDS_SCCLOSE         "Schließt das aktive Fenster und fordert zur Dokumentspeicherung auf."
 END
 
-STRINGTABLE
+STRINGTABLE 
 BEGIN
     AFX_IDS_SCRESTORE       "Stellt das Fenster in seiner normalen Größe wieder her."
     AFX_IDS_SCTASKLIST      "Aktiviert die Task-Liste."
     AFX_IDS_MDICHILD        "Aktiviert dieses Fenster."
 END
 
-STRINGTABLE
+STRINGTABLE 
 BEGIN
     AFX_IDS_PREVIEW_CLOSE   "Beendet die Seitenansicht.\nSeitenansicht beenden"
     ID_SALDO                "0"
@@ -2047,7 +1885,7 @@ BEGIN
                             "Der Plugin Manager kann auf der EasyCash&Tax Webseite nachschauen, ob es Updates bereits installierter Plugins oder neue Plugins gibt oder ob eine neue Version des Hauptprogramms zur Verfügung steht. Eine geöffnete Internetverbindung ist dafür Voraussetzung. Fortfahren?"
 END
 
-STRINGTABLE
+STRINGTABLE 
 BEGIN
     ID_EDIT_EINNAHME_BUCHEN "Einnahmen buchen\nEinnahmen buchen"
     ID_EDIT_AUSGABE_BUCHEN2 "Ausgaben buchen\nAusgaben buchen"
@@ -2060,13 +1898,13 @@ BEGIN
     ID_FILE_EXPORT          "Speichert die Buchungen der Jahresbuchungsdatei im CSV-Format, so dass es von Excel oder dem Import-Plugin verarbeitet werden kann.\nExport"
 END
 
-STRINGTABLE
+STRINGTABLE 
 BEGIN
     ID_VIEW_JOURNAL_SWITCH  "Der Knopf oben rotiert durch die verschiedenen Journalsortierungen. Der untere Teil ermöglicht die direkte Auswahl der gewünschten Sortierung.\nJournalsortierung"
     ID_FILE_PLUGINMANAGER   "Der Knopf oben öffnet den Plugin-Manager. Der untere Teil öffnet ein Menü mit allen installieren Plugins.\nPlugins"
 END
 
-STRINGTABLE
+STRINGTABLE 
 BEGIN
     CG_IDS_TIPOFTHEDAY      "Zeigt den Tipp des Tages an."
     CG_IDS_TIPOFTHEDAYMENU  "Ti&pp des Tages..."
@@ -2078,7 +1916,7 @@ BEGIN
     IDS_EASYRTX_INSTABIL    "Hinweis: EasyRide&Tax enthält noch einen kleinen Fehler bei der Darstellung. Wenn nach dem Aktivieren des Plugins das Menü nicht angezeigt wird, bitte kurz in das Dokumentfenster klicken.  Ich bitte um ein wenig Geduld bis ich den Fehler behoben habe."
 END
 
-STRINGTABLE
+STRINGTABLE 
 BEGIN
     ID_FORMULAR_NEU         "Diese Funktion ist für die normale Verwendung von EC&&T nicht nötig. Die üblichen Formulare werden rechtzeitig vai Update verfügbar gemacht.\nNeues Formular erzeugen"
     ID_FILE_PRINT2          "Druckt das Journal oder auch eine formlose E/Ü-Rechnung bzw. USt-Erklärung.\nDrucken"
@@ -2096,20 +1934,20 @@ BEGIN
                             "Der obere Knopf öffnet den Bestandskonten-Dialog zum Anlegen und Bearbeiten von Bestandskonten. Unten lässt sich der Filter direkt auf ein bestimmtes Bestandskonto einstellen.\nBestandskonten-Filter"
 END
 
-STRINGTABLE
+STRINGTABLE 
 BEGIN
     ID_FILE_BACKUP          "Erstellt eine Datensicherung in einem Unterverzeichnis des Datenverzeichnisses.\nDatensicherung"
     ID_FILE_REGISTRIERUNGSINFORMATIONEN_SICHERN 
                             "Sichert weniger essenzielle Programmeinstellungen wie Registriercode oder Pfad des Datenverzeichnisses.\n&Registrierungsinformationen sichern"
 END
 
-STRINGTABLE
+STRINGTABLE 
 BEGIN
     ID_VIEW_JOURNAL_MONAT   "Der Knopf im oberen Teil wechselt zwischen aktuellem Monat und ganzem Jahr. Das Menü unten ermöglicht das Filtern nach einem beliebigen Monat.\nFilter nach Monat"
     ID_VIEW_JOURNAL_KONTO   "Der Knopf oben rotiert durch sämtliche Konten. Der untere Teil erlaubt die direkte Einstellung des Filters auf ein Konto.\nFilter nach Konto"
 END
 
-STRINGTABLE
+STRINGTABLE 
 BEGIN
     ID_ANSICHT_FORMULARE    "Der Knopf oben springt direkt zum aktuellen USt.-Voranmeldungs-Formular. Das Menü im untern Teil ermöglicht die Auswahl jedes beliebigen installieren Formulars.\nFormular-Ansicht"
     ID_EINSTELLUNGEN_DOKU   "Die Benutzerdokumentation zu EC&T auf www.easyct.de.\nOnline-Dokumentation"
@@ -2123,7 +1961,7 @@ BEGIN
     ID_TIPP_DES_TAGES_EMAIL "Eigenen Vorschlag für einen neuen Tipp des Tages in einer E-Mail verfassen.\nTipp vorschlagen"
 END
 
-STRINGTABLE
+STRINGTABLE 
 BEGIN
     ID_EINSTELLUNGEN_SPENDE_BANK 
                             "Kopiert die IBAN des Spenden-Kontos in Zwischenablage.\nSpende via Banküberweisung"
@@ -2137,29 +1975,31 @@ BEGIN
     ID_ZOOMFAKTOR_VERKLEINERN "Ver&kleinern\tStrg+'-'"
 END
 
-STRINGTABLE
+STRINGTABLE 
 BEGIN
     IDS_EASYCTX_FEHLT       "Die Datei EasyCTX.ocx (zuzständig dafür, dass das Plugin auf die EC&T-Daten zugreifen kann) fehlt oder ist nicht korrekt im System registriert, was im Plugin zu Fehlern wie 'Dialog Fenster kann nicht erzeugt werden' führen kann. Bitte installieren Sie EC&T erneut in das selbe Programmverzeichnis über. Dann sollte wieder alles ok sein."
     IDS_CAPTION_IMAGE_TIP   "Wichtiger Hinweis"
 END
 
-#endif    // Deutsch (Deutschland) resources
+#endif    // German (Germany) resources
 /////////////////////////////////////////////////////////////////////////////
 
 
 /////////////////////////////////////////////////////////////////////////////
-// Englisch (USA) resources
+// English (U.S.) resources
 
 #if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENU)
+#ifdef _WIN32
 LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
 #pragma code_page(1252)
+#endif //_WIN32
 
 /////////////////////////////////////////////////////////////////////////////
 //
 // Dialog
 //
 
-IDD_XFOLDERDIALOG DIALOG 0, 0, 381, 23
+IDD_XFOLDERDIALOG DIALOG  0, 0, 381, 23
 STYLE DS_SETFONT | DS_3DLOOK | DS_CONTROL | WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS
 FONT 8, "MS Sans Serif"
 BEGIN
@@ -2175,7 +2015,7 @@ END
 //
 
 #ifdef APSTUDIO_INVOKED
-GUIDELINES DESIGNINFO
+GUIDELINES DESIGNINFO 
 BEGIN
     "IDD_XFOLDERDIALOG", DIALOG
     BEGIN
@@ -2184,7 +2024,7 @@ BEGIN
 END
 #endif    // APSTUDIO_INVOKED
 
-#endif    // Englisch (USA) resources
+#endif    // English (U.S.) resources
 /////////////////////////////////////////////////////////////////////////////
 
 

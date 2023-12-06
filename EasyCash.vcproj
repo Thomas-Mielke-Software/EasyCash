@@ -1781,6 +1781,10 @@
 			>
 		</File>
 		<File
+			RelativePath=".\RES\ribbon.mfcribbon-ms"
+			>
+		</File>
+		<File
 			RelativePath="tipps.txt"
 			>
 		</File>
