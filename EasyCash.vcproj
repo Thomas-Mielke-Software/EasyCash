@@ -130,7 +130,7 @@
 			/>
 			<Tool
 				Name="VCCustomBuildTool"
-				CommandLine="copy ..\EasyCash\Release\CrashSender1402.exe .\Release&#x0D;&#x0A;copy ..\EasyCash\Release\crashrpt_lang.ini .\Release&#x0D;&#x0A;"
+				CommandLine="copy ..\CrashRpt\bin\CrashSender1402.exe .\Release&#x0D;&#x0A;copy ..\CrashRpt\bin\crashrpt_lang.ini .\Release&#x0D;&#x0A;"
 				Outputs=".\Release\CrashSender1402.exe;.\Release\crashrpt_lang.ini"
 			/>
 			<Tool
