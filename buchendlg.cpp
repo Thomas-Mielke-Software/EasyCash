@@ -1138,7 +1138,11 @@ void BuchenDlg::OnTimer(UINT nIDEvent)
 	}
 	else if (nIDEvent == 101)
 	{
-		int x = 0, y = 0, cx = -1, cy = -1;
+		int x = 0, y = 0
+#if (_MSC_VER >= 1600)
+			, cx = -1, cy = -1
+#endif
+			;
 		RECT rWnd;
 		RECT rScreen;
 
@@ -1152,12 +1156,13 @@ void BuchenDlg::OnTimer(UINT nIDEvent)
 		
 		x = theApp.GetProfileInt("Fenster", "BuchenPosX", 150);
 		y = theApp.GetProfileInt("Fenster", "BuchenPosY", 100);
+#if (_MSC_VER >= 1600)
 		if (*betriebe && *bestandskonten)  // wenn beide aktiv: dynamisches layout aktivieren (TODO: ListCtrls nach unten und horizontal anordenen, damit dynamisches layout auch ermöglicht wird, wenn ListCtrls ausgeblendet sein sollen)
 		{
 			cx = theApp.GetProfileInt("Fenster", "BuchenSizeX", -1);
 			cy = theApp.GetProfileInt("Fenster", "BuchenSizeY", -1);
 		}
-
+#endif
 		if (x > rScreen.right-(rWnd.right-rWnd.left)) x = rScreen.right-(rWnd.right-rWnd.left);
 		if (x < 0) x = 0;
 		if (y > rScreen.bottom-(rWnd.bottom-rWnd.top)) y = rScreen.bottom-(rWnd.bottom-rWnd.top);
@@ -1200,8 +1205,10 @@ void BuchenDlg::OnTimer(UINT nIDEvent)
 			}
 			SetWindowPos(NULL, x, y, rWnd.right-rWnd.left-(*betriebe ? 0 : width_betriebe_bestandskonten)-(*bestandskonten ? 0 : width_betriebe_bestandskonten), rWnd.bottom-rWnd.top, SWP_NOACTIVATE|SWP_NOOWNERZORDER|SWP_NOZORDER);
 		}
+#if (_MSC_VER >= 1600)
 		else if (*betriebe && *bestandskonten && cx > 0 && cy > 0)  // wenn beide aktiv: dynamisches layout aktivieren
 			SetWindowPos(NULL, x, y, cx, cy, SWP_NOACTIVATE | SWP_NOOWNERZORDER | SWP_NOZORDER);
+#endif
 		else
 			SetWindowPos(NULL, x, y, 0, 0, SWP_NOACTIVATE|SWP_NOOWNERZORDER|SWP_NOSIZE|SWP_NOZORDER);
 		
@@ -1478,8 +1485,10 @@ void BuchenDlg::OnDestroy()
 		
 	theApp.WriteProfileInt("Fenster", "BuchenPosX", r.left);
 	theApp.WriteProfileInt("Fenster", "BuchenPosY", r.top);
+#if (_MSC_VER >= 1600)
 	theApp.WriteProfileInt("Fenster", "BuchenSizeX", r.right - r.left);
 	theApp.WriteProfileInt("Fenster", "BuchenSizeY", r.bottom - r.top);
+#endif
 }
 
 void BuchenDlg::OnChangeDatumTag() 
