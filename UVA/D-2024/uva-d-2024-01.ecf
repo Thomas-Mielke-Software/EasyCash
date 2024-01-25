@@ -1,0 +1,294 @@
+<?xml version="1.0" encoding="windows-1252" ?>
+<formular name="Umsatzsteuer-Voranmeldung" anzeigename="Umsatzsteuer-Voranmeldung 2024 Januar (D)" voranmeldungszeitraum="1" seiten="3" schriftart="Courier New" schriftgroesse="24" >
+  <felder>
+    <feld id="1" typ="Einstellungsdaten" seite="1" horizontal="115" vertikal="157" ausrichtung="linksbuendig" anteil="netto" nachkommaanteil="ohne" nullwertdarstellung="nein" veraltet="nein" >
+      <name>steuernummer</name>
+      <erweiterung>fsteuernummer</erweiterung>
+    </feld>
+    <feld id="2" typ="Einstellungsdaten" seite="1" horizontal="119" vertikal="221" ausrichtung="linksbuendig" anteil="netto" nachkommaanteil="ohne" nullwertdarstellung="nein" veraltet="nein" >
+      <name>fname</name>
+      <erweiterung>fname</erweiterung>
+    </feld>
+    <feld id="3" typ="Einstellungsdaten" seite="1" horizontal="615" vertikal="222" ausrichtung="linksbuendig" anteil="netto" nachkommaanteil="ohne" nullwertdarstellung="nein" veraltet="nein" >
+      <name>fname2</name>
+      <erweiterung>fname2</erweiterung>
+    </feld>
+    <feld id="4" typ="Einstellungsdaten" seite="1" horizontal="1076" vertikal="204" ausrichtung="linksbuendig" anteil="netto" nachkommaanteil="ohne" nullwertdarstellung="nein" veraltet="nein" >
+      <name>fstrasse</name>
+      <erweiterung>fstrasse</erweiterung>
+    </feld>
+    <feld id="5" typ="Einstellungsdaten" seite="1" horizontal="1076" vertikal="239" ausrichtung="linksbuendig" anteil="netto" nachkommaanteil="ohne" nullwertdarstellung="nein" veraltet="nein" >
+      <name>fplz</name>
+      <erweiterung>fplz fort</erweiterung>
+    </feld>
+    <feld id="6" typ="Einstellungsdaten" seite="1" horizontal="115" vertikal="287" ausrichtung="linksbuendig" anteil="netto" nachkommaanteil="ohne" nullwertdarstellung="nein" veraltet="nein" >
+      <name>name</name>
+      <erweiterung>vorname name</erweiterung>
+    </feld>
+    <feld id="7" typ="Einstellungsdaten" seite="1" horizontal="115" vertikal="332" ausrichtung="linksbuendig" anteil="netto" nachkommaanteil="ohne" nullwertdarstellung="nein" veraltet="nein" >
+      <name>strasse</name>
+      <erweiterung>strasse</erweiterung>
+    </feld>
+    <feld id="8" typ="Einstellungsdaten" seite="1" horizontal="115" vertikal="372" ausrichtung="linksbuendig" anteil="netto" nachkommaanteil="ohne" nullwertdarstellung="nein" veraltet="nein" >
+      <name>plz</name>
+      <erweiterung>plz ort</erweiterung>
+
+    </feld>
+    <feld id="41" typ="Einnahmen" seite="1" horizontal="704" vertikal="1266" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="ohne" nullwertdarstellung="nein" veraltet="nein" >
+      <name>Steuerfreie Lieferungen an Abnehmer mit USt-Id Nr.</name>
+      <erweiterung/>
+    </feld>
+    <feld id="44" typ="Einnahmen" seite="1" horizontal="704" vertikal="1308" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="ohne" nullwertdarstellung="nein" veraltet="nein" >
+      <name>Steuerfreie Lieferungen neuer Fahrzeuge an Abnehmer ohne USt-Id Nr.</name>
+      <erweiterung/>
+    </feld>
+    <feld id="49" typ="Einnahmen" seite="2" horizontal="666" vertikal="132" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="ohne" nullwertdarstellung="nein" veraltet="nein" >
+      <name>Steuerfreie Lieferungen neuer Fahrzeuge außerhalb eines Unternehmens</name>
+      <erweiterung/>
+    </feld>
+    <feld id="43" typ="Einnahmen" seite="2" horizontal="666" vertikal="199" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="ohne" nullwertdarstellung="nein" veraltet="nein" >
+      <name>Weitere steuerfreie Umsätze mit Vorsteuerabzug</name>
+      <erweiterung/>
+    </feld>
+    <feld id="48" typ="Einnahmen" seite="2" horizontal="666" vertikal="268" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="ohne" nullwertdarstellung="nein" veraltet="nein" >
+      <name>Steuerfreie Umsätze ohne Vorsteuerabzug</name>
+      <erweiterung/>
+
+    </feld>
+    <feld id="81" typ="Summe" seite="1" horizontal="703" vertikal="869" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="ohne" nullwertdarstellung="nein" veraltet="nein" >
+      <name>Steuerpflichtige Umsätze zum Steuersatz von 19%</name>
+      <erweiterung>netto19000(e)</erweiterung>
+    </feld>
+    <feld id="1081" typ="Summe" seite="1" horizontal="931" vertikal="869" ausrichtung="rechtsbuendig" anteil="mwst" nachkommaanteil="mit" nullwertdarstellung="nein" veraltet="nein" >
+      <name>Steuerpflichtige Umsätze zum Steuersatz von 19% (Steuer)</name>
+      <erweiterung>81*119/100-81</erweiterung>
+    </feld>
+    <feld id="86" typ="Summe" seite="1" horizontal="703" vertikal="912" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="ohne" nullwertdarstellung="nein" veraltet="nein" >
+      <name>Steuerpflichtige Umsätze zum Steuersatz von 7%</name>
+      <erweiterung>netto7000(e)</erweiterung>
+    </feld>
+    <feld id="1086" typ="Summe" seite="1" horizontal="931" vertikal="912" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" nullwertdarstellung="nein" veraltet="nein" >
+      <name>Steuerpflichtige Umsätze zum Steuersatz von 7% (Steuer)</name>
+      <erweiterung>86*107/100-86</erweiterung>
+    </feld>
+    <feld id="87" typ="Einnahmen" seite="1" horizontal="703" vertikal="955" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="ohne" nullwertdarstellung="nein" veraltet="nein" >
+      <name>Steuerpflichtige Umsätze zum Steuersatz von 0%</name>
+      <erweiterung/>
+    </feld>
+    <feld id="35" typ="Summe" seite="1" horizontal="703" vertikal="997" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="ohne" nullwertdarstellung="nein" veraltet="nein" >
+      <name>Steuerpflichtige Umsätze, die anderen Steuersätzen unterliegen</name>
+      <erweiterung>netto(e)-netto0000(e)-netto7000(e)-netto19000(e)</erweiterung>
+    </feld>
+    <feld id="36" typ="Summe" seite="1" horizontal="931" vertikal="997" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" nullwertdarstellung="nein" veraltet="nein" >
+      <name>Steuerpflichtige Umsätze, die anderen Steuersätzen unterliegen (Steuer)</name>
+      <erweiterung>mwst(e)-mwst0000(e)-mwst7000(e)-mwst19000(e)</erweiterung>
+    </feld>
+    <feld id="77" typ="Einnahmen" seite="1" horizontal="703" vertikal="1050" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="ohne" nullwertdarstellung="nein" veraltet="nein" >
+      <name>Lieferungen land- und forstwirtschaftlicher Betriebe an Abnehmer mit USt-Id Nr.</name>
+      <erweiterung/>
+    </feld>
+    <feld id="76" typ="Einnahmen" seite="1" horizontal="703" vertikal="1103" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="ohne" nullwertdarstellung="nein" veraltet="nein" >
+      <name>Umsätze, für die eine Steuer nach §24 UStG zu entrichten ist (Netto-Anteil)</name>
+      <erweiterung/>
+    </feld>
+    <feld id="80" typ="Einnahmen" seite="1" horizontal="931" vertikal="1103" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" nullwertdarstellung="nein" veraltet="nein" >
+      <name>Umsätze, für die eine Steuer nach §24 UStG zu entrichten ist (Steuer-Anteil)</name>
+      <erweiterung/>
+    </feld>
+    <feld id="91" typ="Ausgaben" seite="2" horizontal="666" vertikal="361" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="ohne" nullwertdarstellung="nein" veraltet="nein" >
+      <name>Steuerfreie innergemeinschaftliche Erwerbe nach §4b UStG</name>
+      <erweiterung/>
+    </feld>
+    <feld id="89" typ="Ausgaben" seite="2" horizontal="666" vertikal="428" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="ohne" nullwertdarstellung="nein" veraltet="nein" >
+      <name>Innergem. Erwerbe zu 19% (Netto-Anteil)</name>
+      <erweiterung/>
+    </feld>
+    <feld id="1189" typ="Einnahmen" seite="2" horizontal="892" vertikal="428" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" nullwertdarstellung="nein" veraltet="nein" >
+      <name>Innergem. Erwerbe zu 19% (Steuer-Anteil)</name>
+      <erweiterung/>
+    </feld>
+    <feld id="93" typ="Ausgaben" seite="2" horizontal="666" vertikal="470" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="ohne" nullwertdarstellung="nein" veraltet="nein" >
+      <name>Innergem. Erwerbe zu 7% (Netto-Anteil)</name>
+      <erweiterung/>
+    </feld>
+    <feld id="1193" typ="Einnahmen" seite="2" horizontal="892" vertikal="470" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" nullwertdarstellung="nein" veraltet="nein" >
+      <name>Innergem. Erwerbe zu 7% (Steuer-Anteil)</name>
+      <erweiterung/>
+    </feld>
+    <feld id="90" typ="Ausgaben" seite="2" horizontal="666" vertikal="512" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="ohne" nullwertdarstellung="nein" veraltet="nein" >
+      <name>Innergem. Erwerbe zu 0%</name>
+      <erweiterung/>
+    </feld>
+    <feld id="95" typ="Ausgaben" seite="2" horizontal="666" vertikal="556" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="ohne" nullwertdarstellung="nein" veraltet="nein" >
+      <name>Innergem. Erwerbe zu anderen Steuersätzen (Netto-Anteil)</name>
+      <erweiterung/>
+    </feld>
+    <feld id="98" typ="Einnahmen" seite="2" horizontal="892" vertikal="556" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" nullwertdarstellung="nein" veraltet="nein" >
+      <name>Innergem. Erwerbe zu anderen Steuersätzen (Steuer-Anteil)</name>
+      <erweiterung/>
+    </feld>
+    <feld id="94" typ="Ausgaben" seite="2" horizontal="666" vertikal="608" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="ohne" nullwertdarstellung="nein" veraltet="nein" >
+      <name>Innergem. Erwerbe neuer Fahrzeuge von Lieferern ohne USt-Id Nr. (Netto-Anteil)</name>
+      <erweiterung/>
+    </feld>
+    <feld id="96" typ="Einnahmen" seite="2" horizontal="892" vertikal="608" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" nullwertdarstellung="nein" veraltet="nein" >
+      <name>Innergem. Erwerbe neuer Fahrzeuge von Lieferern ohne USt-Id Nr. (Steuer-Anteil)</name>
+      <erweiterung/>
+
+    </feld>
+    <feld id="46" typ="Ausgaben" seite="2" horizontal="666" vertikal="713" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="ohne" nullwertdarstellung="nein" veraltet="nein" >
+      <name>Im Inland steuerpflichtige sonstige Leistungen von im übrigen Gemeinschaftsgebiet ansässigen Unternehmen (Netto-Anteil)</name>
+      <erweiterung/>
+    </feld>
+    <feld id="47" typ="Einnahmen" seite="2" horizontal="892" vertikal="713" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" nullwertdarstellung="nein" veraltet="nein" >
+      <name>Im Inland steuerpflichtige sonstige Leistungen von im übrigen Gemeinschaftsgebiet ansässigen Unternehmen (Steuer-Anteil)</name>
+      <erweiterung/>
+    </feld>
+    <feld id="68" typ="Einnahmen" seite="2" horizontal="1240" vertikal="400" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="ohne" nullwertdarstellung="nein" veraltet="ja" >
+      <name>Steuerpflichtige Umsätze, für die der Leistungsempfänger die Steuer nach §13b Abs. 5 Satz 1 l.V.m. Abs. 2 Nr. 10 UStG schuldet</name>
+      <erweiterung/>
+    </feld>
+    <feld id="52" typ="Ausgaben" seite="2" horizontal="1240" vertikal="440" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="ohne" veraltet="ja" nullwertdarstellung="nein" >
+      <name>Leistungen eines im Ausland ansässigen Unternehmers (Netto-Anteil)</name>
+      <erweiterung/>
+    </feld>
+    <feld id="53" typ="Einnahmen" seite="2" horizontal="1240" vertikal="480" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" veraltet="ja" nullwertdarstellung="nein" >
+      <name>Leistungen eines im Ausland ansässigen Unternehmers (Steuer-Anteil)</name>
+      <erweiterung/>
+    </feld>
+    <feld id="73" typ="Ausgaben" seite="2" horizontal="666" vertikal="756" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="ohne" nullwertdarstellung="nein" veraltet="nein" >
+      <name>Lieferungen sicherungsübereigneter Gegenstände und Umsätze, die unter das GrEStG fallen (Netto-Anteil)</name>
+      <erweiterung/>
+    </feld>
+    <feld id="74" typ="Einnahmen" seite="2" horizontal="892" vertikal="756" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" nullwertdarstellung="nein" veraltet="nein" >
+      <name>Lieferungen sicherungsübereigneter Gegenstände und Umsätze, die unter das GrEStG fallen (Steuer-Anteil)</name>
+      <erweiterung/>
+    </feld>
+    <feld id="78" typ="Ausgaben" seite="2" horizontal="1240" vertikal="520" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="ohne" nullwertdarstellung="nein" veraltet="ja" >
+      <name>Lieferung von Mobilfunkgeräten und integrierten Schaltkreisen (Netto-Anteil)</name>
+      <erweiterung/>
+    </feld>
+    <feld id="79" typ="Einnahmen" seite="1" horizontal="1240" vertikal="560" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" nullwertdarstellung="nein" veraltet="ja" >
+      <name>Lieferung von Mobilfunkgeräten und integrierten Schaltkreisen (Steuer-Anteil)</name>
+      <erweiterung/>
+    </feld>
+    <feld id="84" typ="Ausgaben" seite="2" horizontal="666" vertikal="798" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="ohne" nullwertdarstellung="nein" veraltet="nein" >
+      <name>Andere Leistungen nach § 13b Abs. 2 (Netto-Anteil)</name>
+      <erweiterung/>
+    </feld>
+    <feld id="85" typ="Einnahmen" seite="2" horizontal="892" vertikal="798" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" nullwertdarstellung="nein" veraltet="nein" >
+      <name>Andere Leistungen nach § 13b Abs. 2 (Steuer-Anteil)</name>
+      <erweiterung/>
+
+    </feld>
+    <feld id="1000" typ="Summe" seite="2" horizontal="892" vertikal="1055" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" nullwertdarstellung="nein" veraltet="nein" >
+      <name>Übertrag</name>
+      <erweiterung>1081+1086+36+80+1189+1193+98+96+47+74+85</erweiterung>
+    </feld>
+    <feld id="2001" typ="Einstellungsdaten" seite="2" horizontal="195" vertikal="32" ausrichtung="linksbuendig" anteil="netto" nachkommaanteil="ohne" >
+      <name>Steuernummer nochmal</name>
+      <erweiterung>fsteuernummer</erweiterung>
+    </feld>
+    <feld id="42" typ="Einnahmen" seite="2" horizontal="666" vertikal="867" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="ohne" nullwertdarstellung="nein" veraltet="nein" >
+      <name>Lieferungen des ersten Abnehmers bei innergemeinschaftlichen Dreiecksgeschäften</name>
+      <erweiterung/>
+    </feld>
+    <feld id="60" typ="Einnahmen" seite="2" horizontal="666" vertikal="921" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="ohne" nullwertdarstellung="nein" veraltet="nein" >
+      <name>Steuerpflichtige Umsätze im Sinne des §13b Abs. 1 Satz 1 Nr. 1 bis 5 UStG, für die der Leistungsempfänger die Steuer schuldet</name>
+      <erweiterung/>
+    </feld>
+    <feld id="21" typ="Einnahmen" seite="2" horizontal="666" vertikal="964" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="ohne" nullwertdarstellung="nein" veraltet="nein" >
+      <name>Nicht steuerbare sonstige Leistungen gem. §18b Satz 1 Nr. 2 UStG</name>
+      <erweiterung/>
+    </feld>
+    <feld id="45" typ="Einnahmen" seite="2" horizontal="666" vertikal="1006" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="ohne" nullwertdarstellung="nein" veraltet="nein" >
+      <name>Nicht steuerbare Umsätze (Leistungsort nicht im Inland)</name>
+      <erweiterung/>
+    </feld>
+    <feld id="1466" typ="Summe" seite="2" horizontal="892" vertikal="1185" ausrichtung="rechtsbuendig" anteil="brutto" nachkommaanteil="mit" nullwertdarstellung="nein" veraltet="nein" >
+      <name>Vorsteuerbeträge Summenfeld</name>
+      <erweiterung>66+mwst(a)</erweiterung>
+    </feld>
+    <feld id="66" typ="Ausgaben" seite="2" horizontal="1250" vertikal="1185" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" nullwertdarstellung="ja" veraltet="nein" >
+      <name>Vorsteuerbeträge aus Rechnungen von anderen Unternehmen</name>
+      <erweiterung/>
+    </feld>
+    <feld id="12" typ="Freitext" seite="2" horizontal="1250" vertikal="1127" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="ohne" nullwertdarstellung="nein" veraltet="nein" >
+      <name>VST-Beträge separat Hinweis1</name>
+      <erweiterung>VST-Beträge</erweiterung>
+    </feld>
+    <feld id="13" typ="Freitext" seite="2" horizontal="1255" vertikal="1156" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="ohne" nullwertdarstellung="nein" veraltet="nein" >
+      <name>VST-Beträge separat Hinweis2</name>
+      <erweiterung>separat:</erweiterung>
+    </feld>
+    <feld id="61" typ="Ausgaben" seite="2" horizontal="892" vertikal="1239" ausrichtung="rechtsbuendig" anteil="brutto" nachkommaanteil="mit" nullwertdarstellung="nein" veraltet="nein" >
+      <name>Vorsteuerbeträge aus dem innergemeinschaftlichen Erwerb von Gegenständen</name>
+      <erweiterung/>
+    </feld>
+    <feld id="62" typ="Ausgaben" seite="2" horizontal="892" vertikal="1282" ausrichtung="rechtsbuendig" anteil="brutto" nachkommaanteil="mit" nullwertdarstellung="nein" veraltet="nein" >
+      <name>Entrichtete Einfuhrumsatzsteuer</name>
+      <erweiterung/>
+    </feld>
+    <feld id="67" typ="Ausgaben" seite="2" horizontal="892" vertikal="1325" ausrichtung="rechtsbuendig" anteil="brutto" nachkommaanteil="mit" nullwertdarstellung="nein" veraltet="nein" >
+      <name>Vorsteuerbeträge im Sinne des §13b Abs. 1 UStG</name>
+      <erweiterung/>
+    </feld>
+    <feld id="63" typ="Ausgaben" seite="3" horizontal="931" vertikal="130" ausrichtung="rechtsbuendig" anteil="brutto" nachkommaanteil="mit" nullwertdarstellung="nein" veraltet="nein" >
+      <name>Vorsteuerbeträge, die nach allgemeinen Durchschnittssätzen berechnet sind</name>
+      <erweiterung/>
+    </feld>
+    <feld id="64" typ="Ausgaben" seite="3" horizontal="931" vertikal="239" ausrichtung="rechtsbuendig" anteil="brutto" nachkommaanteil="mit" nullwertdarstellung="nein" veraltet="nein" >
+      <name>Berichtigung des Vorsteuerabzugs (§15a UStG)</name>
+      <erweiterung/>
+    </feld>
+    <feld id="59" typ="Ausgaben" seite="3" horizontal="931" vertikal="197" ausrichtung="rechtsbuendig" anteil="brutto" nachkommaanteil="mit" nullwertdarstellung="nein" veraltet="nein" >
+      <name>Vorsteuerabzug für innergemeinschaftliche Lieferungen neuer Fahrzeuge außerhalb eines Unternehmens sowie von Kleinunternehmern</name>
+      <erweiterung/>
+    </feld>
+    <feld id="2004" typ="Summe" seite="3" horizontal="931" vertikal="285" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" nullwertdarstellung="nein" veraltet="nein" >
+      <name>Verbleibender Betrag</name>
+      <erweiterung>1000-1466-61-62-67-63-59-64</erweiterung>
+    </feld>
+    <feld id="65" typ="Ausgaben" seite="3" horizontal="931" vertikal="367" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" nullwertdarstellung="nein" veraltet="nein" >
+      <name>Steuer infolge Wechsels der Besteuerungsform</name>
+      <erweiterung/>
+    </feld>
+    <feld id="69" typ="Ausgaben" seite="3" horizontal="931" vertikal="447" ausrichtung="rechtsbuendig" anteil="brutto" nachkommaanteil="mit" nullwertdarstellung="nein" veraltet="nein" >
+      <name>In Rechnungen unrichtig oder unberechtigt ausgewiesene Steuerbeträge</name>
+      <erweiterung/>
+    </feld>
+    <feld id="2005" typ="Summe" seite="3" horizontal="931" vertikal="523" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" >
+      <name>Summe Vorauszahlung/Überschuss</name>
+      <erweiterung>2004+65+69</erweiterung>
+    </feld>
+    <feld id="9" typ="Freitext" seite="1" horizontal="108" vertikal="460" ausrichtung="linksbuendig" anteil="netto" nachkommaanteil="ohne" nullwertdarstellung="nein" veraltet="nein" >
+      <name>Voranmeldungszeitraum Kreuzchen</name>
+      <erweiterung>X</erweiterung>
+    </feld>
+    <feld id="39" typ="Dokumentdaten" seite="3" horizontal="931" vertikal="589" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="ohne" nullwertdarstellung="nein" veraltet="nein" >
+      <name>Anrechnung (Abzug) der festgesetzten Sondervorauszahlung für Dauerfristverlängerung -- für Dezember/4.Quartal bitte in Erweiterung eintragen: [Dauerfristverlängerung]Sondervorauszahlung$J</name>
+      <erweiterung/>
+    </feld>
+    <feld id="83" typ="Summe" seite="3" horizontal="931" vertikal="657" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" nullwertdarstellung="ja" veraltet="nein" >
+      <name>Verbleibende Umsatzsteuer-Vorauszahlung</name>
+      <erweiterung>2005-39</erweiterung>
+    </feld>
+  </felder>
+  <seiten>
+    <seite nr="1" >uva-d-2024-1.png</seite>
+    <seite nr="2" >uva-d-2024-2.png</seite>
+    <seite nr="3" >uva-d-2024-3.png</seite>
+  </seiten>
+  <abschnitte>
+    <abschnitt name="A. Steuerpflichtige Lieferungen und Leistungen" seite="1" vertikal="775" />
+    <abschnitt name="B. Steuerfreie Lieferungen und Leistungen" seite="1" vertikal="1124" />
+    <abschnitt name="C. Innergemeinschaftliche Erwerbe" seite="2" vertikal="287" />
+    <abschnitt name="D. Leistungsempfänger als Steuerschuldner" seite="2" vertikal="631" />
+    <abschnitt name="E. Ergänzende Angaben zu Umsätzen" seite="2" vertikal="819" />
+    <abschnitt name="F. Abziehbare Vorsteuerbeträge und Berichtigungen" seite="2" vertikal="1076" />
+    <abschnitt name="G. Andere Steuerbeträge" seite="3" vertikal="307" />
+    <abschnitt name="H. Vorauszahlung/Überschuss" seite="3" vertikal="469" />
+    <abschnitt name="I. Ergänzende Angaben zu Minderungen nach §17 ..." seite="3" vertikal="679" />
+    <abschnitt name="J. Sonstige Angaben" seite="3" vertikal="862" />
+  </abschnitte>
+</formular>
