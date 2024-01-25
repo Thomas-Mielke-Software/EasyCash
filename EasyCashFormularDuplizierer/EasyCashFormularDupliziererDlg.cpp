@@ -305,7 +305,7 @@ void CEasyCashFormularDupliziererDlg::OnOK()
 
 	if (nDauerfristErsetzt != 2)
 	{
-		AfxMessageBox("Dauerfristfeld-Ersetzen hat nicht funktioniert!");
+		AfxMessageBox("Dauerfristfeld-Ersetzen hat nicht funktioniert! Probier mal Notepad++ -> Plugins -> XML Tools -> Pretty Print.");
 	}
 
 	CDialog::OnOK();
