@@ -5412,12 +5412,18 @@ void CEasyCashView::Icon(DrawInfo *pDrawInfo, int left, int top, /*int right,*/ 
 void CEasyCashView::OnFilePrint2() 
 {
 	WasWirdGedruckt = 0;
+	if (m_GewaehltesFormular > 0 && einstellungen2->m_land == 0)
+		DSAMessageBox(IDS_FORMULARDRUCK_DE, MB_OK);
+
 	CScrollView::OnFilePrint();	
 }
 
 void CEasyCashView::OnFilePrintPreview() 
 {
 	WasWirdGedruckt = 0;
+	if (m_GewaehltesFormular > 0 && einstellungen2->m_land == 0)
+		DSAMessageBox(IDS_FORMULARDRUCK_DE, MB_OK);
+
 	//CScrollView::OnFilePrintPreview();
 	AFXPrintPreview(this);	// mit Ribbon
 }
