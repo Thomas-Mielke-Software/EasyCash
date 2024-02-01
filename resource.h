@@ -1,6 +1,6 @@
 //{{NO_DEPENDENCIES}}
-// Von Microsoft Visual C++ generierte Includedatei.
-// Verwendet durch EasyCash.rc
+// Microsoft Visual C++ generated include file.
+// Used by EasyCash.rc
 //
 #define IDC_MINUS                       2
 #define IDC_VERWERFEN                   3
