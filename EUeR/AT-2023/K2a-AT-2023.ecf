@@ -1,0 +1,178 @@
+<?xml version="1.0" encoding="windows-1252" ?>
+<formular name="Beilage E1a" anzeigename="Körperschaftsteuererklärung K2a für betriebliche Einkünfte 2023 (AT)" seiten="5" schriftart="Courier New" schriftgroesse="20" >
+	<felder>
+		<feld id="1" typ="Freitext" seite="1" horizontal="100" vertikal="84" ausrichtung="linksbuendig" anteil="netto" nachkommaanteil="ohne" nullwertdarstellung="nein" >
+			<name>FA</name>
+			<erweiterung>X</erweiterung>
+		</feld>
+		<feld id="10" typ="Einstellungsdaten" seite="1" horizontal="120" vertikal="346" ausrichtung="linksbuendig" anteil="netto" nachkommaanteil="ohne" nullwertdarstellung="nein" >
+			<name>Name</name>
+			<erweiterung>vorname name</erweiterung>
+		</feld>
+		<feld id="12" typ="Einstellungsdaten" seite="1" horizontal="211" vertikal="272" ausrichtung="linksbuendig" anteil="netto" nachkommaanteil="ohne" nullwertdarstellung="nein" >
+			<name>Steuernummer</name>
+			<erweiterung>fsteuernummer</erweiterung>
+		</feld>
+		<feld id="13" typ="Einstellungsdaten" seite="1" horizontal="120" vertikal="272" ausrichtung="linksbuendig" anteil="netto" nachkommaanteil="ohne" nullwertdarstellung="nein" >
+			<name>Team</name>
+			<erweiterung>fname2</erweiterung>
+		</feld>
+		<feld id="14" typ="Einstellungsdaten" seite="1" horizontal="115" vertikal="823" ausrichtung="linksbuendig" anteil="netto" nachkommaanteil="ohne" nullwertdarstellung="nein" >
+			<name>PLZ</name>
+			<erweiterung>plz</erweiterung>
+		</feld>
+		<feld id="15" typ="Einstellungsdaten" seite="1" horizontal="260" vertikal="823" ausrichtung="linksbuendig" anteil="netto" nachkommaanteil="ohne" nullwertdarstellung="nein" >
+			<name>Ort</name>
+			<erweiterung>ort strasse</erweiterung>
+		</feld>
+		<feld id="17" typ="Freitext" seite="1" horizontal="115" vertikal="874" ausrichtung="linksbuendig" anteil="netto" nachkommaanteil="ohne" nullwertdarstellung="nein" >
+			<name>Staat</name>
+			<erweiterung>Österreich</erweiterung>
+		</feld>
+		<feld id="20" typ="Freitext" seite="1" horizontal="520" vertikal="957" ausrichtung="linksbuendig" anteil="netto" nachkommaanteil="ohne" nullwertdarstellung="nein" >
+			<name>Einnahmen-Ausgaben</name>
+			<erweiterung>X</erweiterung>
+		</feld>
+		<feld id="9040" typ="Einnahmen" seite="2" horizontal="950" vertikal="154" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" nullwertdarstellung="nein" >
+			<name>Erträge/Betriebseinahmen</name>
+		</feld>
+		<feld id="9060" typ="Einnahmen" seite="2" horizontal="950" vertikal="192" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" nullwertdarstellung="nein" >
+			<name>Anlagenerträge/Entnahmewerte von Alagevermögen</name>
+		</feld>
+		<feld id="9090" typ="Einnahmen" seite="2" horizontal="950" vertikal="344" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" nullwertdarstellung="nein" >
+			<name>Übrige Erträge/Betriebseinahmen (z.B. Finanzerträge)</name>
+		</feld>
+		<feld id="100" typ="Summe" seite="2" horizontal="950" vertikal="420" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" nullwertdarstellung="nein" >
+			<name>Summe der Erträge/Betriebseinnahmen</name>
+			<erweiterung>9040+9060+9090</erweiterung>
+		</feld>
+		<feld id="9100" typ="Ausgaben" seite="2" horizontal="950" vertikal="576" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" nullwertdarstellung="nein" >
+			<name>Waren, Rohstoffe, Hilfstoffe</name>
+		</feld>
+		<feld id="9110" typ="Ausgaben" seite="2" horizontal="950" vertikal="614" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" nullwertdarstellung="nein" >
+			<name>Beigestelltes Personal (Fremdpersonal) und Fremdleistungen</name>
+		</feld>
+		<feld id="9120" typ="Ausgaben" seite="2" horizontal="950" vertikal="652" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" nullwertdarstellung="nein" >
+			<name>Personalaufwand (eigenes Personal)</name>
+		</feld>
+		<feld id="9130" typ="Ausgaben" seite="2" horizontal="950" vertikal="691" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" nullwertdarstellung="nein" >
+			<name>Abschreibung auf das Anlagevermögen (Afa, GWG)</name>
+		</feld>
+		<feld id="9134" typ="Ausgaben" seite="2" horizontal="950" vertikal="728" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" nullwertdarstellung="nein" >
+			<name>Degressive Absetzung für Abnutzung (§ 7 Abs. 1a) für Wirtschaftsgüter, die nach dem 30.6.2020 angeschafft oder hergestellt worden sind</name>
+		</feld>
+		<feld id="9135" typ="Ausgaben" seite="2" horizontal="950" vertikal="766" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" nullwertdarstellung="nein" >
+			<name>Absetzung für Abnutzung für Gebäude, die nach dem 30.6.2020 angeschafft oder hergestellt worden sind (§ 8 Abs. 1a, beschleunigte Gebäudeabschreibung, höchstens dreifacher AfA-Satz)</name>
+		</feld>
+		<feld id="9150" typ="Ausgaben" seite="2" horizontal="950" vertikal="890" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" nullwertdarstellung="nein" >
+			<name>Instandhaltungsaufwand für Gebäude</name><erweiterung/>
+		</feld>
+		<feld id="9160" typ="Ausgaben" seite="2" horizontal="950" vertikal="927" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" nullwertdarstellung="nein" >
+			<name>Reise- und Fahrtspesen inkl. Kilometergeld und Diäten</name>
+		</feld>
+		<feld id="9170" typ="Ausgaben" seite="2" horizontal="950" vertikal="966" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" nullwertdarstellung="nein" >
+			<name>Tatsächliche Kfz-Kosten</name>
+		</feld>
+		<feld id="9180" typ="Ausgaben" seite="2" horizontal="950" vertikal="1004" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" nullwertdarstellung="nein" >
+			<name>Miet- und Pachtaufwand</name>
+		</feld>
+		<feld id="9190" typ="Ausgaben" seite="2" horizontal="950" vertikal="1042" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" nullwertdarstellung="nein" >
+			<name>Provisionen an Dritte / Lizenzgebühren</name>
+		</feld>
+		<feld id="9200" typ="Ausgaben" seite="2" horizontal="950" vertikal="1081" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" nullwertdarstellung="nein" >
+			<name>Werbe- und Repäsentationsaufwendungen, Spenden, Trinkgelder</name>
+		</feld>
+		<feld id="9210" typ="Ausgaben" seite="2" horizontal="950" vertikal="1117" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" nullwertdarstellung="nein" >
+			<name>Buchwert abgegangener Anlagen</name>
+		</feld>
+		<feld id="9220" typ="Ausgaben" seite="2" horizontal="950" vertikal="1156" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" nullwertdarstellung="nein" >
+			<name>Zinsen und ähnliche Aufwendungen</name>
+		</feld>
+		<feld id="9243" typ="Ausgaben" seite="3" horizontal="950" vertikal="82" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" nullwertdarstellung="nein" >
+			<name>Betriebliche Spenden an begünstigte Forschungs- und Lehreinrichtungen, Museen, Kulturein-richtungen, das Bundesdenkmalamt, Behindertensport-Dachverbände, die Internationale Anti-Korruptions-Akademie</name>
+		</feld>	
+		<feld id="9244" typ="Ausgaben" seite="3" horizontal="950" vertikal="119" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" nullwertdarstellung="nein" >
+			<name>Betriebliche Spenden an mildtätige Organisationen, begünstigte Spendensammelvereine u.a. Nur absetzbar, wenn die jeweilige Einrichtung in der Liste der begünstigten Spendeneinrichtungen des Bundesministeriums für Finanzen enthalten ist.</name>
+		</feld>
+		<feld id="9245" typ="Ausgaben" seite="3" horizontal="950" vertikal="156" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" nullwertdarstellung="nein" >
+			<name>Betriebliche Spenden an Umweltschutzorganisationen und Tierheime Nur absetzbar, wenn die jeweilige Einrichtung in der Liste der begünstigten Spendeneinrichtungen des Bundesministeriums für Finanzen enthalten ist.</name>
+		</feld>	
+		<feld id="9246" typ="Ausgaben" seite="3" horizontal="950" vertikal="194" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" nullwertdarstellung="nein" >
+			<name>Betriebliche Spenden an freiwillige Feuerwehren und Landesfeuerwehrverbände</name>
+		</feld>	
+		<feld id="9261" typ="Ausgaben" seite="3" horizontal="950" vertikal="230" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" nullwertdarstellung="nein" >
+			<name>Zuwendungen zur Vermögensausstattung einer gemeinnützigen Stiftung</name>
+		</feld>	
+		<feld id="9262" typ="Ausgaben" seite="3" horizontal="950" vertikal="268" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" nullwertdarstellung="nein" >
+			<name>Zuwendungen an die Innovationsstiftung für Bildung und an deren Substiftungen</name>
+		</feld>			
+		<feld id="9230" typ="Ausgaben" seite="3" horizontal="950" vertikal="316" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" nullwertdarstellung="nein" >
+			<name>Übrige und/oder pauschale Aufwendungen/Betriebsausgaben</name>
+		</feld>
+		<feld id="101" typ="Summe" seite="3" horizontal="950" vertikal="428" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" nullwertdarstellung="nein" >
+			<name>Summe Aufwendungen/Betriebsausgen</name>
+			<erweiterung>9100+9110+9120+9130+9134+9135+9150+9160+9170+9180+9190+9200+9210+9220+9243+9244+9245+9246+9261+9262+9230</erweiterung>
+		</feld>		
+		<feld id="102" typ="Summe" seite="3" horizontal="950" vertikal="541" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" nullwertdarstellung="nein" >
+			<name>Laufender steuerlicher Gewinn/Verlust</name>
+			<erweiterung>100-101</erweiterung>
+		</feld>
+		<feld id="9240" typ="Einnahmen" seite="3" horizontal="950" vertikal="783" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" nullwertdarstellung="nein" >
+			<name>Korrekturen zu Abschreibungen auf das Anlagevermögen (z.B. AfA. GwG)</name>
+		</feld>
+		<feld id="9269" typ="Einnahmen" seite="3" horizontal="950" vertikal="818" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" nullwertdarstellung="nein" >
+			<name>Korrekturen zu Abschreibungen auf das Anlagevermögen gemäß Kennzahl 9135</name>
+		</feld>	
+		<feld id="9268" typ="Einnahmen" seite="3" horizontal="950" vertikal="857" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" nullwertdarstellung="nein" >
+			<name>Korrekturen zu Abschreibungen auf das Anlagevermögen gemäß Kennzahl 9134</name>
+		</feld>		
+		<feld id="9260" typ="Einnahmen" seite="3" horizontal="950" vertikal="970" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" nullwertdarstellung="nein" >
+			<name>Korrekturen zu tatsächlichen Kfz-Kosten (ohne AfA, Leasing und Kilometergeld)</name>
+		</feld>
+		<feld id="9270" typ="Einnahmen" seite="3" horizontal="950" vertikal="1007" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" nullwertdarstellung="nein" >
+			<name>Korrekturen zu Miete- und Pachtaufwand, Leasing</name>
+		</feld>
+		<feld id="9280" typ="Einnahmen" seite="3" horizontal="950" vertikal="1045" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" nullwertdarstellung="nein" >
+			<name>Korrekturen zu Werbe- und Repräsentationsaufwendungen, Spenden Trinkgelder</name>
+		</feld>
+		<feld id="9317" typ="Einnahmen" seite="3" horizontal="950" vertikal="1083" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" nullwertdarstellung="nein" >
+			<name>Korrekturen betreffend Spenden der Kennzahlen 9243, 9244, 9245, 9246</name>
+		</feld>	
+		<feld id="9322" typ="Einnahmen" seite="3" horizontal="950" vertikal="1121" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" nullwertdarstellung="nein" >
+			<name>Korrektur betreffend Zuwendungen zur Vermögensausstattung einer gemeinnützigen Stiftung - Kennzahl 9261</name>
+		</feld>	
+		<feld id="9325" typ="Einnahmen" seite="3" horizontal="950" vertikal="1158" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" nullwertdarstellung="nein" >
+			<name>Korrekturen betreffend Zuwendungen an die Innovationsstiftung für Bildung und an deren Substiftungen - Kennzahl 9262</name>
+		</feld>	
+		<feld id="9257" typ="Einnahmen" seite="3" horizontal="950" vertikal="1196" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" nullwertdarstellung="nein" >
+			<name>Korrekturen betreffend Entgelte für Arbeits- und Werkleistungen (§ 20 Abs. 1 Z 7 und 8)</name>
+		</feld>			
+		<feld id="9290" typ="Einnahmen" seite="4" horizontal="950" vertikal="807" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" nullwertdarstellung="nein" >
+			<name>Sonstige Änderungen</name>
+		</feld>
+		<feld id="110" typ="Summe" seite="4" horizontal="950" vertikal="844" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" nullwertdarstellung="nein" >
+			<name>Laufender steuerlicher Gewinn/Verlust</name>
+			<erweiterung>9240+9268+9269+9260+9270+9280+9317+9322+9325+9257+9290</erweiterung>
+		</feld>
+		<feld id="120" typ="Summe" seite="4" horizontal="950" vertikal="1035" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" nullwertdarstellung="nein" >
+			<name>Laufender steuerlicher Gewinn/Verlust</name>
+			<erweiterung>102+110</erweiterung>
+		</feld>
+	</felder>
+	<seiten>
+		<seite nr="1" >K2a-AT-2023-1.png</seite>
+		<seite nr="2" >K2a-AT-2023-2.png</seite>
+		<seite nr="3" >K2a-AT-2023-3.png</seite>
+		<seite nr="4" >K2a-AT-2023-4.png</seite> 
+		<seite nr="5" >K2a-AT-2023-5.png</seite> 
+	</seiten>
+	<abschnitte>
+		<abschnitt name="1. Derzeitige Anschrift" seite="1" vertikal="620" />
+		<abschnitt name="2. Angaben zum Betrieb" seite="1" vertikal="730" />
+		<abschnitt name="3. Gewinnermittlung" seite="2" vertikal="140" />
+		<abschnitt name="4. Korrekturen und Ergänzungen zur Gewinnermittlung" seite="3" vertikal="580" />
+		<abschnitt name="5. Bilanzposten" seite="5" vertikal="35" />
+		<abschnitt name="6. Einkünfte aus Kleinunternehmerpauschalierung ..." seite="5" vertikal="1175" />
+	</abschnitte>	
+</formular>
+

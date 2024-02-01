@@ -1,0 +1,214 @@
+<?xml version="1.0" encoding="windows-1252" ?>
+<formular name="Umsatzsteuer" anzeigename="U30 2024 1. Quartal (AT)" voranmeldungszeitraum="13" seiten="4" querformat="1" schriftart="Courier New" schriftgroesse="25" >
+	<felder>
+		<feld id="1" typ="Freitext" seite="1" horizontal="70" vertikal="149" ausrichtung="linksbuendig" anteil="netto" nachkommaanteil="ohne" nullwertdarstellung="nein" >
+			<name>FA</name>
+			<erweiterung>X</erweiterung>
+		</feld>
+		<feld id="4005" typ="Einstellungsdaten" seite="1" horizontal="505" vertikal="411" ausrichtung="linksbuendig" anteil="netto" nachkommaanteil="ohne" nullwertdarstellung="nein" >
+			<name>Steuernummer</name>
+			<erweiterung>fsteuernummer</erweiterung>
+		</feld>
+		<feld id="4006" typ="Einstellungsdaten" seite="1" horizontal="440" vertikal="410" ausrichtung="linksbuendig" anteil="netto" nachkommaanteil="ohne" nullwertdarstellung="nein" >
+			<name>Finanzamt Team</name>
+			<erweiterung>fname2</erweiterung>
+		</feld>
+		<feld id="4007" typ="Freitext" seite="1" horizontal="71" vertikal="371" ausrichtung="linksbuendig" anteil="netto" nachkommaanteil="ohne" nullwertdarstellung="nein" >
+			<name>Quartal</name>
+			<erweiterung>X</erweiterung>
+		</feld>
+		<feld id="4008" typ="Freitext" seite="1" horizontal="800" vertikal="410" ausrichtung="linksbuendig" anteil="netto" nachkommaanteil="ohne" nullwertdarstellung="nein" >
+			<name>Quartal</name>
+			<erweiterung>01</erweiterung>
+		</feld>
+		<feld id="4009" typ="Freitext" seite="1" horizontal="880" vertikal="410" ausrichtung="linksbuendig" anteil="netto" nachkommaanteil="ohne" nullwertdarstellung="nein" >
+			<name>Quartal</name>
+			<erweiterung>03</erweiterung>
+		</feld>
+		<feld id="4010" typ="Einstellungsdaten" seite="1" horizontal="90" vertikal="600" ausrichtung="linksbuendig" anteil="netto" nachkommaanteil="ohne" nullwertdarstellung="ja" >
+			<name>Name</name>
+			<erweiterung>vorname name</erweiterung>
+		</feld>
+		<feld id="4012" typ="Einstellungsdaten" seite="1" horizontal="90" vertikal="900" ausrichtung="linksbuendig" anteil="netto" nachkommaanteil="ohne" nullwertdarstellung="nein" >
+			<name>PLZ</name>
+			<erweiterung>plz</erweiterung>
+		</feld>
+		<feld id="4013" typ="Einstellungsdaten" seite="1" horizontal="308" vertikal="900" ausrichtung="linksbuendig" anteil="netto" nachkommaanteil="ohne" nullwertdarstellung="nein" >
+			<name>Ort</name>
+			<erweiterung>ort</erweiterung>
+		</feld>
+		<feld id="4014" typ="Einstellungsdaten" seite="1" horizontal="90" vertikal="700" ausrichtung="linksbuendig" anteil="netto" nachkommaanteil="ohne" nullwertdarstellung="nein" >
+			<name>Strasse</name>
+			<erweiterung>strasse</erweiterung>
+		</feld>
+		<feld id="3103" typ="Einnahmen" seite="1" horizontal="1100" vertikal="1035" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" nullwertdarstellung="ja" >
+			<name>Vom Finanzamt erstattete und ggf. verrechnete Umsatzsteuer</name>
+		</feld>
+		<feld id="4100" typ="Ausgaben" seite="1" horizontal="1100" vertikal="1075" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" nullwertdarstellung="ja" >
+			<name>Privatkonto</name>
+		</feld>
+		<feld id="1000" typ="Summe" seite="1" horizontal="915" vertikal="1035" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" nullwertdarstellung="ja" >
+			<name>Lieferungen und sonstige Leistungen</name>
+			<erweiterung>netto(e)-3103-1001-4100</erweiterung>
+		</feld>
+		<feld id="1001" typ="Einnahmen" seite="1" horizontal="915" vertikal="1109" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" nullwertdarstellung="nein" >
+			<name>Eigenverbrauch §1 Abs. 1 Z 2, §3 Abs. 2 und §3a Abs. 1a</name>
+		</feld>
+		<feld id="1021" typ="Einnahmen" seite="1" horizontal="915" vertikal="1174" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" nullwertdarstellung="nein" >
+			<name>Einnahmen nach §19 Abs. 1a Ustg</name>
+		</feld>
+		<feld id="2000" typ="Summe" seite="1" horizontal="915" vertikal="1242" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" nullwertdarstellung="nein" >
+			<name>Summe</name>
+			<erweiterung>1000+1001-1021</erweiterung>
+		</feld>
+		<feld id="1011" typ="Einnahmen" seite="2" horizontal="915" vertikal="146" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" nullwertdarstellung="nein" >
+			<name>Lieferungen in Drittländer</name>
+		</feld>
+		<feld id="1017" typ="Einnahmen" seite="2" horizontal="915" vertikal="354" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" nullwertdarstellung="nein" >
+			<name>innergemeinschaftliche Lieferungen</name>
+		</feld>
+		<feld id="1019" typ="Einnahmen" seite="2" horizontal="915" vertikal="493" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" nullwertdarstellung="nein" >
+			<name>Steuerfrei ohne Vorsteuerabzug Grundstücksumsätze $6 Abs. 1 Z 9</name>
+		</feld>			
+		<feld id="1016" typ="Einnahmen" seite="2" horizontal="915" vertikal="562" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" nullwertdarstellung="nein" >
+			<name>Steuerfrei ohne Vorsteuerabzug Kleinunternehmer $6 Abs. 1 Z 26</name>
+		</feld>		
+		<feld id="1020" typ="Summe" seite="2" horizontal="915" vertikal="630" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" nullwertdarstellung="nein" >
+			<name>steuerfreie Umsätze ohne Vorsteuerabzug</name>
+			<erweiterung>netto0000(e)-1021-1011-1017-1019-1016-3103-4100</erweiterung>
+		</feld>
+		<feld id="100" typ="Summe" seite="2" horizontal="915" vertikal="700" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" nullwertdarstellung="ja" >
+			<name>Gesamtbetrag</name>
+			<erweiterung>2000-1011-1017-1019-1016-1020</erweiterung>
+		</feld>
+		<feld id="1022" typ="Summe" seite="2" horizontal="610" vertikal="812" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" nullwertdarstellung="ja" >
+			<name>Steuerpflichtige Umsätze zum Steuersatz von 20%</name>
+			<erweiterung>netto20000(e)</erweiterung>
+		</feld>
+		<feld id="2022" typ="Summe" seite="2" horizontal="915" vertikal="812" ausrichtung="rechtsbuendig" anteil="mwst" nachkommaanteil="mit" nullwertdarstellung="ja" >
+			<name>Mwst zum Steuersatz von 20%</name>
+			<erweiterung>1022*20/100</erweiterung>
+		</feld>
+		<feld id="1029" typ="Summe" seite="2" horizontal="610" vertikal="879" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" nullwertdarstellung="nein" >
+			<name>Steuerpflichtige Umsätze zum Steuersatz von 10%</name>
+			<erweiterung>netto10000(e)</erweiterung>
+		</feld>
+		<feld id="2029" typ="Summe" seite="2" horizontal="915" vertikal="879" ausrichtung="rechtsbuendig" anteil="mwst" nachkommaanteil="mit" nullwertdarstellung="nein" >
+			<name>Mwst zum Steuersatz von 10%</name>
+			<erweiterung>1029*10/100</erweiterung>
+		</feld>
+		<feld id="1006" typ="Summe" seite="2" horizontal="610" vertikal="949" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" nullwertdarstellung="nein" >
+			<name>Steuerpflichtige Umsätze zum Steuersatz von 13%</name>
+			<erweiterung>netto13000(e)</erweiterung>
+		</feld>
+		<feld id="2006" typ="Summe" seite="2" horizontal="915" vertikal="949" ausrichtung="rechtsbuendig" anteil="mwst" nachkommaanteil="mit" nullwertdarstellung="nein" >
+			<name>Mwst zum Steuersatz von 13%</name>
+			<erweiterung>1006*13/100</erweiterung>
+		</feld>
+		<feld id="1037" typ="Summe" seite="2" horizontal="610" vertikal="1018" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" nullwertdarstellung="nein" >
+			<name>Steuerpflichtige Umsätze zum Steuersatz von 19%</name>
+			<erweiterung>netto19000(e)</erweiterung>
+		</feld>
+		<feld id="2037" typ="Summe" seite="2" horizontal="915" vertikal="1018" ausrichtung="rechtsbuendig" anteil="mwst" nachkommaanteil="mit" nullwertdarstellung="nein" >
+			<name>Mwst zum Steuersatz von 19%</name>
+			<erweiterung>1037*19/100</erweiterung>
+		</feld>
+		<feld id="1007" typ="Summe" seite="2" horizontal="610" vertikal="1154" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" nullwertdarstellung="nein" >
+			<name>Steuerpflichtige Umsätze 7% Zusatzsteuer für pauschalierte land- und forstwirtschaftliche Betriebe</name>
+			<erweiterung>netto7000(e)</erweiterung>
+		</feld>
+		<feld id="2007" typ="Summe" seite="2" horizontal="915" vertikal="1154" ausrichtung="rechtsbuendig" anteil="mwst" nachkommaanteil="mit" nullwertdarstellung="nein" >
+			<name>Mwst zum Steuersatz von 7%</name>
+			<erweiterung>1007*7/100</erweiterung>
+		</feld>
+		<feld id="1057" typ="Ausgaben" seite="3" horizontal="915" vertikal="217" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" nullwertdarstellung="nein" >
+			<name>Steuerschuld §19 Abs. 1c 1e</name>
+		</feld>
+		<feld id="1070" typ="Ausgaben" seite="3" horizontal="1100" vertikal="513" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" nullwertdarstellung="nein" veraltet="ja" >
+			<name>Innergemeinschaftliche Erwerbe</name>
+			<erweiterung>Bei steuerfreien innergem. Erwerben bitte stattdessen auf Felder 1072, 1073, 1008 und 1088 aufteilen!</erweiterung>
+		</feld>
+		<feld id="1071" typ="Ausgaben" seite="3" horizontal="610" vertikal="592" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" >
+			<name>Innergemeinschaftliche Erwerbe steuerfrei gemäß Art 6. Abs 2</name>
+		</feld>
+		<feld id="2070" typ="Summe" seite="3" horizontal="915" vertikal="560" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" nullwertdarstellung="nein" >
+			<name>Gesamtebetrag Innergemeinschaftliche Erwerbe ohne steuerfreien Anteil</name>
+			<erweiterung>70-1071</erweiterung>
+		</feld>
+		<feld id="70" typ="Summe" seite="3" horizontal="610" vertikal="513" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" >
+			<name>Innergemeinschaftliche Erwerbe Gesamtsumme</name>
+			<erweiterung>1070+1071+1072+1073+1008+1088</erweiterung>
+		</feld>
+		<feld id="1072" typ="Ausgaben" seite="3" horizontal="610" vertikal="665" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" nullwertdarstellung="nein" veraltet="nein" >
+			<name>Innergemeinschaftliche Erwerbe 20% (steuerpflichtig gemäß Art 6. Abs 2)</name>
+		</feld>
+		<feld id="2072" typ="Summe" seite="3" horizontal="915" vertikal="665" ausrichtung="rechtsbuendig" anteil="brutto" nachkommaanteil="mit" nullwertdarstellung="nein" >
+			<name>Innergemeinschaftliche Erwerbe Mwst 20%</name>
+			<erweiterung>1072*20/100</erweiterung>
+		</feld>
+		<feld id="1073" typ="Ausgaben" seite="3" horizontal="610" vertikal="734" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" nullwertdarstellung="nein" >
+			<name>Innergemeinschaftliche Erwerbe 10% (steuerpflichtig gemäß Art 6. Abs 2)</name>
+		</feld>
+		<feld id="2073" typ="Summe" seite="3" horizontal="915" vertikal="734" ausrichtung="rechtsbuendig" anteil="brutto" nachkommaanteil="mit" nullwertdarstellung="nein" >
+			<name>Innergemeinschaftliche Erwerbe Mwst 10%</name>
+			<erweiterung>1073*10/100</erweiterung>
+		</feld>
+		<feld id="1008" typ="Ausgaben" seite="3" horizontal="610" vertikal="804" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" nullwertdarstellung="nein" >
+			<name>Innergemeinschaftliche Erwerbe 13% (steuerpflichtig gemäß Art 6. Abs 2)</name>
+		</feld>
+		<feld id="2008" typ="Summe" seite="3" horizontal="915" vertikal="804" ausrichtung="rechtsbuendig" anteil="brutto" nachkommaanteil="mit" nullwertdarstellung="nein" >
+			<name>Innergemeinschaftliche Erwerbe Mwst 13%</name>
+			<erweiterung>1008*13/100</erweiterung>
+		</feld>
+		<feld id="1088" typ="Ausgaben" seite="3" horizontal="610" vertikal="870" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" nullwertdarstellung="nein" >
+			<name>Innergemeinschaftliche Erwerbe 19% (steuerpflichtig gemäß Art 6. Abs 2)</name>
+		</feld>
+		<feld id="2088" typ="Summe" seite="3" horizontal="915" vertikal="870" ausrichtung="rechtsbuendig" anteil="brutto" nachkommaanteil="mit" nullwertdarstellung="nein" >
+			<name>Innergemeinschaftliche Erwerbe Mwst 19%</name>
+			<erweiterung>1088*19/100</erweiterung>
+		</feld>
+		<feld id="1060" typ="Summe" seite="3" horizontal="915" vertikal="1168" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" nullwertdarstellung="nein" >
+			<name>060</name>
+			<erweiterung>mwst(a)</erweiterung>
+		</feld>
+		<feld id="1061" typ="Ausgaben" seite="3" horizontal="915" vertikal="1236" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" nullwertdarstellung="nein" >
+			<name>Einfuhrumsatzsteuer §12 Abs 1 Z 2 lit. a</name>
+		</feld>	
+		<feld id="1083" typ="Summe" seite="4" horizontal="915" vertikal="146" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" nullwertdarstellung="nein" >
+			<name>summe</name>
+			<erweiterung>2083*20/100</erweiterung>
+		</feld>
+		<feld id="2083" typ="Ausgaben" seite="4" horizontal="1100" vertikal="145" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" nullwertdarstellung="nein" >
+			<name>Erwerbe aus Drittländern</name>
+		</feld>
+		<feld id="1065" typ="Summe" seite="4" horizontal="915" vertikal="219" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" nullwertdarstellung="nein" veraltet="nein" >
+			<name>Vorsteuer aus dem innergemeinschaftlichen Erwerb</name>
+			<erweiterung>2072+2073+2008+2088</erweiterung>
+		</feld>
+		<feld id="1066" typ="Ausgaben" seite="4" horizontal="915" vertikal="284" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" nullwertdarstellung="nein" >
+			<name>Vorsteuer §19 Abs. 1c 1e</name>
+		</feld>
+		<feld id="2102" typ="Summe" seite="4" horizontal="915" vertikal="835" ausrichtung="rechtsbuendig" anteil="brutto" nachkommaanteil="mit" nullwertdarstellung="nein" >
+			<name>Gesamt Vorsteuer</name>
+			<erweiterung>1060+1061+1083+1065+1066</erweiterung>
+		</feld>
+		<feld id="1095" typ="Summe" seite="4" horizontal="915" vertikal="1062" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" nullwertdarstellung="nein" >
+			<name>Zahllast_Gutschrift</name>
+			<erweiterung>2022+2029+2006+2037+2007+1057+2072+2073+2008+2088-2102</erweiterung>
+		</feld>
+	</felder>
+	<seiten>
+		<seite nr="1" >U30-AT-2024-1.png</seite>
+		<seite nr="2" >U30-AT-2024-2.png</seite>
+		<seite nr="3" >U30-AT-2024-3.png</seite>
+		<seite nr="4" >U30-AT-2024-4.png</seite>
+	</seiten>
+	<abschnitte>
+		<abschnitt name="1. Steuernummer" seite="1" vertikal="312" />
+		<abschnitt name="2. Zeitraum" seite="1" vertikal="314" />
+		<abschnitt name="3. Angaben zum Unternehmen" seite="1" vertikal="415" />
+		<abschnitt name="4. Berechnung der Umsatzsteuer" seite="1" vertikal="775" />
+		<abschnitt name="5. Berechnung der abziehbaren Vorsteuer" seite="3" vertikal="895" />
+		<abschnitt name="6. Sonstige Berichtigungen" seite="4" vertikal="885" />
+	</abschnitte>
+</formular>

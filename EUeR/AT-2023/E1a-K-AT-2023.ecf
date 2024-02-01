@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="windows-1252" ?>
+<formular name="Beilage E1a" anzeigename="Einkommensteuererklärung E1a Kleinbetriebe 2023 (AT)" seiten="3" schriftart="Courier New" schriftgroesse="20" >
+	<felder>
+		<feld id="1" typ="Freitext" seite="1" horizontal="100" vertikal="84" ausrichtung="linksbuendig" anteil="netto" nachkommaanteil="ohne" nullwertdarstellung="nein" >
+			<name>FA</name>
+			<erweiterung>X</erweiterung>
+		</feld>
+		<feld id="10" typ="Einstellungsdaten" seite="1" horizontal="120" vertikal="363" ausrichtung="linksbuendig" anteil="netto" nachkommaanteil="ohne" nullwertdarstellung="nein" >
+			<name>Name</name>
+			<erweiterung>name</erweiterung>
+		</feld>
+		<feld id="11" typ="Einstellungsdaten" seite="1" horizontal="120" vertikal="434" ausrichtung="linksbuendig" anteil="netto" nachkommaanteil="ohne" nullwertdarstellung="nein" >
+			<name>Vorname</name>
+			<erweiterung>vorname</erweiterung>
+		</feld>
+		<feld id="12" typ="Einstellungsdaten" seite="1" horizontal="211" vertikal="291" ausrichtung="linksbuendig" anteil="netto" nachkommaanteil="ohne" nullwertdarstellung="nein" >
+			<name>Steuernummer</name>
+			<erweiterung>fsteuernummer</erweiterung>
+		</feld>
+		<feld id="13" typ="Einstellungsdaten" seite="1" horizontal="120" vertikal="291" ausrichtung="linksbuendig" anteil="netto" nachkommaanteil="ohne" nullwertdarstellung="nein" >
+			<name>Team</name>
+			<erweiterung>fname2</erweiterung>
+		</feld>
+		<feld id="14" typ="Einstellungsdaten" seite="1" horizontal="115" vertikal="1025" ausrichtung="linksbuendig" anteil="netto" nachkommaanteil="ohne" nullwertdarstellung="nein" >
+			<name>PLZ</name>
+			<erweiterung>plz</erweiterung>
+		</feld>
+		<feld id="15" typ="Einstellungsdaten" seite="1" horizontal="267" vertikal="1025" ausrichtung="linksbuendig" anteil="netto" nachkommaanteil="ohne" nullwertdarstellung="nein" >
+			<name>Ort</name>
+			<erweiterung>ort strasse</erweiterung>
+		</feld>
+		<feld id="20" typ="Freitext" seite="2" horizontal="103" vertikal="466" ausrichtung="linksbuendig" anteil="netto" nachkommaanteil="ohne" nullwertdarstellung="nein" >
+			<name>Bruttosyste,</name>
+			<erweiterung>X</erweiterung>
+		</feld>
+		<feld id="21" typ="Freitext" seite="2" horizontal="103" vertikal="500" ausrichtung="linksbuendig" anteil="netto" nachkommaanteil="ohne" nullwertdarstellung="nein" >
+			<name>Einnahmen-Ausgaben</name>
+			<erweiterung>X</erweiterung>
+		</feld>	
+		<feld id="9040" typ="Einnahmen" seite="2" horizontal="950" vertikal="777" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" nullwertdarstellung="nein" >
+			<name>Erträge/Betriebseinahmen</name>
+		</feld>
+		<feld id="9050" typ="Einnahmen" seite="2" horizontal="950" vertikal="828" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" nullwertdarstellung="nein" >
+			<name>Erträge/Betriebseinnahmen gemäß §109</name>
+		</feld>
+		<feld id="9060" typ="Einnahmen" seite="2" horizontal="950" vertikal="869" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" nullwertdarstellung="nein" >
+			<name>Anlagenerträge/Entnahmewerte von Alagevermögen</name>
+		</feld>
+		<feld id="9090" typ="Einnahmen" seite="2" horizontal="950" vertikal="906" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" nullwertdarstellung="nein" >
+			<name>Übrige Erträge/Betriebseinahmen (z.B. Finanzerträge)</name>
+		</feld>
+		<feld id="9099" typ="Summe" seite="2" horizontal="950" vertikal="944" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" nullwertdarstellung="nein" >
+			<name>Summe der Erträge/Betriebseinnahmen</name>
+			<erweiterung>9040+9050+9060+9090</erweiterung>
+		</feld>
+		<feld id="9100" typ="Ausgaben" seite="2" horizontal="950" vertikal="1000" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" nullwertdarstellung="nein" >
+			<name>Waren, Rohstoffe, Hilfstoffe</name>
+		</feld>
+		<feld id="9110" typ="Ausgaben" seite="2" horizontal="950" vertikal="1039" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" nullwertdarstellung="nein" >
+			<name>Beigestelltes Personal (Fremdpersonal) und Fremdleistungen</name>
+		</feld>
+		<feld id="9120" typ="Ausgaben" seite="2" horizontal="950" vertikal="1078" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" nullwertdarstellung="nein" >
+			<name>Personalaufwand (eigenes Personal)</name>
+		</feld>
+		<feld id="9130" typ="Ausgaben" seite="2" horizontal="950" vertikal="1115" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" nullwertdarstellung="nein" >
+			<name>Abschreibung auf das Anlagevermögen (Afa, GWG)</name>
+		</feld>
+		<feld id="9134" typ="Ausgaben" seite="2" horizontal="950" vertikal="1153" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" nullwertdarstellung="nein" >
+			<name>Degressive Absetzung für Abnutzung (§ 7 Abs. 1a) für Wirtschaftsgüter, die nach dem 30.6.2020 angeschafft oder hergestellt worden sind</name>
+		</feld>
+		<feld id="9135" typ="Ausgaben" seite="2" horizontal="950" vertikal="1192" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" nullwertdarstellung="nein" >
+			<name>Absetzung für Abnutzung für Gebäude, die nach dem 30.6.2020 angeschafft oder hergestellt worden sind (§ 8 Abs. 1a, beschleunigte Gebäudeabschreibung, höchstens dreifacher AfA-Satz)</name>
+		</feld>
+		<feld id="9160" typ="Ausgaben" seite="2" horizontal="950" vertikal="1230" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" nullwertdarstellung="nein" >
+			<name>Reise- und Fahrtspesen inkl. Kilometergeld und Diäten</name>
+		</feld>
+		<feld id="9180" typ="Ausgaben" seite="2" horizontal="950" vertikal="1305" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" nullwertdarstellung="nein" >
+			<name>Miet- und Pachtaufwand</name>
+		</feld>
+		<feld id="9220" typ="Ausgaben" seite="3" horizontal="950" vertikal="259" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" nullwertdarstellung="nein" >
+			<name>Zinsen und ähnliche Aufwendungen</name>
+		</feld>
+		<feld id="9225" typ="Ausgaben" seite="3" horizontal="950" vertikal="296" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" nullwertdarstellung="nein" >
+			<name>Eigene Pflichtversicherungsbeiträge und Beiträge zu Versorgungs- und Unterstützungseinrichtungen</name>
+		</feld>
+		<feld id="9243" typ="Ausgaben" seite="3" horizontal="950" vertikal="444" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" nullwertdarstellung="nein" >
+			<name>Betriebliche Spenden an Forschungs und Lehreinrichtungen</name>
+		</feld>		
+		<feld id="9244" typ="Ausgaben" seite="3" horizontal="950" vertikal="482" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" nullwertdarstellung="nein" >
+			<name>Betriebliche Spenden an mildtätige Organisationen</name>
+		</feld>	
+		<feld id="9245" typ="Ausgaben" seite="3" horizontal="950" vertikal="520" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" nullwertdarstellung="nein" >
+			<name>Betriebliche Spenden an Umweltschutz und Tierheime</name>
+		</feld>		
+		<feld id="9246" typ="Ausgaben" seite="3" horizontal="950" vertikal="558" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" nullwertdarstellung="nein" >
+			<name>Betriebliche Spenden an freiwillige Feuerwehren</name>
+		</feld>		
+		<feld id="9261" typ="Ausgaben" seite="3" horizontal="950" vertikal="598" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" nullwertdarstellung="nein" >
+			<name>Zuwendung zur Vermögensausstattung einer gemeinnützigen Stiftung</name>
+		</feld>		
+		<feld id="9262" typ="Ausgaben" seite="3" horizontal="950" vertikal="636" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" nullwertdarstellung="nein" >
+			<name>Zuwendung zan die Innovationsstiftung für Bildung</name>
+		</feld>			
+		<feld id="9230" typ="Ausgaben" seite="3" horizontal="950" vertikal="674" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" nullwertdarstellung="nein" >
+			<name>Übrige und/oder pauschale Aufwendungen/Betriebsausgaben</name>
+		</feld>	
+		<feld id="9259" typ="Einnahmen" seite="3" horizontal="950" vertikal="711" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" nullwertdarstellung="nein" >
+			<name>Pauschalierte Betriebsausgaben</name>
+		</feld>	
+		<feld id="9299" typ="Summe" seite="3" horizontal="950" vertikal="750" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" nullwertdarstellung="nein" >
+			<name>Summe der Betriebsausgaben</name>
+			<erweiterung>9100+9110+9120+9130+9134+9135+9160+9180+9220+9225+9243+9244+9245+9246+9261+9262+9230+9259</erweiterung>
+		</feld>		
+		<feld id="9399" typ="Summe" seite="3" horizontal="950" vertikal="844" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" nullwertdarstellung="nein" >
+			<name>Gewinn/Verlust</name>
+			<erweiterung>9099-9299</erweiterung>
+		</feld>
+	</felder>
+	<seiten>
+		<seite nr="1" >E1a-K-AT-2023-1.png</seite>
+		<seite nr="2" >E1a-K-AT-2023-2.png</seite>
+		<seite nr="3" >E1a-K-AT-2023-3.png</seite>
+	</seiten>
+	<abschnitte>
+		<abschnitt name="1. Derzeitige Anschrift" seite="1" vertikal="780" />
+		<abschnitt name="2. Einkünfteermittlung durch Kleinunternehmerpauschalierung" seite="1" vertikal="868" />
+		<abschnitt name="3. Einkünfteermittlung durch Einnahmen-Ausgaben-Rechnung ..." seite="2" vertikal="318" />
+		<abschnitt name="3.1 Angaben zum Betrieb" seite="2" vertikal="343" />
+		<abschnitt name="3.2 Gewinnermittlung" seite="2" vertikal="525" />
+	</abschnitte>
+</formular>
+
