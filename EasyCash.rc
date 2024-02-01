@@ -1979,7 +1979,7 @@ STRINGTABLE
 BEGIN
     IDS_EASYCTX_FEHLT       "Die Datei EasyCTX.ocx (zuzständig dafür, dass das Plugin auf die EC&T-Daten zugreifen kann) fehlt oder ist nicht korrekt im System registriert, was im Plugin zu Fehlern wie 'Dialog Fenster kann nicht erzeugt werden' führen kann. Bitte installieren Sie EC&T erneut in das selbe Programmverzeichnis über. Dann sollte wieder alles ok sein."
     IDS_CAPTION_IMAGE_TIP   "Wichtiger Hinweis"
-    IDS_FORMULARDRUCK_DE    "Steuererklärungen sind dem Finanzamt in der Regel elektronisch zu übermitteln (etwa mit dem Elster-Plugin für EC&T oder einem Web-Formular auf elster.de), es sei denn das Finanzamt erkannt auf Antrag einen Härtefall an und akzeptiert ein auf Papier ausgedrucktes Formular.\r\n\r\nSteuerpflichtige müssen in dem Fall Steuererklärungen vollständig abgeben, d. h. einschließlich der Seiten, auf denen keine Eintragungen erfolgt sind. Notwendige ergänzende Angaben zur Steuererklärung sind auf einem separaten Blatt zu machen. Leere Rückseiten der Steuererklärung sind hierfür nicht zu verwenden."
+    IDS_FORMULARDRUCK_DE    "Steuererklärungen sind dem Finanzamt in der Regel elektronisch zu übermitteln (etwa mit dem Elster-Plugin für EC&T oder einem Web-Formular auf elster.de), es sei denn das Finanzamt erkennt auf Antrag einen Härtefall an und akzeptiert ein auf Papier ausgedrucktes Formular.\r\n\r\nSteuerpflichtige müssen in dem Fall Steuererklärungen vollständig abgeben, d. h. einschließlich der Seiten, auf denen keine Eintragungen erfolgt sind. Notwendige ergänzende Angaben zur Steuererklärung sind auf einem separaten Blatt zu machen. Leere Rückseiten der Steuererklärung sind hierfür nicht zu verwenden."
 END
 
 #endif    // German (Germany) resources
