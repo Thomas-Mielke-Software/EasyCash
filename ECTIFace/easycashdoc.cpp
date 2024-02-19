@@ -1880,7 +1880,8 @@ CString CEasyCashDoc::GetFormularwertByID(XDoc *pFormular, int nID, LPCSTR sFilt
 		
 		if (child && !child->value.IsEmpty())
 		{
-			if (nID == atoi(child->GetAttrValue("id")))
+			LPXAttr idAttr = child->GetAttrValue("id")
+			if (nID == atoi(idAttr))
 				return GetFormularwertByIndex(pFormular, i, sFilter);
 		}
 	}

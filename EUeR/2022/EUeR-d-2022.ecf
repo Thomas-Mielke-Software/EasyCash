@@ -45,6 +45,10 @@
       <name>Umsatzsteuerfreie, nicht umsatzsteuerbare Betriebseinnahmen sowie Betriebseinnahmen, für die der Leistungsempfänger die Umsatzsteuer nach § 13 b UStG schuldet</name>
       <erweiterung/>
     </feld>
+    <feld id="1140" typ="Einnahmen" seite="1" horizontal="1174" vertikal="738" ausrichtung="rechtsbuendig" anteil="brutto" nachkommaanteil="mit" nullwertdarstellung="nein" veraltet="nein" >
+      <name>Vereinnahmte Umsatzsteuer sowie Umsatzsteuer auf unentgeltliche Wertabgaben</name>
+      <erweiterung/> 
+    </feld>
     <feld id="7" typ="Summe" seite="1" horizontal="962" vertikal="740" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" nullwertdarstellung="nein" veraltet="nein" elsterfeldname="EUER/BEin/USt_Vereinnahmt_Unentgeltl/Sum/E6000601" >
       <name>Vereinnahmte Umsatzsteuer sowie Umsatzsteuer auf unentgeltliche Wertabgaben (Summe)</name>
       <erweiterung>mwst(e:1111)+mwst(e:1104)+mwst(e:1112)+mwst(e:1103)+mwst(e:1141)+mwst(e:1102)+mwst(e:1106)+mwst(e:1108)+brutto(e:1140)+brutto(e:8)</erweiterung> 
@@ -52,10 +56,6 @@
     <feld id="8" typ="Einnahmen" seite="1" horizontal="1174" vertikal="703" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" nullwertdarstellung="nein" veraltet="nein" >
       <name>UST §13b USTG Lieferung Ausland</name>
       <erweiterung/>
-    </feld>
-    <feld id="1140" typ="Einnahmen" seite="1" horizontal="1174" vertikal="738" ausrichtung="rechtsbuendig" anteil="brutto" nachkommaanteil="mit" nullwertdarstellung="nein" veraltet="nein" elsterfeldname="EUER/BEin/USt_Vereinnahmt_Unentgeltl/Sum/E6000601" >
-      <name>Vereinnahmte Umsatzsteuer sowie Umsatzsteuer auf unentgeltliche Wertabgaben</name>
-      <erweiterung/> 
     </feld>
     <feld id="1141" typ="Einnahmen" seite="1" horizontal="962" vertikal="778" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" nullwertdarstellung="nein" veraltet="nein" elsterfeldname="EUER/BEin/USt_Erstattet_Verrechnet/Sum/E6000701" >
       <name>Vom Finanzamt erstattete und ggf. verrechnete Umsatzsteuer</name>
@@ -233,12 +233,12 @@
       <name>/Nicht abziehbare Aufwendungen für Geschenke</name>
       <erweiterung/> 
     </feld>
-    <feld id="1174" typ="Ausgaben" seite="2" horizontal="903" vertikal="1027" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" nullwertdarstellung="nein" veraltet="nein" elsterfeldname="EUER/BAus/Beschr_abziehbar/Abziehbar/Geschenke/Sum/E6004002" >
-      <name>Abziehbare Aufwendungen für Geschenke</name>
-      <erweiterung/> 
-    </feld>
     <feld id="1165" typ="Ausgaben" seite="2" horizontal="571" vertikal="1059" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" nullwertdarstellung="nein" veraltet="nein" elsterfeldname="EUER/BAus/Beschr_abziehbar/Nicht_abziehbar/Bewirtung/Sum/E6004101" >
       <name>/Nicht abziehbare Aufwendungen für Bewirtung</name>
+      <erweiterung/> 
+    </feld>
+    <feld id="1174" typ="Ausgaben" seite="2" horizontal="903" vertikal="1027" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" nullwertdarstellung="nein" veraltet="nein" elsterfeldname="EUER/BAus/Beschr_abziehbar/Abziehbar/Geschenke/Sum/E6004002" >
+      <name>Abziehbare Aufwendungen für Geschenke</name>
       <erweiterung/> 
     </feld>
     <feld id="1175" typ="Ausgaben" seite="2" horizontal="903" vertikal="1059" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" nullwertdarstellung="nein" veraltet="nein" elsterfeldname="EUER/BAus/Beschr_abziehbar/Abziehbar/Bewirtung/Sum/E6004102" >

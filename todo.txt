@@ -660,6 +660,14 @@ v2.46
 v2.47
 - Bestandskonten ohne Buchungen werden nun im Journal dann angezeit, wenn sie einen Saldo aufweisen, der nicht null ist.
 - Auf den USt.-Formularen werden Vor- und Nachnamen jetzt direkt hintereinandergeschrieben.
+
+...
+...
+
+v1.52
+!!! Wenn Du ja die Buchungen umplanst, könntest Du bitte auch an die automatisch ausgeführten Buchungen denken: Die zu identifizieren ist sehr lästig --> neu erstellte Dauerbuchungen markieren!!!
+!!!! Steuernummer in Freestyle-EÜR fehlt
+
 !!!!!!!!!!!!!!!!!!!!!!!!!
 > anbei ein Beispiel für das 2. Quartal.
 > Wie beschrieben ist die Anzeige für das 3. und 4. Quartal auch fehlerhaft.
