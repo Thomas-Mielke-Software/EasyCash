@@ -1770,7 +1770,7 @@ void CEasyCashView::DrawToDC_AnlagenverzeichnisHeader(DrawInfo *pDrawInfo)
 	}
 }
 
-bool CEasyCashView::DrawToDC_BestandskontenHeader(DrawInfo *pDrawInfo, int nIcon, int nAnfangssaldo)
+bool CEasyCashView::DrawToDC_BestandskontenHeader(DrawInfo *pDrawInfo, int nIcon, int nAnfangssaldo, int nBuchungenDavor, CTime von)
 {
 	char buf[300];	
 
@@ -1809,7 +1809,12 @@ bool CEasyCashView::DrawToDC_BestandskontenHeader(DrawInfo *pDrawInfo, int nIcon
 	// jede gerade Zeile grau unterlegen
 	if (!(pDrawInfo->line % 2)) GraueBox(pDrawInfo, pDrawInfo->spalte_datum, pDrawInfo->line, pDrawInfo->spalte_afanr, pDrawInfo->line+1);
 	
-	Text(pDrawInfo, pDrawInfo->spalte_beschreibung, pDrawInfo->line, "Anfangssaldo/Übertrag");
+	char* cp = "Anfangssaldo/Übertrag";
+	if (nBuchungenDavor)
+		sprintf(buf, "%s (inkl. %d Buchung(en) vor dem %d.%d.%d -- siehe Journal nach Datum)", cp, nBuchungenDavor, von.GetDay(), von.GetMonth(), von.GetYear());
+	else
+		strcpy(buf, cp);
+	Text(pDrawInfo, pDrawInfo->spalte_beschreibung, pDrawInfo->line, buf);
 	pDrawInfo->m_pDC->SetTextAlign(TA_RIGHT);
 	int_to_currency_tausenderpunkt(nAnfangssaldo, 10, buf);
 	Text(pDrawInfo, pDrawInfo->spalte_brutto, pDrawInfo->line, buf);
@@ -3285,23 +3290,30 @@ void CEasyCashView::DrawToDC_Bestandskonten(CDC* pDC_par, DrawInfo *pDrawInfo)
 		CBuchung **ppBAusgaben = &pDoc->Ausgaben;
 
 		int nAnfangssaldo = bestandskonto_anfangssaldo[i];
+		int nBuchungenDavor = 0;
 
 		// Monats- bzw. Datumsfilter
 		while (*ppBEinnahmen && (*ppBEinnahmen)->Datum < von)
 		{
 			if ((*ppBEinnahmen)->Bestandskonto == bestandskonto_name[i])
+			{
 				nAnfangssaldo += (*ppBEinnahmen)->Betrag;
+				nBuchungenDavor++;
+			}
 			ppBEinnahmen = &((*ppBEinnahmen)->next);
 		}
 
 		while (*ppBAusgaben && (*ppBAusgaben)->Datum < von)
 		{
 			if ((*ppBAusgaben)->Bestandskonto == bestandskonto_name[i] && (*ppBAusgaben)->AbschreibungNr == 1)
+			{
 				nAnfangssaldo -= (*ppBAusgaben)->Betrag;
+				nBuchungenDavor++;
+			}
 			ppBAusgaben = &((*ppBAusgaben)->next);
 		}
 		
-		if (!DrawToDC_BestandskontenHeader(pDrawInfo, bestandskonto_icon[i], nAnfangssaldo))
+		if (!DrawToDC_BestandskontenHeader(pDrawInfo, bestandskonto_icon[i], nAnfangssaldo, nBuchungenDavor, von))
 			if (!pDrawInfo->pm)
 				return; // Bildaufbau abbrechen und auf redraw mit kleinerem Zoomlevel warten
 

@@ -253,7 +253,7 @@ protected:
 	bool DrawToDC_EinnahmenHeader(DrawInfo *pDrawInfo);
 	void DrawToDC_AusgabenHeader(DrawInfo *pDrawInfo);
 	void DrawToDC_AnlagenverzeichnisHeader(DrawInfo *pDrawInfo);
-	bool DrawToDC_BestandskontenHeader(DrawInfo *pDrawInfo, int nIcon, int nAnfangssaldo);
+	bool DrawToDC_BestandskontenHeader(DrawInfo *pDrawInfo, int nIcon, int nAnfangssaldo, int nBuchungenDavor, CTime von);
 	void DrawToDC_EinnahmenFooter(DrawInfo *pDrawInfo);
 	void DrawToDC_AusgabenFooter(DrawInfo *pDrawInfo);
 	void DrawToDC_BestandskontenFooter(DrawInfo *pDrawInfo);
