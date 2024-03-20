@@ -396,6 +396,13 @@ BOOL CEasyCashApp::InitInstance()
 
 	// Parse command line for standard shell commands, DDE, file open
 	CCommandLineInfo cmdInfo;
+
+	if (!strncmp(m_lpCmdLine, "/P=", 3) && !strchr(m_lpCmdLine, ' '))	// nur /P-Option mit Pluginnamen angegeben?
+	{
+		m_csStartupPlugin = m_lpCmdLine + 3;							// Startup-Plugin setzen und
+		m_lpCmdLine[0] = '\0';											// im "kein Dateiname angegeben"-Modus verarbeiten
+	}
+
 	if (m_lpCmdLine[0] == '\0')
 	{
 		// Mandanten auswählen, wenn vorhanden --> Datenverzeichnis setzen
@@ -536,6 +543,21 @@ BOOL CEasyCashApp::InitInstance()
 	ShowTipAtStartup();
 
 	return TRUE;
+}
+
+void CEasyCashApp::ParseCommandLine(CCommandLineInfo& rCmdInfo)
+{
+	for (int i = 1; i < __argc; i++)
+	{
+		LPCTSTR pszParam = __targv[i];
+		if (!strncmp(pszParam, "/P=", 3))
+		{
+			// bei Programmstart als Parameter angegebenes Plugin öffnen
+			m_csStartupPlugin = pszParam+3;
+		}
+	}
+
+	CWinAppEx::ParseCommandLine(rCmdInfo);
 }
 
 int CEasyCashApp::ExitInstance() 

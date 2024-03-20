@@ -64,6 +64,8 @@ public:
 	void CaptionBox(LPCTSTR str, int id, LPCTSTR buttontext, LPCTSTR tooltiptext);
 	void CaptionBoxHide();
 	BOOL IsCaptionBoxShown();
+	CString m_csStartupPlugin;
+	void ParseCommandLine(CCommandLineInfo& rCmdInfo);
 	CDocument* GenericGetActiveDocument(CRuntimeClass* pClass);
 
 	BOOL m_bCrashReportingAktiv;

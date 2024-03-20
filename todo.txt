@@ -661,6 +661,11 @@ v2.47
 - Bestandskonten ohne Buchungen werden nun im Journal dann angezeit, wenn sie einen Saldo aufweisen, der nicht null ist.
 - Auf den USt.-Formularen werden Vor- und Nachnamen jetzt direkt hintereinandergeschrieben.
 
+v2.52
+- Hinweis beim Bestandskontensaldo bei Buchungen, die vor dem Buchungsjahr datiert sind
+- Kommandozeilenoption /P=<Pluginname> erlaubt Angabe eines Startup-Plugins, das sich beim Starten statt des Journals öffnet.
+
+
 ...
 ...
 

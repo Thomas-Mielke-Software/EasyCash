@@ -379,6 +379,24 @@ Für den Fall, dass die Daten verschoben wurden, ändern Sie bitte das Datenverzei
 	UpdateBetriebeMenu();
 	UpdateBestandskontenMenu();
 
+	if (!theApp.m_csStartupPlugin.IsEmpty())
+	{
+		CPluginElement* pPluginDaten = ((CMainFrame*)AfxGetMainWnd())->m_pPlugins;
+		while (pPluginDaten)
+		{
+			if (pPluginDaten->name.GetLength() >= theApp.m_csStartupPlugin.GetLength() && 
+				pPluginDaten->name.Left(theApp.m_csStartupPlugin.GetLength()) == theApp.m_csStartupPlugin)
+			{	// Finden wir ein Plugin bei dem die ersten Buchstaben des Startup-Plugin vom Cmd-Parameter passen?
+				PostMessage(WM_COMMAND, pPluginDaten->id, 0L);
+				break;
+			}
+
+			pPluginDaten = pPluginDaten->next;
+		}
+
+		theApp.m_csStartupPlugin = "";
+	}
+
 /*	// Dauertest Code
 int iii;
 for (iii = 0; iii < 50; iii++)
