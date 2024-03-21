@@ -138,13 +138,15 @@ BOOL CEasyCashApp::InitInstance()
 		info.uPriorities[CR_SMTP] = CR_NEGATIVE_PRIORITY;
 		info.pszEmailTo = "thomas@mielke.software";
 		info.pszEmailSubject = "EC&T Absturzbericht";
-		info.pszUrl = _T("https://www.easyct.de/crashrpt.php");    // URL for sending error reports over HTTP.                
+		info.pszUrl = _T("https://www.easyct.de/crashrpt.php");	// URL for sending error reports over HTTP.                
 		// Install all available exception handlers.
 		info.dwFlags |= CR_INST_ALL_POSSIBLE_HANDLERS; 
 		// Use binary encoding for HTTP uploads (recommended).
 		info.dwFlags |= CR_INST_HTTP_BINARY_ENCODING;     
 		// Provide privacy policy URL
-		//info.pszPrivacyPolicyURL = _T("http://easyct.no-ip.org/privacy.html");
+		//info.pszPrivacyPolicyURL = _T("http://easyct.de/privacy.html");
+		info.dwFlags |= CR_INST_SHOW_ADDITIONAL_INFO_FIELDS;	// EMail und Beschreibung per default einblenden
+		// info.dwFlags |= CR_INST_ALLOW_ATTACH_MORE_FILES;		// weitere Anhänge erlauben
 
 		int nResult = crInstall(&info);
 		if(nResult!=0)
