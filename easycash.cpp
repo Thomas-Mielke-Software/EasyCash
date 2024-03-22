@@ -96,9 +96,27 @@ BOOL CEasyCashApp::InitInstance()
 	char last_file[300];
 	CString csInitalStatusText;
 	
-	CoInitialize(0);
-	AfxOleInit();  // führte mal zu heap corruption
+	HRESULT hrCoInit = CoInitializeEx(NULL, COINIT_APARTMENTTHREADED);
+	switch (hrCoInit)
+	{
+	case S_FALSE:
+		AfxMessageBox("CoInitializeEx(): Die COM-Bibliothek wurde bereits in diesem Thread initialisiert."); break;
+	case RPC_E_CHANGED_MODE:
+		AfxMessageBox("CoInitializeEx(): Ein vorheriger Aufruf von CoInitializeEx hat das Parallelitätsmodell für diesen Thread als Multithread-Apartment (MTA) angegeben."); break;
+	case E_INVALIDARG:
+		AfxMessageBox("CoInitializeEx(): ungültiger Parameter"); break;
+	case E_OUTOFMEMORY:
+		AfxMessageBox("CoInitializeEx(): Speicher voll"); break;
+	case E_UNEXPECTED:
+		AfxMessageBox("CoInitializeEx(): unerwarteter Fehler"); break;
+	case S_OK:
+	default:
+		;
+		// Die COM-Bibliothek wurde in diesem Thread erfolgreich initialisiert.
+	}
 
+	//if (!AfxOleInit())  // führte mal zu heap corruption, deshalb lieber CoInitialize()
+	//	DSAMessageBox(IDS_OLEINIT);
 	// Version abholen
 	HMODULE hExe = GetModuleHandle("EASYCT.EXE");
 	_Module.Init(NULL, hExe);
@@ -573,7 +591,7 @@ int CEasyCashApp::ExitInstance()
 	
 	AtlAxWinTerm();
 
-	// CoUninitialize(); -- kann weggelassen werden: wird von AfxOleInit() automatisch erledigt
+	CoUninitialize();  // kann bei AfxOleInit() weggelassen werden: wird dann automatisch erledigt. AfxOleInit() führte aber zu heap corruptions
 
 #if defined(NDEBUG)
 	// Uninstall crash reporting

@@ -1,6 +1,6 @@
 //{{NO_DEPENDENCIES}}
-// Microsoft Visual C++ generated include file.
-// Used by EasyCash.rc
+// Von Microsoft Visual C++ generierte Includedatei.
+// Verwendet durch EasyCash.rc
 //
 #define IDC_MINUS                       2
 #define IDC_VERWERFEN                   3
@@ -27,6 +27,7 @@
 #define IDS_EASYCTX_FEHLT               112
 #define IDS_CAPTION_IMAGE_TIP           113
 #define IDR_HTML_FORMULARABSCHNITT      114
+#define IDS_OLEINIT                     114
 #define IDS_FORMULARDRUCK_DE            115
 #define IDR_MAINFRAME                   128
 #define IDR_EASYCATYPE                  129
