@@ -270,7 +270,7 @@ CBuchung::CBuchung()
 
 CBuchung::~CBuchung()
 {
-	if (next) delete next;
+	if (next) delete next;	// crash v2.51.0.1-6edbae21-2d63-4630-8e78-00df1ebe2ca2
 }
 
 void CBuchung::Serialize(CArchive& ar)
@@ -770,7 +770,7 @@ void CEasyCashDoc::Serialize(CArchive& ar)
 		ar << (BOOL)(Einnahmen != 0);
 		if (Einnahmen) ar << Einnahmen;
 	
-		ar << (BOOL)(Ausgaben != 0);
+		ar << (BOOL)(Ausgaben != 0);	// crash v2.51.0.1-9d4cbb5d-c8e9-4452-9fe7-673648049f6d und v2.51.0.1-780f0825-abfb-4d23-b12d-26da2e2ccd06, siehe auch DoSave()
 		if (Ausgaben) ar << Ausgaben;
 
 		ar << Buchungszaehler;
@@ -1284,9 +1284,9 @@ BOOL CDocument::DoSave(LPCTSTR lpszPathName, BOOL bReplace)
 
 	CWaitCursor wait;
 
-	if (!OnSaveDocument(newName))
-	{
-		if (lpszPathName == NULL)
+	if (!OnSaveDocument(newName))	// access violation v2.51.0.1-4f3ed12a-3f18-4a7a-a24b-723ae643ef04 v2.51.0.1-5f693222-6021-4cf6-8186-16f2366c678a v2.51.0.1-6bc724f0-8faf-40dc-92af-2e5dc3f53cf9 v2.51.0.1-6ee46e2e-b0a4-48d5-b984-674212ee88a8 v2.51.0.1-20df0361-4d26-4c29-a5ea-35e6b25f93ad v2.51.0.1-58ebdf74-6b66-433e-9d6d-1c8a73d355a9 v2.51.0.1-7802dff4-f939-4120-8980-be4544a4124e
+	{								//					v2.51.0.1-9d4cbb5d-c8e9-4452-9fe7-673648049f6d, v2.51.0.1-8656d890-3bf1-4898-80da-2d6124920760 und v2.51.0.1-780f0825-abfb-4d23-b12d-26da2e2ccd06 crasht etwas tiefer in Serialize
+		if (lpszPathName == NULL)	
 		{
 			// be sure to delete the file
 			TRY

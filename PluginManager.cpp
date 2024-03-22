@@ -270,7 +270,7 @@ void CPluginManager::Statusmeldung(CString &text)
 	// ((CEdit*)GetDlgItem(IDC_STATUS))->SetSel(m_status.GetLength(), m_status.GetLength()); <-- hier kam es gelegentlich zu Abstürzen
 	// ((CEdit*)GetDlgItem(IDC_STATUS))->ReplaceSel((LPCSTR)text, TRUE); -- durch m_status += text; obsolet geworden
 	// Ersatzcode:
-	if (::IsWindow(GetDlgItem(IDC_STATUS)->m_hWnd))
+	if (::IsWindow(GetDlgItem(IDC_STATUS)->m_hWnd))	// Update 3/2024: access violation v2.51.0.1-39e4f594-855f-44cc-a0eb-e435c6baee32
 	{
 		int line = ((CEdit*)GetDlgItem(IDC_STATUS))->GetLineCount(); // <-- hier kam es immer noch zu Abstürzen, weil das CEdit angeblich kein Fenster war... siehe drei Zeilen zuvor
 		line -= 3;

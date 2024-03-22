@@ -664,7 +664,7 @@ v2.47
 v2.52
 - Hinweis beim Bestandskontensaldo bei Buchungen, die vor dem Buchungsjahr datiert sind
 - Kommandozeilenoption /P=<Pluginname> erlaubt Angabe eines Startup-Plugins, das sich beim Starten statt des Journals öffnet.
-
+- bessere Absicherung gegenüber Crashes in Zusammenhang mit Plugins und OLE-Komponenten
 
 ...
 ...

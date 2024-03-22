@@ -6462,7 +6462,7 @@ BOOL CEasyCashView::OnCommand(WPARAM wParam, LPARAM lParam)
 
 						pb = (*ppb)->next;
 						(*ppb)->next = NULL;	// ganz wichtig wegen Kettenlöschung
-						delete *ppb;
+						delete *ppb;			// access violation v2.51.0.1-85be8316-6104-4e0f-8de8-bac7f47bc1ef v2.51.0.1-9511f9c5-8810-4591-a642-9c002744d709
 						*ppb = pb;
 
 						pDoc->SetModifiedFlag("Buchung wurde gelöscht");
