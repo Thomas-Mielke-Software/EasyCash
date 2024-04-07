@@ -373,7 +373,7 @@
       <name>abzüglich Summe der Betriebsausgaben (Übertrag aus Zeile 88)</name>
       <erweiterung>1199</erweiterung> 
     </feld>
-    <feld id="1240" typ="Ausgaben" seite="3" horizontal="966" vertikal="488" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" nullwertdarstellung="nein" veraltet="nein" unterkategorie="Korrektur des Gewinns" >
+    <feld id="1240" typ="Ausgaben" seite="3" horizontal="966" vertikal="488" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" nullwertdarstellung="nein" veraltet="nein" unterkategorie="Korrektur des Gewinns" elsterfeldname="Ermittlung_Gewinn/P3_26_26a_26b_abziehbar/Sum/E6007203" >
       <name>Gewinnminderung wegen steuerfreier Einnahmen aus § 3 Nr. 26, 26a, oder 26b EStG</name>
       <erweiterung/>
     </feld>
