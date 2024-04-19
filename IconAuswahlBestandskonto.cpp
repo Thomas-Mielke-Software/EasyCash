@@ -190,6 +190,9 @@ static IconInfo Icons[] = {
 	"Bitcart",
 	"Lipa",
 	"Opago",
+	// Kryptowährungen
+	"Monero",
+	"Digitalwährung",
 	// FinTechs
 	"Wise",
 	"Revolut"
