@@ -3,20 +3,20 @@
 // Diese Datei ist Bestandteil von EasyCash&Tax, der freien EÜR-Fibu
 //
 // Copyleft (GPLv3) 2020  Thomas Mielke
-// 
-// Dies ist freie Software; Sie dürfen sie unter den Bedingungen der 
-// GNU General Public License, wie von der Free Software Foundation 
-// veröffentlicht, weiterverteilen und/oder modifizieren; entweder gemäß 
+//
+// Dies ist freie Software; Sie dürfen sie unter den Bedingungen der
+// GNU General Public License, wie von der Free Software Foundation
+// veröffentlicht, weiterverteilen und/oder modifizieren; entweder gemäß
 // Version 3 der Lizenz oder (nach Ihrer Option) jeder späteren Version.
 //
-// Diese Software wird in der Hoffnung weiterverbreitet, dass sie nützlich 
-// sein wird, jedoch OHNE IRGENDEINE GARANTIE, auch ohne die implizierte 
+// Diese Software wird in der Hoffnung weiterverbreitet, dass sie nützlich
+// sein wird, jedoch OHNE IRGENDEINE GARANTIE, auch ohne die implizierte
 // Garantie der MARKTREIFE oder der VERWENDBARKEIT FÜR EINEN BESTIMMTEN ZWECK.
 // Mehr Details finden Sie in der GNU Lesser General Public License.
 //
-// Sie sollten eine Kopie der GNU General Public License Version 3 zusammen mit 
-// dieser Software erhalten haben; falls nicht, schreiben Sie an die Free 
-// Software Foundation, Inc., 51 Franklin St, 5th Floor, Boston, MA 02110, USA. 
+// Sie sollten eine Kopie der GNU General Public License Version 3 zusammen mit
+// dieser Software erhalten haben; falls nicht, schreiben Sie an die Free
+// Software Foundation, Inc., 51 Franklin St, 5th Floor, Boston, MA 02110, USA.
 
 #include "stdafx.h"
 #include "easycash.h"
@@ -76,39 +76,43 @@ void CIconAuswahlBestandskonto::InitDialog()
 // CIconAuswahlMandant virtuals
 
 static IconInfo Icons[] = {
+	// Allgemein
 	"cash",
 	"bar",
 	"Kasse",
-	"Bank für Sozialwirtschaft",
+	// Banken
+	"SozialBank",
 	"Citibank",
-	"comdirect bank",
-	"Commerzbank AG",
-	"Deutsche Apotheker- und Ärztebank",
-	"Deutsche Bank AG",
-	"Direkt Anlage Bank",
-	"Dresdner Bank",
+	"comdirect",
+	"Commerzbank",
+	"apoBank (Deutschland)",
+	"Deutsche Bank",
+	"DAB (Legacy)",
+	"Dresdner Bank (Legacy)",
 	"Volks- und Raiffeisenbanken",
 	"HypoVereinsbank / Bank Austria",
-	"ING Diba",
-	"NetBank",
-	"NIBC Direct",
-	"Noa Bank",
-	"Norisbank",
+	"ING-DiBa",
+	"NetBank (Legacy)",
+	"NIBC Bank",
+	"Noa Bank (Legacy)",
+	"norisbank",
 	"Postbank",
 	"PSD-Bank",
 	"Santander Consumer Bank",
 	"SEB",
-	"Sparda",
-	"Raiffeisenbank (Österreich)",
-	"Immo-Bank / Volksbank",
+	"Sparda-Bank (Deutschland)",
+	"Raiffeisen (Österreich)",
+	"Volksbank",
 	"Sparkasse",
-	"BAWAG",
+	"BAWAG P.S.K.",
 	"Credit Suisse",
 	"WIR Bank",
-	"Bank COOP",
+	"Coop Bank",
 	"UBS",
+	// Karten
 	"MasterCard",
 	"VISA",
+	// Paypal
 	"PayPal",
 	"PayPal blau",
 	"PayPal grün",
@@ -116,6 +120,7 @@ static IconInfo Icons[] = {
 	"PayPal orange",
 	"PayPal pink",
 	"PayPal grau",
+	// Allgemein
 	"Sparschwein",
 	"Aktenordner",
 	"Schatulle",
@@ -126,63 +131,132 @@ static IconInfo Icons[] = {
 	"Abacus",
 	"Onlinebanking",
 	// 36 neue Icons von Herbert Held
-	"GEFA-Bank",
-	"Barclays-Bank",
+	"GEFA Bank",
+	"Barclays Bank",
 	"1822direkt",
-	"Deniz-Bank",
-	"Creditplus-Bank",
-	"Agar-Bank",
+	"DenizBank",
+	"Creditplus Bank",
+	"AgrarB@nk",
 	"Ethikbank",
 	"DKB",
-	"Targo-Bank",
+	"TARGOBANK",
 	"Wüstenrot",
-	"Skatbank",
-	"IKANO",
-	"Fidor",
-	"Rabo-Bank",
+	"Deutsche Skatbank",
+	"Ikano Bank",
+	"Fidor (Legacy)",
+	"Rabobank",
 	"Moneyou",
 	"GarantiBank",
-	"Oyak",
-	"Audi-Bank",
-	"VW-Bank",
-	"BMW-Bank",
-	"IW-Bank",
-	"Ziaatbank",
+	"OYAK ANKER Bank",
+	"Audi Bank",
+	"Volkswagen Bank",
+	"BMW Bank",
+	"IWBank",
+	"Ziraat Bank",
 	"VTB",
 	"Bank of Scotland",
-	"GE-Capital",
-	"ING DiBa (v2)",
+	"GE Capital",
+	"ING-DiBa (v2)",
 	"PrivatBank",
-	"SWK",
-	"Triodos-Bank",
+	"SWK Bank",
+	"Triodos Bank",
 	"Bank11",
-	"Crediteurope",
-	"Merkur-Bank",
+	"Credit Europe Bank",
+	"Merkur Privatbank",
 	"Degussa Bank",
 	"Umweltbank",
-	"DHB-Bank",
-	"Cortal Consors",
-	"cronbank",
+	"DHB Bank",
+	"Consors Finanz / BNP Paribas",
+	"Cronbank",
 	"smava",
 	"ABK",
 	"Naspa",
-	"NordFinanz Bank",
+	"NordFinanz Bank (Legacy)",
 	"National-Bank",
 	"KD-Bank",
 	"Bank 1 Saar",
-	"LevoBank",
+	"levoBank",
 	"Haspa",
-	"Bankhaus August Lenz",
+	"Bankhaus August Lenz (Legacy)",
 	"Bankhaus Gebr. Martin",
-	"MKB-Bank",
+	"MKB",
 	"BBBank",
-	"GSL-Bank",
-	"BerlinerBank",
+	"GLS Bank",
+	"Berliner Bank (Legacy)",
 	"Aktivbank",
 	"ICICI Bank",
-	"IKBdirekt",
+	"IKB",
 	"MLP",
-	"Amerika Express Card"
+	"American Express",
+	// Bitcoin und Kryptowährungen
+	"Bitcoin",
+	"Lightning",
+	"BTCPay Server",
+	"Bitcart",
+	"Lipa",
+	"Opago",
+	"Monero",
+	"Digitalwährung",
+	// FinTechs
+	"Wise",
+	"Revolut",
+	"Paypal (Icon)",
+	"Holvi",
+	"N26",
+	"Tomorrow",
+	"SumUp",
+	"Alipay",
+	"myPOS",
+	"Neteller",
+	"Western Union",
+	"Payoneer",
+	"Skrill",
+	"Strike",
+	"Wirex",
+	"Glint",
+	"Billie",
+	// Karten
+	"Diners Club",
+	"Discover",
+	"JCB",
+	"Maestro",
+	"UnionPay",
+	"V PAY",
+	// Neue Banken Österreich
+	"Österr. Ärzte- u. Apothekerbank",
+	"Addiko Bank",
+	"Alpen Privatbank",
+	"Anadi Bank",
+	"Bank 99",
+	"Bank Burgenland",
+	"Bank Gutmann",
+	"Bank Winter",
+	"Schelhammer Capital Bank",
+	"Bankhaus Spängler",
+	"BKS Bank",
+	"BTV Vier Länder Bank",
+	"DADAT Bank",
+	"easybank",
+	"CA Autobank",
+	"HYPO-Gruppe",
+	"Kathrein Privatbank",
+	"Kommunalkredit Invest",
+	"Oberbank",
+	"OeKB",
+	"Partner Bank",
+	"Renault Bank direkt",
+	"Sparda-Bank (Österreich)",
+	"Erste Bank",
+	"VakifBank",
+	"WSK Bank",
+	// Schweizer Banken
+	"Züricher Kantonalbank",
+	"Bank Cler",
+	"Raiffeisen (Schweiz)",
+	// Weitere Banken
+	"Consorsbank",
+	"Fideuram Direct",
+	"WIBank"
 };
 
 IconInfo* CIconAuswahlBestandskonto::GetIcons()
@@ -209,26 +283,26 @@ BOOL CIconAuswahlBestandskonto::ChooseProperty(CString &csProperty)
 		csProperty = dlg.m_csAnfangssaldo;
 		return TRUE;
 	}
-	else 
+	else
 		return FALSE;
 
 }
 
 void CIconAuswahlBestandskonto::Umbenennen(int nElement)
 {
-	
+
 }
 
 void CIconAuswahlBestandskonto::Loeschen(int nElement)
 {
-	
+
 }
 
 int CIconAuswahlBestandskonto::IconAuswahl()
 {
 	// Icon wählen
 	CIconAuswahlBestandskonto dlgIcon(m_pParent);
-	dlgIcon.DoModal();		
+	dlgIcon.DoModal();
 
 	return dlgIcon.m_nSelected;
 }
