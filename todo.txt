@@ -666,6 +666,10 @@ v2.52
 - Kommandozeilenoption /P=<Pluginname> erlaubt Angabe eines Startup-Plugins, das sich beim Starten statt des Journals öffnet.
 - bessere Absicherung gegenüber Crashes in Zusammenhang mit Plugins und OLE-Komponenten
 
+v2.53
+- Komplettes Update der Icons für Bestandskonten.
+- Icons von Bestandskonten, Mandanten und Betrieben sind jetzt mit einem 'Icon'-Knopf im jeweiligen Dialogfenster nachträglich änderbar.
+- Bugfix: Feld (1)240 funktionierte im Elster-Plugin bei der Übertragung der EÜR nicht.
 ...
 ...
 
