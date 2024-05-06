@@ -60,6 +60,7 @@ BEGIN_MESSAGE_MAP(CIconAuswahl, CDialog)
 	ON_BN_CLICKED(IDC_Neu, OnNeu)
 	ON_BN_CLICKED(IDC_LOESCHEN, OnLoeschen)
 	ON_BN_CLICKED(IDC_UMBENENNEN, OnUmbenennen)
+	ON_BN_CLICKED(IDC_ICON_AENDERN, OnIconAendern)
 	ON_BN_CLICKED(IDC_PROPERTY, OnProperty)
 	//}}AFX_MSG_MAP
 END_MESSAGE_MAP()
@@ -141,6 +142,7 @@ void CIconAuswahl::InitDialog()
 			GetDlgItem(IDC_Neu)->ShowWindow(SW_SHOW);
 			GetDlgItem(IDC_LOESCHEN)->ShowWindow(SW_SHOW);
 			GetDlgItem(IDC_UMBENENNEN)->ShowWindow(SW_SHOW);
+			GetDlgItem(IDC_ICON_AENDERN)->ShowWindow(SW_SHOW);
 			GetDlgItem(IDC_PROPERTY)->ShowWindow(SW_SHOW);
 		}
 
@@ -195,7 +197,7 @@ void CIconAuswahl::OnCancel()
 	CDialog::OnCancel();
 }
 
-void CIconAuswahl::OnNeu() 
+void CIconAuswahl::OnNeu()
 {
 	int nSelected = IconAuswahl();
 
@@ -343,6 +345,37 @@ void CIconAuswahl::OnUmbenennen()
 	}
 	else
 		AfxMessageBox("Bitte erst einmal ein Element auswählen");
+}
+
+void CIconAuswahl::OnIconAendern()
+{
+	POSITION p = m_liste.GetFirstSelectedItemPosition();
+	if (p)
+	{
+		int nZuUmbenennendesElement = m_liste.GetNextSelectedItem(p);
+		switch (m_nModus)
+		{
+		case 1:
+		{
+			int i = (int)m_liste.GetItemData(nZuUmbenennendesElement);
+
+			int gewaehltesIcon = IconAuswahl();
+
+			CString csGewaehltesIcon;
+			csGewaehltesIcon.Format("%d", gewaehltesIcon);
+
+			CString csKey;
+			csKey.Format("%s%-02.2dIcon", GetKey(), i);
+			WriteProfileString(GetSection(), csKey.GetBuffer(0), csGewaehltesIcon.GetBuffer(0));
+
+			InitDialog();
+		}
+		break;
+		}
+	}
+	else
+		AfxMessageBox("Bitte erst einmal ein Element auswählen");
+
 }
 
 void CIconAuswahl::OnProperty() 

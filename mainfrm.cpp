@@ -1582,7 +1582,7 @@ void CMainFrame::OnFileWaehleDatenverzeichnis()
 		SetIniFileName(((CString)(csDatenverzeichnis + "\\easyct.ini")).GetBuffer(0));
 
 		if (csDatenverzeichnis != csAltesDatenverzeichnis)
-			AfxMessageBox("Bitte kopieren Sie die easyct.ini und alle benötigten Buchungsdateien (Jahr????.eca) in das neue Datenverzeichnis.");
+			AfxMessageBox("Bitte kopieren Sie die easyct.ini und alle benötigten Buchungsdateien (Jahr????.eca) ggf. in das neue Datenverzeichnis.");
 	}
 }
 

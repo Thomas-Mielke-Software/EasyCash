@@ -88,6 +88,7 @@ protected:
 	afx_msg void OnNeu();
 	afx_msg void OnLoeschen();
 	afx_msg void OnUmbenennen();
+	afx_msg void OnIconAendern();
 	afx_msg void OnProperty();
 	//}}AFX_MSG
 	DECLARE_MESSAGE_MAP()
