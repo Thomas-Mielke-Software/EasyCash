@@ -95,7 +95,7 @@ BuchenDlg::BuchenDlg(CEasyCashDoc *pDoc, BOOL ausgaben,
 	GetPrivateProfileString("Betriebe", "Betrieb00Name", "", betriebe, sizeof(betriebe), inifile);
 	GetPrivateProfileString("Bestandskonten", "Bestandskonto00Name", "", bestandskonten, sizeof(bestandskonten), inifile);
 #if (_MSC_VER >= 1600)
-	if (*betriebe && *bestandskonten)
+	// if (*betriebe && *bestandskonten)
 		EnableDynamicLayout(TRUE);
 #endif
 }
@@ -221,7 +221,7 @@ BOOL BuchenDlg::OnInitDialog()
 		if (!*buffer) break;
 		((CListCtrl *)GetDlgItem(IDC_BETRIEB))->InsertItem(i, buffer, nIcon);
 	}
-	if (i > 2)	// bei mehr als zwei Einträgen: kleinere Icons benutzen
+	if (i > 0)	// bei mehr als zwei Einträgen: kleinere Icons benutzen
 		((CListCtrl *)GetDlgItem(IDC_BETRIEB))->SetView(LV_VIEW_TILE);
 	for (i = 0; i < 100; i++)
 	{
@@ -235,7 +235,7 @@ BOOL BuchenDlg::OnInitDialog()
 		if (!*buffer) break;
 		((CListCtrl *)GetDlgItem(IDC_BESTANDSKONTO))->InsertItem(i, buffer, nIcon);
 	}
-	if (i > 2)	// bei mehr als zwei Einträgen: kleinere Icons benutzen
+	if (i > 0)	// bei mehr als zwei Einträgen: kleinere Icons benutzen
 		((CListCtrl *)GetDlgItem(IDC_BESTANDSKONTO))->SetView(LV_VIEW_TILE);
 
 /*	KONVERTIERUNGSCODE ERSTMAL AUSSCHALTEN!!!
@@ -1157,61 +1157,82 @@ void BuchenDlg::OnTimer(UINT nIDEvent)
 		x = theApp.GetProfileInt("Fenster", "BuchenPosX", 150);
 		y = theApp.GetProfileInt("Fenster", "BuchenPosY", 100);
 #if (_MSC_VER >= 1600)
-		if (*betriebe && *bestandskonten)  // wenn beide aktiv: dynamisches layout aktivieren (TODO: ListCtrls nach unten und horizontal anordenen, damit dynamisches layout auch ermöglicht wird, wenn ListCtrls ausgeblendet sein sollen)
+		// if (*betriebe && *bestandskonten)  // wenn beide aktiv: dynamisches layout aktivieren
 		{
 			cx = theApp.GetProfileInt("Fenster", "BuchenSizeX", -1);
 			cy = theApp.GetProfileInt("Fenster", "BuchenSizeY", -1);
 		}
 #endif
+		// Dialog noch auf dem Display sichtbar?
 		if (x > rScreen.right-(rWnd.right-rWnd.left)) x = rScreen.right-(rWnd.right-rWnd.left);
 		if (x < 0) x = 0;
 		if (y > rScreen.bottom-(rWnd.bottom-rWnd.top)) y = rScreen.bottom-(rWnd.bottom-rWnd.top);
 		if (y < 0) y = 0;
 
+		CRect r, r2, r3;
+		GetWindowRect(&r);
+		GetDlgItem(IDC_BETRIEB_STATIC)->GetWindowRect(&r2);
+		GetDlgItem(IDC_EINNAHMEN)->GetWindowRect(&r3);
+		ScreenToClient(r3);
+		// int width_betriebe_bestandskonten = r2.left-r.left;
+		int fensterhoehe_ohne_betriebe_und_bestandskonten = r2.top - r.top + r3.top;
+
 		if (!*betriebe || !*bestandskonten)
 		{
-			CRect r, r2;
-			GetDlgItem(IDC_BETRIEB_STATIC)->GetWindowRect(&r);
-			GetDlgItem(IDC_BESTANDSKONTO_STATIC)->GetWindowRect(&r2);
-			int width_betriebe_bestandskonten = r2.left-r.left;
-
+			// nur Bestandskonten, ohne Betriebe? dann Bestandskonten nach links verschieben auf die Positionen der Betriebe-Controls
 			if (!*betriebe)
 			{
-				GetDlgItem(IDC_BETRIEB_STATIC)->GetWindowRect(&r);		// Bestandskonto Static verschieben
 				GetDlgItem(IDC_BETRIEB_STATIC)->ShowWindow(SW_HIDE);
+				GetDlgItem(IDC_BETRIEB_STATIC)->GetWindowRect(&r);		// Bestandskonto Static verschieben
 				ScreenToClient(r);
 				GetDlgItem(IDC_BESTANDSKONTO_STATIC)->MoveWindow(r);
-				
-				GetDlgItem(IDC_BETRIEB)->GetWindowRect(&r);		// Bestandskonto ListCtrl verschieben
+
 				GetDlgItem(IDC_BETRIEB)->ShowWindow(SW_HIDE);
+				GetDlgItem(IDC_BETRIEB)->GetWindowRect(&r);				// Bestandskonto ListCtrl verschieben
+				// GetDlgItem(IDC_BESTANDSKONTO)->GetWindowRect(&r2);
+				// r.right = r2.right;									// Bestandskonto ListCtrl vergrößern
 				ScreenToClient(r);
 				GetDlgItem(IDC_BESTANDSKONTO)->MoveWindow(r);
 				
 				GetDlgItem(IDC_ALT1)->ShowWindow(SW_HIDE);
-				GetDlgItem(IDC_ALT1)->GetWindowRect(&r);		// Knopf verschieben
+				GetDlgItem(IDC_ALT1)->GetWindowRect(&r);				// Knopf verschieben
 				ScreenToClient(r);
 				GetDlgItem(IDC_ALT4)->MoveWindow(r);
 
 				GetDlgItem(IDC_ALT2)->ShowWindow(SW_HIDE);
-				GetDlgItem(IDC_ALT2)->GetWindowRect(&r);		// Knopf verschieben
+				GetDlgItem(IDC_ALT2)->GetWindowRect(&r);				// Knopf verschieben
 				ScreenToClient(r);
 				GetDlgItem(IDC_ALT5)->MoveWindow(r);
 
 				GetDlgItem(IDC_ALT3)->ShowWindow(SW_HIDE);
-				GetDlgItem(IDC_ALT3)->GetWindowRect(&r);		// Knopf verschieben
+				GetDlgItem(IDC_ALT3)->GetWindowRect(&r);				// Knopf verschieben
 				ScreenToClient(r);
 				GetDlgItem(IDC_ALT6)->MoveWindow(r);
-
 			}
-			SetWindowPos(NULL, x, y, rWnd.right-rWnd.left-(*betriebe ? 0 : width_betriebe_bestandskonten)-(*bestandskonten ? 0 : width_betriebe_bestandskonten), rWnd.bottom-rWnd.top, SWP_NOACTIVATE|SWP_NOOWNERZORDER|SWP_NOZORDER);
+
+			if (!*bestandskonten)
+			{
+				GetDlgItem(IDC_BESTANDSKONTO_STATIC)->ShowWindow(SW_HIDE);
+				GetDlgItem(IDC_BESTANDSKONTO)->ShowWindow(SW_HIDE);
+				//GetDlgItem(IDC_BETRIEB)->GetWindowRect(&r);			// Betrieb ListCtrl vergrößern
+				//ScreenToClient(r);
+				//GetDlgItem(IDC_BESTANDSKONTO)->MoveWindow(r);
+				GetDlgItem(IDC_ALT4)->ShowWindow(SW_HIDE);
+				GetDlgItem(IDC_ALT5)->ShowWindow(SW_HIDE);
+				GetDlgItem(IDC_ALT6)->ShowWindow(SW_HIDE);
+			}
 		}
+
 #if (_MSC_VER >= 1600)
-		else if (*betriebe && *bestandskonten && cx > 0 && cy > 0)  // wenn beide aktiv: dynamisches layout aktivieren
-			SetWindowPos(NULL, x, y, cx, cy, SWP_NOACTIVATE | SWP_NOOWNERZORDER | SWP_NOZORDER);
-#endif
+		if (!*betriebe && !*bestandskonten)  // wenn weder Betriebe noch Bestandskonten einzublenden sind: Fenster immer reduzieren
+			SetWindowPos(NULL, x, y, cx, fensterhoehe_ohne_betriebe_und_bestandskonten, SWP_NOACTIVATE | SWP_NOOWNERZORDER | SWP_NOZORDER);
 		else
+			SetWindowPos(NULL, x, y, cx, cy, SWP_NOACTIVATE | SWP_NOOWNERZORDER | SWP_NOZORDER);
+#else
+		// else
 			SetWindowPos(NULL, x, y, 0, 0, SWP_NOACTIVATE|SWP_NOOWNERZORDER|SWP_NOSIZE|SWP_NOZORDER);
-		
+#endif
+
 		KillTimer(nIDEvent);
 	}
 	else if (nIDEvent == 102)
