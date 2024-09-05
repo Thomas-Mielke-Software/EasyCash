@@ -51,6 +51,7 @@ public:
 // Implementation
 
 	void RegistrierungsinformationenSichern(char *DateinameParam);
+	BOOL  m_bHiColorIcons;
 
 	//{{AFX_MSG(CEasyCashApp)
 	afx_msg void OnAppAbout();

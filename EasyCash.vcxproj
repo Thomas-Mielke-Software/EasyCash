@@ -412,6 +412,7 @@ copy ..\EasyCash\Release\crashrpt_lang.ini .\Release
       <Optimization Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Disabled</Optimization>
       <Optimization Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Disabled</Optimization>
     </ClCompile>
+    <ClCompile Include="OutputWnd.cpp" />
     <ClCompile Include="PluginManager.cpp">
       <Optimization Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Disabled</Optimization>
       <Optimization Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Disabled</Optimization>
@@ -540,6 +541,7 @@ copy ..\EasyCash\Release\crashrpt_lang.ini .\Release
     <ClInclude Include="nbMessageBox.h" />
     <ClInclude Include="NeuesFormular.h" />
     <ClInclude Include="neueskonto.h" />
+    <ClInclude Include="OutputWnd.h" />
     <ClInclude Include="PluginManager.h" />
     <ClInclude Include="QuickEdit.h" />
     <ClInclude Include="QuickList.h" />

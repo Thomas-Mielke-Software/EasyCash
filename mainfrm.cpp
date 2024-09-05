@@ -369,6 +369,21 @@ int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
 	m_wndPluginToolBar.SetBarStyle(m_wndToolBar.GetBarStyle() |
 		CBRS_TOOLTIPS | CBRS_FLYBY | CBRS_SIZE_DYNAMIC);
 */
+
+	// Andockfensterverhalten wie in Visual Studio 2005 aktivieren
+	CDockingManager::SetDockingMode(DT_SMART);
+	// Automatisches Ausblenden von Andockfenstern wie in Visual Studio 2005 aktivieren
+	EnableAutoHidePanes(CBRS_ALIGN_ANY);
+
+	// Andockfenster erstellen
+	if (!CreateDockingWindows())
+	{
+		TRACE0("Fehler beim Erstellen der Andockfenster.\n");
+		return -1;
+	}
+	m_wndOutput.EnableDocking(CBRS_ALIGN_ANY);
+	DockPane(&m_wndOutput);
+
 	// create status bar
 	if (!m_wndStatusBar.Create(this)/* ||
 		!m_wndStatusBar.SetIndicators(indicators,
@@ -384,6 +399,34 @@ int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
 	m_wndStatusBar.AddExtendedElement(new CMFCRibbonStatusBarPane(ID_SALDO, ""), "Saldo");
 		
 	return 0;
+}
+
+
+BOOL CMainFrame::CreateDockingWindows()
+{
+	BOOL bNameValid;
+
+	// Ausgabefenster erstellen
+	CString strOutputWnd;
+	bNameValid = strOutputWnd.LoadString(IDS_CAPTION_IMAGE_TIP);
+	ASSERT(bNameValid);
+	if (!m_wndOutput.Create(strOutputWnd, this, CRect(100, 100, 200, 200), TRUE, ID_VIEW_JOURNAL_SWITCH, WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN | CBRS_BOTTOM | CBRS_FLOAT_MULTI))
+	{
+		TRACE0("Fehler beim Erstellen des Ausgabefensters.\n");
+		return FALSE; // Fehler beim Erstellen
+	}
+
+	SetDockingWindowIcons(theApp.m_bHiColorIcons);
+	return TRUE;
+}
+
+
+void CMainFrame::SetDockingWindowIcons(BOOL bHiColorIcons)
+{
+	HICON hOutputBarIcon = (HICON) ::LoadImage(::AfxGetResourceHandle(), MAKEINTRESOURCE(bHiColorIcons ? IDI_FACE1 : IDI_FACE3), IMAGE_ICON, ::GetSystemMetrics(SM_CXSMICON), ::GetSystemMetrics(SM_CYSMICON), 0);
+	m_wndOutput.SetIcon(hOutputBarIcon, FALSE);
+
+	UpdateMDITabbedBarsIcons();
 }
 
 
