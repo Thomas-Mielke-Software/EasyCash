@@ -5711,15 +5711,15 @@ void CEasyCashView::OnEditEinnahmeBuchen()
 {
 	((CMainFrame*)AfxGetMainWnd())->m_wndOutput.ShowPane(TRUE, TRUE, TRUE);
 
-	//if (buchenDlg) 
-	//{
-	//	buchenDlg->DestroyWindow();
-	//	delete buchenDlg;
-	//	buchenDlg = NULL;
-	//}
-	//buchenDlg = new BuchenDlg(GetDocument(), FALSE, this);
-	//buchenDlg->Create(IDD_BUCHUNG, this);
-	//buchenDlg->ShowWindow(SW_SHOW);
+	if (buchenDlg) 
+	{
+		buchenDlg->DestroyWindow();
+		delete buchenDlg;
+		buchenDlg = NULL;
+	}
+	buchenDlg = new BuchenDlg(GetDocument(), FALSE, this);
+	buchenDlg->Create(IDD_BUCHUNG, this);
+	buchenDlg->ShowWindow(SW_SHOW);
 }
 
 void CEasyCashView::OnEditAusgabeBuchen() 

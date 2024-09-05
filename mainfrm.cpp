@@ -376,13 +376,13 @@ int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
 	EnableAutoHidePanes(CBRS_ALIGN_ANY);
 
 	// Andockfenster erstellen
-	if (!CreateDockingWindows())
-	{
-		TRACE0("Fehler beim Erstellen der Andockfenster.\n");
-		return -1;
-	}
-	m_wndOutput.EnableDocking(CBRS_ALIGN_ANY);
-	DockPane(&m_wndOutput);
+///////////////////	if (!CreateDockingWindows())
+///////////////////	{
+///////////////////		TRACE0("Fehler beim Erstellen der Andockfenster.\n");
+///////////////////		return -1;
+///////////////////	}
+///////////////////	m_wndOutput.EnableDocking(CBRS_ALIGN_ANY);
+///////////////////	DockPane(&m_wndOutput);
 
 	// create status bar
 	if (!m_wndStatusBar.Create(this)/* ||
