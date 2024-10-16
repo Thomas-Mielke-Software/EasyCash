@@ -638,7 +638,17 @@ BOOL CEasyCashDoc::OnNewDocument()
 	if (n > 0)
 		sprintf(buf, "Jahr%04d-%d.eca", nJahr, n);
 
-	SetPathName(buf);
+	TRY
+	{
+		SetPathName(buf);
+	}
+	CATCH(CInvalidArgException, e)
+	{
+		// ignore invalid argument exception, if file was not found in "add to MRU" code
+		SetTitle(buf);  // ensure a title is set
+	}
+	END_CATCH
+
 
 	// Hook Erweiterungs-DLLs
 	::CIterateExtensionDLLs("ECTE_OpenDocument", (void *)this);
