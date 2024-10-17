@@ -198,6 +198,7 @@ public:
 	virtual void SetModifiedFlag(LPCTSTR lpszAktion, BOOL bModified = TRUE);
 	virtual void SetModifiedFlag(BOOL bModified = TRUE);
 	//}}AFX_VIRTUAL
+	void ZeigeStartoptionen();
 
 // Implementation
 public:

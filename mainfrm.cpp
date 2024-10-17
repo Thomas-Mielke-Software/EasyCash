@@ -376,7 +376,7 @@ int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
 	EnableAutoHidePanes(CBRS_ALIGN_ANY);
 
 	// Andockfenster erstellen
-///////////////////	if (!CreateDockingWindows())
+/////////////dockable-experiment	if (!CreateDockingWindows())
 ///////////////////	{
 ///////////////////		TRACE0("Fehler beim Erstellen der Andockfenster.\n");
 ///////////////////		return -1;

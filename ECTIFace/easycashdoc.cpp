@@ -589,6 +589,9 @@ BOOL CEasyCashDoc::OnNewDocument()
 	if (!CDocument::OnNewDocument())
 		return FALSE;
 
+	//if (theApp.m_istInStartupPhase)
+	//	ZeigeStartoptionen();
+
 	CBuchungsjahrWaehlen dlg;
 	dlg.m_jahr = CTime::GetCurrentTime().GetYear();
 	dlg.m_waehrung = csWaehrung;
@@ -699,29 +702,8 @@ habe ich besser eigene Menüpunkte für gemacht...
 */
 	if (!CDocument::OnOpenDocument(lpszDatenverzeichnis))
 	{
-		int nRet;
-		CStartoptionen dlg;
-		nRet = dlg.DoModal();
-
-		switch (nRet)
-		{
-			case 0: 
-				PostMessage(AfxGetMainWnd()->m_hWnd, WM_COMMAND, ID_FILE_OPEN, 0L);
-				return FALSE;
-			case 1: 
-				PostMessage(AfxGetMainWnd()->m_hWnd, WM_COMMAND, ID_FILE_WAEHLE_DATENVERZEICHNIS, 0L);
-				return FALSE;
-			case 2: 
-				PostMessage(AfxGetMainWnd()->m_hWnd, WM_COMMAND, ID_FILE_NEW, 0L);
-				return FALSE;
-			case 3:
-			default:
-				// tu nichts
-				return FALSE;
-			case 4:
-				PostMessage(AfxGetMainWnd()->m_hWnd, WM_COMMAND, ID_APP_EXIT, 0L);
-				return FALSE;
-		}
+		ZeigeStartoptionen();
+		return FALSE;
 	}
 
 	if (Version == -1) return FALSE;
@@ -750,6 +732,33 @@ habe ich besser eigene Menüpunkte für gemacht...
 	}
 		
 	return TRUE;
+}
+
+void CEasyCashDoc::ZeigeStartoptionen()
+{
+	int nRet;
+	CStartoptionen dlg;
+	nRet = dlg.DoModal();
+
+	switch (nRet)
+	{
+	case 0:
+		PostMessage(AfxGetMainWnd()->m_hWnd, WM_COMMAND, ID_FILE_OPEN, 0L);
+		return;
+	case 1:
+		PostMessage(AfxGetMainWnd()->m_hWnd, WM_COMMAND, ID_FILE_WAEHLE_DATENVERZEICHNIS, 0L);
+		return;
+	case 2:
+		PostMessage(AfxGetMainWnd()->m_hWnd, WM_COMMAND, ID_FILE_NEW, 0L);
+		return;
+	case 3:
+	default:
+		// tu nichts
+		return;
+	case 4:
+		PostMessage(AfxGetMainWnd()->m_hWnd, WM_COMMAND, ID_APP_EXIT, 0L);
+		return;
+	}
 }
 
 void CEasyCashDoc::OnCloseDocument() 

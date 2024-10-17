@@ -77,8 +77,8 @@ LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
 //
 
 VS_VERSION_INFO VERSIONINFO
- FILEVERSION 2,54,0,1
- PRODUCTVERSION 2,54,0,1
+ FILEVERSION 3,0,0,1
+ PRODUCTVERSION 3,0,0,1
  FILEFLAGSMASK 0x3fL
 #ifdef _DEBUG
  FILEFLAGS 0x1L
@@ -95,12 +95,12 @@ BEGIN
         BEGIN
             VALUE "CompanyName", "Thomas Mielke Softwareentwicklung"
             VALUE "FileDescription", "EasyCTX XP Helper Module"
-            VALUE "FileVersion", "2.54.0.1"
+            VALUE "FileVersion", "3.0.0.1"
             VALUE "InternalName", "EasyCTXP.dll"
             VALUE "LegalCopyright", "© 1998-2024 Thomas Mielke Softwareentwicklung"
             VALUE "OriginalFilename", "EasyCTXP.dll"
             VALUE "ProductName", "EasyCTX XP Helper Module"
-            VALUE "ProductVersion", "2.54.0.1"
+            VALUE "ProductVersion", "3.0.0.1"
         END
     END
     BLOCK "VarFileInfo"

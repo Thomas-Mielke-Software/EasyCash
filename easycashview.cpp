@@ -5709,7 +5709,7 @@ CEasyCashDoc* CEasyCashView::GetDocument() // non-debug version is inline
 
 void CEasyCashView::OnEditEinnahmeBuchen() 
 {
-	((CMainFrame*)AfxGetMainWnd())->m_wndOutput.ShowPane(TRUE, TRUE, TRUE);
+/////////////dockable-experiment	((CMainFrame*)AfxGetMainWnd())->m_wndOutput.ShowPane(TRUE, TRUE, TRUE);
 
 	if (buchenDlg) 
 	{
