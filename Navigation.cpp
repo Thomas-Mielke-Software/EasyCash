@@ -62,15 +62,26 @@ void CNavigation::OnSize(UINT nType, int cx, int cy)
 void CNavigation::OnNMClick(NMHDR *pNMHDR, LRESULT *pResult)
 {
 	LPNMITEMACTIVATE pNMItemActivate = reinterpret_cast<LPNMITEMACTIVATE>(pNMHDR);
+
+	// läuft auf Wine-Emulator, wo es keine ListView-Groups gibt?
+	BOOL bWine;
+	HKEY hKey;
+	bWine = RegOpenKey(HKEY_LOCAL_MACHINE, "Software\\Wine", &hKey) == ERROR_SUCCESS;
 	
 	if (m_pViewWnd)
 	{	
-		LVITEM lvi = {0};
-		lvi.iItem = pNMItemActivate->iItem;
-		lvi.iSubItem = 0;
-		lvi.mask = LVIF_GROUPID;
-		GetListCtrl().GetItem(&lvi);
-		int nGroup = lvi.iGroupId;  // bei Journal nach Konto: 0 = Einnahmen, 1 = Ausgaben
+		int nGroup;
+		if (bWine)
+			nGroup = 0;
+		else
+		{
+			LVITEM lvi = { 0 };
+			lvi.iItem = pNMItemActivate->iItem;
+			lvi.iSubItem = 0;
+			lvi.mask = LVIF_GROUPID;
+			GetListCtrl().GetItem(&lvi);
+			nGroup = lvi.iGroupId;  // bei Journal nach Konto: 0 = Einnahmen, 1 = Ausgaben
+		}
 
 		CEasyCashDoc* pDoc = m_pViewWnd->GetDocument();
 		if (m_pViewWnd->m_GewaehltesFormular < 0)
@@ -162,10 +173,13 @@ void CNavigation::OnNMClick(NMHDR *pNMHDR, LRESULT *pResult)
 							 || ((*(m_pViewWnd->ppPosBuchungsliste[i]))->Konto.IsEmpty() && bSucheUnzugewieseneAusgabenbuchungen && pDoc->BuchungIstAusgabe(*(m_pViewWnd->ppPosBuchungsliste[i])))
 							 || csUrspruenglichesKonto == csKonto)
 							{
-								if (nGroup == 1 && pDoc->BuchungIstEinnahme(*(m_pViewWnd->ppPosBuchungsliste[i])))  // Wenn Kontoname sowohl in Einnahmen als auch in Ausgaben existiert sicherstellen,
-									continue;																		// dass bei einer Ausgaben-Buchung auch das Ausgaben-Konto gewählt wird
-								if (nGroup == 0 && pDoc->BuchungIstAusgabe(*(m_pViewWnd->ppPosBuchungsliste[i])))   // und pro forma auch noch mal für Einnahmen, obwohl das nicht vorkommen sollte...
-									continue;
+								if (!bWine)  // unter wine lässt sich nicht der Buchungstyp von der ListView-Gruppe ableiten
+								{
+									if (nGroup == 1 && pDoc->BuchungIstEinnahme(*(m_pViewWnd->ppPosBuchungsliste[i])))  // Wenn Kontoname sowohl in Einnahmen als auch in Ausgaben existiert sicherstellen,
+										continue;																		// dass bei einer Ausgaben-Buchung auch das Ausgaben-Konto gewählt wird
+									if (nGroup == 0 && pDoc->BuchungIstAusgabe(*(m_pViewWnd->ppPosBuchungsliste[i])))   // und pro forma auch noch mal für Einnahmen, obwohl das nicht vorkommen sollte...
+										continue;
+								}
 								m_pViewWnd->ScrolleZuBuchung(i);
 								CString csMsg;
 								csMsg.Format("zu Konto %s gescrollt", csKonto);
