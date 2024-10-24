@@ -29,7 +29,7 @@
 			<name>Ort</name>
 			<erweiterung>ort</erweiterung>
 		</feld>
-		<feld id="9" typ="Einstellungsdaten" seite="1" horizontal="440" vertikal="631" ausrichtung="linksbuendig" anteil="netto" nachkommaanteil="ohne" nullwertdarstellung="nein" veraltet="nein" >
+		<feld id="9" typ="Einstellungsdaten" seite="1" horizontal="111" vertikal="615" ausrichtung="linksbuendig" anteil="netto" nachkommaanteil="ohne" nullwertdarstellung="nein" veraltet="nein" >
 			<name>Telefon</name>
 			<erweiterung>telefon</erweiterung>
 		</feld>

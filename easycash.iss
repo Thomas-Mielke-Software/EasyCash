@@ -3,7 +3,7 @@
 
 [Setup]
 AppName=EasyCash&Tax
-AppVerName=EasyCash&Tax 2.53
+AppVerName=EasyCash&Tax 3.0 Preview 1
 DiskSpanning=no
 AppPublisher=tm
 AppPublisherURL=http://www.easyct.de
@@ -14,10 +14,10 @@ UsePreviousAppDir=yes
 DefaultGroupName=EasyCash
 OutputBaseFilename=ECTSetup
 OutputDir=.\EasyCash 
-MinVersion=5.0
-LicenseFile=.\LIZENZ.txt
-SignTool=winsdk81sha1   ; dual sign the 
-SignTool=winsdk81sha256 ; installer
+MinVersion=6.1
+LicenseFile=.\LIZENZ.txt      
+SignTool=winsdk10sha1   ; dual sign the 
+SignTool=winsdk10sha256 ; installer
 ;Menu -> Tools -> Configure Sign Tool...
 ;winsdk81sha1: "C:\Program Files (x86)\Windows Kits\8.1\bin\x86\signtool.exe" sign /p mysecretpw /f C:\My\Path\To\cert.p12 /t http://timestamp.comodoca.com $f
 ;winsdk81sha256:  "C:\Program Files (x86)\Windows Kits\8.1\bin\x86\signtool.exe" sign /p mysecretpw /f C:\My\Path\To\cert.p12 /tr http://timestamp.comodoca.com /fd sha256 /td sha256 /as $f
@@ -44,7 +44,8 @@ Name: desktopicon; Description: Create a &desktop icon; GroupDescription: Additi
 ;Source: "C:\Program Files (x86)\Microsoft Visual Studio 9.0\VC\redist\x86\Microsoft.VC90.MFC\mfc90.dll"; DestDir: {app};
 ;Source: "C:\Program Files (x86)\Microsoft Visual Studio 9.0\VC\redist\x86\Microsoft.VC90.MFCLOC\MFC90DEU.dll"; DestDir: {app};
 ;Source: "C:\Program Files (x86)\Microsoft Visual Studio 9.0\VC\redist\x86\Microsoft.VC90.OPENMP\vcomp90.dll"; DestDir: {app};      
-Source: D:\Work\EasyCash\Systemdateien\vcredist_x86.exe; DestDir: {tmp}; Flags: dontcopy;   
+;vc9: Source: .\Systemdateien\VC_redist.x86.exe; DestDir: {tmp}; Flags: dontcopy;   
+Source: .\Systemdateien\VC_redist.x86.exe; DestDir: {tmp}; Flags: dontcopy;
 ;-> [Run] !!
 
 Source: .\Release\EasyCT.exe; DestDir: {app}; Flags: ignoreversion
@@ -53,132 +54,133 @@ Source: .\Release\EasyCTXP.dll; DestDir: {app}; Flags: ignoreversion
 Source: .\Release\EasyCTX.ocx; DestDir: {app}; Flags: regserver restartreplace  
 Source: .\tipps.txt; DestDir: {app}; Flags: ignoreversion             
 Source: .\Release\ECTUpdater.exe; DestDir: {app}; Flags: ignoreversion
-Source: D:\Work\CrashRpt\bin\CrashSender1402.exe; DestDir: {app}; Flags: ignoreversion
-Source: D:\Work\CrashRpt\bin\crashrpt_lang.ini; DestDir: {app}; Flags: ignoreversion
-Source: D:\Work\CrashRpt\bin\dbghelp.dll; DestDir: {app}; Flags: ignoreversion 
-Source: D:\Work\EasyCash\Doc\PDF-Anleitungen\ECT-Doku_Michael.pdf; DestDir: {app}; Flags: ignoreversion
+Source: ..\CrashRpt\bin\CrashSender1403.exe; DestDir: {app}; Flags: ignoreversion  
+Source: ..\CrashRpt\bin\CrashRpt1403.dll; DestDir: {app}; Flags: ignoreversion
+Source: ..\CrashRpt\bin\crashrpt_lang.ini; DestDir: {app}; Flags: ignoreversion
+Source: ..\CrashRpt\bin\dbghelp.dll; DestDir: {app}; Flags: ignoreversion 
+Source: .\Doc\PDF-Anleitungen\ECT-Doku_Michael.pdf; DestDir: {app}; Flags: ignoreversion
 ;___USt deutsch___
-Source: D:\Work\EasyCash\UST\D-2022\ust-d-2022.ecf; DestDir: {app}; Flags: ignoreversion; Components: BRDFormular
-Source: D:\Work\EasyCash\UST\D-2022\ust-d-2022-1.png; DestDir: {app}; Flags: ignoreversion; Components: BRDFormular
-Source: D:\Work\EasyCash\UST\D-2022\ust-d-2022-2.png; DestDir: {app}; Flags: ignoreversion; Components: BRDFormular
-Source: D:\Work\EasyCash\UST\D-2022\ust-d-2022-3.png; DestDir: {app}; Flags: ignoreversion; Components: BRDFormular
-Source: D:\Work\EasyCash\UST\D-2022\ust-d-2022-4.png; DestDir: {app}; Flags: ignoreversion; Components: BRDFormular
-Source: D:\Work\EasyCash\UST\D-2022\ust-d-2022-5.png; DestDir: {app}; Flags: ignoreversion; Components: BRDFormular
-Source: D:\Work\EasyCash\UST\D-2022\ust-d-2022-6.png; DestDir: {app}; Flags: ignoreversion; Components: BRDFormular
-Source: D:\Work\EasyCash\UST\D-2023\ust-d-2023.ecf; DestDir: {app}; Flags: ignoreversion; Components: BRDFormular
-Source: D:\Work\EasyCash\UST\D-2023\ust-d-2023-1.png; DestDir: {app}; Flags: ignoreversion; Components: BRDFormular
-Source: D:\Work\EasyCash\UST\D-2023\ust-d-2023-2.png; DestDir: {app}; Flags: ignoreversion; Components: BRDFormular
-Source: D:\Work\EasyCash\UST\D-2023\ust-d-2023-3.png; DestDir: {app}; Flags: ignoreversion; Components: BRDFormular
-Source: D:\Work\EasyCash\UST\D-2023\ust-d-2023-4.png; DestDir: {app}; Flags: ignoreversion; Components: BRDFormular
-Source: D:\Work\EasyCash\UST\D-2023\ust-d-2023-5.png; DestDir: {app}; Flags: ignoreversion; Components: BRDFormular
-Source: D:\Work\EasyCash\UST\D-2023\ust-d-2023-6.png; DestDir: {app}; Flags: ignoreversion; Components: BRDFormular  
-Source: D:\Work\EasyCash\UST\D-2024\ust-d-2024.ecf; DestDir: {app}; Flags: ignoreversion; Components: BRDFormular
-Source: D:\Work\EasyCash\UST\D-2024\ust-d-2024-1.png; DestDir: {app}; Flags: ignoreversion; Components: BRDFormular
-Source: D:\Work\EasyCash\UST\D-2024\ust-d-2024-2.png; DestDir: {app}; Flags: ignoreversion; Components: BRDFormular
-Source: D:\Work\EasyCash\UST\D-2024\ust-d-2024-3.png; DestDir: {app}; Flags: ignoreversion; Components: BRDFormular
-Source: D:\Work\EasyCash\UST\D-2024\ust-d-2024-4.png; DestDir: {app}; Flags: ignoreversion; Components: BRDFormular
-Source: D:\Work\EasyCash\UST\D-2024\ust-d-2024-5.png; DestDir: {app}; Flags: ignoreversion; Components: BRDFormular
-Source: D:\Work\EasyCash\UST\D-2024\ust-d-2024-6.png; DestDir: {app}; Flags: ignoreversion; Components: BRDFormular   
+Source: .\UST\D-2022\ust-d-2022.ecf; DestDir: {app}; Flags: ignoreversion; Components: BRDFormular
+Source: .\UST\D-2022\ust-d-2022-1.png; DestDir: {app}; Flags: ignoreversion; Components: BRDFormular
+Source: .\UST\D-2022\ust-d-2022-2.png; DestDir: {app}; Flags: ignoreversion; Components: BRDFormular
+Source: .\UST\D-2022\ust-d-2022-3.png; DestDir: {app}; Flags: ignoreversion; Components: BRDFormular
+Source: .\UST\D-2022\ust-d-2022-4.png; DestDir: {app}; Flags: ignoreversion; Components: BRDFormular
+Source: .\UST\D-2022\ust-d-2022-5.png; DestDir: {app}; Flags: ignoreversion; Components: BRDFormular
+Source: .\UST\D-2022\ust-d-2022-6.png; DestDir: {app}; Flags: ignoreversion; Components: BRDFormular
+Source: .\UST\D-2023\ust-d-2023.ecf; DestDir: {app}; Flags: ignoreversion; Components: BRDFormular
+Source: .\UST\D-2023\ust-d-2023-1.png; DestDir: {app}; Flags: ignoreversion; Components: BRDFormular
+Source: .\UST\D-2023\ust-d-2023-2.png; DestDir: {app}; Flags: ignoreversion; Components: BRDFormular
+Source: .\UST\D-2023\ust-d-2023-3.png; DestDir: {app}; Flags: ignoreversion; Components: BRDFormular
+Source: .\UST\D-2023\ust-d-2023-4.png; DestDir: {app}; Flags: ignoreversion; Components: BRDFormular
+Source: .\UST\D-2023\ust-d-2023-5.png; DestDir: {app}; Flags: ignoreversion; Components: BRDFormular
+Source: .\UST\D-2023\ust-d-2023-6.png; DestDir: {app}; Flags: ignoreversion; Components: BRDFormular  
+Source: .\UST\D-2024\ust-d-2024.ecf; DestDir: {app}; Flags: ignoreversion; Components: BRDFormular
+Source: .\UST\D-2024\ust-d-2024-1.png; DestDir: {app}; Flags: ignoreversion; Components: BRDFormular
+Source: .\UST\D-2024\ust-d-2024-2.png; DestDir: {app}; Flags: ignoreversion; Components: BRDFormular
+Source: .\UST\D-2024\ust-d-2024-3.png; DestDir: {app}; Flags: ignoreversion; Components: BRDFormular
+Source: .\UST\D-2024\ust-d-2024-4.png; DestDir: {app}; Flags: ignoreversion; Components: BRDFormular
+Source: .\UST\D-2024\ust-d-2024-5.png; DestDir: {app}; Flags: ignoreversion; Components: BRDFormular
+Source: .\UST\D-2024\ust-d-2024-6.png; DestDir: {app}; Flags: ignoreversion; Components: BRDFormular   
 ;___UVA deutsch___
-Source: D:\Work\EasyCash\UVA\D-2024\uva-d-2024-1.png; DestDir: {app}; Flags: ignoreversion; Components: BRDFormular
-Source: D:\Work\EasyCash\UVA\D-2024\uva-d-2024-2.png; DestDir: {app}; Flags: ignoreversion; Components: BRDFormular   
-Source: D:\Work\EasyCash\UVA\D-2024\uva-d-2024-3.png; DestDir: {app}; Flags: ignoreversion; Components: BRDFormular
-Source: D:\Work\EasyCash\UVA\D-2024\uva-d-2024-01.ecf; DestDir: {app}; Flags: ignoreversion; Components: BRDFormular
-Source: D:\Work\EasyCash\UVA\D-2024\uva-d-2024-02.ecf; DestDir: {app}; Flags: ignoreversion; Components: BRDFormular
-Source: D:\Work\EasyCash\UVA\D-2024\uva-d-2024-03.ecf; DestDir: {app}; Flags: ignoreversion; Components: BRDFormular
-Source: D:\Work\EasyCash\UVA\D-2024\uva-d-2024-04.ecf; DestDir: {app}; Flags: ignoreversion; Components: BRDFormular
-Source: D:\Work\EasyCash\UVA\D-2024\uva-d-2024-05.ecf; DestDir: {app}; Flags: ignoreversion; Components: BRDFormular
-Source: D:\Work\EasyCash\UVA\D-2024\uva-d-2024-06.ecf; DestDir: {app}; Flags: ignoreversion; Components: BRDFormular
-Source: D:\Work\EasyCash\UVA\D-2024\uva-d-2024-07.ecf; DestDir: {app}; Flags: ignoreversion; Components: BRDFormular
-Source: D:\Work\EasyCash\UVA\D-2024\uva-d-2024-08.ecf; DestDir: {app}; Flags: ignoreversion; Components: BRDFormular
-Source: D:\Work\EasyCash\UVA\D-2024\uva-d-2024-09.ecf; DestDir: {app}; Flags: ignoreversion; Components: BRDFormular
-Source: D:\Work\EasyCash\UVA\D-2024\uva-d-2024-10.ecf; DestDir: {app}; Flags: ignoreversion; Components: BRDFormular
-Source: D:\Work\EasyCash\UVA\D-2024\uva-d-2024-11.ecf; DestDir: {app}; Flags: ignoreversion; Components: BRDFormular
-Source: D:\Work\EasyCash\UVA\D-2024\uva-d-2024-12.ecf; DestDir: {app}; Flags: ignoreversion; Components: BRDFormular
-Source: D:\Work\EasyCash\UVA\D-2024\uva-d-2024-q1.ecf; DestDir: {app}; Flags: ignoreversion; Components: BRDFormular
-Source: D:\Work\EasyCash\UVA\D-2024\uva-d-2024-q2.ecf; DestDir: {app}; Flags: ignoreversion; Components: BRDFormular
-Source: D:\Work\EasyCash\UVA\D-2024\uva-d-2024-q3.ecf; DestDir: {app}; Flags: ignoreversion; Components: BRDFormular
-Source: D:\Work\EasyCash\UVA\D-2024\uva-d-2024-q4.ecf; DestDir: {app}; Flags: ignoreversion; Components: BRDFormular
+Source: .\UVA\D-2024\uva-d-2024-1.png; DestDir: {app}; Flags: ignoreversion; Components: BRDFormular
+Source: .\UVA\D-2024\uva-d-2024-2.png; DestDir: {app}; Flags: ignoreversion; Components: BRDFormular   
+Source: .\UVA\D-2024\uva-d-2024-3.png; DestDir: {app}; Flags: ignoreversion; Components: BRDFormular
+Source: .\UVA\D-2024\uva-d-2024-01.ecf; DestDir: {app}; Flags: ignoreversion; Components: BRDFormular
+Source: .\UVA\D-2024\uva-d-2024-02.ecf; DestDir: {app}; Flags: ignoreversion; Components: BRDFormular
+Source: .\UVA\D-2024\uva-d-2024-03.ecf; DestDir: {app}; Flags: ignoreversion; Components: BRDFormular
+Source: .\UVA\D-2024\uva-d-2024-04.ecf; DestDir: {app}; Flags: ignoreversion; Components: BRDFormular
+Source: .\UVA\D-2024\uva-d-2024-05.ecf; DestDir: {app}; Flags: ignoreversion; Components: BRDFormular
+Source: .\UVA\D-2024\uva-d-2024-06.ecf; DestDir: {app}; Flags: ignoreversion; Components: BRDFormular
+Source: .\UVA\D-2024\uva-d-2024-07.ecf; DestDir: {app}; Flags: ignoreversion; Components: BRDFormular
+Source: .\UVA\D-2024\uva-d-2024-08.ecf; DestDir: {app}; Flags: ignoreversion; Components: BRDFormular
+Source: .\UVA\D-2024\uva-d-2024-09.ecf; DestDir: {app}; Flags: ignoreversion; Components: BRDFormular
+Source: .\UVA\D-2024\uva-d-2024-10.ecf; DestDir: {app}; Flags: ignoreversion; Components: BRDFormular
+Source: .\UVA\D-2024\uva-d-2024-11.ecf; DestDir: {app}; Flags: ignoreversion; Components: BRDFormular
+Source: .\UVA\D-2024\uva-d-2024-12.ecf; DestDir: {app}; Flags: ignoreversion; Components: BRDFormular
+Source: .\UVA\D-2024\uva-d-2024-q1.ecf; DestDir: {app}; Flags: ignoreversion; Components: BRDFormular
+Source: .\UVA\D-2024\uva-d-2024-q2.ecf; DestDir: {app}; Flags: ignoreversion; Components: BRDFormular
+Source: .\UVA\D-2024\uva-d-2024-q3.ecf; DestDir: {app}; Flags: ignoreversion; Components: BRDFormular
+Source: .\UVA\D-2024\uva-d-2024-q4.ecf; DestDir: {app}; Flags: ignoreversion; Components: BRDFormular
 ;___EÜR deutsch___
-Source: D:\Work\EasyCash\EUeR\2022\EUeR-d-2022.ecf; DestDir: {app}; Flags: ignoreversion; Components: BRDFormular
-Source: D:\Work\EasyCash\EUeR\2022\EUeR-d-2022-1.png; DestDir: {app}; Flags: ignoreversion; Components: BRDFormular
-Source: D:\Work\EasyCash\EUeR\2022\EUeR-d-2022-2.png; DestDir: {app}; Flags: ignoreversion; Components: BRDFormular
-Source: D:\Work\EasyCash\EUeR\2022\EUeR-d-2022-3.png; DestDir: {app}; Flags: ignoreversion; Components: BRDFormular  
-Source: D:\Work\EasyCash\EUeR\2022\EUeR-d-2022-4.png; DestDir: {app}; Flags: ignoreversion; Components: BRDFormular    
-Source: D:\Work\EasyCash\EUeR\2023\EUeR-d-2023.ecf; DestDir: {app}; Flags: ignoreversion; Components: BRDFormular
-Source: D:\Work\EasyCash\EUeR\2023\EUeR-d-2023-1.png; DestDir: {app}; Flags: ignoreversion; Components: BRDFormular
-Source: D:\Work\EasyCash\EUeR\2023\EUeR-d-2023-2.png; DestDir: {app}; Flags: ignoreversion; Components: BRDFormular
-Source: D:\Work\EasyCash\EUeR\2023\EUeR-d-2023-3.png; DestDir: {app}; Flags: ignoreversion; Components: BRDFormular  
-Source: D:\Work\EasyCash\EUeR\2023\EUeR-d-2023-4.png; DestDir: {app}; Flags: ignoreversion; Components: BRDFormular
+Source: .\EUeR\2022\EUeR-d-2022.ecf; DestDir: {app}; Flags: ignoreversion; Components: BRDFormular
+Source: .\EUeR\2022\EUeR-d-2022-1.png; DestDir: {app}; Flags: ignoreversion; Components: BRDFormular
+Source: .\EUeR\2022\EUeR-d-2022-2.png; DestDir: {app}; Flags: ignoreversion; Components: BRDFormular
+Source: .\EUeR\2022\EUeR-d-2022-3.png; DestDir: {app}; Flags: ignoreversion; Components: BRDFormular  
+Source: .\EUeR\2022\EUeR-d-2022-4.png; DestDir: {app}; Flags: ignoreversion; Components: BRDFormular    
+Source: .\EUeR\2023\EUeR-d-2023.ecf; DestDir: {app}; Flags: ignoreversion; Components: BRDFormular
+Source: .\EUeR\2023\EUeR-d-2023-1.png; DestDir: {app}; Flags: ignoreversion; Components: BRDFormular
+Source: .\EUeR\2023\EUeR-d-2023-2.png; DestDir: {app}; Flags: ignoreversion; Components: BRDFormular
+Source: .\EUeR\2023\EUeR-d-2023-3.png; DestDir: {app}; Flags: ignoreversion; Components: BRDFormular  
+Source: .\EUeR\2023\EUeR-d-2023-4.png; DestDir: {app}; Flags: ignoreversion; Components: BRDFormular
 ;___USt österr.___
-Source: D:\Work\EasyCash\UST\AT-2022\U1-at-2022.ecf; DestDir: {app}; Flags: ignoreversion; Components: ATFormular
-Source: D:\Work\EasyCash\UST\AT-2022\U1-at-2022-1.png; DestDir: {app}; Flags: ignoreversion; Components: ATFormular
-Source: D:\Work\EasyCash\UST\AT-2022\U1-at-2022-2.png; DestDir: {app}; Flags: ignoreversion; Components: ATFormular
-Source: D:\Work\EasyCash\UST\AT-2022\U1-at-2022-3.png; DestDir: {app}; Flags: ignoreversion; Components: ATFormular
-Source: D:\Work\EasyCash\UST\AT-2023\U1-at-2023.ecf; DestDir: {app}; Flags: ignoreversion; Components: ATFormular
-Source: D:\Work\EasyCash\UST\AT-2023\U1-at-2023-1.png; DestDir: {app}; Flags: ignoreversion; Components: ATFormular
-Source: D:\Work\EasyCash\UST\AT-2023\U1-at-2023-2.png; DestDir: {app}; Flags: ignoreversion; Components: ATFormular
-Source: D:\Work\EasyCash\UST\AT-2023\U1-at-2023-3.png; DestDir: {app}; Flags: ignoreversion; Components: ATFormular    
+Source: .\UST\AT-2022\U1-at-2022.ecf; DestDir: {app}; Flags: ignoreversion; Components: ATFormular
+Source: .\UST\AT-2022\U1-at-2022-1.png; DestDir: {app}; Flags: ignoreversion; Components: ATFormular
+Source: .\UST\AT-2022\U1-at-2022-2.png; DestDir: {app}; Flags: ignoreversion; Components: ATFormular
+Source: .\UST\AT-2022\U1-at-2022-3.png; DestDir: {app}; Flags: ignoreversion; Components: ATFormular
+Source: .\UST\AT-2023\U1-at-2023.ecf; DestDir: {app}; Flags: ignoreversion; Components: ATFormular
+Source: .\UST\AT-2023\U1-at-2023-1.png; DestDir: {app}; Flags: ignoreversion; Components: ATFormular
+Source: .\UST\AT-2023\U1-at-2023-2.png; DestDir: {app}; Flags: ignoreversion; Components: ATFormular
+Source: .\UST\AT-2023\U1-at-2023-3.png; DestDir: {app}; Flags: ignoreversion; Components: ATFormular    
 ;___UVA österr.___
-Source: D:\Work\EasyCash\UVA\AT-2024\U30-AT-2024-1.png; DestDir: {app}; Flags: ignoreversion; Components: ATFormular
-Source: D:\Work\EasyCash\UVA\AT-2024\U30-AT-2024-2.png; DestDir: {app}; Flags: ignoreversion; Components: ATFormular
-Source: D:\Work\EasyCash\UVA\AT-2024\U30-AT-2024-3.png; DestDir: {app}; Flags: ignoreversion; Components: ATFormular
-Source: D:\Work\EasyCash\UVA\AT-2024\U30-AT-2024-4.png; DestDir: {app}; Flags: ignoreversion; Components: ATFormular
-Source: D:\Work\EasyCash\UVA\AT-2024\U30-AT-2024-01.ecf; DestDir: {app}; Flags: ignoreversion; Components: ATFormular
-Source: D:\Work\EasyCash\UVA\AT-2024\U30-AT-2024-02.ecf; DestDir: {app}; Flags: ignoreversion; Components: ATFormular
-Source: D:\Work\EasyCash\UVA\AT-2024\U30-AT-2024-03.ecf; DestDir: {app}; Flags: ignoreversion; Components: ATFormular
-Source: D:\Work\EasyCash\UVA\AT-2024\U30-AT-2024-04.ecf; DestDir: {app}; Flags: ignoreversion; Components: ATFormular
-Source: D:\Work\EasyCash\UVA\AT-2024\U30-AT-2024-05.ecf; DestDir: {app}; Flags: ignoreversion; Components: ATFormular
-Source: D:\Work\EasyCash\UVA\AT-2024\U30-AT-2024-06.ecf; DestDir: {app}; Flags: ignoreversion; Components: ATFormular
-Source: D:\Work\EasyCash\UVA\AT-2024\U30-AT-2024-07.ecf; DestDir: {app}; Flags: ignoreversion; Components: ATFormular
-Source: D:\Work\EasyCash\UVA\AT-2024\U30-AT-2024-08.ecf; DestDir: {app}; Flags: ignoreversion; Components: ATFormular
-Source: D:\Work\EasyCash\UVA\AT-2024\U30-AT-2024-09.ecf; DestDir: {app}; Flags: ignoreversion; Components: ATFormular
-Source: D:\Work\EasyCash\UVA\AT-2024\U30-AT-2024-10.ecf; DestDir: {app}; Flags: ignoreversion; Components: ATFormular
-Source: D:\Work\EasyCash\UVA\AT-2024\U30-AT-2024-11.ecf; DestDir: {app}; Flags: ignoreversion; Components: ATFormular
-Source: D:\Work\EasyCash\UVA\AT-2024\U30-AT-2024-12.ecf; DestDir: {app}; Flags: ignoreversion; Components: ATFormular
-Source: D:\Work\EasyCash\UVA\AT-2024\U30-AT-2024-q1.ecf; DestDir: {app}; Flags: ignoreversion; Components: ATFormular
-Source: D:\Work\EasyCash\UVA\AT-2024\U30-AT-2024-q2.ecf; DestDir: {app}; Flags: ignoreversion; Components: ATFormular
-Source: D:\Work\EasyCash\UVA\AT-2024\U30-AT-2024-q3.ecf; DestDir: {app}; Flags: ignoreversion; Components: ATFormular
-Source: D:\Work\EasyCash\UVA\AT-2024\U30-AT-2024-q4.ecf; DestDir: {app}; Flags: ignoreversion; Components: ATFormular
+Source: .\UVA\AT-2024\U30-AT-2024-1.png; DestDir: {app}; Flags: ignoreversion; Components: ATFormular
+Source: .\UVA\AT-2024\U30-AT-2024-2.png; DestDir: {app}; Flags: ignoreversion; Components: ATFormular
+Source: .\UVA\AT-2024\U30-AT-2024-3.png; DestDir: {app}; Flags: ignoreversion; Components: ATFormular
+Source: .\UVA\AT-2024\U30-AT-2024-4.png; DestDir: {app}; Flags: ignoreversion; Components: ATFormular
+Source: .\UVA\AT-2024\U30-AT-2024-01.ecf; DestDir: {app}; Flags: ignoreversion; Components: ATFormular
+Source: .\UVA\AT-2024\U30-AT-2024-02.ecf; DestDir: {app}; Flags: ignoreversion; Components: ATFormular
+Source: .\UVA\AT-2024\U30-AT-2024-03.ecf; DestDir: {app}; Flags: ignoreversion; Components: ATFormular
+Source: .\UVA\AT-2024\U30-AT-2024-04.ecf; DestDir: {app}; Flags: ignoreversion; Components: ATFormular
+Source: .\UVA\AT-2024\U30-AT-2024-05.ecf; DestDir: {app}; Flags: ignoreversion; Components: ATFormular
+Source: .\UVA\AT-2024\U30-AT-2024-06.ecf; DestDir: {app}; Flags: ignoreversion; Components: ATFormular
+Source: .\UVA\AT-2024\U30-AT-2024-07.ecf; DestDir: {app}; Flags: ignoreversion; Components: ATFormular
+Source: .\UVA\AT-2024\U30-AT-2024-08.ecf; DestDir: {app}; Flags: ignoreversion; Components: ATFormular
+Source: .\UVA\AT-2024\U30-AT-2024-09.ecf; DestDir: {app}; Flags: ignoreversion; Components: ATFormular
+Source: .\UVA\AT-2024\U30-AT-2024-10.ecf; DestDir: {app}; Flags: ignoreversion; Components: ATFormular
+Source: .\UVA\AT-2024\U30-AT-2024-11.ecf; DestDir: {app}; Flags: ignoreversion; Components: ATFormular
+Source: .\UVA\AT-2024\U30-AT-2024-12.ecf; DestDir: {app}; Flags: ignoreversion; Components: ATFormular
+Source: .\UVA\AT-2024\U30-AT-2024-q1.ecf; DestDir: {app}; Flags: ignoreversion; Components: ATFormular
+Source: .\UVA\AT-2024\U30-AT-2024-q2.ecf; DestDir: {app}; Flags: ignoreversion; Components: ATFormular
+Source: .\UVA\AT-2024\U30-AT-2024-q3.ecf; DestDir: {app}; Flags: ignoreversion; Components: ATFormular
+Source: .\UVA\AT-2024\U30-AT-2024-q4.ecf; DestDir: {app}; Flags: ignoreversion; Components: ATFormular
 ;___Einnahmen-Ausgaben-Rechnung österr.___
-Source: D:\Work\EasyCash\EUeR\AT-2022\E1a-AT-2022.ecf; DestDir: {app}; Flags: ignoreversion; Components: ATFormular
-Source: D:\Work\EasyCash\EUeR\AT-2022\E1a-AT-2022-1.png; DestDir: {app}; Flags: ignoreversion; Components: ATFormular
-Source: D:\Work\EasyCash\EUeR\AT-2022\E1a-AT-2022-2.png; DestDir: {app}; Flags: ignoreversion; Components: ATFormular
-Source: D:\Work\EasyCash\EUeR\AT-2022\E1a-AT-2022-3.png; DestDir: {app}; Flags: ignoreversion; Components: ATFormular
-Source: D:\Work\EasyCash\EUeR\AT-2022\E1a-AT-2022-4.png; DestDir: {app}; Flags: ignoreversion; Components: ATFormular    
-Source: D:\Work\EasyCash\EUeR\AT-2022\E1a-AT-2022-5.png; DestDir: {app}; Flags: ignoreversion; Components: ATFormular  
-Source: D:\Work\EasyCash\EUeR\AT-2022\E1a-K-AT-2022.ecf; DestDir: {app}; Flags: ignoreversion; Components: ATFormular
-Source: D:\Work\EasyCash\EUeR\AT-2022\E1a-K-AT-2022-1.png; DestDir: {app}; Flags: ignoreversion; Components: ATFormular
-Source: D:\Work\EasyCash\EUeR\AT-2022\E1a-K-AT-2022-2.png; DestDir: {app}; Flags: ignoreversion; Components: ATFormular
-Source: D:\Work\EasyCash\EUeR\AT-2022\E1a-K-AT-2022-3.png; DestDir: {app}; Flags: ignoreversion; Components: ATFormular  
-Source: D:\Work\EasyCash\EUeR\AT-2022\E6a-AT-2022.ecf; DestDir: {app}; Flags: ignoreversion; Components: ATFormular
-Source: D:\Work\EasyCash\EUeR\AT-2022\E6a-AT-2022-1.png; DestDir: {app}; Flags: ignoreversion; Components: ATFormular       
-Source: D:\Work\EasyCash\EUeR\AT-2022\E6a-AT-2022-2.png; DestDir: {app}; Flags: ignoreversion; Components: ATFormular        
-Source: D:\Work\EasyCash\EUeR\AT-2022\E6a-AT-2022-3.png; DestDir: {app}; Flags: ignoreversion; Components: ATFormular
-Source: D:\Work\EasyCash\EUeR\AT-2022\E6a-AT-2022-4.png; DestDir: {app}; Flags: ignoreversion; Components: ATFormular
-Source: D:\Work\EasyCash\EUeR\AT-2022\E6a-AT-2022-5.png; DestDir: {app}; Flags: ignoreversion; Components: ATFormular    
-Source: D:\Work\EasyCash\EUeR\AT-2023\E1a-AT-2023.ecf; DestDir: {app}; Flags: ignoreversion; Components: ATFormular
-Source: D:\Work\EasyCash\EUeR\AT-2023\E1a-AT-2023-1.png; DestDir: {app}; Flags: ignoreversion; Components: ATFormular
-Source: D:\Work\EasyCash\EUeR\AT-2023\E1a-AT-2023-2.png; DestDir: {app}; Flags: ignoreversion; Components: ATFormular
-Source: D:\Work\EasyCash\EUeR\AT-2023\E1a-AT-2023-3.png; DestDir: {app}; Flags: ignoreversion; Components: ATFormular    
-Source: D:\Work\EasyCash\EUeR\AT-2023\E1a-AT-2023-4.png; DestDir: {app}; Flags: ignoreversion; Components: ATFormular  
-Source: D:\Work\EasyCash\EUeR\AT-2023\E1a-AT-2023-5.png; DestDir: {app}; Flags: ignoreversion; Components: ATFormular  
-Source: D:\Work\EasyCash\EUeR\AT-2023\E1a-K-AT-2023.ecf; DestDir: {app}; Flags: ignoreversion; Components: ATFormular
-Source: D:\Work\EasyCash\EUeR\AT-2023\E1a-K-AT-2023-1.png; DestDir: {app}; Flags: ignoreversion; Components: ATFormular
-Source: D:\Work\EasyCash\EUeR\AT-2023\E1a-K-AT-2023-2.png; DestDir: {app}; Flags: ignoreversion; Components: ATFormular
-Source: D:\Work\EasyCash\EUeR\AT-2023\E1a-K-AT-2023-3.png; DestDir: {app}; Flags: ignoreversion; Components: ATFormular   
-Source: D:\Work\EasyCash\EUeR\AT-2023\E6a-AT-2023.ecf; DestDir: {app}; Flags: ignoreversion; Components: ATFormular
-Source: D:\Work\EasyCash\EUeR\AT-2023\E6a-AT-2023-1.png; DestDir: {app}; Flags: ignoreversion; Components: ATFormular       
-Source: D:\Work\EasyCash\EUeR\AT-2023\E6a-AT-2023-2.png; DestDir: {app}; Flags: ignoreversion; Components: ATFormular        
-Source: D:\Work\EasyCash\EUeR\AT-2023\E6a-AT-2023-3.png; DestDir: {app}; Flags: ignoreversion; Components: ATFormular
-Source: D:\Work\EasyCash\EUeR\AT-2023\E6a-AT-2023-4.png; DestDir: {app}; Flags: ignoreversion; Components: ATFormular
-Source: D:\Work\EasyCash\EUeR\AT-2023\E6a-AT-2023-5.png; DestDir: {app}; Flags: ignoreversion; Components: ATFormular  
-Source: D:\Work\EasyCash\EUeR\AT-2023\K2a-AT-2023.ecf; DestDir: {app}; Flags: ignoreversion; Components: ATFormular
-Source: D:\Work\EasyCash\EUeR\AT-2023\K2a-AT-2023-1.png; DestDir: {app}; Flags: ignoreversion; Components: ATFormular       
-Source: D:\Work\EasyCash\EUeR\AT-2023\K2a-AT-2023-2.png; DestDir: {app}; Flags: ignoreversion; Components: ATFormular        
-Source: D:\Work\EasyCash\EUeR\AT-2023\K2a-AT-2023-3.png; DestDir: {app}; Flags: ignoreversion; Components: ATFormular
-Source: D:\Work\EasyCash\EUeR\AT-2023\K2a-AT-2023-4.png; DestDir: {app}; Flags: ignoreversion; Components: ATFormular
-Source: D:\Work\EasyCash\EUeR\AT-2023\K2a-AT-2023-5.png; DestDir: {app}; Flags: ignoreversion; Components: ATFormular
+Source: .\EUeR\AT-2022\E1a-AT-2022.ecf; DestDir: {app}; Flags: ignoreversion; Components: ATFormular
+Source: .\EUeR\AT-2022\E1a-AT-2022-1.png; DestDir: {app}; Flags: ignoreversion; Components: ATFormular
+Source: .\EUeR\AT-2022\E1a-AT-2022-2.png; DestDir: {app}; Flags: ignoreversion; Components: ATFormular
+Source: .\EUeR\AT-2022\E1a-AT-2022-3.png; DestDir: {app}; Flags: ignoreversion; Components: ATFormular
+Source: .\EUeR\AT-2022\E1a-AT-2022-4.png; DestDir: {app}; Flags: ignoreversion; Components: ATFormular    
+Source: .\EUeR\AT-2022\E1a-AT-2022-5.png; DestDir: {app}; Flags: ignoreversion; Components: ATFormular  
+Source: .\EUeR\AT-2022\E1a-K-AT-2022.ecf; DestDir: {app}; Flags: ignoreversion; Components: ATFormular
+Source: .\EUeR\AT-2022\E1a-K-AT-2022-1.png; DestDir: {app}; Flags: ignoreversion; Components: ATFormular
+Source: .\EUeR\AT-2022\E1a-K-AT-2022-2.png; DestDir: {app}; Flags: ignoreversion; Components: ATFormular
+Source: .\EUeR\AT-2022\E1a-K-AT-2022-3.png; DestDir: {app}; Flags: ignoreversion; Components: ATFormular  
+Source: .\EUeR\AT-2022\E6a-AT-2022.ecf; DestDir: {app}; Flags: ignoreversion; Components: ATFormular
+Source: .\EUeR\AT-2022\E6a-AT-2022-1.png; DestDir: {app}; Flags: ignoreversion; Components: ATFormular       
+Source: .\EUeR\AT-2022\E6a-AT-2022-2.png; DestDir: {app}; Flags: ignoreversion; Components: ATFormular        
+Source: .\EUeR\AT-2022\E6a-AT-2022-3.png; DestDir: {app}; Flags: ignoreversion; Components: ATFormular
+Source: .\EUeR\AT-2022\E6a-AT-2022-4.png; DestDir: {app}; Flags: ignoreversion; Components: ATFormular
+Source: .\EUeR\AT-2022\E6a-AT-2022-5.png; DestDir: {app}; Flags: ignoreversion; Components: ATFormular    
+Source: .\EUeR\AT-2023\E1a-AT-2023.ecf; DestDir: {app}; Flags: ignoreversion; Components: ATFormular
+Source: .\EUeR\AT-2023\E1a-AT-2023-1.png; DestDir: {app}; Flags: ignoreversion; Components: ATFormular
+Source: .\EUeR\AT-2023\E1a-AT-2023-2.png; DestDir: {app}; Flags: ignoreversion; Components: ATFormular
+Source: .\EUeR\AT-2023\E1a-AT-2023-3.png; DestDir: {app}; Flags: ignoreversion; Components: ATFormular    
+Source: .\EUeR\AT-2023\E1a-AT-2023-4.png; DestDir: {app}; Flags: ignoreversion; Components: ATFormular  
+Source: .\EUeR\AT-2023\E1a-AT-2023-5.png; DestDir: {app}; Flags: ignoreversion; Components: ATFormular  
+Source: .\EUeR\AT-2023\E1a-K-AT-2023.ecf; DestDir: {app}; Flags: ignoreversion; Components: ATFormular
+Source: .\EUeR\AT-2023\E1a-K-AT-2023-1.png; DestDir: {app}; Flags: ignoreversion; Components: ATFormular
+Source: .\EUeR\AT-2023\E1a-K-AT-2023-2.png; DestDir: {app}; Flags: ignoreversion; Components: ATFormular
+Source: .\EUeR\AT-2023\E1a-K-AT-2023-3.png; DestDir: {app}; Flags: ignoreversion; Components: ATFormular   
+Source: .\EUeR\AT-2023\E6a-AT-2023.ecf; DestDir: {app}; Flags: ignoreversion; Components: ATFormular
+Source: .\EUeR\AT-2023\E6a-AT-2023-1.png; DestDir: {app}; Flags: ignoreversion; Components: ATFormular       
+Source: .\EUeR\AT-2023\E6a-AT-2023-2.png; DestDir: {app}; Flags: ignoreversion; Components: ATFormular        
+Source: .\EUeR\AT-2023\E6a-AT-2023-3.png; DestDir: {app}; Flags: ignoreversion; Components: ATFormular
+Source: .\EUeR\AT-2023\E6a-AT-2023-4.png; DestDir: {app}; Flags: ignoreversion; Components: ATFormular
+Source: .\EUeR\AT-2023\E6a-AT-2023-5.png; DestDir: {app}; Flags: ignoreversion; Components: ATFormular  
+Source: .\EUeR\AT-2023\K2a-AT-2023.ecf; DestDir: {app}; Flags: ignoreversion; Components: ATFormular
+Source: .\EUeR\AT-2023\K2a-AT-2023-1.png; DestDir: {app}; Flags: ignoreversion; Components: ATFormular       
+Source: .\EUeR\AT-2023\K2a-AT-2023-2.png; DestDir: {app}; Flags: ignoreversion; Components: ATFormular        
+Source: .\EUeR\AT-2023\K2a-AT-2023-3.png; DestDir: {app}; Flags: ignoreversion; Components: ATFormular
+Source: .\EUeR\AT-2023\K2a-AT-2023-4.png; DestDir: {app}; Flags: ignoreversion; Components: ATFormular
+Source: .\EUeR\AT-2023\K2a-AT-2023-5.png; DestDir: {app}; Flags: ignoreversion; Components: ATFormular
 
 [Registry]
 Root: HKCU; Subkey: Software\Tools; Flags: uninsdeletekeyifempty
@@ -194,7 +196,7 @@ Name: {group}\Dokumentation zu EasyCash&Tax; Filename: {app}\ECT-Doku_Michael.pd
 Name: {userdesktop}\EasyCash&Tax; Filename: {app}\EasyCT.exe; MinVersion: 4,4; Tasks: desktopicon
 
 [Run]
-;Filename: {tmp}\vcredist_x86.exe; Parameters: "/q:a /c:""VCREDI~3.EXE /q:a /c:""""msiexec /i vcredist.msi /qn"""" """; Flags: runhidden shellexec waituntilterminated;
+;Filename: {tmp}\VC_redist.x86.exe; Parameters: "/q:a /c:""VCREDI~3.EXE /q:a /c:""""msiexec /i vcredist.msi /qn"""" """; Flags: runhidden shellexec waituntilterminated;
 Filename: {app}\EasyCT.exe; Description: Launch EasyCash&Tax; Flags: nowait postinstall skipifsilent
 
 [Code]
@@ -270,9 +272,9 @@ begin
   if not IsRuntimeInstalled then
   begin
     // extract the redist to the temporary folder
-    ExtractTemporaryFile('vcredist_x86.exe');
+    ExtractTemporaryFile('VC_redist.x86.exe');
     // run the redist from the temp folder; if that fails, return from this handler the error text
-    if not Exec(ExpandConstant('{tmp}\vcredist_x86.exe'), '/q:a /c:"VCREDI~3.EXE /q:a /c:""msiexec /i vcredist.msi /qn"" "', '', SW_SHOW, ewWaitUntilTerminated, ExitCode) then
+    if not Exec(ExpandConstant('{tmp}\VC_redist.x86.exe'), ' /quiet /norestart /q:a /c:"VCREDI~3.EXE /q:a /c:""msiexec /i vcredist.msi /qn"" "', '', SW_SHOW, ewWaitUntilTerminated, ExitCode) then
     begin
       // return the error text
       Result := 'Setup failed to install VC++ runtime. Exit code: ' + IntToStr(ExitCode);

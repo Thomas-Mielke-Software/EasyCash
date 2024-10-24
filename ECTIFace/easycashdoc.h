@@ -237,6 +237,10 @@ public:
 	void BerechneFormularfeldwerte(CString &Formular, CStringArray &csaFormularfeldwerte, int *pFormularfeldIDs, CStringArray *pcsaFormularfeldbeschreibungen, LPCSTR sFilter = NULL); // IDs nur von 1 - 9999, also int[10000], NULL -> wird dann ignoriert
 	void SortQuick(void **bparray, int left, int right);
 	void SortSingle(CBuchung **bpp_base, CBuchung **bpp_einzufuegen);
+	void OnWiederherstellungsdateiSave();
+	void CheckWiederherstellungsdatei(LPCTSTR path);
+	void LoescheWiederherstellungsdatei(LPCTSTR dateipfad);
+	CTime GetFileModifiedTime(LPCTSTR path);
 
 	CStringArray m_csaFeldStatustext;	// Statustexte für Formularfelder im freien Zugriff
 
