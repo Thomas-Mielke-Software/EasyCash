@@ -1145,52 +1145,60 @@ BOOL DatenverzeichnisCheck(char* pfad1, char* pfad2)  // gibt true zurück, wenn 
 {
 	HKEY hKey;
 	if (RegOpenKey(HKEY_LOCAL_MACHINE, "Software\\Wine", &hKey) == ERROR_SUCCESS)
-	{  
-		// unter Wine keinen Check machen
-		return TRUE;
+	{
+		typedef char* (CDECL* wine_get_unix_file_name_realpath)(LPCWSTR dosW);
 
-		/* umwandeln in unix-Pfade bringt auch nichts... :(
+		HMODULE kernel32 = LoadLibraryW(L"kernel32.dll");
+		wine_get_unix_file_name_realpath get_unix_fn = (wine_get_unix_file_name_realpath)GetProcAddress(kernel32, "wine_get_unix_file_name_realpath");
+
+		// unter normalem Wine keinen Check machen (wine_get_unix_file_name_realpath existiert nur im PortJump package (easyct-2.53.0-unsigned-v4.zip)
+		if (get_unix_fn == NULL)
+			return TRUE;
+
 		// vergleicht reale Wine-Pfade statt möglicherweise verlinktes Userverzeichnis (Y:)
 		WCHAR wcPfad1[1000];
 		WCHAR wcPfad2[1000];
 		ZeroMemory(wcPfad1, sizeof(wcPfad1));
 		ZeroMemory(wcPfad2, sizeof(wcPfad2));
 		if (!MultiByteToWideChar(CP_ACP, 0, pfad1, (int)strlen(pfad1), wcPfad1, sizeof(wcPfad1)))
+		{
+			FreeLibrary(kernel32);
 			return FALSE;
+		}
 		if (!MultiByteToWideChar(CP_ACP, 0, pfad2, (int)strlen(pfad2), wcPfad2, sizeof(wcPfad2)))
+		{
+			FreeLibrary(kernel32);
 			return FALSE;
+		}
 
-		typedef char* (CDECL* wine_get_unix_file_name)(LPCWSTR dosW);
 		typedef WCHAR* (CDECL* wine_get_dos_file_name)(LPCSTR str);
 
 		//LPWSTR path = L"C:\\Users\\crossover\\Documents\\test.txt";
-		HMODULE kernel32 = LoadLibraryW(L"kernel32.dll");
 
-		wine_get_unix_file_name get_unix_fn = (wine_get_unix_file_name)GetProcAddress(kernel32, "wine_get_unix_file_name");
-		wine_get_dos_file_name get_dos_fn = (wine_get_dos_file_name)GetProcAddress(kernel32, "wine_get_dos_file_name");
+		//wine_get_dos_file_name get_dos_fn = (wine_get_dos_file_name)GetProcAddress(kernel32, "wine_get_dos_file_name");
 
 		char* cPfad1Unix = get_unix_fn(wcPfad1);
 		char* cPfad2Unix = get_unix_fn(wcPfad2);
-		AfxMessageBox((CString)"1: " + (CString)cPfad1Unix + " -- 2: " + (CString)cPfad2Unix);
+		// AfxMessageBox((CString)"1: " + (CString)cPfad1Unix + " -- 2: " + (CString)cPfad2Unix);
 
-		WCHAR* wcPfad1Unix = get_dos_fn(cPfad1Unix);
-		WCHAR* wcPfad2Unix = get_dos_fn(cPfad2Unix);
-		char cPfad1[1000];
-		char cPfad2[1000];
-		ZeroMemory(cPfad1, sizeof(cPfad1));
-		ZeroMemory(cPfad2, sizeof(cPfad2));
+		//WCHAR* wcPfad1Unix = get_dos_fn(cPfad1Unix);
+		//WCHAR* wcPfad2Unix = get_dos_fn(cPfad2Unix);
+		//char cPfad1[1000];
+		//char cPfad2[1000];
+		//ZeroMemory(cPfad1, sizeof(cPfad1));
+		//ZeroMemory(cPfad2, sizeof(cPfad2));
 
-		int nSize = (int)wcslen(wcPfad1Unix);
-		WideCharToMultiByte(CP_ACP, 0, wcPfad1Unix, nSize, cPfad1, 1000, NULL, NULL);
-		cPfad1[nSize] = '\0';
-		nSize = (int)wcslen(wcPfad2Unix);
-		WideCharToMultiByte(CP_ACP, 0, wcPfad2Unix, nSize, cPfad2, 1000, NULL, NULL);
-		cPfad2[nSize] = '\0';
-		AfxMessageBox((CString)"3: " + (CString)cPfad1 + " -- 4: " + (CString)cPfad2);
-
-		BOOL bVergleich = strcmp(cPfad1Unix, cPfad2Unix);
+		//int nSize = (int)wcslen(wcPfad1Unix);
+		//WideCharToMultiByte(CP_ACP, 0, wcPfad1Unix, nSize, cPfad1, 1000, NULL, NULL);
+		//cPfad1[nSize] = '\0';
+		//nSize = (int)wcslen(wcPfad2Unix);
+		//WideCharToMultiByte(CP_ACP, 0, wcPfad2Unix, nSize, cPfad2, 1000, NULL, NULL);
+		//cPfad2[nSize] = '\0';
+		//AfxMessageBox((CString)"3: " + (CString)cPfad1 + " -- 4: " + (CString)cPfad2);
 
 		// dosFn now contains "Y:\Documents\test.txt"
+
+		BOOL bVergleich = strcmp(cPfad1Unix, cPfad2Unix);
 
 		HeapFree(GetProcessHeap(), 0, cPfad1Unix);
 		HeapFree(GetProcessHeap(), 0, cPfad2Unix);
@@ -1198,11 +1206,11 @@ BOOL DatenverzeichnisCheck(char* pfad1, char* pfad2)  // gibt true zurück, wenn 
 		FreeLibrary(kernel32);
 
 		return !bVergleich;
-		*/
 	}
 	else
 		return !stricmp(pfad1, pfad2);
 }
+
 
 /////////////////////////////////////////////////////////////////////////////
 // CEasyCashDoc commands
