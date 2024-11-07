@@ -645,25 +645,25 @@ BOOL CEasyCashDoc::OnNewDocument()
 	if (n > 0)
 		sprintf(buf, "Jahr%04d-%d.eca", nJahr, n);
 	
-	// Versuch einen MRU list bug zu fixen: AddToRecentFileList wird mehrfach aufgerufen, das letzte mal mit ECTIFace-DLL-Pfad
-	m_strPathName = buf;
-	
-	strcpy(titlebuf, buf);
-	if (strlen(titlebuf) > 4 && !strcmp(titlebuf + strlen(titlebuf) - 4, ".eca"))  // Dateiendung .eca im Titel entfernen
-		titlebuf[strlen(titlebuf) - 4] = _T('\0');
-	SetTitle(titlebuf);
-	OnFileSave();
+	// // Versuch einen MRU list bug zu fixen: AddToRecentFileList wird mehrfach aufgerufen, das letzte mal mit ECTIFace-DLL-Pfad
+	// m_strPathName = buf;
+	// 
+	// strcpy(titlebuf, buf);
+	// if (strlen(titlebuf) > 4 && !strcmp(titlebuf + strlen(titlebuf) - 4, ".eca"))  // Dateiendung .eca im Titel entfernen
+	// 	titlebuf[strlen(titlebuf) - 4] = _T('\0');
+	// SetTitle(titlebuf);
+	// OnFileSave();         --> bessere Lösung: SetPathName(buf, FALSE); statt SetPathName(buf);
 
-	// TRY
-	// {
-	// 	SetPathName(buf);
-	// }
-	// CATCH_ALL(e)  // (CInvalidArgException, e) ... auch file not found abdecken --> CATCH_ALL
-	// {
-	// 	// ignore invalid argument exception or file not found, if file was not found in "add to MRU" code (OnNewDocument)
-	// 	SetTitle(buf);  // ensure a title is set
-	// }
-	// END_CATCH_ALL //  END_CATCH
+	TRY
+	{
+		SetPathName(buf, FALSE);
+	}
+	CATCH_ALL(e)  // (CInvalidArgException, e) ... auch file not found abdecken --> CATCH_ALL
+	{
+		// ignore invalid argument exception or file not found, if file was not found in "add to MRU" code (OnNewDocument)
+		SetTitle(buf);  // ensure a title is set
+	}
+	END_CATCH_ALL //  END_CATCH
 
 
 	// Hook Erweiterungs-DLLs
