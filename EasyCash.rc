@@ -1942,7 +1942,7 @@ END
 
 STRINGTABLE
 BEGIN
-    IDR_MAINFRAME           "EasyCash&&Tax"
+    IDR_MAINFRAME           "EasyCash&Tax"
     IDR_EASYCATYPE          "\nEasyCa\nEasyCa\nEasyCash&Tax Buchungsjahr (*.eca)\n.eca;.ecareg\nEasyCashAndTax.Document\nEasyCash&Tax Buchungsjahr"
     IDR_EASYCAREGTYPE       "\nEasyCaReg\nEasyCaReg\nEasyCash&Tax Registrierungsinformationen (*.ecareg)\n.ecareg\nEasyCashAndTax.Registrierungsinformationen\nEasyCash&Tax Registrierungsinformationen"
 END
