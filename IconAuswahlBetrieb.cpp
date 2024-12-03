@@ -167,24 +167,51 @@ BOOL CIconAuswahlBetrieb::ChooseProperty(CString &csProperty)
 {
 	CUnternehmensartDlg dlg(this);
 	int nPos;
+	CString strRest = "";
 	if ((nPos = csProperty.Find("\t")) < 0)
 		dlg.m_Unternehmensart1 = csProperty;
-	else	// Unternehmensart1, Unternehmensart2 (Rechtsform) und Steuernummer sind durch Tabs getrennt
+	else	// Unternehmensart1, Unternehmensart2 (Rechtsform), Steuernummer und Wirtschaftsidentifikationsnummer sind durch Tabs getrennt
 	{
-		int nPos2;
-		dlg.m_Unternehmensart1 = csProperty.Left(nPos);
-		if ((nPos2 = csProperty.Find("\t", nPos+1)) < 0)
-			dlg.m_Unternehmensart2 = csProperty.Mid(nPos+1);
-		else
+		int nTokenPos = 0;
+		CString strToken;
+		strToken = csProperty.Tokenize(_T("\t"), nTokenPos);
+		for (int i = 0; !strToken.IsEmpty(); strToken = csProperty.Tokenize(_T("\t"), nTokenPos), i++)
 		{
-			dlg.m_Unternehmensart2 = csProperty.Mid(nPos+1, nPos2 - nPos - 1);
-			dlg.m_Steuernummer = csProperty.Mid(nPos2+1);
+			switch (i)
+			{
+			case 0: dlg.m_Unternehmensart1 = strToken; break;
+			case 1: dlg.m_Unternehmensart2 = strToken; break;
+			case 2: dlg.m_Steuernummer = strToken;	   break;
+			case 3: dlg.m_wirtschaftsIdNr = strToken;  break;
+			default: strRest += _T("\t") + strToken;   break;  // zukünftige betriebsabhängige Einstellungedaten beibehalten
+			}			
 		}
 	}
 
 	if (dlg.DoModal() == IDOK)
 	{
-		csProperty = dlg.m_Unternehmensart1 + "\t" + dlg.m_Unternehmensart2 + "\t" + dlg.m_Steuernummer;
+		csProperty = dlg.m_Unternehmensart1 + "\t" + dlg.m_Unternehmensart2 + "\t" + dlg.m_Steuernummer + "\t" + dlg.m_wirtschaftsIdNr + strRest;
+		if (!dlg.m_wirtschaftsIdNr.IsEmpty())
+		{
+			if (dlg.m_wirtschaftsIdNr.GetLength() != 17)
+				AfxMessageBox("Hinweis: Die Wirtschaftsidentifikationsnummer muss 17 Zeichen lang sein.");
+			else if (dlg.m_wirtschaftsIdNr.Left(2) != _T("DE"))
+				AfxMessageBox("Hinweis: Die Wirtschaftsidentifikationsnummer muss mit 'DE' beginnen.");
+			else if (dlg.m_wirtschaftsIdNr[11] != _T('-'))
+				AfxMessageBox("Hinweis: Die Wirtschaftsidentifikationsnummer muss an der 12. Position einen Bindestrich enthalten.");
+			else 
+				for (int i = 2; i < 17; i++)
+				{
+					if (i == 11) i++;  // '-' überspringen
+					if (!isdigit(dlg.m_wirtschaftsIdNr[i]))
+					{
+						CString msg;
+						msg.Format("Hinweis: Die Wirtschaftsidentifikationsnummer muss an der %d. Position eine Ziffer enthalten.", i + 1);
+						AfxMessageBox(msg);
+						break;
+					}
+				}
+		}
 		return TRUE;
 	}
 	else

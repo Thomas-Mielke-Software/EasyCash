@@ -39,6 +39,7 @@ public:
 	CString	m_plz;
 	CString	m_steuernummer;
 	CString	m_strasse;
+	CString m_wirtschaftsIdNr;
 	//}}AFX_DATA
 
 
@@ -57,4 +58,5 @@ protected:
 	//}}AFX_MSG
 	DECLARE_MESSAGE_MAP()
 
+public:
 };

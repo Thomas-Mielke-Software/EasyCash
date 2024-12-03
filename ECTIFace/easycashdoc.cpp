@@ -2541,7 +2541,7 @@ CString CEasyCashDoc::GetFormularwertByIndex(XDoc *pFormular, int nIndex, LPCSTR
 						{
 							csKey.Format("Betrieb%02dUnternehmensart", iBetriebe);
 							GetPrivateProfileString("Betriebe", csKey, "", betriebe, sizeof(betriebe), inifile);
-							char *cp = strchr(betriebe, '\t');	// Unternehmensart1, Unternehmensart2 (Rechtsform) und Steuernummer sind durch Tabs getrennt
+							char *cp = strchr(betriebe, '\t');	// Unternehmensart1, Unternehmensart2 (Rechtsform), Steuernummer und Wirtschaftsidentifikationsnummer sind durch Tabs getrennt
 							if (cp)
 								*cp = '\0';
 							csFeldinhalt = betriebe;
@@ -2568,7 +2568,7 @@ CString CEasyCashDoc::GetFormularwertByIndex(XDoc *pFormular, int nIndex, LPCSTR
 						{
 							csKey.Format("Betrieb%02dUnternehmensart", iBetriebe);
 							GetPrivateProfileString("Betriebe", csKey, "", betriebe, sizeof(betriebe), inifile);
-							char *cp = strchr(betriebe, '\t');	// Unternehmensart1, Unternehmensart2 (Rechtsform) und Steuernummer sind durch Tabs getrennt
+							char *cp = strchr(betriebe, '\t');	// Unternehmensart1, Unternehmensart2 (Rechtsform), Steuernummer und Wirtschaftsidentifikationsnummer sind durch Tabs getrennt
 							if (!cp || cp[1] == '\0' || cp[1] == '\t')
 							{
 								GetPrivateProfileString(IniSektion((LPCSTR)ID), !strcmp(IniSektion((LPCSTR)ID), "Finanzamt") || !strcmp(IniSektion((LPCSTR)ID), "EinnahmenRechnungsposten") || !strcmp(IniSektion((LPCSTR)ID), "AusgabenRechnungsposten")? ((LPCSTR)ID)+1 : (LPCSTR)ID, "", csFeldinhalt.GetBuffer(10000), 10000, inifile);
@@ -2604,11 +2604,46 @@ CString CEasyCashDoc::GetFormularwertByIndex(XDoc *pFormular, int nIndex, LPCSTR
 						{
 							csKey.Format("Betrieb%02dUnternehmensart", iBetriebe);
 							GetPrivateProfileString("Betriebe", csKey, "", betriebe, sizeof(betriebe), inifile);
-							char *cp = strchr(betriebe, '\t');	// Unternehmensart1, Unternehmensart2 (Rechtsform) und Steuernummer sind durch Tabs getrennt
+							char *cp = strchr(betriebe, '\t');	// Unternehmensart1, Unternehmensart2 (Rechtsform), Steuernummer und Wirtschaftsidentifikationsnummer sind durch Tabs getrennt
 							if (cp) cp = strchr(cp+1, '\t');
 							if (!cp || cp[1] == '\0' || cp[1] == '\t')
 							{
 								GetPrivateProfileString(IniSektion((LPCSTR)ID), !strcmp(IniSektion((LPCSTR)ID), "Finanzamt") || !strcmp(IniSektion((LPCSTR)ID), "EinnahmenRechnungsposten") || !strcmp(IniSektion((LPCSTR)ID), "AusgabenRechnungsposten")? ((LPCSTR)ID)+1 : (LPCSTR)ID, "", csFeldinhalt.GetBuffer(10000), 10000, inifile);
+								csFeldinhalt.ReleaseBuffer();
+							}
+							else
+							{
+								csFeldinhalt = ++cp;
+							}
+							break;
+						}
+					}
+				}
+				else if (ID == "wirtschaftsidnr" && *sFilter)
+				{
+					char inifile[1000], betriebe[1000];
+					GetIniFileName(inifile, sizeof(inifile));
+					CString csKey;
+					int iBetriebe;
+					for (iBetriebe = 0; iBetriebe < 100; iBetriebe++)
+					{
+						csKey.Format("Betrieb%02dName", iBetriebe);
+						GetPrivateProfileString("Betriebe", csKey, "", betriebe, sizeof(betriebe), inifile);
+						if (!*betriebe)
+						{
+							csFeldinhalt = "";
+							break;
+						}
+						else if (!strcmp(betriebe, sFilter))
+						{
+							csKey.Format("Betrieb%02dUnternehmensart", iBetriebe);
+							GetPrivateProfileString("Betriebe", csKey, "", betriebe, sizeof(betriebe), inifile);
+							char* cp = strchr(betriebe, '\t');	// Unternehmensart1, Unternehmensart2 (Rechtsform), Steuernummer und Wirtschaftsidentifikationsnummer sind durch Tabs getrennt
+							if (cp) cp = strchr(cp + 1, '\t');
+							if (cp) cp = strchr(cp + 1, '\t');
+							if (!cp || cp[1] == '\0' || cp[1] == '\t')
+							{
+								GetPrivateProfileString(IniSektion((LPCSTR)ID), !strcmp(IniSektion((LPCSTR)ID), "Finanzamt") || !strcmp(IniSektion((LPCSTR)ID), "EinnahmenRechnungsposten") || !strcmp(IniSektion((LPCSTR)ID), "AusgabenRechnungsposten") ? ((LPCSTR)ID) + 1 : (LPCSTR)ID, "", csFeldinhalt.GetBuffer(10000), 10000, inifile);
 								csFeldinhalt.ReleaseBuffer();
 							}
 							else

@@ -4179,7 +4179,7 @@ void CEasyCashView::DrawEURechungToDC(CDC* pDC, DrawInfo *pDrawInfo)
 				{
 					csKey.Format("Betrieb%02dUnternehmensart", iBetriebe);
 					GetPrivateProfileString("Betriebe", csKey, "", betriebe, sizeof(betriebe), inifile);
-					char *cp = strchr(betriebe, '\t');	// Unternehmensart1, Unternehmensart2 (Rechtsform) und Steuernummer sind durch Tabs getrennt
+					char *cp = strchr(betriebe, '\t');	// Unternehmensart1, Unternehmensart2 (Rechtsform), Steuernummer und Wirtschaftsidentifikationsnummer sind durch Tabs getrennt
 					if (cp) cp = strchr(cp+1, '\t');
 					if (!cp || cp[1] == '\0' || cp[1] == '\t')
 					{
@@ -8422,6 +8422,8 @@ void CEasyCashView::LoadProfile()
 	einstellungen3->m_ort = buffer;
 	GetPrivateProfileString("Finanzamt", "steuernummer", "", buffer, sizeof(buffer), EasyCashIniFilenameBuffer);
 	einstellungen3->m_steuernummer = buffer;
+	GetPrivateProfileString("Finanzamt", "wirtschaftsidnr", "", buffer, sizeof(buffer), EasyCashIniFilenameBuffer);
+	einstellungen3->m_wirtschaftsIdNr = buffer;
 
 	BOOL bInitRechnungsposten = TRUE;
 	for (i = 0; i < 100; i++)
@@ -8794,6 +8796,7 @@ void CEasyCashView::SaveProfile()
 	WritePrivateProfileString("Finanzamt", "plz", (LPCSTR)einstellungen3->m_plz, EasyCashIniFilenameBuffer);
 	WritePrivateProfileString("Finanzamt", "ort", (LPCSTR)einstellungen3->m_ort, EasyCashIniFilenameBuffer);
 	WritePrivateProfileString("Finanzamt", "steuernummer", (LPCSTR)einstellungen3->m_steuernummer, EasyCashIniFilenameBuffer);
+	WritePrivateProfileString("Finanzamt", "wirtschaftsidnr", (LPCSTR)einstellungen3->m_wirtschaftsIdNr, EasyCashIniFilenameBuffer);
 
 	for (i = 0; i < 100; i++)
 	{

@@ -21,6 +21,10 @@
 			<name>Rechtsform</name>
 			<erweiterung>unternehmensart2</erweiterung>
 		</feld>
+		<feld id="1101" typ="Einstellungsdaten" seite="1" horizontal="624" vertikal="349" ausrichtung="linksbuendig" anteil="netto" nachkommaanteil="ohne" >
+			<name>Wirtschaftsidentifikationsnummer</name>
+			<erweiterung>wirtschaftsidnr</erweiterung>
+		</feld>
 		<feld id="1111" typ="Einnahmen" seite="1" horizontal="1178" vertikal="671" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" nullwertdarstellung="nein" elsterfeldname="EUER/BEin/Kleinunternehmer/Sum/E6000101" veraltet="nein" >
 			<name>Betriebseinnahmen als umsatzsteuerlicher Kleinunternehmer ohne Umsätze aus §19 Abs. 3 Nr. 1 und Nr. 2</name>
 			<erweiterung/>

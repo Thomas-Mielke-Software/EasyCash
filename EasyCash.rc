@@ -798,17 +798,21 @@ STYLE DS_SETFONT | WS_CHILD | WS_DISABLED | WS_CAPTION | WS_SYSMENU
 CAPTION "Finanzamt"
 FONT 8, "MS Sans Serif", 0, 0, 0x0
 BEGIN
-    LTEXT           "Name",-1,7,9,22,10
-    LTEXT           "Abt./Sachbearb.",-1,7,24,60,10
-    LTEXT           "Straﬂe/Postfach",-1,7,39,61,10
-    LTEXT           "PLZ/Ort",-1,7,54,47,10
+    LTEXT           "Name",IDC_STATIC,7,9,22,10
+    LTEXT           "Abt./Sachbearb.",IDC_STATIC,7,24,60,10
+    LTEXT           "Straﬂe/Postfach",IDC_STATIC,7,39,61,10
+    LTEXT           "PLZ/Ort",IDC_STATIC,7,54,47,10
     EDITTEXT        IDC_NAME,70,7,285,12,ES_AUTOHSCROLL
     EDITTEXT        IDC_NAME2,70,22,285,12,ES_AUTOHSCROLL
     EDITTEXT        IDC_STRASSE,70,37,285,12,ES_AUTOHSCROLL
     EDITTEXT        IDC_PLZ,70,52,37,12,ES_AUTOHSCROLL
     EDITTEXT        IDC_ORT,114,52,241,12,ES_AUTOHSCROLL
-    LTEXT           "Steuernr. (ohne evtl. Trennstriche)",-1,7,69,59,22
+    LTEXT           "Steuernummer",IDC_STATIC,7,69,59,22
     EDITTEXT        IDC_STEUERNUMMER,70,67,87,12,ES_AUTOHSCROLL
+    LTEXT           "Wirtschafts-ID-Nr.",IDC_STATIC,7,85,59,10
+    EDITTEXT        IDC_WIRTSCHAFTSIDNR,71,83,85,12,ES_AUTOHSCROLL
+    LTEXT           "(ohne evtl. Trennstriche)",IDC_STATIC,165,68,190,9
+    LTEXT           "(Beispiel: DE123456789-12345)",IDC_STATIC,165,85,190,9
 END
 
 IDD_VORANMELDUNGSZEITRAUM DIALOGEX 0, 0, 225, 76
@@ -1143,20 +1147,22 @@ BEGIN
     PUSHBUTTON      "&Anfangssaldo setzen",IDC_PROPERTY,237,179,76,14,NOT WS_VISIBLE
 END
 
-IDD_UNTERNEHMENSART DIALOG 0, 0, 300, 96
+IDD_UNTERNEHMENSART DIALOGEX 0, 0, 301, 111
 STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
 CAPTION "Beschreibung des Betriebs"
-FONT 8, "MS Sans Serif"
+FONT 8, "MS Sans Serif", 0, 0, 0x0
 BEGIN
     LTEXT           "Unternehmensart",IDC_STATIC,7,9,59,10
-    EDITTEXT        IDC_UNTERNEHMENSART1,70,7,223,12,ES_AUTOHSCROLL
-    DEFPUSHBUTTON   "OK",IDOK,189,75,50,14
-    PUSHBUTTON      "Cancel",IDCANCEL,243,75,50,14
-    LTEXT           "Hinweis: die entspr. Felder in den Einstellungen (pers. Daten und Finanzamt) werden durch die Angaben hier aufgehoben und stattdessen in Formularen benutzt.",IDC_STATIC,7,56,169,33
+    EDITTEXT        IDC_UNTERNEHMENSART1,71,7,223,12,ES_AUTOHSCROLL
+    DEFPUSHBUTTON   "OK",IDOK,189,90,50,14
+    PUSHBUTTON      "Cancel",IDCANCEL,244,90,50,14
+    LTEXT           "Hinweis: die entspr. Felder in den Einstellungen (pers. Daten und Finanzamt) werden durch die Angaben hier aufgehoben und stattdessen in Formularen benutzt.",IDC_STATIC,7,71,169,33
     LTEXT           "Rechtsform",IDC_STATIC,7,24,59,10
-    EDITTEXT        IDC_UNTERNEHMENSART2,70,22,223,12,ES_AUTOHSCROLL
+    EDITTEXT        IDC_UNTERNEHMENSART2,71,22,223,12,ES_AUTOHSCROLL
     LTEXT           "Betriebssteuernr.",IDC_STATIC,7,40,59,10
-    EDITTEXT        IDC_STEUERNUMMER,70,38,223,12,ES_AUTOHSCROLL
+    EDITTEXT        IDC_STEUERNUMMER,71,38,223,12,ES_AUTOHSCROLL
+    LTEXT           "Wirtschafts-ID-Nr.",IDC_STATIC,7,56,59,10
+    EDITTEXT        IDC_WIRTSCHAFTSIDNR,71,54,223,12,ES_AUTOHSCROLL
 END
 
 IDD_ANFANGSSALDO DIALOG 0, 0, 226, 44
@@ -1500,9 +1506,9 @@ BEGIN
     IDD_UNTERNEHMENSART, DIALOG
     BEGIN
         LEFTMARGIN, 7
-        RIGHTMARGIN, 293
+        RIGHTMARGIN, 294
         TOPMARGIN, 7
-        BOTTOMMARGIN, 89
+        BOTTOMMARGIN, 104
     END
 
     IDD_ANFANGSSALDO, DIALOG
@@ -1807,6 +1813,10 @@ BEGIN
     0, 0, 0, 0,
     0, 0, 100, 0,
     0, 0, 0, 0,
+    0, 0, 0, 0,
+    0, 0, 0, 0,
+    0, 0, 0, 0,
+    0, 0, 0, 0,
     0, 0, 0, 0
 END
 
@@ -1930,6 +1940,11 @@ BEGIN
 END
 
 IDD_ICONAUSWAHL_MANDANT AFX_DIALOG_LAYOUT
+BEGIN
+    0
+END
+
+IDD_UNTERNEHMENSART AFX_DIALOG_LAYOUT
 BEGIN
     0
 END

@@ -39,6 +39,7 @@ public:
 	CString	m_Unternehmensart1;
 	CString	m_Unternehmensart2;
 	CString	m_Steuernummer;
+	CString m_wirtschaftsIdNr;
 	//}}AFX_DATA
 
 
@@ -57,6 +58,7 @@ protected:
 		// NOTE: the ClassWizard will add member functions here
 	//}}AFX_MSG
 	DECLARE_MESSAGE_MAP()
+public:
 };
 
 //{{AFX_INSERT_LOCATION}}
