@@ -7889,6 +7889,28 @@ void CEasyCashView::OnViewOptions()
 			GetDocument()->SetModifiedFlag();
 		}
 
+		if (!einstellungen3->m_wirtschaftsIdNr.IsEmpty())
+		{
+			if (einstellungen3->m_wirtschaftsIdNr.GetLength() != 17)
+				AfxMessageBox("Hinweis: Die Wirtschaftsidentifikationsnummer muss 17 Zeichen lang sein.");
+			else if (!isalpha(einstellungen3->m_wirtschaftsIdNr[0]) || isalpha(einstellungen3->m_wirtschaftsIdNr[1]))
+				AfxMessageBox("Hinweis: Die Wirtschaftsidentifikationsnummer muss mit zwei Buchstaben für das Landeskürzel beginnen, z.B. 'DE' oder 'AT'.");
+			else if (einstellungen3->m_wirtschaftsIdNr[11] != _T('-'))
+				AfxMessageBox("Hinweis: Die Wirtschaftsidentifikationsnummer muss an der 12. Position einen Bindestrich enthalten.");
+			else
+				for (int i = 2; i < 17; i++)
+				{
+					if (i == 11) i++;  // '-' überspringen
+					if (!isdigit(einstellungen3->m_wirtschaftsIdNr[i]))
+					{
+						CString msg;
+						msg.Format("Hinweis: Die Wirtschaftsidentifikationsnummer muss an der %d. Position eine Ziffer enthalten.", i + 1);
+						AfxMessageBox(msg);
+						break;
+					}
+				}
+		}
+
 		RedrawWindow();
 	}
 	else

@@ -172,19 +172,26 @@ BOOL CIconAuswahlBetrieb::ChooseProperty(CString &csProperty)
 		dlg.m_Unternehmensart1 = csProperty;
 	else	// Unternehmensart1, Unternehmensart2 (Rechtsform), Steuernummer und Wirtschaftsidentifikationsnummer sind durch Tabs getrennt
 	{
-		int nTokenPos = 0;
+		int nEndPos = nPos;
+		strRest = csProperty;
 		CString strToken;
-		strToken = csProperty.Tokenize(_T("\t"), nTokenPos);
-		for (int i = 0; !strToken.IsEmpty(); strToken = csProperty.Tokenize(_T("\t"), nTokenPos), i++)
+		for (int i = 0; nEndPos >= 0; i++, strRest = strRest.Mid(nEndPos + 1))
 		{
+			if ((nEndPos = strRest.Find(_T("\t"))) < 0)  // Tokenzize() verschluckte hier Tabs bei Leerstrings, deshalb wieder Find()
+			{
+				strToken = strRest.Mid(0);
+				strRest = "";
+			}
+			else
+				strToken = strRest.Mid(0, nEndPos);
 			switch (i)
 			{
 			case 0: dlg.m_Unternehmensart1 = strToken; break;
 			case 1: dlg.m_Unternehmensart2 = strToken; break;
 			case 2: dlg.m_Steuernummer = strToken;	   break;
 			case 3: dlg.m_wirtschaftsIdNr = strToken;  break;
-			default: strRest += _T("\t") + strToken;   break;  // zukünftige betriebsabhängige Einstellungedaten beibehalten
-			}			
+			default: strRest += _T("\t") + strToken;   break;  // zukünftige betriebsabhängige Einstellungsdaten beibehalten
+			}
 		}
 	}
 
@@ -195,8 +202,8 @@ BOOL CIconAuswahlBetrieb::ChooseProperty(CString &csProperty)
 		{
 			if (dlg.m_wirtschaftsIdNr.GetLength() != 17)
 				AfxMessageBox("Hinweis: Die Wirtschaftsidentifikationsnummer muss 17 Zeichen lang sein.");
-			else if (dlg.m_wirtschaftsIdNr.Left(2) != _T("DE"))
-				AfxMessageBox("Hinweis: Die Wirtschaftsidentifikationsnummer muss mit 'DE' beginnen.");
+			else if (!isalpha(dlg.m_wirtschaftsIdNr[0]) || !isalpha(dlg.m_wirtschaftsIdNr[1]))
+				AfxMessageBox("Hinweis: Die Wirtschaftsidentifikationsnummer muss mit zwei Buchstaben für das Landeskürzel beginnen, z.B. 'DE' oder 'AT'.");
 			else if (dlg.m_wirtschaftsIdNr[11] != _T('-'))
 				AfxMessageBox("Hinweis: Die Wirtschaftsidentifikationsnummer muss an der 12. Position einen Bindestrich enthalten.");
 			else 
