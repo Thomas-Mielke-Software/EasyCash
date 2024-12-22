@@ -195,7 +195,7 @@ public:
 	virtual BOOL OnOpenDocument(LPCTSTR lpszPathName);
 	virtual void OnCloseDocument();
 	virtual BOOL OnCmdMsg(UINT nID, int nCode, void* pExtra, AFX_CMDHANDLERINFO* pHandlerInfo);
-	virtual void SetModifiedFlag(LPCTSTR lpszAktion, BOOL bModified = TRUE);
+	virtual void SetModifiedFlag(LPCTSTR lpszAktion, BOOL bModified = TRUE, BOOL bSaveToWiederherstellungsdatei = TRUE);
 	virtual void SetModifiedFlag(BOOL bModified = TRUE);
 	//}}AFX_VIRTUAL
 	void ZeigeStartoptionen();

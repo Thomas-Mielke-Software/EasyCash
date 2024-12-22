@@ -7445,7 +7445,7 @@ void CEasyCashView::OnFileJahreswechsel()
 	sprintf(cp, "Jahr%04d.eca", pNewDoc->nJahr);
 	pNewDoc->SetPathName(buf, FALSE);
 	
-	pNewDoc->SetModifiedFlag("Neue Buchungsdatei wurde über Jahreswechsel generiert");
+	pNewDoc->SetModifiedFlag("Neue Buchungsdatei wurde über Jahreswechsel generiert", TRUE, FALSE);
 	pNewDoc->SavePublic();
 	strcpy(buf, pNewDoc->GetPathName());
 	delete pNewDoc;

@@ -2808,12 +2808,12 @@ void CEasyCashDoc::SetModifiedFlag(BOOL bModified)
 		OnWiederherstellungsdateiSave();
 }
 
-void CEasyCashDoc::SetModifiedFlag(LPCTSTR lpszAktion, BOOL bModified)
+void CEasyCashDoc::SetModifiedFlag(LPCTSTR lpszAktion, BOOL bModified, BOOL bSaveToWiederherstellungsdatei)
 {
 	HWND hWndMain = AfxGetMainWnd()->GetSafeHwnd();
 	if (hWndMain) ::SendMessage(hWndMain, WM_SETSTATUS, 0x4712, (LPARAM)lpszAktion);
 	CDocument::SetModifiedFlag(bModified);
-	if (bModified)
+	if (bModified && bSaveToWiederherstellungsdatei)
 		OnWiederherstellungsdateiSave();
 	//UpdateAllViews(NULL); --> bringt Plugins zum Abstürzen!
 }
