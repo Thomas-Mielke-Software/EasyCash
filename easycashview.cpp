@@ -7193,10 +7193,10 @@ BOOL CEasyCashView::Backup(char *backupdir)
 		strcpy(path, backupdir);
 		sprintf(path + strlen(path), "\\Jahr%04d.eca", pDoc->nJahr);
 		csOldPathName = pDoc->GetPathName();
-		pDoc->SetPathName(path);			
+		pDoc->SetPathName(path, FALSE);			
 		BOOL bModified = pDoc->IsModified();
 		pDoc->OnSaveDocument(path);	
-		pDoc->SetPathName(csOldPathName);
+		pDoc->SetPathName(csOldPathName, FALSE);
 		pDoc->SetModifiedFlag("Datensicherung wurde in " + (CString)backupdir + " angelegt", bModified);
 
 		strcpy(path, backupdir);
