@@ -673,6 +673,23 @@ v2.53
 ...
 ...
 
+v3.0 preview
+- Dokumentwiederherstellung (bei Absturz oder Stromausfall)
+- Position der Telefonnummer in USt.-Erkl.-Formular 2023 und 2024 korrigiert
+- Bugfix: Unter Wine und MacOS waren bei Journal nach Konto die Ausgaben-Konten in der Navigation nicht anklickbar
+- dynamisches Fensterlayout beim Buchen- und Dauerbuchungen-Dialog
+
+v3.1
+- deutsches Umsatzsteuervoranmeldungsformular für 2025 und EÜR 2024
+- österreichische Formulare 2024/2025
+- Bugfix zu v3.0: Wenn beim Jahreswechsel der Dateiname der neuen Buchungsdatei verändert wurde, wurde eine Wiederherstellungsdatei mit falschem Namen angelegt.
+- Bugfix zu v3.0: Fehlermeldung bei Datensicherung, Speichern-unter (und Jahreswechsel) behoben
+- Knopf bei Betrieben heißt jetzt "Betriebsspezifische Daten" statt "Unternehmensart"
+- Feld Wirtschaftsidentifikationsnummer in EÜR2024
+- Bugfix zu v3.0: Datenverzeichnis-Check funktioniert nun auf MacOS und Wine
+
+
+
 v1.52
 !!! Wenn Du ja die Buchungen umplanst, könntest Du bitte auch an die automatisch ausgeführten Buchungen denken: Die zu identifizieren ist sehr lästig --> neu erstellte Dauerbuchungen markieren!!!
 !!!! Steuernummer in Freestyle-EÜR fehlt
