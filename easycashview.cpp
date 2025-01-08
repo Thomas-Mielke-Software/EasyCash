@@ -296,6 +296,7 @@ void CEasyCashView::OnInitialUpdate()
 	einstellungen3 = new CEinstellungen3();
 	einstellungen4 = new CEinstellungen4();
 	einstellungen4->m_einstellungen1 = einstellungen1;
+	einstellungen4->m_einstellungen2 = einstellungen2;
 	einstellungen5 = new CEinstellungen5();
 	einstellungen5->m_einstellungen1 = einstellungen1;
 	propdlg->AddPage(einstellungen1);

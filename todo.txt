@@ -690,7 +690,7 @@ v3.1
 
 v3.2
 - waren keine Betriebe angelegt, wurde in der Freestyle-EÜR die Steuernummer nicht angezeigt
-
+- Unter Einstellungen->E/Ü-Konten wird jetzt eine möglichst aktuelle EÜR bzw. E1a vorausgewählt
  ^
 ^^^
  !

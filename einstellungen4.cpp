@@ -21,6 +21,7 @@
 #include "stdafx.h"
 #include "easycash.h"
 #include "Einstellungen1.h"
+#include "Einstellungen2.h"
 #include "Einstellungen4.h"
 #include "NeuesKonto.h"
 #include ".\ECTIFace\EasyCashDoc.h"
@@ -168,7 +169,27 @@ TRACE3("%d: %s  --  %s\n\r", i, attr_name, m_csaFormulare[i].GetBuffer(0));
 		else
 			m_formular.AddString("kein gültiges Formular");
 	}
-	if (m_formular.GetCount() > 0 ) m_formular.SetCurSel(0);
+	if (m_formular.GetCount() > 0 && m_formular.GetCurSel() == -1)
+	{
+		CTime now = CTime::GetCurrentTime();
+		CString csAktuellesJahr, csLetztesJahr, csVorletztesJahr;
+		csAktuellesJahr.Format("%04d", now.GetYear());
+		csLetztesJahr.Format("%04d", now.GetYear() - 1);
+		csVorletztesJahr.Format("%04d", now.GetYear() - 2);
+
+		int nItem = 0;
+		CString csFormularname;
+		if (m_einstellungen2->m_land == 1)
+			csFormularname = "Beilage E1a \\ Einkommensteuererklärung E1a Einzelunternehmer*innen ";
+		else
+			csFormularname = "E/Ü-Rechnung \\ E/Ü-Rechnung ";
+		if ((nItem = m_formular.FindString(0, csFormularname + csAktuellesJahr)) < 0)			// kein Formular für aktuelles Jahr gefunden?
+			if ((nItem = m_formular.FindString(0, csFormularname + csLetztesJahr)) < 0)		// und auch keines für letzes Jahr gefunden?
+				if ((nItem = m_formular.FindString(0, csFormularname + csVorletztesJahr)) < 0)	// und nicht mal eines für vorletztes Jahr gefunden?
+					nItem = 0;																					// dann aufgeben und stumpf das erste Formular in der Liste auswählen
+
+		m_formular.SetCurSel(nItem);
+	}
 	OnSelchangeFormular();
 
 	UpdateList();
