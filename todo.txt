@@ -688,6 +688,18 @@ v3.1
 - Feld Wirtschaftsidentifikationsnummer in EÜR2024
 - Bugfix zu v3.0: Datenverzeichnis-Check funktioniert nun auf MacOS und Wine
 
+v3.2
+- waren keine Betriebe angelegt, wurde in der Freestyle-EÜR die Steuernummer nicht angezeigt
+
+ ^
+^^^
+ !
+ !
+- Buchungsfenster: Minimalgröße (vertikal abhängig von Betrieben und Bestandskonten)
+- DSA-Messagebox vergrößern (letzte Zeile wird teilweise abgeschnitten)
+- Die Konten mit den Anfangsbuchstaben auszuwählen, auch wenn sie eingerückt sind, wäre sinnvoll.
+
+
 
 
 v1.52

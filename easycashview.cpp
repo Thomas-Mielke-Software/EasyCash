@@ -4196,7 +4196,7 @@ void CEasyCashView::DrawEURechungToDC(CDC* pDC, DrawInfo *pDrawInfo)
 				csSteuernummer = einstellungen3->m_steuernummer.GetBuffer(0);
 		}
 		else
-			einstellungen3->m_steuernummer.GetBuffer(0);
+			csSteuernummer = einstellungen3->m_steuernummer.GetBuffer(0);
 		Text(pDrawInfo, 60, 7, csSteuernummer.GetBuffer(0));
 	}
 
