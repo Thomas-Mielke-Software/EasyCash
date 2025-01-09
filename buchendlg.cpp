@@ -1157,10 +1157,11 @@ void BuchenDlg::OnTimer(UINT nIDEvent)
 		x = theApp.GetProfileInt("Fenster", "BuchenPosX", 150);
 		y = theApp.GetProfileInt("Fenster", "BuchenPosY", 100);
 #if (_MSC_VER >= 1600)
-		// if (*betriebe && *bestandskonten)  // wenn beide aktiv: dynamisches layout aktivieren
 		{
 			cx = theApp.GetProfileInt("Fenster", "BuchenSizeX", -1);
+			if (cx < rWnd.right - rWnd.left - 20) cx = rWnd.right - rWnd.left;
 			cy = theApp.GetProfileInt("Fenster", "BuchenSizeY", -1);
+			if (cy < rWnd.bottom - rWnd.top - 20) cy = rWnd.bottom - rWnd.top;
 		}
 #endif
 		// Dialog noch auf dem Display sichtbar?

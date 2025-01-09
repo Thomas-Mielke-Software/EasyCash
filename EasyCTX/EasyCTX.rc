@@ -51,8 +51,8 @@ END
 //
 
 VS_VERSION_INFO VERSIONINFO
- FILEVERSION 3,1,0,1
- PRODUCTVERSION 3,1,0,1
+ FILEVERSION 3,2,0,1
+ PRODUCTVERSION 3,2,0,1
  FILEFLAGSMASK 0x3fL
 #ifdef _DEBUG
  FILEFLAGS 0x1L
@@ -69,12 +69,12 @@ BEGIN
         BEGIN
             VALUE "CompanyName", "Thomas Mielke Softwareentwicklung"
             VALUE "FileDescription", "EasyCTX ActiveX Control Module"
-            VALUE "FileVersion", "3.1.0.1"
+            VALUE "FileVersion", "3.2.0.1"
             VALUE "InternalName", "EasyCTX"
             VALUE "LegalCopyright", "© 1998-2024 Thomas Mielke Softwareentwicklung"
             VALUE "OriginalFilename", "EasyCTX.OCX"
             VALUE "ProductName", "EasyCTX ActiveX Control Module"
-            VALUE "ProductVersion", "3.1.0.1"
+            VALUE "ProductVersion", "3.2.0.1"
         END
     END
     BLOCK "VarFileInfo"

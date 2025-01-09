@@ -689,6 +689,7 @@ v3.1
 - Bugfix zu v3.0: Datenverzeichnis-Check funktioniert nun auf MacOS und Wine
 
 v3.2
+- Beim Buchen-Dialog wird nun geprüft, ob er eine Minimalgröße unterschreitet und diese ggf. wiederhergestellt.
 - Waren keine Betriebe angelegt, wurde in der Freestyle-EÜR die Steuernummer nicht angezeigt.
 - Unter Einstellungen->E/Ü-Konten wird jetzt eine möglichst aktuelle EÜR bzw. E1a vorausgewählt.
 - Meldungen mit "nicht noch einmal anzeigen"-Checkbox werden jetzt nicht mehr abgehackt angezeigt.
