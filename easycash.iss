@@ -45,7 +45,7 @@ Name: desktopicon; Description: Create a &desktop icon; GroupDescription: Additi
 ;Source: "C:\Program Files (x86)\Microsoft Visual Studio 9.0\VC\redist\x86\Microsoft.VC90.MFCLOC\MFC90DEU.dll"; DestDir: {app};
 ;Source: "C:\Program Files (x86)\Microsoft Visual Studio 9.0\VC\redist\x86\Microsoft.VC90.OPENMP\vcomp90.dll"; DestDir: {app};      
 ;vc9: Source: .\Systemdateien\VC_redist.x86.exe; DestDir: {tmp}; Flags: dontcopy;   
-Source: .\Systemdateien\VC_redist.x86.exe; DestDir: {tmp}; Flags: dontcopy;
+Source: ..\EasyCash\Systemdateien\VC_redist.x86.exe; DestDir: {tmp}; Flags: dontcopy;
 ;-> [Run] !!
 
 Source: .\Release\EasyCT.exe; DestDir: {app}; Flags: ignoreversion
@@ -58,7 +58,7 @@ Source: ..\CrashRpt\bin\CrashSender1403.exe; DestDir: {app}; Flags: ignoreversio
 Source: ..\CrashRpt\bin\CrashRpt1403.dll; DestDir: {app}; Flags: ignoreversion
 Source: ..\CrashRpt\bin\crashrpt_lang.ini; DestDir: {app}; Flags: ignoreversion
 Source: ..\CrashRpt\bin\dbghelp.dll; DestDir: {app}; Flags: ignoreversion 
-Source: .\Doc\PDF-Anleitungen\ECT-Doku_Michael.pdf; DestDir: {app}; Flags: ignoreversion
+Source: ..\EasyCash\Doc\PDF-Anleitungen\ECT-Doku_Michael.pdf; DestDir: {app}; Flags: ignoreversion
 ;___USt deutsch___
 Source: .\UST\D-2023\ust-d-2023.ecf; DestDir: {app}; Flags: ignoreversion; Components: BRDFormular
 Source: .\UST\D-2023\ust-d-2023-1.png; DestDir: {app}; Flags: ignoreversion; Components: BRDFormular
