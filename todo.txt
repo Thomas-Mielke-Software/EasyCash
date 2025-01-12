@@ -694,12 +694,13 @@ v3.2
 - Unter Einstellungen->E/Ü-Konten wird jetzt eine möglichst aktuelle EÜR bzw. E1a vorausgewählt.
 - Meldungen mit "nicht noch einmal anzeigen"-Checkbox werden jetzt nicht mehr abgehackt angezeigt.
 
+v3.3
+- Bugfix im EÜR2024-Formular, der im Elster-Plugin zu Plausibilitätsfehlern führte
+
  ^
 ^^^
  !
  !
-- Buchungsfenster: Minimalgröße (vertikal abhängig von Betrieben und Bestandskonten)
-- DSA-Messagebox vergrößern (letzte Zeile wird teilweise abgeschnitten)
 - Die Konten mit den Anfangsbuchstaben auszuwählen, auch wenn sie eingerückt sind, wäre sinnvoll.
 
 
