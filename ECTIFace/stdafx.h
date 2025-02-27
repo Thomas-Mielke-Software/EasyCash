@@ -20,6 +20,8 @@
 // dieser Software erhalten haben; falls nicht, schreiben Sie an die Free 
 // Software Foundation, Inc., 51 Franklin St, 5th Floor, Boston, MA 02110, USA.
 
+#define _WIN32_WINNT 0x00a00
+
 #define VC_EXTRALEAN		// Exclude rarely-used stuff from Windows headers
 
 #include <afxwin.h>         // MFC core and standard components

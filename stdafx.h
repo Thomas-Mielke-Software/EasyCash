@@ -20,6 +20,10 @@
 // dieser Software erhalten haben; falls nicht, schreiben Sie an die Free 
 // Software Foundation, Inc., 51 Franklin St, 5th Floor, Boston, MA 02110, USA. 
 
+#define _WIN32_WINNT 0x0a00
+
+#define NTDDI_VERSION NTDDI_WIN10
+
 #include "targetver.h"
 
 // #define VC_EXTRALEAN		// Exclude rarely-used stuff from Windows headers
@@ -62,7 +66,7 @@ extern CComModule _Module;
 #include <afxcview.h>
 
 // XFolderDialog Stuff
-#define _WIN32_WINNT 0x0500
+
 #ifndef CDSIZEOF_STRUCT
 #define CDSIZEOF_STRUCT(structname, member) (((int)((LPBYTE)(&((structname*)0)->member) - ((LPBYTE)((structname*)0)))) + sizeof(((structname*)0)->member))
 #endif

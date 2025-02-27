@@ -35,6 +35,7 @@
 #if defined(NDEBUG)
 #include "CrashRpt.h"
 #endif
+#include <ShellScalingApi.h>
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -179,6 +180,9 @@ BOOL CEasyCashApp::InitInstance()
 		crAddScreenshot2(CR_AS_MAIN_WINDOW|CR_AS_USE_JPEG_FORMAT, 95);
 	}
 #endif
+
+	SetProcessDpiAwareness(PROCESS_PER_MONITOR_DPI_AWARE);
+	//SetThreadDpiAwarenessContext(DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE_V2);
 
 	// Don't Show Again Messagebox
 	DSASetModule(hExe);

@@ -19,6 +19,8 @@
 // Software Foundation, Inc., 51 Franklin St, 5th Floor, Boston, MA 02110, USA. 
 
 #include "stdafx.h"
+#include <WinUser.h>
+#include <windowsx.h>
 #include "EasyCash.h"
 #include "ECTIFace\EasyCashDoc.h"
 #include "EasyCashView.h"
@@ -26,6 +28,8 @@
 #include "RechnDlg.h"
 #include <ctype.h>
 #include <rpcdce.h>
+#include <shellscalingapi.h>
+#pragma comment(lib, "Shcore.lib")
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -89,6 +93,8 @@ BuchenDlg::BuchenDlg(CEasyCashDoc *pDoc, BOOL ausgaben,
 	m_bNeueBelegnummer = bNeueBelegnummer;
 	m_UpdateBeschreibung = TRUE;
 	m_nGewaehlterSplit = -1;
+	m_uLastDpi = 96;
+	m_vOriginalDlgWndRect = { };
 
 	char inifile[1000], betriebe[2], bestandskonten[2];
 	GetIniFileName(inifile, sizeof(inifile));
@@ -109,6 +115,10 @@ void BuchenDlg::DoDataExchange(CDataExchange* pDX)
 	//}}AFX_DATA_MAP
 }
 
+
+//#ifndef WM_DPICHANGED
+#define WM_DPICHANGED 0x02E0 // Define WM_DPICHANGED if not already defined
+//#endif
 
 BEGIN_MESSAGE_MAP(BuchenDlg, CDialog)
 	//{{AFX_MSG_MAP(BuchenDlg)
@@ -149,6 +159,8 @@ BEGIN_MESSAGE_MAP(BuchenDlg, CDialog)
 	ON_BN_CLICKED(IDC_MWST_ENABLED, &BuchenDlg::OnBnClickedMwstEnabled)
 	ON_CBN_SELCHANGE(IDC_EURECHNUNGSPOSTEN, &BuchenDlg::OnCbnSelchangeEurechnungsposten)
 	ON_BN_CLICKED(IDC_ABGANG_BUCHEN, &BuchenDlg::OnBnClickedAbgangBuchen)
+	ON_MESSAGE(WM_DPICHANGED, &BuchenDlg::OnDpiChanged)
+	ON_WM_NCCREATE()
 END_MESSAGE_MAP()
 
 /////////////////////////////////////////////////////////////////////////////
@@ -1234,6 +1246,9 @@ void BuchenDlg::OnTimer(UINT nIDEvent)
 			SetWindowPos(NULL, x, y, 0, 0, SWP_NOACTIVATE|SWP_NOOWNERZORDER|SWP_NOSIZE|SWP_NOZORDER);
 #endif
 
+
+		DoInitialDPISetup();
+
 		KillTimer(nIDEvent);
 	}
 	else if (nIDEvent == 102)
@@ -1769,4 +1784,420 @@ void BuchenDlg::OnBnClickedAbgangBuchen()
 		}
 	m_pParent->RedrawWindow();
 	m_pDoc->UpdateAllViews(NULL);
+}
+
+
+
+
+
+
+
+
+LRESULT BuchenDlg::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
+{
+	switch (message)
+	{
+		// On DPI change resize the window, scale the font, and update
+		// the DPI-info string
+		/*case WM_DPICHANGED:
+		{
+			return HandleDpiChange(wParam, lParam);
+		}*/
+
+	}
+	return CDialog::WindowProc(message, wParam, lParam);
+}
+
+BOOL BuchenDlg::OnNcCreate(LPCREATESTRUCT lpCreateStruct)
+{
+	if (!CDialog::OnNcCreate(lpCreateStruct))
+		return FALSE;
+
+	//if (!EnableNonClientDpiScaling(m_hWnd))  // Note  Applications running at a DPI_AWARENESS_CONTEXT of DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE_V2 automatically scale their non-client areas by default. They do not need to call this function.
+	//	return FALSE;
+
+	return TRUE;
+}
+
+// Perform initial Window setup and DPI scaling when the window is created
+LRESULT BuchenDlg::DoInitialDPISetup()
+{
+	// Resize the window to account for DPI. The window might have been created
+	// on a monitor that has > 96 DPI. Windows does not send a window a DPI change
+	// when it is created, even if it is created on a monitor with a DPI > 96
+	RECT rcWindow = {};
+	UINT uDpi = 96;
+
+	SetProcessDpiAwareness(PROCESS_PER_MONITOR_DPI_AWARE);
+	SetThreadDpiAwarenessContext(DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE_V2);	// this also scales the dialog window title without the need to EnableNonClientDpiScaling()
+
+	// Determine the DPI to use, according to the DPI awareness mode
+	DPI_AWARENESS dpiAwareness = GetAwarenessFromDpiAwarenessContext(GetThreadDpiAwarenessContext());
+	switch (dpiAwareness)
+	{
+		// Scale the window to the system DPI
+	case DPI_AWARENESS_SYSTEM_AWARE:
+		uDpi = GetDpiForSystem();
+		break;
+
+		// Scale the window to the monitor DPI
+	case DPI_AWARENESS_PER_MONITOR_AWARE:
+		uDpi = GetDpiForWindow(m_hWnd);
+		break;
+	}
+
+	GetWindowRect(&rcWindow);
+	rcWindow.right = rcWindow.left + MulDiv(WINDOW_WIDTH96, uDpi, 96);
+	rcWindow.bottom = rcWindow.top + MulDiv(WINDOW_HEIGHT96, uDpi, 96);
+	SetWindowPos(nullptr, rcWindow.right, rcWindow.top, rcWindow.right - rcWindow.left, rcWindow.bottom - rcWindow.top, SWP_NOZORDER | SWP_NOACTIVATE);
+/*
+	// Create a static control for use displaying DPI-related information.
+	// Initially the static control will not be sized, but we will next DPI
+	// scale it with a helper function.
+	HWND hWndStatic = CreateWindowExW(WS_EX_LEFT, L"STATIC", HWND_NAME_STATIC, SS_LEFT | WS_CHILD | WS_VISIBLE,
+		0, 0, 0, 0, hWnd, nullptr, g_hInst, nullptr);
+	if (hWndStatic == nullptr)
+	{
+		return -1;
+	}
+
+	// Create some buttons
+	HWND hWndCheckbox = CreateWindow(L"BUTTON", HWND_NAME_CHECKBOX, WS_TABSTOP | WS_VISIBLE | WS_CHILD | BS_DEFPUSHBUTTON | BS_CHECKBOX, 0, 0, 0, 0, hWnd, nullptr, g_hInst, nullptr);
+	HWND hWndRadio = CreateWindow(L"BUTTON", HWND_NAME_RADIO, BS_PUSHBUTTON | BS_TEXT | BS_DEFPUSHBUTTON | BS_USERBUTTON | BS_AUTORADIOBUTTON | WS_CHILD | WS_OVERLAPPED | WS_VISIBLE, 0, 0, 0, 0, hWnd, nullptr, g_hInst, nullptr);
+	HWND hWndDialog = CreateWindow(L"BUTTON", HWND_NAME_DIALOG, WS_TABSTOP | WS_VISIBLE | WS_CHILD | BS_DEFPUSHBUTTON, 0, 0, 0, 0, hWnd, (HMENU)IDM_SHOWDIALOG, g_hInst, nullptr);
+
+	// Load an HWND from an external source (a DLL in this example)
+	//
+	// HWNDs from external sources might not support Per-Monitor V2 awareness. Hosting HWNDs that
+	// don't support the same DPI awareness mode as their host can lead to rendering problems.
+	// When child-HWND DPI isolation is enabled, Windows will try to let that HWND run in its native
+	// DPI scaling mode (which might or might not have been defined explicitly). 
+
+	// First, determine if we are in the correct mode to use this feature
+	BOOL bDpiIsolation = PtrToInt(GetProp(hWnd, PROP_DPIISOLATION));
+
+	DPI_AWARENESS_CONTEXT previousDpiContext = {};
+	DPI_HOSTING_BEHAVIOR previousDpiHostingBehavior = {};
+
+	if (bDpiIsolation)
+	{
+		previousDpiHostingBehavior = SetThreadDpiHostingBehavior(DPI_HOSTING_BEHAVIOR_MIXED);
+
+		// For this example, we'll have the external content run with System-DPI awareness
+		previousDpiContext = SetThreadDpiAwarenessContext(DPI_AWARENESS_CONTEXT_SYSTEM_AWARE);
+	}
+
+	HWND hWndExternal = PlugInDll::PlugInDll::CreateContentHwnd(g_hInst, EXTERNAL_CONTENT_WIDTH96, EXTERNAL_CONTENT_HEIGHT96);
+
+	// Return the thread context and hosting behavior to its previous value, if using DPI-isolation
+	if (bDpiIsolation)
+	{
+		SetThreadDpiAwarenessContext(previousDpiContext);
+		SetThreadDpiHostingBehavior(previousDpiHostingBehavior);
+	}
+
+	// After the external content HWND was create with a system-DPI awareness context, reparent it
+	HWND hWndResult = SetParent(hWndExternal, m_hWnd);
+*/
+	// DPI scale child-windows
+	UpdateAndDpiScaleControls(uDpi);
+
+	return 0;
+}
+
+// DPI Change handler. on WM_DPICHANGE resize the window and
+// then call a function to redo layout for the child controls
+UINT BuchenDlg::HandleDpiChange(WPARAM wParam, LPARAM lParam)
+{
+	UINT uDpi = HIWORD(wParam);
+
+	// Resize the window
+	auto lprcNewScale = reinterpret_cast<RECT*>(lParam);
+	//CRect rcNewScale;
+	//GetWindowRect(&rcNewScale);
+	//auto lprcNewScale = &rcNewScale;
+
+	/*if (uDpi < m_uLastDpi)*/
+		SetWindowPos(nullptr,
+			MulDiv(lprcNewScale->left, uDpi, m_uLastDpi),
+			MulDiv(lprcNewScale->top, uDpi, m_uLastDpi),
+			MulDiv(lprcNewScale->right - lprcNewScale->left, uDpi, m_uLastDpi),
+			MulDiv(lprcNewScale->bottom - lprcNewScale->top, uDpi, m_uLastDpi),
+			SWP_NOZORDER | SWP_NOACTIVATE);
+	/*else
+		SetWindowPos(nullptr, lprcNewScale->left, lprcNewScale->top,
+			lprcNewScale->right - lprcNewScale->left, lprcNewScale->bottom - lprcNewScale->top,
+			SWP_NOZORDER | SWP_NOACTIVATE);*/
+
+	// Redo layout of the child controls
+	UpdateAndDpiScaleControls(uDpi);
+	m_uLastDpi = uDpi;
+
+	return 0;
+}
+
+
+LRESULT BuchenDlg::OnDpiChanged(WPARAM wParam, LPARAM lParam)
+{
+	UINT uDpi = HIWORD(wParam);
+	UINT uDpiX = LOWORD(wParam);
+
+	// Resize the window
+	auto lprcNewScale = reinterpret_cast<RECT*>(lParam);
+
+	SetWindowPos(nullptr, lprcNewScale->left, lprcNewScale->top,
+		lprcNewScale->right - lprcNewScale->left, lprcNewScale->bottom - lprcNewScale->top,
+		SWP_NOZORDER | SWP_NOACTIVATE);
+
+	// Redo layout of the child controls
+	UpdateAndDpiScaleControls(uDpi);
+	if (uDpi != m_uLastDpi)
+	{
+		MoveWindow(lprcNewScale->left, lprcNewScale->top,
+			lprcNewScale->right - lprcNewScale->left + 1, lprcNewScale->bottom - lprcNewScale->top + 1);
+		RedrawWindow();
+	}
+	m_uLastDpi = uDpi;
+
+	return 0;
+}
+
+
+// Resize and reposition child controls for DPI
+void BuchenDlg::UpdateAndDpiScaleControls(UINT uDpi)
+{
+	HWND hWndRadio;
+	HWND hWndDialog;
+
+	CRect rect, clientRect;
+	GetClientRect(&clientRect);
+	
+	// Resize and set new font for all child controls
+	LOGFONT lf;
+	CFont fontNew;
+	//HFONT hFontNew;
+	CWnd* pChild = GetWindow(GW_CHILD);
+	CWnd* pChildWithFont = nullptr;
+	CFont* currentFont = nullptr;
+	while (pChild)
+	{
+		// Resize child
+		pChild->GetWindowRect(&rect);
+		ScreenToClient(&rect);
+		rect.left = MulDiv(rect.left, uDpi, m_uLastDpi);
+		rect.top = MulDiv(rect.top, uDpi, m_uLastDpi);
+		rect.right = min(MulDiv(rect.right, uDpi, m_uLastDpi), clientRect.right);
+		if (rect.right >= clientRect.right) 
+			rect.right -= 400;
+		rect.bottom = min(MulDiv(rect.bottom, uDpi, m_uLastDpi), clientRect.bottom - 200);
+		pChild->MoveWindow(&rect);
+
+		/*
+		UINT uPadding = MulDiv(DEFAULT_PADDING96, uDpi, 96);
+		RECT rcClient = {};
+		GetClientRect(&rcClient);
+		UINT uWidth = (rcClient.right - rcClient.left) - 2 * uPadding;
+		UINT uHeight = MulDiv(SAMPLE_STATIC_HEIGHT96, uDpi, 96);
+		pChild->SetWindowPos(
+			nullptr,
+			0,
+			0,
+			uWidth,
+			uHeight,
+			SWP_NOZORDER | SWP_NOACTIVATE);
+		*/
+
+
+
+		
+		// set fontsize
+		currentFont = pChild->GetFont();
+		if (currentFont)
+		{
+			pChildWithFont = pChild;
+			/*
+			LOGFONT lf = {};
+			::SystemParametersInfoForDpi(SPI_GETICONTITLELOGFONT, sizeof(lf), &lf, FALSE, uDpi);
+			//currentFont->GetLogFont(&lf);
+			if (lf.lfHeight != 0)
+			{
+				MulDiv(lf.lfHeight, uDpi, m_uLastDpi);
+				lf.lfHeight = MulDiv(lf.lfHeight, uDpi, m_uLastDpi);
+				fontNew.DeleteObject();
+				fontNew.CreateFontIndirect(&lf);
+				pChild->SetFont(&fontNew);
+				currentFont->DeleteObject();
+			}*/
+		}
+
+
+		/*
+		CFont* currentFont = GetFont();
+		currentFont->GetLogFont(&lf);
+		lf.lfHeight = pixelHeight;
+		font_.DeleteObject();
+		font_.CreateFontIndirect(&lf);    // Create the font.
+
+		// Use the font to paint a control.
+		SetFont(&font_);
+		*/
+
+		/*
+		CFont* currentFont = pChild->GetFont();
+		if (currentFont)
+		{
+			currentFont->GetLogFont(&lf);
+			lf.lfHeight = -6;
+			fontNew.DeleteObject();
+			fontNew.CreateFontIndirect(&lf);    // Create the font.
+
+			// Use the font to paint a control.
+			pChild->SetFont(&fontNew);
+		}
+		*/
+
+		pChild = pChild->GetNextWindow();
+	}
+		
+	if (currentFont)
+	{
+		// Send a new font to all child controls (the 'plugin' content is subclassed to ignore WM_SETFONT)
+		//auto hFontOld = pChildWithFont->GetFont();
+		//LOGFONT lfText = {};
+		//SystemParametersInfoForDpi(SPI_GETICONTITLELOGFONT, sizeof(lfText), &lfText, FALSE, uDpi);
+		LOGFONT lfText = {};
+		currentFont->GetLogFont(&lfText);
+		lfText.lfHeight = MulDiv(lfText.lfHeight, uDpi, m_uLastDpi);
+		HFONT hFontNew = CreateFontIndirect(&lfText);
+		if (hFontNew)
+		{
+			//DeleteObject(hFontOld);
+			EnumChildWindows(m_hWnd, [](HWND hWnd, LPARAM lParam) -> BOOL
+				{
+					::SendMessage(hWnd, WM_SETFONT, (WPARAM)lParam, MAKELPARAM(TRUE, 0));
+					return TRUE;
+				}, (LPARAM)hFontNew);
+		}
+		currentFont->DeleteObject();
+	}
+
+	/*
+	// Size and position the static control
+	HWND hWndStatic = ::FindWindowEx(m_hWnd, nullptr, _T("STATIC"), nullptr);
+	if (hWndStatic == nullptr)
+	{
+		return;
+	}
+	UINT uWidth = (rcClient.right - rcClient.left) - 2 * uPadding;
+	UINT uHeight = MulDiv(SAMPLE_STATIC_HEIGHT96, uDpi, 96);
+	::SetWindowPos(
+		hWndStatic,
+		nullptr,
+		uPadding,
+		uPadding,
+		uWidth,
+		uHeight,
+		SWP_NOZORDER | SWP_NOACTIVATE);
+
+	// Size and position the checkbox
+	HWND hWndCheckbox = ::FindWindowEx(hWnd, nullptr, _T("BUTTON"), nullptr);
+	if (hWndCheckbox == nullptr)
+	{
+		return;
+	}
+	GetParentRelativeWindowRect(hWndStatic, &rcClient);
+	::SetWindowPos(
+		hWndCheckbox,
+		nullptr,
+		uPadding,
+		rcClient.bottom + uPadding,
+		MulDiv(DEFAULT_BUTTON_WIDTH96, uDpi, 96),
+		MulDiv(DEFAULT_BUTTON_HEIGHT96, uDpi, 96), SWP_NOZORDER | SWP_NOACTIVATE);
+
+	// Size and position the radio button
+	hWndRadio = FindWindowEx(hWnd, nullptr, L"BUTTON", HWND_NAME_RADIO);
+	if (hWndCheckbox == nullptr)
+	{
+		return;
+	}
+	GetParentRelativeWindowRect(hWndCheckbox, &rcClient);
+	SetWindowPos(hWndRadio, nullptr, rcClient.right + uPadding, rcClient.top,
+		MulDiv(DEFAULT_BUTTON_WIDTH96, uDpi, 96),
+		MulDiv(DEFAULT_BUTTON_HEIGHT96, uDpi, 96),
+		SWP_NOZORDER | SWP_NOACTIVATE);
+
+	// Size and position the dialog button
+	hWndDialog = FindWindowEx(hWnd, nullptr, L"BUTTON", HWND_NAME_DIALOG);
+	GetParentRelativeWindowRect(hWndCheckbox, &rcClient);
+	SetWindowPos(hWndDialog, nullptr, uPadding, rcClient.bottom + uPadding,
+		MulDiv(DEFAULT_BUTTON_WIDTH96 * 2, uDpi, 96), // Make this one twice as wide as the others
+		MulDiv(DEFAULT_BUTTON_HEIGHT96, uDpi, 96),
+		SWP_NOZORDER | SWP_NOACTIVATE);
+
+	// Size and position the external content HWND
+	HWND hWndExternal = FindWindowEx(hWnd, nullptr, PLUGINWINDOWCLASSNAME, HWND_NAME_EXTERNAL);
+	GetParentRelativeWindowRect(hWndDialog, &rcClient);
+	SetWindowPos(hWndExternal, hWndDialog, uPadding, rcClient.bottom + uPadding,
+		MulDiv(EXTERNAL_CONTENT_WIDTH96, uDpi, 96),
+		MulDiv(EXTERNAL_CONTENT_HEIGHT96, uDpi, 96),
+		SWP_NOZORDER | SWP_NOACTIVATE);
+
+
+	// Send a new font to all child controls
+	LOGFONT lf;
+	CFont fontNew;
+	HFONT hFontNew;
+	if (hFontNew)
+	{
+		auto hFontOld = GetWindowFont(hWndStatic);
+		LOGFONT lfText = {};
+		::SystemParametersInfoForDpi(SPI_GETICONTITLELOGFONT, sizeof(lfText), &lfText, FALSE, uDpi);
+		VERIFY(fontNew.FromHandle(hFontNew));
+		fontNew.CreateFontIndirect(&lfText)
+
+
+
+		CFont* currentFont = GetFont();
+		currentFont->GetLogFont(&lf);
+		lf.lfHeight = pixelHeight;
+		font_.DeleteObject();
+		font_.CreateFontIndirect(&lf);    // Create the font.
+
+		// Use the font to paint a control.
+		SetFont(&font_);
+
+		/*
+		DeleteObject(hFontOld);
+		EnumChildWindows(m_hWnd, [](HWND hWnd, LPARAM lParam) -> BOOL
+			{
+				::SendMessage(hWnd, WM_SETFONT, (WPARAM)lParam, MAKELPARAM(TRUE, 0));
+				return TRUE;
+			}, (LPARAM)hFontNew);
+
+
+
+	CFont font;
+	LOGFONT lf;
+	memset(&lf, 0, sizeof(LOGFONT)); // zero out structure
+	lf.lfHeight = 12;                // request a 12-pixel-height font
+	_tcsncpy_s(lf.lfFaceName, LF_FACESIZE,
+		_T("Arial"), 7);           // request a face name "Arial"
+	VERIFY(font.CreateFontIndirect(&lf)); // create the font
+
+
+
+
+	
+	}*/
+}
+
+BOOL BuchenDlg::GetParentRelativeWindowRect(HWND hWnd, RECT* childBounds)
+{
+	if (!::GetWindowRect(hWnd, childBounds))
+	{
+		return FALSE;
+	}
+	::MapWindowPoints(HWND_DESKTOP, ::GetAncestor(hWnd, GA_PARENT), (POINT *)childBounds, 2);
+
+	return TRUE;
 }

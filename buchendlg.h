@@ -23,6 +23,16 @@
 
 class CEasyCashView;
 
+#define DEFAULT_PADDING96          20
+#define WINDOW_WIDTH96             500
+#define WINDOW_HEIGHT96            700
+#define DEFAULT_CHAR_BUFFER        150
+#define DEFAULT_BUTTON_HEIGHT96    25
+#define DEFAULT_BUTTON_WIDTH96     100
+#define SAMPLE_STATIC_HEIGHT96     50
+#define EXTERNAL_CONTENT_WIDTH96   400
+#define EXTERNAL_CONTENT_HEIGHT96  400
+
 class BuchenDlg : public CDialog
 {
 // Construction
@@ -74,6 +84,17 @@ protected:
 	void UpdateCombo(CString ea);
 	void OnAlt(int nCtrl, int nItem);
 
+	// DPI awareness functions
+	LRESULT DoInitialDPISetup();
+	UINT HandleDpiChange(WPARAM wParam, LPARAM lParam);
+	BOOL GetParentRelativeWindowRect(HWND hWnd, LPRECT lpRect);
+	void UpdateAndDpiScaleControls(UINT uDpi);
+
+	// DPI awareness variables
+	UINT m_uLastDpi;
+	CRect m_vOriginalDlgWndRect;
+	std::vector<CRect> m_vOriginalCtlRects;
+
 	// Generated message map functions
 	//{{AFX_MSG(BuchenDlg)
 	virtual void OnOK();
@@ -118,4 +139,7 @@ public:
 	afx_msg void OnBnClickedMwstEnabled();
 	afx_msg void OnCbnSelchangeEurechnungsposten();
 	afx_msg void OnBnClickedAbgangBuchen();
+	virtual LRESULT WindowProc(UINT message, WPARAM wParam, LPARAM lParam);
+	LRESULT OnDpiChanged(WPARAM wParam, LPARAM lParam);
+	afx_msg BOOL OnNcCreate(LPCREATESTRUCT lpCreateStruct);
 };
