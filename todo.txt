@@ -697,6 +697,8 @@ v3.2
 v3.3
 - Bugfix im EÜR2024-Formular, der im Elster-Plugin zu Plausibilitätsfehlern führte
 
+v3.4
+- Bugfix: irrtümlicher Hinweis, wenn in den Einstellungen bei der Formatprüfung der Wirtschaftsidentifikationsnummer an der zweiten Stelle einen Buchstaben hatte
  ^
 ^^^
  !
