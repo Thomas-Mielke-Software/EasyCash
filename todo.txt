@@ -699,6 +699,8 @@ v3.3
 
 v3.4
 - Bugfix: irrtümlicher Hinweis, wenn in den Einstellungen bei der Formatprüfung der Wirtschaftsidentifikationsnummer an der zweiten Stelle einen Buchstaben hatte
+- Usability: Nach dem Ändern des Datenverzeichnis wird die Liste der zuletzt geöffneten Dateien sinnvoll vorbelegt und enthält nicht mehr die Dateien aus dem alten Verzeichnis.
+
  ^
 ^^^
  !

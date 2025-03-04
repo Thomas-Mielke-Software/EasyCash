@@ -172,6 +172,7 @@ protected:
 	BOOL CreateDockingWindows();
 	void SetDockingWindowIcons(BOOL bHiColorIcons);
 //	void ShowOptions (int nPage);
+	void GeneriereMRUFile(CString& csDatenverzeichnis, CStringArray& csaFileList, CString csMuster, int nLength = 0);
 
 	UINT	m_nAppLook;
 public:

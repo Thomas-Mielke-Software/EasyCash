@@ -1625,8 +1625,73 @@ void CMainFrame::OnFileWaehleDatenverzeichnis()
 		SetIniFileName(((CString)(csDatenverzeichnis + "\\easyct.ini")).GetBuffer(0));
 
 		if (csDatenverzeichnis != csAltesDatenverzeichnis)
-			AfxMessageBox("Bitte kopieren Sie die easyct.ini und alle benötigten Buchungsdateien (Jahr????.eca) ggf. in das neue Datenverzeichnis.");
+		{
+			AfxMessageBox("Bitte kopieren Sie die ggf. easyct.ini und alle benötigten Buchungsdateien (Jahr????.eca) in das neue Datenverzeichnis.");
+
+			// MRU-Liste aktualisieren mit allen im neuen Datenverzeichnis vorgefundenen .eca-Dateien
+			CStringArray csaFileList, csaFileListSafe;
+			GeneriereMRUFile(csDatenverzeichnis, csaFileList, "*.eca");
+			csaFileListSafe.Copy(csaFileList);
+			if (csaFileList.GetSize() > 20)		// filtern, wenn zu viele Ergebnisse...
+			{
+				GeneriereMRUFile(csDatenverzeichnis, csaFileList, "Jahr*.eca");
+			}
+			if (csaFileList.GetSize() < 1)		// zu wenig Ergebisse? dann vorige Suche wiederherstellen
+			{
+				csaFileList.Copy(csaFileListSafe);
+			}
+			else
+			{
+				csaFileListSafe.Copy(csaFileList);
+				if (csaFileList.GetSize() > 20)
+				{
+					GeneriereMRUFile(csDatenverzeichnis, csaFileList, "Jahr*.eca", 12);		// z.B. "Jahr2025.eca" == 12 Stellen
+				}
+				if (csaFileList.GetSize() < 1)		// zu wenig Ergebisse? dann vorige Suche wiederherstellen
+				{
+					csaFileList.Copy(csaFileListSafe);
+				}
+			}
+
+			theApp.ReplaceRecentFileList(csaFileList);
+		}
 	}
+}
+
+void CMainFrame::GeneriereMRUFile(CString& csDatenverzeichnis, CStringArray& csaFileList, CString csMuster, int nMaxFileNameLength)
+{
+	csaFileList.RemoveAll();
+	CString strFileSpec(csDatenverzeichnis);
+
+	if (strFileSpec.Right(1) != _T("\\"))
+		strFileSpec += "\\";
+	strFileSpec += csMuster;
+
+	CFileFind Search;
+	BOOL bFound = Search.FindFile(strFileSpec);
+
+	while (bFound) {
+		bFound = Search.FindNextFile();
+
+		if (Search.IsDots())
+			continue;
+
+		if (Search.IsDirectory()) {
+			//if (m_oPrefs.Recurse())							nicht rekursiv!
+			//	GetFiles(Search.GetFilePath(), iFound);
+			//else
+			continue;
+		}
+		CString s = Search.GetFileName();
+		if (nMaxFileNameLength > 0)
+			if (Search.GetFileName().GetLength() > nMaxFileNameLength)
+				continue;
+
+		csaFileList.Add(Search.GetFilePath());
+
+	}
+
+	Search.Close();
 }
 
 void CMainFrame::OnFileRegistrierungsinformationenWiederherstellen() 

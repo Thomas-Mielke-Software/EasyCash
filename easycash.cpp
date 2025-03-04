@@ -19,6 +19,7 @@
 // Software Foundation, Inc., 51 Franklin St, 5th Floor, Boston, MA 02110, USA. 
 
 #include "stdafx.h"
+#include "afxadv.h"
 #include "EasyCash.h"
 
 #include "ExtSplitter.h"
@@ -1086,6 +1087,34 @@ BOOL CEasyCashApp::OnOpenRecentFile(UINT nID)
 	else
 	{
 		OpenDocumentFile(m_MandantenverzeichnisMRUDateinamen[nID-ID_FILE_MRU_FILE2]);		
+		return TRUE;
+	}
+}
+
+BOOL CEasyCashApp::ReplaceRecentFileList(CStringArray& csaFileList)
+{
+	CString Mandant0Existiert = theApp.GetProfileString("Mandanten", "Mandant00Datenverzeichnis", "");
+	if (Mandant0Existiert.IsEmpty())
+	{
+		// Überprüfen, ob m_pRecentFileList initialisiert ist
+		if (m_pRecentFileList == nullptr)
+		{
+			return FALSE;
+		}
+
+		// MRU-Liste löschen
+		int nRFL = m_pRecentFileList->GetSize();
+		while (nRFL > 0)
+		{
+			m_pRecentFileList->Remove(--nRFL);
+		}
+
+		// Neue Dateien zur MRU-Liste hinzufügen
+		for (int i = 0; i < csaFileList.GetSize(); ++i)
+		{
+			AddToRecentFileList(csaFileList[i]);
+		}
+
 		return TRUE;
 	}
 }
