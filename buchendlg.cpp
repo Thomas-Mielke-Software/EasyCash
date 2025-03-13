@@ -1705,7 +1705,7 @@ void BuchenDlg::OnRechner()
 		dlg.m_mwst = (double)b.MWSt / 1000.0;
 	if (dlg.DoModal() == IDOK)
 	{
-		int_to_currency((int)((dlg.m_betrag_neu + 0.005) * 100), 4, buf);
+		int_to_currency((int)((dlg.m_betrag_neu + (dlg.m_betrag_neu < 0.0 ? -0.005 : +0.005)) * 100), 4, buf);	// Rundung: bei positiven Zahlen nach oben, bei negativen Zahlen nach unten
 		SetDlgItemText(IDC_BETRAG, buf);
 	}
 
