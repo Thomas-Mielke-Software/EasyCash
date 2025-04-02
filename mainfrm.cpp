@@ -1620,8 +1620,29 @@ void CMainFrame::OnFileWaehleDatenverzeichnis()
 			theApp.WriteProfileString("Mandanten", csKey, csDatenverzeichnis);
 		}
 		else
-			theApp.WriteProfileString("Allgemein", "Datenverzeichnis", csDatenverzeichnis);	
+		{
+			if (!theApp.WriteProfileString("Allgemein", "Datenverzeichnis", csDatenverzeichnis))
+			{
+				CString csError;
+				DWORD dwError = GetLastError();
+				LPVOID lpMsgBuf;
 
+				FormatMessage(
+					FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM,
+					NULL,
+					GetLastError(),
+					MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), // Default language
+					(LPTSTR)&lpMsgBuf,
+					0,
+					NULL
+				);
+
+				if (!lpMsgBuf) lpMsgBuf = "keine genauere Fehlerbeschreibung verfügbar";
+				csError.Format("Fehler beim Schreiben des Datenverzeichnisses '%s' in die Registry: %s", (LPCTSTR)csDatenverzeichnis, lpMsgBuf);
+				AfxMessageBox(csError);
+			}
+		}
+		
 		SetIniFileName(((CString)(csDatenverzeichnis + "\\easyct.ini")).GetBuffer(0));
 
 		if (csDatenverzeichnis != csAltesDatenverzeichnis)
@@ -1654,6 +1675,32 @@ void CMainFrame::OnFileWaehleDatenverzeichnis()
 			}
 
 			theApp.ReplaceRecentFileList(csaFileList);
+		}
+	}
+	else
+	{
+		csDatenverzeichnis.ReleaseBuffer();
+		AfxMessageBox(csDatenverzeichnis);
+
+		if (csAltesDatenverzeichnis != csDatenverzeichnis)
+		{
+			CString csError;
+			DWORD dwError = GetLastError();
+			LPVOID lpMsgBuf;
+
+			FormatMessage(
+				FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM,
+				NULL,
+				GetLastError(),
+				MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), // Default language
+				(LPTSTR)&lpMsgBuf,
+				0,
+				NULL
+			);
+
+			if (!lpMsgBuf) lpMsgBuf = "keine genauere Fehlerbeschreibung verfügbar";
+			csError.Format("Fehler beim Orndner-Auswahl-Dialog: %s", lpMsgBuf);
+			AfxMessageBox(csError);
 		}
 	}
 }

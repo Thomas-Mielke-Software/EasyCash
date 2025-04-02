@@ -700,6 +700,8 @@ v3.3
 v3.4
 - Bugfix: irrtümlicher Hinweis, wenn in den Einstellungen bei der Formatprüfung der Wirtschaftsidentifikationsnummer an der zweiten Stelle einen Buchstaben hatte
 - Usability: Nach dem Ändern des Datenverzeichnis wird die Liste der zuletzt geöffneten Dateien sinnvoll vorbelegt und enthält nicht mehr die Dateien aus dem alten Verzeichnis.
+- Bugfix: korrektes Runden beim Formelrechner auch bei negativen Beträgen
+- Bugfix: Der Auswahldialog für das Datenverzeichnis im Mac-Paket v3.x gab nicht das ausgewählte Verzeichnis zurück. Wichtig: Um das Problem zu beheben muss das Mac-App-Paket von der Hopemape neu installiert werden. Einfaches Updaten über den Plugin-Manager reicht nicht.
 
  ^
 ^^^

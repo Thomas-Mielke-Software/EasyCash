@@ -1155,6 +1155,25 @@ HINSTANCE hEasyCTXP_DLL = NULL;
 // Note: This is just multi-byte code and not yet unicode compatibel!
 BOOL SelectFolder(LPSTR sFolder, LPCTSTR sTitle = "Verzeichnis auswählen")
 {
+	/* TODO: in Zukunft CFolderPickerDialog benutzen:
+	CFolderPickerDialog dlg("C:\\users\\crossover\\Documents", OFN_FILEMUSTEXIST | OFN_ENABLESIZING, AfxGetMainWnd(), sizeof(OPENFILENAME));
+	ASSERT(dlg.DoModal() == IDCANCEL);	// always returned IDCANCEL in v3.3, no matter what button was pressed
+	if (ret == IDOK)
+	{
+		CString csPath = dlg.GetPathName();
+		AfxMessageBox(csPath);
+		strcpy(sFolder, (LPCTSTR)csPath);
+		return TRUE;
+	}
+	else if (ret != IDCANCEL)
+		{
+			CString csError;
+			csError.Format("Verzeichnisauswahldialog gab unerwarteter Weise '%d' als Status-Wert und '%s' als Verzeichnis zurück.", ret, (LPCTSTR)dlg.GetPathName());
+			AfxMessageBox(csError);
+		}
+	return FALSE;
+
+	*/ 
 	OSVERSIONINFOEX osvi;
 	ZeroMemory(&osvi, sizeof(OSVERSIONINFOEX));
 	osvi.dwOSVersionInfoSize = sizeof(osvi);
