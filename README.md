@@ -12,18 +12,20 @@ Der Quellcode könnte ästhetische Gefühle verletzen und einiges an Leidensfäh
 Die Codebasis ist ein Vierteljahrhundert alt und Konzepte von modernem C++, wie etwa smart pointer, sind selten genutzt worden.
 Tatsächlich wurde vieles häufig noch mit dem Griff in die C-Mottenkiste umgesetzt.
 
-Wer nicht ganz so masochistisch drauf ist, möge sich erst mal der [Plugin-Schnittstelle](https://www.easyct.de/articles.php?cat_id=5) bedienen.
+Wer nicht ganz so hardcore drauf ist, möge sich erst mal der [Plugin-Schnittstelle](https://www.easyct.de/articles.php?cat_id=5) bedienen.
 
 ## Lizenz
 
 Meistens GNU General Public License Version 3 -- bitte weiteres in LIZENZ.txt nachschauen.
 
 ## Voraussetzungen
-Folgendes in dieser Reihenfolge installieren:
+Folgendes in dieser Reihenfolge installieren für EC&T v2.54 und niedriger:
 - VS2008 Standard Edition
 - VS2008 Feature Pack
 - VS2008 SP1
 - KB976656 (um .pch-Bug zu vermeiden)
+oder:
+- Visual Studion 2022 Preview (für v3.0 und höher)
 
 Weiteres:
 - Grafikbibliotheken (in der Projektdatei untergebracht im Verzeichnis [GrafLib](https://github.com/Thomas-Mielke-Software/GrafLib) auf derselben Ebene wie das EasyCash-Repoverzeichnis):
