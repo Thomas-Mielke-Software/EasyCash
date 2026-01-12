@@ -58,7 +58,7 @@ Source: ..\CrashRpt\bin\CrashSender1403.exe; DestDir: {app}; Flags: ignoreversio
 Source: ..\CrashRpt\bin\CrashRpt1403.dll; DestDir: {app}; Flags: ignoreversion
 Source: ..\CrashRpt\bin\crashrpt_lang.ini; DestDir: {app}; Flags: ignoreversion
 Source: ..\CrashRpt\bin\dbghelp.dll; DestDir: {app}; Flags: ignoreversion 
-Source: ..\EasyCash\Doc\PDF-Anleitungen\ECT-Doku_Michael.pdf; DestDir: {app}; Flags: ignoreversion
+Source: .\Doc\PDF-Anleitungen\ECT-Doku_Michael.pdf; DestDir: {app}; Flags: ignoreversion
 ;___USt deutsch___
 Source: .\UST\D-2023\ust-d-2023.ecf; DestDir: {app}; Flags: ignoreversion; Components: BRDFormular
 Source: .\UST\D-2023\ust-d-2023-1.png; DestDir: {app}; Flags: ignoreversion; Components: BRDFormular
