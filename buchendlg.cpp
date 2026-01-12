@@ -1164,11 +1164,29 @@ void BuchenDlg::OnTimer(UINT nIDEvent)
 			if (cy < rWnd.bottom - rWnd.top - 20) cy = rWnd.bottom - rWnd.top;
 		}
 #endif
-		// Dialog noch auf dem Display sichtbar?
+
+		// Dialog noch auf einem der Monitore sichtbar?
+		HMONITOR hMonitor = ::MonitorFromPoint(CPoint(x, y), MONITOR_DEFAULTTONEAREST);
+		MONITORINFO monInfo;
+		monInfo.cbSize = sizeof(MONITORINFO);
+		if (::GetMonitorInfo(hMonitor, &monInfo))
+		{
+			// Adjust for work area
+			x += monInfo.rcWork.left - monInfo.rcMonitor.left;
+			y += monInfo.rcWork.top - monInfo.rcMonitor.top;
+
+			// Ensure top left point is on screen
+			if (CRect(monInfo.rcWork).PtInRect(CPoint(x, y)) == FALSE)
+			{
+				x = monInfo.rcWork.left;
+				y = monInfo.rcWork.top;
+			}
+		}
+		/* obsolet: // Dialog noch auf dem Display sichtbar?
 		if (x > rScreen.right-(rWnd.right-rWnd.left)) x = rScreen.right-(rWnd.right-rWnd.left);
 		if (x < 0) x = 0;
 		if (y > rScreen.bottom-(rWnd.bottom-rWnd.top)) y = rScreen.bottom-(rWnd.bottom-rWnd.top);
-		if (y < 0) y = 0;
+		if (y < 0) y = 0;*/
 
 		CRect r, r2, r3;
 		GetWindowRect(&r);
