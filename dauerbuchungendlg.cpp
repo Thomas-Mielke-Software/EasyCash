@@ -720,10 +720,27 @@ void DauerbuchungenDlg::OnTimer(UINT nIDEvent)
 		cx = theApp.GetProfileInt("Fenster", "DauerbuchungenSizeX", -1);
 		cy = theApp.GetProfileInt("Fenster", "DauerbuchungenSizeY", -1);
 
-		if (x > rScreen.right-(rWnd.right-rWnd.left)) x = rScreen.right-(rWnd.right-rWnd.left);
+		// Dialog noch auf einem der Monitore sichtbar?
+		HMONITOR hMonitor = ::MonitorFromPoint(CPoint(x, y), MONITOR_DEFAULTTONEAREST);
+		MONITORINFO monInfo;
+		monInfo.cbSize = sizeof(MONITORINFO);
+		if (::GetMonitorInfo(hMonitor, &monInfo))
+		{
+			// Adjust for work area
+			x += monInfo.rcWork.left - monInfo.rcMonitor.left;
+			y += monInfo.rcWork.top - monInfo.rcMonitor.top;
+
+			// Ensure top left point is on screen
+			if (CRect(monInfo.rcWork).PtInRect(CPoint(x, y)) == FALSE)
+			{
+				x = monInfo.rcWork.left;
+				y = monInfo.rcWork.top;
+			}
+		}
+		/*if (x > rScreen.right-(rWnd.right-rWnd.left)) x = rScreen.right-(rWnd.right-rWnd.left);
 		if (x < 0) x = 0;
 		if (y > rScreen.bottom-(rWnd.bottom-rWnd.top)) y = rScreen.bottom-(rWnd.bottom-rWnd.top);
-		if (y < 0) y = 0;
+		if (y < 0) y = 0;*/
 
 		if (cx > 0 && cy > 0)  // wenn beide aktiv: dynamisches layout aktivieren
 			SetWindowPos(NULL, x, y, cx, cy, SWP_NOACTIVATE | SWP_NOOWNERZORDER | SWP_NOZORDER);

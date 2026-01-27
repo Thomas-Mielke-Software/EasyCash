@@ -296,6 +296,7 @@ void CEasyCashView::OnInitialUpdate()
 	einstellungen3 = new CEinstellungen3();
 	einstellungen4 = new CEinstellungen4();
 	einstellungen4->m_einstellungen1 = einstellungen1;
+	einstellungen4->m_einstellungen2 = einstellungen2;
 	einstellungen5 = new CEinstellungen5();
 	einstellungen5->m_einstellungen1 = einstellungen1;
 	propdlg->AddPage(einstellungen1);
@@ -4179,7 +4180,7 @@ void CEasyCashView::DrawEURechungToDC(CDC* pDC, DrawInfo *pDrawInfo)
 				{
 					csKey.Format("Betrieb%02dUnternehmensart", iBetriebe);
 					GetPrivateProfileString("Betriebe", csKey, "", betriebe, sizeof(betriebe), inifile);
-					char *cp = strchr(betriebe, '\t');	// Unternehmensart1, Unternehmensart2 (Rechtsform) und Steuernummer sind durch Tabs getrennt
+					char *cp = strchr(betriebe, '\t');	// Unternehmensart1, Unternehmensart2 (Rechtsform), Steuernummer und Wirtschaftsidentifikationsnummer sind durch Tabs getrennt
 					if (cp) cp = strchr(cp+1, '\t');
 					if (!cp || cp[1] == '\0' || cp[1] == '\t')
 					{
@@ -4196,7 +4197,7 @@ void CEasyCashView::DrawEURechungToDC(CDC* pDC, DrawInfo *pDrawInfo)
 				csSteuernummer = einstellungen3->m_steuernummer.GetBuffer(0);
 		}
 		else
-			einstellungen3->m_steuernummer.GetBuffer(0);
+			csSteuernummer = einstellungen3->m_steuernummer.GetBuffer(0);
 		Text(pDrawInfo, 60, 7, csSteuernummer.GetBuffer(0));
 	}
 
@@ -5709,6 +5710,8 @@ CEasyCashDoc* CEasyCashView::GetDocument() // non-debug version is inline
 
 void CEasyCashView::OnEditEinnahmeBuchen() 
 {
+/////////////dockable-experiment	((CMainFrame*)AfxGetMainWnd())->m_wndOutput.ShowPane(TRUE, TRUE, TRUE);
+
 	if (buchenDlg) 
 	{
 		buchenDlg->DestroyWindow();
@@ -7191,10 +7194,10 @@ BOOL CEasyCashView::Backup(char *backupdir)
 		strcpy(path, backupdir);
 		sprintf(path + strlen(path), "\\Jahr%04d.eca", pDoc->nJahr);
 		csOldPathName = pDoc->GetPathName();
-		pDoc->SetPathName(path);			
+		pDoc->SetPathName(path, FALSE);			
 		BOOL bModified = pDoc->IsModified();
 		pDoc->OnSaveDocument(path);	
-		pDoc->SetPathName(csOldPathName);
+		pDoc->SetPathName(csOldPathName, FALSE);
 		pDoc->SetModifiedFlag("Datensicherung wurde in " + (CString)backupdir + " angelegt", bModified);
 
 		strcpy(path, backupdir);
@@ -7441,9 +7444,9 @@ void CEasyCashView::OnFileJahreswechsel()
 		cp = buf;
 
 	sprintf(cp, "Jahr%04d.eca", pNewDoc->nJahr);
-	pNewDoc->SetPathName(buf);
+	pNewDoc->SetPathName(buf, FALSE);
 	
-	pNewDoc->SetModifiedFlag("Neue Buchungsdatei wurde über Jahreswechsel generiert");
+	pNewDoc->SetModifiedFlag("Neue Buchungsdatei wurde über Jahreswechsel generiert", TRUE, FALSE);
 	pNewDoc->SavePublic();
 	strcpy(buf, pNewDoc->GetPathName());
 	delete pNewDoc;
@@ -7885,6 +7888,28 @@ void CEasyCashView::OnViewOptions()
 		{
 			SetErweiterungKey(GetDocument()->Erweiterung, "Dauerfristverlängerung", Key, einstellungen1->m_sondervorauszahlung);		
 			GetDocument()->SetModifiedFlag();
+		}
+
+		if (!einstellungen3->m_wirtschaftsIdNr.IsEmpty())
+		{
+			if (einstellungen3->m_wirtschaftsIdNr.GetLength() != 17)
+				AfxMessageBox("Hinweis: Die Wirtschaftsidentifikationsnummer muss 17 Zeichen lang sein.");
+			else if (!isalpha(einstellungen3->m_wirtschaftsIdNr[0]) || !isalpha(einstellungen3->m_wirtschaftsIdNr[1]))
+				AfxMessageBox("Hinweis: Die Wirtschaftsidentifikationsnummer muss mit zwei Buchstaben für das Landeskürzel beginnen, z.B. 'DE' oder 'AT'.");
+			else if (einstellungen3->m_wirtschaftsIdNr[11] != _T('-'))
+				AfxMessageBox("Hinweis: Die Wirtschaftsidentifikationsnummer muss an der 12. Position einen Bindestrich enthalten.");
+			else
+				for (int i = 2; i < 17; i++)
+				{
+					if (i == 11) i++;  // '-' überspringen
+					if (!isdigit(einstellungen3->m_wirtschaftsIdNr[i]))
+					{
+						CString msg;
+						msg.Format("Hinweis: Die Wirtschaftsidentifikationsnummer muss an der %d. Position eine Ziffer enthalten.", i + 1);
+						AfxMessageBox(msg);
+						break;
+					}
+				}
 		}
 
 		RedrawWindow();
@@ -8420,6 +8445,8 @@ void CEasyCashView::LoadProfile()
 	einstellungen3->m_ort = buffer;
 	GetPrivateProfileString("Finanzamt", "steuernummer", "", buffer, sizeof(buffer), EasyCashIniFilenameBuffer);
 	einstellungen3->m_steuernummer = buffer;
+	GetPrivateProfileString("Finanzamt", "wirtschaftsidnr", "", buffer, sizeof(buffer), EasyCashIniFilenameBuffer);
+	einstellungen3->m_wirtschaftsIdNr = buffer;
 
 	BOOL bInitRechnungsposten = TRUE;
 	for (i = 0; i < 100; i++)
@@ -8792,6 +8819,7 @@ void CEasyCashView::SaveProfile()
 	WritePrivateProfileString("Finanzamt", "plz", (LPCSTR)einstellungen3->m_plz, EasyCashIniFilenameBuffer);
 	WritePrivateProfileString("Finanzamt", "ort", (LPCSTR)einstellungen3->m_ort, EasyCashIniFilenameBuffer);
 	WritePrivateProfileString("Finanzamt", "steuernummer", (LPCSTR)einstellungen3->m_steuernummer, EasyCashIniFilenameBuffer);
+	WritePrivateProfileString("Finanzamt", "wirtschaftsidnr", (LPCSTR)einstellungen3->m_wirtschaftsIdNr, EasyCashIniFilenameBuffer);
 
 	for (i = 0; i < 100; i++)
 	{

@@ -42,6 +42,7 @@ CEinstellungen3::CEinstellungen3() : CPropertyPage(CEinstellungen3::IDD)
 	m_plz = _T("");
 	m_steuernummer = _T("");
 	m_strasse = _T("");
+	m_wirtschaftsIdNr = _T("");
 	//}}AFX_DATA_INIT
 }
 
@@ -65,6 +66,8 @@ void CEinstellungen3::DoDataExchange(CDataExchange* pDX)
 	DDV_MaxChars(pDX, m_steuernummer, 19);
 	DDX_Text(pDX, IDC_STRASSE, m_strasse);
 	DDV_MaxChars(pDX, m_strasse, 30);
+	DDX_Text(pDX, IDC_WIRTSCHAFTSIDNR, m_wirtschaftsIdNr);
+	DDV_MaxChars(pDX, m_wirtschaftsIdNr, 17);
 	//}}AFX_DATA_MAP
 }
 

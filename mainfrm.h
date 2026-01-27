@@ -22,6 +22,7 @@
 
 #include "WebUpdate.h"
 #include "ToolBarEx.h"
+#include "OutputWnd.h"
 
 class CPluginElement : public CObject
 {
@@ -138,6 +139,7 @@ protected:  // control bar embedded members
 	CToolBarWithCombo   m_wndFindToolBar;		// Find Toolbar
 	CToolBar			m_wndPluginToolBar; 	// Plugin Toolbar
 	CMFCCaptionBar		m_wndCaptionBar;
+	COutputWnd			m_wndOutput;
 
 	CImageList m_ToolbarImages;
 	CImageList m_ToolbarImagesDisabled;
@@ -167,7 +169,10 @@ protected:
 	DECLARE_MESSAGE_MAP()
 
 	BOOL CreateRibbonBar ();
+	BOOL CreateDockingWindows();
+	void SetDockingWindowIcons(BOOL bHiColorIcons);
 //	void ShowOptions (int nPage);
+	void GeneriereMRUFile(CString& csDatenverzeichnis, CStringArray& csaFileList, CString csMuster, int nLength = 0);
 
 	UINT	m_nAppLook;
 public:

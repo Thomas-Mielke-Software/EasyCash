@@ -36,6 +36,7 @@ class CEasyCashApp : public CWinAppEx
 public:
 	CStringArray m_MandantenverzeichnisMRUDateinamen;
 	BOOL OnOpenRecentFile(UINT nID);
+	BOOL ReplaceRecentFileList(CStringArray& csaFileList);
 	BOOL Check4EasyCTX();
 	CEasyCashApp();
 
@@ -51,6 +52,7 @@ public:
 // Implementation
 
 	void RegistrierungsinformationenSichern(char *DateinameParam);
+	BOOL  m_bHiColorIcons;
 
 	//{{AFX_MSG(CEasyCashApp)
 	afx_msg void OnAppAbout();

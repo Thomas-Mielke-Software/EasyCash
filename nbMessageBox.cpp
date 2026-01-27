@@ -118,7 +118,8 @@ LRESULT CnbMessageBox::OnSubclassedInit(WPARAM wParam, LPARAM lParam)
     static const int k_nCaptionHeight = GetSystemMetrics(SM_CYCAPTION);
     static const int k_nBorderHeight = GetSystemMetrics(SM_CYEDGE);
     static const int k_nBorderWidth = GetSystemMetrics(SM_CXEDGE);
-    static const int k_nSepHeigth = 3;
+    static const int k_nSepHeigth = 17;
+    static const int k_nCheckboxAlign = -33;
     static const int k_nMargin = 7;
 
     // get standard font (from static)
@@ -168,11 +169,11 @@ LRESULT CnbMessageBox::OnSubclassedInit(WPARAM wParam, LPARAM lParam)
     rc.bottom -= k_nCaptionHeight + k_nBorderHeight;
 
     // create the separator
-    //CRect rc_sep(-1, rc.Height(), rc.Width(), rc.Height()+k_nSepHeigth);
-    //m_ctrlSep.Create(NULL, "", SS_SIMPLE|WS_CHILD|WS_VISIBLE, rc_sep, this, IDC_SEPARATOR);
+    // CRect rc_sep(-1, rc.Height(), rc.Width(), rc.Height()+k_nSepHeigth);
+    // m_ctrlSep.Create(NULL, "", SS_SIMPLE|WS_CHILD|WS_VISIBLE, rc_sep, this, IDC_SEPARATOR);
 
     // create the button
-    CRect rc_but(k_nMargin, rc.Height()+2*k_nSepHeigth, rc.Width(), rc.Height()+2*k_nSepHeigth+nCheckboxHeight);
+    CRect rc_but(k_nMargin, rc.Height()+2*k_nSepHeigth+k_nCheckboxAlign, rc.Width(), rc.Height()+2*k_nSepHeigth+nCheckboxHeight);
     m_cbDoNotAgain.Create(strLabel, WS_CHILD|WS_VISIBLE|BS_CHECKBOX, rc_but, this, IDC_CHECKBOX);
     m_cbDoNotAgain.SetFont(CFont::FromHandle(hFont));
     m_cbDoNotAgain.SetCheck(m_bChecked);

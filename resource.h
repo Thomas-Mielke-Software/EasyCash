@@ -1,6 +1,6 @@
 //{{NO_DEPENDENCIES}}
-// Microsoft Visual C++ generated include file.
-// Used by EasyCash.rc
+// Von Microsoft Visual C++ generierte Includedatei.
+// Verwendet durch EasyCash.rc
 //
 #define IDC_MINUS                       2
 #define IDC_VERWERFEN                   3
@@ -201,6 +201,7 @@
 #define IDC_VAT1                        1034
 #define IDC_BUCHUNGSPOSTENNUMMER        1035
 #define IDC_VAT2                        1035
+#define IDC_WIRTSCHAFTSIDNR             1035
 #define IDC_LAUFENDE_BUCHUNGSNUMMERN_FUER_EINNAHMEN 1036
 #define IDC_VAT3                        1036
 #define IDC_LAUFENDE_BUCHUNGSNUMMERN_FUER_AUSGABEN 1037
@@ -536,7 +537,7 @@
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_3D_CONTROLS                     1
-#define _APS_NEXT_RESOURCE_VALUE        442
+#define _APS_NEXT_RESOURCE_VALUE        443
 #define _APS_NEXT_COMMAND_VALUE         32918
 #define _APS_NEXT_CONTROL_VALUE         1172
 #define _APS_NEXT_SYMED_VALUE           115

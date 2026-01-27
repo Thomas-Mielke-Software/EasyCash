@@ -85,30 +85,30 @@ BOOL CDatensicherungsoptionen::OnInitDialog()
 
 	// läuft unter Wine auf Linux?
 	HKEY hKey;
-	if (RegOpenKey(HKEY_LOCAL_MACHINE, "Software\\Wine", &hKey) == ERROR_SUCCESS)
-	{
-		m_KeineBtn.ShowWindow(SW_HIDE);
-		m_InternBtn.ShowWindow(SW_HIDE);
-		m_ExternBtn.ShowWindow(SW_HIDE);
-		m_DiskBtn.ShowWindow(SW_HIDE);
-		m_ZeitBtn.ShowWindow(SW_HIDE);
+	//if (RegOpenKey(HKEY_LOCAL_MACHINE, "Software\\Wine", &hKey) == ERROR_SUCCESS)  <- funktioniert ab Wine 9.0
+	//{
+	//	m_KeineBtn.ShowWindow(SW_HIDE);
+	//	m_InternBtn.ShowWindow(SW_HIDE);
+	//	m_ExternBtn.ShowWindow(SW_HIDE);
+	//	m_DiskBtn.ShowWindow(SW_HIDE);
+	//	m_ZeitBtn.ShowWindow(SW_HIDE);
 
-		//Create the ToolTip control
-		if( !m_ToolTip.Create(this))
-		{
-			 TRACE0("Unable to create the ToolTip!");
-		}
-		else
-		{
-	  		m_ToolTip.AddTool( &m_KeineBtn2, (CString)_T("jetzt keine Datensicherung machen und in ") + (*m_npNachfrageIntervall == 7 ? _T("einer Woche") : _T("einem Monat")) + _T(" noch einmal nachfragen"));
-			m_ToolTip.AddTool( &m_InternBtn2, _T("einfachste Option mit nur einem Klick -- aber Festplatten gehen manchmal kaputt..."));
-			m_ToolTip.AddTool( &m_ExternBtn2, _T("speichern auf externem Laufwerk, falls die interne Festplatte mal den Geist aufgibt"));
-			m_ToolTip.AddTool( &m_DiskBtn2, _T("Das Archivieren auf einer nur einmal beschreibbaren Disk entspricht am ehesten den 'Grundsätzen ordnungsmäßiger DV-gestützter Buchführungssystemen' (GoBS)"));
+	//	//Create the ToolTip control
+	//	if( !m_ToolTip.Create(this))
+	//	{
+	//		 TRACE0("Unable to create the ToolTip!");
+	//	}
+	//	else
+	//	{
+	//  		m_ToolTip.AddTool( &m_KeineBtn2, (CString)_T("jetzt keine Datensicherung machen und in ") + (*m_npNachfrageIntervall == 7 ? _T("einer Woche") : _T("einem Monat")) + _T(" noch einmal nachfragen"));
+	//		m_ToolTip.AddTool( &m_InternBtn2, _T("einfachste Option mit nur einem Klick -- aber Festplatten gehen manchmal kaputt..."));
+	//		m_ToolTip.AddTool( &m_ExternBtn2, _T("speichern auf externem Laufwerk, falls die interne Festplatte mal den Geist aufgibt"));
+	//		m_ToolTip.AddTool( &m_DiskBtn2, _T("Das Archivieren auf einer nur einmal beschreibbaren Disk entspricht am ehesten den 'Grundsätzen ordnungsmäßiger DV-gestützter Buchführungssystemen' (GoBS)"));
 
-			m_ToolTip.Activate(TRUE);
-		}    
-	}
-	else
+	//		m_ToolTip.Activate(TRUE);
+	//	}    
+	//}
+	//else
 	{
 		m_KeineBtn2.ShowWindow(SW_HIDE);
 		m_InternBtn2.ShowWindow(SW_HIDE);

@@ -19,6 +19,7 @@
 // Software Foundation, Inc., 51 Franklin St, 5th Floor, Boston, MA 02110, USA. 
 
 #include "stdafx.h"
+#include "afxadv.h"
 #include "EasyCash.h"
 
 #include "ExtSplitter.h"
@@ -1090,6 +1091,34 @@ BOOL CEasyCashApp::OnOpenRecentFile(UINT nID)
 	}
 }
 
+BOOL CEasyCashApp::ReplaceRecentFileList(CStringArray& csaFileList)
+{
+	CString Mandant0Existiert = theApp.GetProfileString("Mandanten", "Mandant00Datenverzeichnis", "");
+	if (Mandant0Existiert.IsEmpty())
+	{
+		// Überprüfen, ob m_pRecentFileList initialisiert ist
+		if (m_pRecentFileList == nullptr)
+		{
+			return FALSE;
+		}
+
+		// MRU-Liste löschen
+		int nRFL = m_pRecentFileList->GetSize();
+		while (nRFL > 0)
+		{
+			m_pRecentFileList->Remove(--nRFL);
+		}
+
+		// Neue Dateien zur MRU-Liste hinzufügen
+		for (int i = 0; i < csaFileList.GetSize(); ++i)
+		{
+			AddToRecentFileList(csaFileList[i]);
+		}
+
+		return TRUE;
+	}
+}
+
 BOOL CEasyCashApp::Check4EasyCTX()
 {
 	HKEY hKey;
@@ -1126,6 +1155,25 @@ HINSTANCE hEasyCTXP_DLL = NULL;
 // Note: This is just multi-byte code and not yet unicode compatibel!
 BOOL SelectFolder(LPSTR sFolder, LPCTSTR sTitle = "Verzeichnis auswählen")
 {
+	/* TODO: in Zukunft CFolderPickerDialog benutzen:
+	CFolderPickerDialog dlg("C:\\users\\crossover\\Documents", OFN_FILEMUSTEXIST | OFN_ENABLESIZING, AfxGetMainWnd(), sizeof(OPENFILENAME));
+	ASSERT(dlg.DoModal() == IDCANCEL);	// always returned IDCANCEL in v3.3, no matter what button was pressed
+	if (ret == IDOK)
+	{
+		CString csPath = dlg.GetPathName();
+		AfxMessageBox(csPath);
+		strcpy(sFolder, (LPCTSTR)csPath);
+		return TRUE;
+	}
+	else if (ret != IDCANCEL)
+		{
+			CString csError;
+			csError.Format("Verzeichnisauswahldialog gab unerwarteter Weise '%d' als Status-Wert und '%s' als Verzeichnis zurück.", ret, (LPCTSTR)dlg.GetPathName());
+			AfxMessageBox(csError);
+		}
+	return FALSE;
+
+	*/ 
 	OSVERSIONINFOEX osvi;
 	ZeroMemory(&osvi, sizeof(OSVERSIONINFOEX));
 	osvi.dwOSVersionInfoSize = sizeof(osvi);

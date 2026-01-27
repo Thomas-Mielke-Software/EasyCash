@@ -75,32 +75,32 @@ BOOL CStartoptionen::OnInitDialog()
 	CDialog::OnInitDialog();
 
 	// läuft unter Wine auf Linux?
-	HKEY hKey;
-	if (RegOpenKey(HKEY_LOCAL_MACHINE, "Software\\Wine", &hKey) == ERROR_SUCCESS)
-	{
-		m_OeffnenBn.ShowWindow(SW_HIDE);
-		m_DatenverzeichnisBn.ShowWindow(SW_HIDE);
-		m_LeerBn.ShowWindow(SW_HIDE);
-		m_OhneBn.ShowWindow(SW_HIDE);
-		m_ExitBn.ShowWindow(SW_HIDE);
+	//HKEY hKey;
+	//if (RegOpenKey(HKEY_LOCAL_MACHINE, "Software\\Wine", &hKey) == ERROR_SUCCESS)  <- funktioniert ab Wine 9.0
+	//{
+	//	m_OeffnenBn.ShowWindow(SW_HIDE);
+	//	m_DatenverzeichnisBn.ShowWindow(SW_HIDE);
+	//	m_LeerBn.ShowWindow(SW_HIDE);
+	//	m_OhneBn.ShowWindow(SW_HIDE);
+	//	m_ExitBn.ShowWindow(SW_HIDE);
 
-		/*
-		//Create the ToolTip control
-		if( !m_ToolTip.Create(this))
-		{
-			 TRACE0("Unable to create the ToolTip!");
-		}
-		else
-		{
-			
-	  		m_ToolTip.AddTool( &m_Oeffnen2Bn, (CString)_T(""));
-			m_ToolTip.AddTool( &m_Datenverzeichnis2Bn, _T(""));
+	//	/*
+	//	//Create the ToolTip control
+	//	if( !m_ToolTip.Create(this))
+	//	{
+	//		 TRACE0("Unable to create the ToolTip!");
+	//	}
+	//	else
+	//	{
+	//		
+	//  		m_ToolTip.AddTool( &m_Oeffnen2Bn, (CString)_T(""));
+	//		m_ToolTip.AddTool( &m_Datenverzeichnis2Bn, _T(""));
 
-			m_ToolTip.Activate(TRUE);			
-		} 
-		*/
-	}
-	else
+	//		m_ToolTip.Activate(TRUE);			
+	//	} 
+	//	*/
+	//}
+	//else
 	{
 		m_Oeffnen2Bn.ShowWindow(SW_HIDE);
 		m_Datenverzeichnis2Bn.ShowWindow(SW_HIDE);

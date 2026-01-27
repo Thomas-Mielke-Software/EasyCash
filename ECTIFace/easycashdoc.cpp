@@ -555,6 +555,8 @@ END_MESSAGE_MAP()
 
 CEasyCashDoc::CEasyCashDoc()
 {
+	CTime now = CTime::GetCurrentTime();
+
 	Einnahmen = NULL;
 	Ausgaben = NULL;
 	Dauerbuchungen = NULL;
@@ -575,6 +577,7 @@ CEasyCashDoc::CEasyCashDoc()
 	AbschreibungGenauigkeit = GetPrivateProfileInt("Allgemein", "AbschreibungGenauigkeit", 2, buffer);	
 	Version = VERSION;
 	m_nZeitraum = -1;
+	ctNachfrageTermin = now + CTimeSpan(7, 0, 0, 0);
 }
 
 CEasyCashDoc::~CEasyCashDoc()
@@ -588,6 +591,9 @@ BOOL CEasyCashDoc::OnNewDocument()
 {
 	if (!CDocument::OnNewDocument())
 		return FALSE;
+
+	//if (theApp.m_istInStartupPhase)
+	//	ZeigeStartoptionen();
 
 	CBuchungsjahrWaehlen dlg;
 	dlg.m_jahr = CTime::GetCurrentTime().GetYear();
@@ -622,6 +628,7 @@ BOOL CEasyCashDoc::OnNewDocument()
 	}
 */
 	char buf[300];
+	char titlebuf[300];
 	char ini_filename[500];
 	char nummer[10];
 
@@ -637,8 +644,27 @@ BOOL CEasyCashDoc::OnNewDocument()
 	// dann ein "-1", "-2" ... an den Dateinamen anhängen
 	if (n > 0)
 		sprintf(buf, "Jahr%04d-%d.eca", nJahr, n);
+	
+	// // Versuch einen MRU list bug zu fixen: AddToRecentFileList wird mehrfach aufgerufen, das letzte mal mit ECTIFace-DLL-Pfad
+	// m_strPathName = buf;
+	// 
+	// strcpy(titlebuf, buf);
+	// if (strlen(titlebuf) > 4 && !strcmp(titlebuf + strlen(titlebuf) - 4, ".eca"))  // Dateiendung .eca im Titel entfernen
+	// 	titlebuf[strlen(titlebuf) - 4] = _T('\0');
+	// SetTitle(titlebuf);
+	// OnFileSave();         --> bessere Lösung: SetPathName(buf, FALSE); statt SetPathName(buf);
 
-	SetPathName(buf);
+	TRY
+	{
+		SetPathName(buf, FALSE);
+	}
+	CATCH_ALL(e)  // (CInvalidArgException, e) ... auch file not found abdecken --> CATCH_ALL
+	{
+		// ignore invalid argument exception or file not found, if file was not found in "add to MRU" code (OnNewDocument)
+		SetTitle(buf);  // ensure a title is set
+	}
+	END_CATCH_ALL //  END_CATCH
+
 
 	// Hook Erweiterungs-DLLs
 	::CIterateExtensionDLLs("ECTE_OpenDocument", (void *)this);
@@ -687,31 +713,12 @@ BOOL CEasyCashDoc::OnOpenDocument(LPCTSTR lpszPathName)
 habe ich besser eigene Menüpunkte für gemacht...
 	}
 */
+	CheckWiederherstellungsdatei(lpszDatenverzeichnis);
+
 	if (!CDocument::OnOpenDocument(lpszDatenverzeichnis))
 	{
-		int nRet;
-		CStartoptionen dlg;
-		nRet = dlg.DoModal();
-
-		switch (nRet)
-		{
-			case 0: 
-				PostMessage(AfxGetMainWnd()->m_hWnd, WM_COMMAND, ID_FILE_OPEN, 0L);
-				return FALSE;
-			case 1: 
-				PostMessage(AfxGetMainWnd()->m_hWnd, WM_COMMAND, ID_FILE_WAEHLE_DATENVERZEICHNIS, 0L);
-				return FALSE;
-			case 2: 
-				PostMessage(AfxGetMainWnd()->m_hWnd, WM_COMMAND, ID_FILE_NEW, 0L);
-				return FALSE;
-			case 3:
-			default:
-				// tu nichts
-				return FALSE;
-			case 4:
-				PostMessage(AfxGetMainWnd()->m_hWnd, WM_COMMAND, ID_APP_EXIT, 0L);
-				return FALSE;
-		}
+		ZeigeStartoptionen();
+		return FALSE;
 	}
 
 	if (Version == -1) return FALSE;
@@ -742,11 +749,40 @@ habe ich besser eigene Menüpunkte für gemacht...
 	return TRUE;
 }
 
+void CEasyCashDoc::ZeigeStartoptionen()
+{
+	int nRet;
+	CStartoptionen dlg;
+	nRet = dlg.DoModal();
+
+	switch (nRet)
+	{
+	case 0:
+		PostMessage(AfxGetMainWnd()->m_hWnd, WM_COMMAND, ID_FILE_OPEN, 0L);
+		return;
+	case 1:
+		PostMessage(AfxGetMainWnd()->m_hWnd, WM_COMMAND, ID_FILE_WAEHLE_DATENVERZEICHNIS, 0L);
+		return;
+	case 2:
+		PostMessage(AfxGetMainWnd()->m_hWnd, WM_COMMAND, ID_FILE_NEW, 0L);
+		return;
+	case 3:
+	default:
+		// tu nichts
+		return;
+	case 4:
+		PostMessage(AfxGetMainWnd()->m_hWnd, WM_COMMAND, ID_APP_EXIT, 0L);
+		return;
+	}
+}
+
 void CEasyCashDoc::OnCloseDocument() 
 {
 	// Hook Erweiterungs-DLLs
 	::CIterateExtensionDLLs("ECTE_CloseDocument", (void *)this);
-	
+
+	LoescheWiederherstellungsdatei((LPCTSTR)m_strPathName);
+
 	CDocument::OnCloseDocument();
 }
 
@@ -1103,10 +1139,84 @@ void CEasyCashDoc::Dump(CDumpContext& dc) const
 #endif //_DEBUG
 
 /////////////////////////////////////////////////////////////////////////////
+// Wine helper
+
+BOOL DatenverzeichnisCheck(char* pfad1, char* pfad2)  // gibt true zurück, wenn Pfade übereinstimmen
+{
+	HKEY hKey;
+	if (RegOpenKey(HKEY_LOCAL_MACHINE, "Software\\Wine", &hKey) == ERROR_SUCCESS)
+	{
+		typedef char* (CDECL* wine_get_unix_file_name_realpath)(LPCWSTR dosW);
+
+		HMODULE kernel32 = LoadLibraryW(L"kernel32.dll");
+		wine_get_unix_file_name_realpath get_unix_fn = (wine_get_unix_file_name_realpath)GetProcAddress(kernel32, "wine_get_unix_file_name_realpath");
+
+		// unter normalem Wine keinen Check machen (wine_get_unix_file_name_realpath existiert nur im PortJump package (easyct-2.53.0-unsigned-v4.zip)
+		if (get_unix_fn == NULL)
+			return TRUE;
+
+		// vergleicht reale Wine-Pfade statt möglicherweise verlinktes Userverzeichnis (Y:)
+		WCHAR wcPfad1[1000];
+		WCHAR wcPfad2[1000];
+		ZeroMemory(wcPfad1, sizeof(wcPfad1));
+		ZeroMemory(wcPfad2, sizeof(wcPfad2));
+		if (!MultiByteToWideChar(CP_ACP, 0, pfad1, (int)strlen(pfad1), wcPfad1, sizeof(wcPfad1)))
+		{
+			FreeLibrary(kernel32);
+			return FALSE;
+		}
+		if (!MultiByteToWideChar(CP_ACP, 0, pfad2, (int)strlen(pfad2), wcPfad2, sizeof(wcPfad2)))
+		{
+			FreeLibrary(kernel32);
+			return FALSE;
+		}
+
+		typedef WCHAR* (CDECL* wine_get_dos_file_name)(LPCSTR str);
+
+		//LPWSTR path = L"C:\\Users\\crossover\\Documents\\test.txt";
+
+		//wine_get_dos_file_name get_dos_fn = (wine_get_dos_file_name)GetProcAddress(kernel32, "wine_get_dos_file_name");
+
+		char* cPfad1Unix = get_unix_fn(wcPfad1);
+		char* cPfad2Unix = get_unix_fn(wcPfad2);
+		// AfxMessageBox((CString)"1: " + (CString)cPfad1Unix + " -- 2: " + (CString)cPfad2Unix);
+
+		//WCHAR* wcPfad1Unix = get_dos_fn(cPfad1Unix);
+		//WCHAR* wcPfad2Unix = get_dos_fn(cPfad2Unix);
+		//char cPfad1[1000];
+		//char cPfad2[1000];
+		//ZeroMemory(cPfad1, sizeof(cPfad1));
+		//ZeroMemory(cPfad2, sizeof(cPfad2));
+
+		//int nSize = (int)wcslen(wcPfad1Unix);
+		//WideCharToMultiByte(CP_ACP, 0, wcPfad1Unix, nSize, cPfad1, 1000, NULL, NULL);
+		//cPfad1[nSize] = '\0';
+		//nSize = (int)wcslen(wcPfad2Unix);
+		//WideCharToMultiByte(CP_ACP, 0, wcPfad2Unix, nSize, cPfad2, 1000, NULL, NULL);
+		//cPfad2[nSize] = '\0';
+		//AfxMessageBox((CString)"3: " + (CString)cPfad1 + " -- 4: " + (CString)cPfad2);
+
+		// dosFn now contains "Y:\Documents\test.txt"
+
+		BOOL bVergleich = strcmp(cPfad1Unix, cPfad2Unix);
+
+		HeapFree(GetProcessHeap(), 0, cPfad1Unix);
+		HeapFree(GetProcessHeap(), 0, cPfad2Unix);
+		//HeapFree(GetProcessHeap(), 0, dosFn);
+		FreeLibrary(kernel32);
+
+		return !bVergleich;
+	}
+	else
+		return !stricmp(pfad1, pfad2);
+}
+
+
+/////////////////////////////////////////////////////////////////////////////
 // CEasyCashDoc commands
 
 
-////////////////////////////////////////////////////////7
+/////////////////////////////////////////////////////////
 //
 // Hilfsfunktionen
 //
@@ -1163,6 +1273,107 @@ void CEasyCashDoc::OnFileSave()
 	strcpy(lpszPathName, GetPathName());
 	GetIniFileName(IniFileName, sizeof(IniFileName));
 	if (*lpszPathName) WritePrivateProfileString("Allgemein", "LetzteDatei", lpszPathName, IniFileName);
+}
+
+void CEasyCashDoc::OnWiederherstellungsdateiSave()
+{
+	char path[1000];
+	strcpy(path, m_strPathName);
+	char* pFileExtension = path + strlen(path) - 4;
+	if (strlen(path) >= 4 && !strcmp(pFileExtension, ".eca"))
+	{
+		strcpy(pFileExtension, ".~eca");
+		BOOL bAlterModifyStatus = IsModified();
+		CDocument::OnSaveDocument(path);
+		CDocument::SetModifiedFlag(bAlterModifyStatus);
+	}
+}
+
+void CEasyCashDoc::CheckWiederherstellungsdatei(LPCTSTR dateipfad)
+{
+	char pfadWiederherstellungsdatei[1000];
+	strcpy(pfadWiederherstellungsdatei, dateipfad);
+	char* pFileExtension = pfadWiederherstellungsdatei + strlen(pfadWiederherstellungsdatei) - 4;
+	if (strlen(pfadWiederherstellungsdatei) >= 4 && !strcmp(pFileExtension, ".eca"))
+	{
+		strcpy(pFileExtension, ".~eca");
+		DWORD dw = GetFileAttributes(pfadWiederherstellungsdatei);
+		if (dw == 0xFFFFFFFF) return;  // keine Wiederherstellungsdatei gefunden --> alles ok
+
+		CTime dateiZuletztModifiziert = GetFileModifiedTime(dateipfad);
+		CTime wiederherstellungsdateiZuletztModifiziert = GetFileModifiedTime(pfadWiederherstellungsdatei);
+
+		CString csMessage;
+		if (wiederherstellungsdateiZuletztModifiziert > dateiZuletztModifiziert)
+		{
+			csMessage.Format("Es wurde eine Wiederherstellungsdatei '%s' gefunden, die neuer ist als die zu öffnende Buchungsdatei '%s'. "
+				"Die Wiederherstellungsdatei enthält normalerweise letzte Änderungen, die noch nicht in der Buchungsdatei gespeichert wurden, "
+				"weil EC&T unerwartet beendet wurde, z.B. bei einem Stromausfall oder Systemabsturz. "
+				"Soll die ältere Buchungsdatei jetzt mit der neueren Wiederherstellungsdatei ersetzt werden?", pfadWiederherstellungsdatei, dateipfad);
+			if (AfxMessageBox(csMessage, MB_YESNO) == IDYES)
+			{
+				DeleteFile((CString)dateipfad + "_kann_geloescht_werden");  // ggf. uraltes Backup löschen
+				if (MoveFile(dateipfad, (CString)dateipfad + "_kann_geloescht_werden"))
+				{
+					csMessage = "Die Datei '" + (CString)dateipfad + "' wurde in '" + (CString)dateipfad + "_kann_geloescht_werden' umbenannt.\r\n";
+					if (MoveFile(pfadWiederherstellungsdatei, dateipfad))
+						csMessage += "Die Wiederherstellungsdatei '" + (CString)pfadWiederherstellungsdatei + "' wurde in '" + (CString)dateipfad + "' umbenannt.\r\n";
+					else
+					{
+						csMessage += "Die Datei '" + (CString)pfadWiederherstellungsdatei + "' konnte nicht umbenannt werden. Bitte versuche die .~eca-Datei manuell im Windows-Explorer in eine .eca-Datei umzubenennen.\r\n";
+						if (MoveFile((CString)dateipfad + "_kann_geloescht_werden", dateipfad))
+							csMessage += "Die Änderung des Dateinamens in '" + (CString)dateipfad + "_kann_geloescht_werden' wurde rückgängig gemacht.\r\n";
+						else
+							csMessage += "Die Änderung des Dateinamens in '" + (CString)dateipfad + "_kann_geloescht_werden' konnte nicht rückgängig gemacht werden, sorry.\r\n";
+					}
+				}
+				else
+					csMessage = "Die Datei '" + (CString)dateipfad + "' konnte nicht umbenannt werden, um sie mit der Wiederherstellungs-Version zu ersetzten. Bitte versuche die jetzige .eca-Datei manuell im Windows-Explorer umzubenennen und danach die .~eca-Datei in eine .eca-Datei. Die alte Datei ohne die letzten Änderungen wird jetzt gleich geöffnet.\r\n";
+
+				AfxMessageBox(csMessage);
+			}
+			else
+				if (AfxMessageBox("Ok, soll die Wiederherstellungsdatei dann jetzt gelöscht werden, damit diese Meldung beim nächsten Öffnen nicht mehr erscheint?", MB_YESNO) == IDYES)
+					DeleteFile(pfadWiederherstellungsdatei);
+		}
+		else if (wiederherstellungsdateiZuletztModifiziert == dateiZuletztModifiziert)  // Dateien sind mutmaßlich identisch
+			DeleteFile(pfadWiederherstellungsdatei);
+		else // if (wiederherstellungsdateiZuletztModifiziert < dateiZuletztModifiziert)
+		{
+			csMessage.Format("Es wurde eine Wiederherstellungsdatei '%s' gefunden, die älter ist als die zu öffnende Buchungsdatei '%s'. "
+				"(Die Wiederherstellungsdatei enthält normalerweise letzte Änderungen, die noch nicht in der Buchungsdatei gespeichert wurden, "
+				"weil EC&&T unerwartet beendet wurde, z.B. bei einem Stromausfall oder Systemabsturz.) Die mutmaßlich neuere Buchungsdatei wird gleich geöffnet. "
+				"Soll die wahrscheinlich veraltete Wiederherstellungsdatei jetzt gelöscht werden, damit diese Meldung beim nächsten Öffnen nicht mehr erscheint?", pfadWiederherstellungsdatei, dateipfad);
+			if (AfxMessageBox(csMessage, MB_YESNO) == IDYES)
+				DeleteFile(pfadWiederherstellungsdatei);
+		}
+	}
+}
+
+void CEasyCashDoc::LoescheWiederherstellungsdatei(LPCTSTR dateipfad)
+{
+	char pfadWiederherstellungsdatei[1000];
+	strcpy(pfadWiederherstellungsdatei, dateipfad);
+	char* pFileExtension = pfadWiederherstellungsdatei + strlen(pfadWiederherstellungsdatei) - 4;
+	if (strlen(pfadWiederherstellungsdatei) >= 4 && !strcmp(pFileExtension, ".eca"))
+	{
+		strcpy(pFileExtension, ".~eca");
+		DWORD dw = GetFileAttributes(pfadWiederherstellungsdatei);
+		if (dw == 0xFFFFFFFF) return;  // keine Wiederherstellungsdatei gefunden --> alles ok
+		DeleteFile(pfadWiederherstellungsdatei);
+	}
+}
+
+CTime CEasyCashDoc::GetFileModifiedTime(LPCTSTR path)
+{
+	CTime ctReturn;
+	CFile cfile;
+	CFileStatus status;
+
+	cfile.Open(path, CFile::modeRead);
+	if (cfile.GetStatus(status))
+		ctReturn = status.m_mtime;
+	return ctReturn;
 }
 
 //HINSTANCE hEasyCTXP_DLL = NULL;
@@ -1317,7 +1528,7 @@ BOOL CDocument::DoSave(LPCTSTR lpszPathName, BOOL bReplace)
 		if (cp2)
 		{
 			*cp2 = '\0';
-			if (stricmp(lpszDatenverzeichnis, newName))
+			if (!DatenverzeichnisCheck(lpszDatenverzeichnis, newName.GetBuffer(0)))
 			{
 				newName.ReleaseBuffer();
 				AfxMessageBox((CString)"Hinweis: Die Datei wurde nicht im gewählten Datenverzeichnis '" + lpszDatenverzeichnis + "' gespeichert, wo EasyCash&Tax sie erwartet. So etwas ist ok, wenn man etwas ausprobieren und mit einer Kopie arbeiten möchte, aber die offizielle Buchungsdatei sollte auf jeden Fall im Datenverzeichnis gespeichert werden, z.B. um bei der eingebauten Datensicherung berücksichtigt zu werden. Wenn dies die offiziellen Buchführungsdaten sind, wird dringend empfohlen sie von '" + newName + " nach '" + lpszDatenverzeichnis + "' zu verschieben. Eventuell ist aber auch nur das Datenverzeichnis falsch gesetzt. In diesem Fall kann das mit 'Datenverzeichnis neu wählen' im Appliaktionsmenü (der runde Knopf links oben) nachgeholt werden.");
@@ -2330,7 +2541,7 @@ CString CEasyCashDoc::GetFormularwertByIndex(XDoc *pFormular, int nIndex, LPCSTR
 						{
 							csKey.Format("Betrieb%02dUnternehmensart", iBetriebe);
 							GetPrivateProfileString("Betriebe", csKey, "", betriebe, sizeof(betriebe), inifile);
-							char *cp = strchr(betriebe, '\t');	// Unternehmensart1, Unternehmensart2 (Rechtsform) und Steuernummer sind durch Tabs getrennt
+							char *cp = strchr(betriebe, '\t');	// Unternehmensart1, Unternehmensart2 (Rechtsform), Steuernummer und Wirtschaftsidentifikationsnummer sind durch Tabs getrennt
 							if (cp)
 								*cp = '\0';
 							csFeldinhalt = betriebe;
@@ -2357,7 +2568,7 @@ CString CEasyCashDoc::GetFormularwertByIndex(XDoc *pFormular, int nIndex, LPCSTR
 						{
 							csKey.Format("Betrieb%02dUnternehmensart", iBetriebe);
 							GetPrivateProfileString("Betriebe", csKey, "", betriebe, sizeof(betriebe), inifile);
-							char *cp = strchr(betriebe, '\t');	// Unternehmensart1, Unternehmensart2 (Rechtsform) und Steuernummer sind durch Tabs getrennt
+							char *cp = strchr(betriebe, '\t');	// Unternehmensart1, Unternehmensart2 (Rechtsform), Steuernummer und Wirtschaftsidentifikationsnummer sind durch Tabs getrennt
 							if (!cp || cp[1] == '\0' || cp[1] == '\t')
 							{
 								GetPrivateProfileString(IniSektion((LPCSTR)ID), !strcmp(IniSektion((LPCSTR)ID), "Finanzamt") || !strcmp(IniSektion((LPCSTR)ID), "EinnahmenRechnungsposten") || !strcmp(IniSektion((LPCSTR)ID), "AusgabenRechnungsposten")? ((LPCSTR)ID)+1 : (LPCSTR)ID, "", csFeldinhalt.GetBuffer(10000), 10000, inifile);
@@ -2393,11 +2604,46 @@ CString CEasyCashDoc::GetFormularwertByIndex(XDoc *pFormular, int nIndex, LPCSTR
 						{
 							csKey.Format("Betrieb%02dUnternehmensart", iBetriebe);
 							GetPrivateProfileString("Betriebe", csKey, "", betriebe, sizeof(betriebe), inifile);
-							char *cp = strchr(betriebe, '\t');	// Unternehmensart1, Unternehmensart2 (Rechtsform) und Steuernummer sind durch Tabs getrennt
+							char *cp = strchr(betriebe, '\t');	// Unternehmensart1, Unternehmensart2 (Rechtsform), Steuernummer und Wirtschaftsidentifikationsnummer sind durch Tabs getrennt
 							if (cp) cp = strchr(cp+1, '\t');
 							if (!cp || cp[1] == '\0' || cp[1] == '\t')
 							{
 								GetPrivateProfileString(IniSektion((LPCSTR)ID), !strcmp(IniSektion((LPCSTR)ID), "Finanzamt") || !strcmp(IniSektion((LPCSTR)ID), "EinnahmenRechnungsposten") || !strcmp(IniSektion((LPCSTR)ID), "AusgabenRechnungsposten")? ((LPCSTR)ID)+1 : (LPCSTR)ID, "", csFeldinhalt.GetBuffer(10000), 10000, inifile);
+								csFeldinhalt.ReleaseBuffer();
+							}
+							else
+							{
+								csFeldinhalt = ++cp;
+							}
+							break;
+						}
+					}
+				}
+				else if (ID == "wirtschaftsidnr" && *sFilter)
+				{
+					char inifile[1000], betriebe[1000];
+					GetIniFileName(inifile, sizeof(inifile));
+					CString csKey;
+					int iBetriebe;
+					for (iBetriebe = 0; iBetriebe < 100; iBetriebe++)
+					{
+						csKey.Format("Betrieb%02dName", iBetriebe);
+						GetPrivateProfileString("Betriebe", csKey, "", betriebe, sizeof(betriebe), inifile);
+						if (!*betriebe)
+						{
+							csFeldinhalt = "";
+							break;
+						}
+						else if (!strcmp(betriebe, sFilter))
+						{
+							csKey.Format("Betrieb%02dUnternehmensart", iBetriebe);
+							GetPrivateProfileString("Betriebe", csKey, "", betriebe, sizeof(betriebe), inifile);
+							char* cp = strchr(betriebe, '\t');	// Unternehmensart1, Unternehmensart2 (Rechtsform), Steuernummer und Wirtschaftsidentifikationsnummer sind durch Tabs getrennt
+							if (cp) cp = strchr(cp + 1, '\t');
+							if (cp) cp = strchr(cp + 1, '\t');
+							if (!cp || cp[1] == '\0' || cp[1] == '\t')
+							{
+								GetPrivateProfileString(IniSektion((LPCSTR)ID), !strcmp(IniSektion((LPCSTR)ID), "Finanzamt") || !strcmp(IniSektion((LPCSTR)ID), "EinnahmenRechnungsposten") || !strcmp(IniSektion((LPCSTR)ID), "AusgabenRechnungsposten") ? ((LPCSTR)ID) + 1 : (LPCSTR)ID, "", csFeldinhalt.GetBuffer(10000), 10000, inifile);
 								csFeldinhalt.ReleaseBuffer();
 							}
 							else
@@ -2558,13 +2804,17 @@ BOOL CEasyCashDoc::OnCmdMsg(UINT nID, int nCode, void* pExtra, AFX_CMDHANDLERINF
 void CEasyCashDoc::SetModifiedFlag(BOOL bModified)
 {
 	CDocument::SetModifiedFlag(bModified);
+	if (bModified)
+		OnWiederherstellungsdateiSave();
 }
 
-void CEasyCashDoc::SetModifiedFlag(LPCTSTR lpszAktion, BOOL bModified)
+void CEasyCashDoc::SetModifiedFlag(LPCTSTR lpszAktion, BOOL bModified, BOOL bSaveToWiederherstellungsdatei)
 {
 	HWND hWndMain = AfxGetMainWnd()->GetSafeHwnd();
 	if (hWndMain) ::SendMessage(hWndMain, WM_SETSTATUS, 0x4712, (LPARAM)lpszAktion);
-	CDocument::SetModifiedFlag(bModified);	
+	CDocument::SetModifiedFlag(bModified);
+	if (bModified && bSaveToWiederherstellungsdatei)
+		OnWiederherstellungsdateiSave();
 	//UpdateAllViews(NULL); --> bringt Plugins zum Abstürzen!
 }
 

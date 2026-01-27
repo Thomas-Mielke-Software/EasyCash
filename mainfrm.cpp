@@ -369,6 +369,21 @@ int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
 	m_wndPluginToolBar.SetBarStyle(m_wndToolBar.GetBarStyle() |
 		CBRS_TOOLTIPS | CBRS_FLYBY | CBRS_SIZE_DYNAMIC);
 */
+
+	// Andockfensterverhalten wie in Visual Studio 2005 aktivieren
+	CDockingManager::SetDockingMode(DT_SMART);
+	// Automatisches Ausblenden von Andockfenstern wie in Visual Studio 2005 aktivieren
+	EnableAutoHidePanes(CBRS_ALIGN_ANY);
+
+	// Andockfenster erstellen
+/////////////dockable-experiment	if (!CreateDockingWindows())
+///////////////////	{
+///////////////////		TRACE0("Fehler beim Erstellen der Andockfenster.\n");
+///////////////////		return -1;
+///////////////////	}
+///////////////////	m_wndOutput.EnableDocking(CBRS_ALIGN_ANY);
+///////////////////	DockPane(&m_wndOutput);
+
 	// create status bar
 	if (!m_wndStatusBar.Create(this)/* ||
 		!m_wndStatusBar.SetIndicators(indicators,
@@ -384,6 +399,34 @@ int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
 	m_wndStatusBar.AddExtendedElement(new CMFCRibbonStatusBarPane(ID_SALDO, ""), "Saldo");
 		
 	return 0;
+}
+
+
+BOOL CMainFrame::CreateDockingWindows()
+{
+	BOOL bNameValid;
+
+	// Ausgabefenster erstellen
+	CString strOutputWnd;
+	bNameValid = strOutputWnd.LoadString(IDS_CAPTION_IMAGE_TIP);
+	ASSERT(bNameValid);
+	if (!m_wndOutput.Create(strOutputWnd, this, CRect(100, 100, 200, 200), TRUE, ID_VIEW_JOURNAL_SWITCH, WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN | CBRS_BOTTOM | CBRS_FLOAT_MULTI))
+	{
+		TRACE0("Fehler beim Erstellen des Ausgabefensters.\n");
+		return FALSE; // Fehler beim Erstellen
+	}
+
+	SetDockingWindowIcons(theApp.m_bHiColorIcons);
+	return TRUE;
+}
+
+
+void CMainFrame::SetDockingWindowIcons(BOOL bHiColorIcons)
+{
+	HICON hOutputBarIcon = (HICON) ::LoadImage(::AfxGetResourceHandle(), MAKEINTRESOURCE(bHiColorIcons ? IDI_FACE1 : IDI_FACE3), IMAGE_ICON, ::GetSystemMetrics(SM_CXSMICON), ::GetSystemMetrics(SM_CYSMICON), 0);
+	m_wndOutput.SetIcon(hOutputBarIcon, FALSE);
+
+	UpdateMDITabbedBarsIcons();
 }
 
 
@@ -1577,13 +1620,125 @@ void CMainFrame::OnFileWaehleDatenverzeichnis()
 			theApp.WriteProfileString("Mandanten", csKey, csDatenverzeichnis);
 		}
 		else
-			theApp.WriteProfileString("Allgemein", "Datenverzeichnis", csDatenverzeichnis);	
+		{
+			if (!theApp.WriteProfileString("Allgemein", "Datenverzeichnis", csDatenverzeichnis))
+			{
+				CString csError;
+				DWORD dwError = GetLastError();
+				LPVOID lpMsgBuf;
 
+				FormatMessage(
+					FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM,
+					NULL,
+					GetLastError(),
+					MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), // Default language
+					(LPTSTR)&lpMsgBuf,
+					0,
+					NULL
+				);
+
+				if (!lpMsgBuf) lpMsgBuf = "keine genauere Fehlerbeschreibung verfügbar";
+				csError.Format("Fehler beim Schreiben des Datenverzeichnisses '%s' in die Registry: %s", (LPCTSTR)csDatenverzeichnis, lpMsgBuf);
+				AfxMessageBox(csError);
+			}
+		}
+		
 		SetIniFileName(((CString)(csDatenverzeichnis + "\\easyct.ini")).GetBuffer(0));
 
 		if (csDatenverzeichnis != csAltesDatenverzeichnis)
-			AfxMessageBox("Bitte kopieren Sie die easyct.ini und alle benötigten Buchungsdateien (Jahr????.eca) ggf. in das neue Datenverzeichnis.");
+		{
+			AfxMessageBox("Bitte kopieren Sie die ggf. easyct.ini und alle benötigten Buchungsdateien (Jahr????.eca) in das neue Datenverzeichnis.");
+
+			// MRU-Liste aktualisieren mit allen im neuen Datenverzeichnis vorgefundenen .eca-Dateien
+			CStringArray csaFileList, csaFileListSafe;
+			GeneriereMRUFile(csDatenverzeichnis, csaFileList, "*.eca");
+			csaFileListSafe.Copy(csaFileList);
+			if (csaFileList.GetSize() > 20)		// filtern, wenn zu viele Ergebnisse...
+			{
+				GeneriereMRUFile(csDatenverzeichnis, csaFileList, "Jahr*.eca");
+			}
+			if (csaFileList.GetSize() < 1)		// zu wenig Ergebisse? dann vorige Suche wiederherstellen
+			{
+				csaFileList.Copy(csaFileListSafe);
+			}
+			else
+			{
+				csaFileListSafe.Copy(csaFileList);
+				if (csaFileList.GetSize() > 20)
+				{
+					GeneriereMRUFile(csDatenverzeichnis, csaFileList, "Jahr*.eca", 12);		// z.B. "Jahr2025.eca" == 12 Stellen
+				}
+				if (csaFileList.GetSize() < 1)		// zu wenig Ergebisse? dann vorige Suche wiederherstellen
+				{
+					csaFileList.Copy(csaFileListSafe);
+				}
+			}
+
+			theApp.ReplaceRecentFileList(csaFileList);
+		}
 	}
+	else
+	{
+		csDatenverzeichnis.ReleaseBuffer();
+		AfxMessageBox(csDatenverzeichnis);
+
+		if (csAltesDatenverzeichnis != csDatenverzeichnis)
+		{
+			CString csError;
+			DWORD dwError = GetLastError();
+			LPVOID lpMsgBuf;
+
+			FormatMessage(
+				FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM,
+				NULL,
+				GetLastError(),
+				MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), // Default language
+				(LPTSTR)&lpMsgBuf,
+				0,
+				NULL
+			);
+
+			if (!lpMsgBuf) lpMsgBuf = "keine genauere Fehlerbeschreibung verfügbar";
+			csError.Format("Fehler beim Orndner-Auswahl-Dialog: %s", lpMsgBuf);
+			AfxMessageBox(csError);
+		}
+	}
+}
+
+void CMainFrame::GeneriereMRUFile(CString& csDatenverzeichnis, CStringArray& csaFileList, CString csMuster, int nMaxFileNameLength)
+{
+	csaFileList.RemoveAll();
+	CString strFileSpec(csDatenverzeichnis);
+
+	if (strFileSpec.Right(1) != _T("\\"))
+		strFileSpec += "\\";
+	strFileSpec += csMuster;
+
+	CFileFind Search;
+	BOOL bFound = Search.FindFile(strFileSpec);
+
+	while (bFound) {
+		bFound = Search.FindNextFile();
+
+		if (Search.IsDots())
+			continue;
+
+		if (Search.IsDirectory()) {
+			//if (m_oPrefs.Recurse())							nicht rekursiv!
+			//	GetFiles(Search.GetFilePath(), iFound);
+			//else
+			continue;
+		}
+		CString s = Search.GetFileName();
+		if (nMaxFileNameLength > 0)
+			if (Search.GetFileName().GetLength() > nMaxFileNameLength)
+				continue;
+
+		csaFileList.Add(Search.GetFilePath());
+
+	}
+
+	Search.Close();
 }
 
 void CMainFrame::OnFileRegistrierungsinformationenWiederherstellen() 

@@ -47,6 +47,7 @@ public:
 	CString m_finanzamtszahlungen;
 
 	CEinstellungen1 *m_einstellungen1;
+	CEinstellungen2* m_einstellungen2;
 
 // Overrides
 	// ClassWizard generate virtual function overrides

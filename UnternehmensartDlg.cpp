@@ -39,6 +39,7 @@ CUnternehmensartDlg::CUnternehmensartDlg(CWnd* pParent /*=NULL*/)
 	m_Unternehmensart1 = _T("");
 	m_Unternehmensart2 = _T("");
 	m_Steuernummer = _T("");
+	m_wirtschaftsIdNr = _T("");
 	//}}AFX_DATA_INIT
 }
 
@@ -53,6 +54,8 @@ void CUnternehmensartDlg::DoDataExchange(CDataExchange* pDX)
 	DDV_MaxChars(pDX, m_Unternehmensart2, 40);
 	DDX_Text(pDX, IDC_STEUERNUMMER, m_Steuernummer);
 	DDV_MaxChars(pDX, m_Steuernummer, 20);
+	DDX_Text(pDX, IDC_WIRTSCHAFTSIDNR, m_wirtschaftsIdNr);
+	DDV_MaxChars(pDX, m_wirtschaftsIdNr, 17);
 	//}}AFX_DATA_MAP
 }
 

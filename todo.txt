@@ -673,6 +673,45 @@ v2.53
 ...
 ...
 
+v3.0 preview
+- Dokumentwiederherstellung (bei Absturz oder Stromausfall)
+- Position der Telefonnummer in USt.-Erkl.-Formular 2023 und 2024 korrigiert
+- Bugfix: Unter Wine und MacOS waren bei Journal nach Konto die Ausgaben-Konten in der Navigation nicht anklickbar
+- dynamisches Fensterlayout beim Buchen- und Dauerbuchungen-Dialog
+
+v3.1
+- deutsches Umsatzsteuervoranmeldungsformular für 2025 und EÜR 2024
+- österreichische Formulare 2024/2025
+- Bugfix zu v3.0: Wenn beim Jahreswechsel der Dateiname der neuen Buchungsdatei verändert wurde, wurde eine Wiederherstellungsdatei mit falschem Namen angelegt.
+- Bugfix zu v3.0: Fehlermeldung bei Datensicherung, Speichern-unter (und Jahreswechsel) behoben
+- Knopf bei Betrieben heißt jetzt "Betriebsspezifische Daten" statt "Unternehmensart"
+- Feld Wirtschaftsidentifikationsnummer in EÜR2024
+- Bugfix zu v3.0: Datenverzeichnis-Check funktioniert nun auf MacOS und Wine
+
+v3.2
+- Beim Buchen-Dialog wird nun geprüft, ob er eine Minimalgröße unterschreitet und diese ggf. wiederhergestellt.
+- Waren keine Betriebe angelegt, wurde in der Freestyle-EÜR die Steuernummer nicht angezeigt.
+- Unter Einstellungen->E/Ü-Konten wird jetzt eine möglichst aktuelle EÜR bzw. E1a vorausgewählt.
+- Meldungen mit "nicht noch einmal anzeigen"-Checkbox werden jetzt nicht mehr abgehackt angezeigt.
+
+v3.3
+- Bugfix im EÜR2024-Formular, der im Elster-Plugin zu Plausibilitätsfehlern führte
+
+v3.4
+- Bugfix: irrtümlicher Hinweis, wenn in den Einstellungen bei der Formatprüfung der Wirtschaftsidentifikationsnummer an der zweiten Stelle einen Buchstaben hatte
+- Usability: Nach dem Ändern des Datenverzeichnis wird die Liste der zuletzt geöffneten Dateien sinnvoll vorbelegt und enthält nicht mehr die Dateien aus dem alten Verzeichnis.
+- Bugfix: korrektes Runden beim Formelrechner auch bei negativen Beträgen
+- Bugfix: Der Auswahldialog für das Datenverzeichnis im Mac-Paket v3.x gab nicht das ausgewählte Verzeichnis zurück. Wichtig: Um das Problem zu beheben muss das Mac-App-Paket von der Hopemape neu installiert werden. Einfaches Updaten über den Plugin-Manager reicht nicht.
+
+ ^
+^^^
+ !
+ !
+- Die Konten mit den Anfangsbuchstaben auszuwählen, auch wenn sie eingerückt sind, wäre sinnvoll.
+
+
+
+
 v1.52
 !!! Wenn Du ja die Buchungen umplanst, könntest Du bitte auch an die automatisch ausgeführten Buchungen denken: Die zu identifizieren ist sehr lästig --> neu erstellte Dauerbuchungen markieren!!!
 !!!! Steuernummer in Freestyle-EÜR fehlt
