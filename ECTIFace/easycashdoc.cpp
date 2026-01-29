@@ -2174,7 +2174,7 @@ CString CEasyCashDoc::GetFormularwertByIndex(XDoc *pFormular, int nIndex, LPCSTR
 			if (csaVerknuepfteKonten.GetSize() == 0)
 				m_csaFeldStatustext[nID].Format("Es gibt keine Einnahmenkonten, die mit Feld %d (%s) verknüpft sind. Das kann unter Einstellungen->E/Ü-Konten geändert werden.", nID, attr_name);
 			else if (csaVerknuepfteKonten.GetSize() == 1)
-				m_csaFeldStatustext[nID].Format("%s Feld %d ist mit dem Konto '%s' verknüpft.", child->GetChildValue("erweiterung"), nID, csaVerknuepfteKonten[0]);
+				m_csaFeldStatustext[nID].Format("%s Feld %d ist mit dem Konto '%s' verknüpft.", child->GetChildValue("erweiterung"), nID, (LPCTSTR)csaVerknuepfteKonten[0]);
 			else
 			{
 				m_csaFeldStatustext[nID].Format("%s Feld %d ist verknüpft mit den Konten ", child->GetChildValue("erweiterung"), nID);
@@ -2619,39 +2619,51 @@ CString CEasyCashDoc::GetFormularwertByIndex(XDoc *pFormular, int nIndex, LPCSTR
 						}
 					}
 				}
-				else if (ID == "wirtschaftsidnr" && *sFilter)
+				else if (ID == "wirtschaftsidnr")
 				{
-					char inifile[1000], betriebe[1000];
-					GetIniFileName(inifile, sizeof(inifile));
-					CString csKey;
-					int iBetriebe;
-					for (iBetriebe = 0; iBetriebe < 100; iBetriebe++)
+					if (*sFilter)
 					{
-						csKey.Format("Betrieb%02dName", iBetriebe);
-						GetPrivateProfileString("Betriebe", csKey, "", betriebe, sizeof(betriebe), inifile);
-						if (!*betriebe)
+						char inifile[1000], betriebe[1000];
+						GetIniFileName(inifile, sizeof(inifile));
+						CString csKey;
+						int iBetriebe;
+						for (iBetriebe = 0; iBetriebe < 100; iBetriebe++)
 						{
-							csFeldinhalt = "";
-							break;
-						}
-						else if (!strcmp(betriebe, sFilter))
-						{
-							csKey.Format("Betrieb%02dUnternehmensart", iBetriebe);
+							csKey.Format("Betrieb%02dName", iBetriebe);
 							GetPrivateProfileString("Betriebe", csKey, "", betriebe, sizeof(betriebe), inifile);
-							char* cp = strchr(betriebe, '\t');	// Unternehmensart1, Unternehmensart2 (Rechtsform), Steuernummer und Wirtschaftsidentifikationsnummer sind durch Tabs getrennt
-							if (cp) cp = strchr(cp + 1, '\t');
-							if (cp) cp = strchr(cp + 1, '\t');
-							if (!cp || cp[1] == '\0' || cp[1] == '\t')
+							if (!*betriebe)
 							{
-								GetPrivateProfileString(IniSektion((LPCSTR)ID), !strcmp(IniSektion((LPCSTR)ID), "Finanzamt") || !strcmp(IniSektion((LPCSTR)ID), "EinnahmenRechnungsposten") || !strcmp(IniSektion((LPCSTR)ID), "AusgabenRechnungsposten") ? ((LPCSTR)ID) + 1 : (LPCSTR)ID, "", csFeldinhalt.GetBuffer(10000), 10000, inifile);
-								csFeldinhalt.ReleaseBuffer();
+								csFeldinhalt = "";
+								break;
 							}
-							else
+							else if (!strcmp(betriebe, sFilter))
 							{
-								csFeldinhalt = ++cp;
+								csKey.Format("Betrieb%02dUnternehmensart", iBetriebe);
+								GetPrivateProfileString("Betriebe", csKey, "", betriebe, sizeof(betriebe), inifile);
+								char* cp = strchr(betriebe, '\t');	// Unternehmensart1, Unternehmensart2 (Rechtsform), Steuernummer und Wirtschaftsidentifikationsnummer sind durch Tabs getrennt
+								if (cp) cp = strchr(cp + 1, '\t');
+								if (cp) cp = strchr(cp + 1, '\t');
+								if (!cp || cp[1] == '\0' || cp[1] == '\t')
+								{
+									GetPrivateProfileString(IniSektion((LPCSTR)ID), !strcmp(IniSektion((LPCSTR)ID), "Finanzamt") || !strcmp(IniSektion((LPCSTR)ID), "EinnahmenRechnungsposten") || !strcmp(IniSektion((LPCSTR)ID), "AusgabenRechnungsposten") ? ((LPCSTR)ID) + 1 : (LPCSTR)ID, "", csFeldinhalt.GetBuffer(10000), 10000, inifile);
+									csFeldinhalt.ReleaseBuffer();
+								}
+								else
+								{
+									csFeldinhalt = ++cp;
+								}
+								break;
 							}
-							break;
 						}
+					}
+					else // wenn kein Filter gesetzt, nur erste 11 Zeichen zurückliefern (keine Unterscheidung nach Betrieb)
+					{
+						char inifile[1000];
+						GetIniFileName(inifile, sizeof(inifile));
+						GetPrivateProfileString("Finanzamt", "wirtschaftsidnr", "", csFeldinhalt.GetBuffer(10000), 10000, inifile);
+						csFeldinhalt.ReleaseBuffer();
+						if (csFeldinhalt.GetLength() > 11)
+							csFeldinhalt = csFeldinhalt.Left(11);
 					}
 				}
 				else 
