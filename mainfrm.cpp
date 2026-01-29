@@ -654,7 +654,7 @@ void CMainFrame::Add_Category1()
 
 	CMFCRibbonPanel* pPanel4 = pCategory->AddPanel(_T("Suche\ns"));
 
-	m_pSucheCombobox = new CMFCRibbonComboBox(ID_VIEW_FINDTOOLBAR, TRUE, 75);
+	m_pSucheCombobox = new CMyRibbonComboBox(ID_VIEW_FINDTOOLBAR, TRUE, 75);
 	pPanel4->Add(m_pSucheCombobox);
 	std::auto_ptr<CMFCRibbonButton> apBtn40(new CMFCRibbonButton(ID_NEXT, "vorwärts\nv", 19));
 	apBtn40->SetDefaultCommand();
@@ -1963,6 +1963,39 @@ LRESULT CMainFrame::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
 	}
 
 	return CMDIFrameWndEx::WindowProc(message, wParam, lParam);
+}
+
+BOOL CMainFrame::PreTranslateMessage(MSG* pMsg)
+{
+	// Erst Ribbon/Controls pretranslate lassen
+	if (m_wndRibbonBar.PreTranslateMessage(pMsg))
+		return TRUE;
+
+	// Enter im Ribbon?Suchfeld abfangen und an aktive View weiterleiten
+	if ((pMsg->message == WM_KEYUP || pMsg->message == WM_KEYDOWN) && (UINT)pMsg->wParam == VK_RETURN)
+	{
+		if (m_pSucheCombobox)
+		{
+			CWnd* pEdit = m_pSucheCombobox->GetEditCtrl(); // CMFCRibbonComboBox::GetEditCtrl()
+			if (pEdit && ::GetFocus() == pEdit->GetSafeHwnd())
+			{
+				// Aktive MDI?Child/View ermitteln und Command senden
+				CMDIChildWndEx* pChild = (CMDIChildWndEx*)GetActiveFrame();
+				if (pChild)
+				{
+					CView* pView = pChild->GetActiveView();
+					if (pView)
+					{
+						// Verwenden Sie die Command?ID, die Ihre View erwartet (z.B. ID_NEXT)
+						pView->PostMessage(WM_COMMAND, ID_NEXT, 0);
+						return TRUE; // Nachricht verarbeitet
+					}
+				}
+			}
+		}
+	}
+
+	return CMDIFrameWndEx::PreTranslateMessage(pMsg);
 }
 
 void CMainFrame::OnSpendeBank()

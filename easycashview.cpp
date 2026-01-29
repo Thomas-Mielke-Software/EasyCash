@@ -233,10 +233,94 @@ BOOL CEasyCashView::PreCreateWindow(CREATESTRUCT& cs)
 	return CScrollView::PreCreateWindow(cs);
 }
 
-
 BOOL CEasyCashView::PreTranslateMessage(MSG* pMsg)
 {
-	if (pMsg->message == WM_KEYUP && (UINT)pMsg->wParam == VK_RETURN)	
+	// Plugin (ActiveX) Accelerator weiterleiten, damit z.B. Ctrl-C / Ctrl-V dort ankommen
+	// Dazu wird im Plugins die TranslateAccelerator-Methode der IOleInPlaceActiveObject-Schnittstelle nachempfunden
+	if (pPluginWnd && pPluginWnd->IsWindow())
+	{
+		LPUNKNOWN pUnk = NULL;
+		if (SUCCEEDED(pPluginWnd->QueryControl(&pUnk)) && pUnk)
+		{
+			IDispatch* spDispatch;
+			HRESULT hRes = pUnk->QueryInterface(__uuidof(spDispatch), (void**)&spDispatch);
+			if (hRes != S_OK)
+			{
+				CString csError;
+				csError.Format("Plugin-Problem: Fehler %lx bei QueryInterface für TranslateAccelerator().", (long)hRes);
+				TRACE0(csError);
+				return TRUE;
+			}
+
+			// spDispatch->AddRef(); // rrrrrrrrrrrr....
+
+			DISPID dispid;
+			OLECHAR FAR szMember[5];
+			MultiByteToWideChar(CP_ACP, 0, "TranslateAccelerator", -1, szMember, 5);
+			OLECHAR FAR* pszMember = szMember;
+			DISPPARAMS dispparams = { NULL, NULL, 0, 0 };
+			VARIANT vRet;
+			COleVariant vParam((long)GetDocument(), VT_I4);
+			EXCEPINFO excepinfo;
+			UINT nArgErr;
+			dispparams.rgvarg = (LPVARIANT)vParam;
+			dispparams.cArgs = 1;
+			dispparams.cNamedArgs = 0;
+
+			hRes = spDispatch->GetIDsOfNames(IID_NULL, &pszMember, 1, LOCALE_SYSTEM_DEFAULT, &dispid);
+			if (hRes == DISP_E_UNKNOWNNAME)
+			{
+				TRACE0("TranslateAccelerator-Methode wurde im ActiveX-Plugin nicht gefunden.");
+				return TRUE;
+			}
+			else if (hRes == E_OUTOFMEMORY)
+			{
+				TRACE0("Speicherprobleme beim Initialisieren des ActiveX-Plugins.");
+				return TRUE;
+			}
+			else if (hRes == DISP_E_UNKNOWNLCID)
+			{
+				TRACE0("Unbekannte Ländereinstellung beim Initialisieren des ActiveX-Plugins.");
+				return TRUE;
+			}
+			else if (hRes != S_OK)
+			{
+				TRACE0("Unspezifizierbarer Fehler beim Initialisieren des ActiveX-Plugins.");
+				return TRUE;
+			}
+
+			hRes = spDispatch->Invoke(dispid, IID_NULL, LOCALE_SYSTEM_DEFAULT, DISPATCH_METHOD, &dispparams, &vRet, &excepinfo, &nArgErr);
+			if (hRes != S_OK)
+			{
+				CString csError;
+				if (hRes == DISP_E_EXCEPTION && excepinfo.bstrDescription && excepinfo.bstrSource)
+					csError.Format("Ausnahmefehler beim Verlassen des ActiveX-Plugins (Invoke). Code %lx: '%s' (Quelle: %s)", (int)excepinfo.wCode, (LPCSTR)(CString)excepinfo.bstrDescription, (LPCSTR)(CString)excepinfo.bstrSource);
+				else if (hRes == DISP_E_EXCEPTION && excepinfo.bstrDescription)
+					csError.Format("Ausnahmefehler beim Verlassen des ActiveX-Plugins (Invoke). Code %lx: '%s'", (int)excepinfo.wCode, (LPCSTR)(CString)excepinfo.bstrDescription);
+				else if (hRes == DISP_E_EXCEPTION && excepinfo.bstrSource)
+					csError.Format("Ausnahmefehler beim Verlassen des ActiveX-Plugins (Invoke). Code %lx: '%s'", (int)excepinfo.wCode, (LPCSTR)(CString)excepinfo.bstrSource);
+				else if (hRes == DISP_E_EXCEPTION && excepinfo.wCode != 0)
+					csError.Format("Ausnahmefehler beim Verlassen des ActiveX-Plugins (Invoke). Code %lx: '%s'", (int)excepinfo.wCode);
+				else if (hRes == DISP_E_EXCEPTION)
+					csError.Format("Ausnahmefehler beim Verlassen des ActiveX-Plugins (Invoke Init).");
+				else
+					csError.Format("Fehler %lx beim Verlassen des ActiveX-Plugins (Invoke Init).", (long)hRes);
+				TRACE0(csError);
+			}
+			else // hRes == S_OK
+			{
+				// TranslateAccelerator liefert TRUE wenn das Control die Message verarbeitet hat
+				spDispatch->Release();
+				pUnk->Release();
+				return TRUE; // Message wurde vom ActiveX verarbeitet
+			}
+
+			pUnk->Release();
+		}
+	}
+
+	// vorhandenes Verhalten beibehalten (z.B. Enter-Suche)
+	if (pMsg->message == WM_KEYUP && (UINT)pMsg->wParam == VK_RETURN)
 	{
 		CString csSuchtext = ((CMainFrame*)AfxGetMainWnd())->m_pSucheCombobox->GetEditText();
 		if (csSuchtext != "")

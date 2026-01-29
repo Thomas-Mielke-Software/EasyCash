@@ -39,6 +39,20 @@ public:
 	CPluginElement *next;
 };
 
+class CMyRibbonComboBox : public CMFCRibbonComboBox
+{
+public:
+	CMyRibbonComboBox(UINT nID, BOOL bHasEditBox = TRUE, int nWidth = -1)
+		: CMFCRibbonComboBox(nID, bHasEditBox, nWidth) {
+	}
+
+	// Exponiert das geschützte m_pWndEdit aus CMFCRibbonEdit als CWnd*
+	CWnd* GetEditCtrl()
+	{
+		return m_pWndEdit;
+	}
+};
+
 class CMFCRibbonButtonEx : public CMFCRibbonButton
 {
 // Construction
@@ -125,7 +139,7 @@ public:
 	CMFCRibbonButton* m_pFilterKontoButton;
 	CMFCRibbonButton* m_pFilterBetriebButton;
 	CMFCRibbonButton* m_pFilterBestandskontoButton;
-	CMFCRibbonComboBox* m_pSucheCombobox;
+	CMyRibbonComboBox* m_pSucheCombobox;
 	CMFCRibbonButton* m_pAnsichtFormulareButton;
 	CMFCRibbonButton* m_pAnsichtPluginsButton;
 
@@ -165,6 +179,7 @@ protected:
 	afx_msg void OnSpendePayPal();
 	afx_msg void OnSpendeBitcoin();
 	afx_msg void OnSpendeFlattr();
+	virtual BOOL PreTranslateMessage(MSG* pMsg);
 	//}}AFX_MSG
 	DECLARE_MESSAGE_MAP()
 
