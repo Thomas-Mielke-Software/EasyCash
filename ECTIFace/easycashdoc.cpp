@@ -2613,7 +2613,9 @@ CString CEasyCashDoc::GetFormularwertByIndex(XDoc *pFormular, int nIndex, LPCSTR
 							}
 							else
 							{
-								csFeldinhalt = ++cp;
+								char* cp2 = strchr(++cp, '\t');  // durch tab getrennte nachfolgende 
+								if (cp2) *cp2 = '\0';				// wirtschaftsidnr noch entfernen
+								csFeldinhalt = cp;
 							}
 							break;
 						}
