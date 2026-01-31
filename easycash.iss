@@ -16,8 +16,9 @@ OutputBaseFilename=ECTSetup
 OutputDir=.\EasyCash 
 MinVersion=6.1
 LicenseFile=.\LIZENZ.txt      
-SignTool=winsdk10sha1   ; dual sign the 
-SignTool=winsdk10sha256 ; installer
+;SignTool=winsdk10sha1   ; no longer dual sign the installer?
+SignTool=winsdk10sha256
+; ^temporär timestamp herausgenommen: /tr http://timestamp.comodoca.com 
 ;Menu -> Tools -> Configure Sign Tool...
 ;winsdk81sha1: "C:\Program Files (x86)\Windows Kits\8.1\bin\x86\signtool.exe" sign /p mysecretpw /f C:\My\Path\To\cert.p12 /t http://timestamp.comodoca.com $f
 ;winsdk81sha256:  "C:\Program Files (x86)\Windows Kits\8.1\bin\x86\signtool.exe" sign /p mysecretpw /f C:\My\Path\To\cert.p12 /tr http://timestamp.comodoca.com /fd sha256 /td sha256 /as $f
