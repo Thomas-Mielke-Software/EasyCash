@@ -2753,6 +2753,9 @@ CString CEasyCashDoc::GetFormularwertByIndex(XDoc *pFormular, int nIndex, LPCSTR
 			if (csFeldinhalt == (CString)"0" + DEZIMALKOMMA + "00" || csFeldinhalt == "0")
 				csFeldinhalt = "";
 
+		if (!m_csaFeldStatustext[nID].IsEmpty())
+			m_csaFeldStatustext[nID] += " -- ";
+		m_csaFeldStatustext[nID] += (CString)"Feldname: '" + (LPCTSTR)child->GetChildValue("name") + "'";
 		return csFeldinhalt;
 	}
 	else
