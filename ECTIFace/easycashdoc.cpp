@@ -656,7 +656,12 @@ BOOL CEasyCashDoc::OnNewDocument()
 
 	TRY
 	{
-		SetPathName(buf, FALSE);
+		char* cp1 = strrchr(ini_filename, '\\');
+		if (cp1)
+		{
+			strcpy(++cp1, buf);
+			SetPathName(ini_filename, FALSE);
+		}
 	}
 	CATCH_ALL(e)  // (CInvalidArgException, e) ... auch file not found abdecken --> CATCH_ALL
 	{
