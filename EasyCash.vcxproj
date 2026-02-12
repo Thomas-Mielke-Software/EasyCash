@@ -633,6 +633,7 @@ copy ..\EasyCash\Release\crashrpt_lang.ini .\Release
     <Image Include="RES\toolbar_hicolor_32.bmp" />
     <Image Include="RES\toolbar_hicolor_disabled.bmp" />
     <Image Include="RES\toolbar_hicolor_hot.bmp" />
+    <Image Include="res\waehrungsrechner.bmp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Formularabschnitt.htm">

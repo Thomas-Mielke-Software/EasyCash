@@ -6725,15 +6725,28 @@ BOOL CEasyCashView::OnCommand(WPARAM wParam, LPARAM lParam)
 		}
 	}
 
+	// Privat-Split-Menüaktion im Buchen-Dialog
 	int i;
-	for (i = 0; i < einstellungen5->m_privat_split_size+1; i++)
-	if (wParam == (UINT)POPUP_SPLIT+i)
-	{
-		if (pBuchungAendernDlg) 
-			pBuchungAendernDlg->PrivatSplit(i);
-		else
-			buchenDlg->PrivatSplit(i);
-	}
+	if (wParam >= (UINT)POPUP_SPLIT && wParam < (UINT)POPUP_SPLIT + einstellungen5->m_privat_split_size + 1)
+		for (i = 0; i < einstellungen5->m_privat_split_size+1; i++)
+			if (wParam == (UINT)POPUP_SPLIT+i)
+			{
+				if (pBuchungAendernDlg) 
+					pBuchungAendernDlg->PrivatSplit(i);
+				else
+					buchenDlg->PrivatSplit(i);
+			}
+
+	// Währungsrechner-Menüaktion im Buchen-Dialog
+	if (wParam >= (UINT)POPUP_WAEHRUNGSRECHNER && wParam < (UINT)POPUP_WAEHRUNGSRECHNER + 0000000000 + 2)
+		for (i = 0; i < 00000000000 + 2; i++)
+			if (wParam == (UINT)POPUP_WAEHRUNGSRECHNER + i)
+			{
+				if (pBuchungAendernDlg)
+					pBuchungAendernDlg->Waehrungsrechner(i);
+				else
+					buchenDlg->Waehrungsrechner(i);
+			}
 
 	return CScrollView::OnCommand(wParam, lParam);
 }

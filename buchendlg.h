@@ -34,10 +34,12 @@ public:
 	CBitmap StopBmp;
 	CBitmap SplitBmp;
 	CBitmap RechnerBmp;
+	CBitmap WaehrungsrechnerBmp;
 
 	CMenu PopUp;
 
 	void PrivatSplit(int n);
+	void Waehrungsrechner(int n);
 
 // Dialog Data
 	//{{AFX_DATA(BuchenDlg)
@@ -118,4 +120,5 @@ public:
 	afx_msg void OnBnClickedMwstEnabled();
 	afx_msg void OnCbnSelchangeEurechnungsposten();
 	afx_msg void OnBnClickedAbgangBuchen();
+	afx_msg void OnBnClickedWaehrungsrechner();
 };

@@ -541,6 +541,9 @@
       <Filter>Resource Files</Filter>
     </Image>
     <Image Include="RES\EasyCash32x32.png" />
+    <Image Include="res\waehrungsrechner.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
   </ItemGroup>
   <ItemGroup>
     <None Include="Res\easycash.rc2">

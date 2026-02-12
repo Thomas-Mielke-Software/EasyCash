@@ -26,6 +26,7 @@
 #include "RechnDlg.h"
 #include <ctype.h>
 #include <rpcdce.h>
+#include <afxinet.h>
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -149,6 +150,7 @@ BEGIN_MESSAGE_MAP(BuchenDlg, CDialog)
 	ON_BN_CLICKED(IDC_MWST_ENABLED, &BuchenDlg::OnBnClickedMwstEnabled)
 	ON_CBN_SELCHANGE(IDC_EURECHNUNGSPOSTEN, &BuchenDlg::OnCbnSelchangeEurechnungsposten)
 	ON_BN_CLICKED(IDC_ABGANG_BUCHEN, &BuchenDlg::OnBnClickedAbgangBuchen)
+	ON_BN_CLICKED(IDC_WAEHRUNGSRECHNER, &BuchenDlg::OnBnClickedWaehrungsrechner)
 END_MESSAGE_MAP()
 
 /////////////////////////////////////////////////////////////////////////////
@@ -169,6 +171,8 @@ BOOL BuchenDlg::OnInitDialog()
 	((CButton *)GetDlgItem(IDC_SPLIT))->SetBitmap(SplitBmp);
 	RechnerBmp.LoadBitmap(IDB_RECHNER);
 	((CButton *)GetDlgItem(IDC_RECHNER))->SetBitmap(RechnerBmp);
+	WaehrungsrechnerBmp.LoadBitmap(IDB_WAEHRUNGSRECHNER);
+	((CButton*)GetDlgItem(IDC_WAEHRUNGSRECHNER))->SetBitmap(WaehrungsrechnerBmp);
 	
 	PopUp.CreatePopupMenu();
 
@@ -1673,6 +1677,7 @@ void BuchenDlg::OnSplit()
 	PopUp.TrackPopupMenu(TPM_LEFTALIGN|TPM_RIGHTBUTTON, r.left, r.bottom, m_pParent);
 }
 
+// Privat-Split-Menüaktion ausführen
 void BuchenDlg::PrivatSplit(int n)
 {
 	if (n >= m_pParent->einstellungen5->m_privat_split_size) 
@@ -1728,6 +1733,177 @@ void BuchenDlg::OnRechner()
 	}
 
 	GetDlgItem(IDC_BESCHREIBUNG)->SetFocus();
+}
+
+void BuchenDlg::OnBnClickedWaehrungsrechner()
+{
+	CRect r;
+
+	// erstmal Menü löschen
+	while (PopUp.GetMenuItemCount() > 0)
+		PopUp.DeleteMenu(0, MF_BYPOSITION);
+
+	/*int i;
+	for (i = 0; i < m_pParent->einstellungen5->m_privat_split_size; i++)
+	{
+		if (!(m_pParent->einstellungen5->m_part[i])->IsEmpty()
+			|| *(m_pParent->einstellungen5->m_psatz[i]) != 100)
+		{
+			char buffer[1000];
+			sprintf(buffer, "%s%%/%s%% %s", (LPCSTR)*m_pParent->einstellungen5->m_psatz[i], (LPCSTR)*m_pParent->einstellungen5->m_pustsatz[i], (LPCSTR)*m_pParent->einstellungen5->m_part[i]);
+			char buffer_ampercent[2000], * cp1, * cp2;
+			cp1 = buffer; cp2 = buffer_ampercent;
+			do {
+				if (*cp1 == '&') *cp2++ = '&';
+			} while (*cp2++ = *cp1++);
+			PopUp.AppendMenu(MF_STRING, POPUP_SPLIT + i, buffer_ampercent);
+		}
+	}
+	PopUp.AppendMenu(MF_STRING, POPUP_SPLIT + i, "<kein Privat-Split>");
+	*/
+	PopUp.AppendMenu(MF_STRING, POPUP_WAEHRUNGSRECHNER, "USD -> €");
+	PopUp.AppendMenu(MF_STRING, POPUP_WAEHRUNGSRECHNER + 1, "Bitcoin -> €");
+	
+	GetDlgItem(IDC_WAEHRUNGSRECHNER)->GetWindowRect(&r);
+	PopUp.TrackPopupMenu(TPM_LEFTALIGN | TPM_RIGHTBUTTON, r.left, r.bottom, m_pParent);
+}
+
+// Währungsrechner-Menüaktion ausführen
+void BuchenDlg::Waehrungsrechner(int n)
+{
+	char betrag[100];
+	char tag[100];
+	char monat[100];
+	char jahr[100];
+	GetDlgItemText(IDC_BETRAG, betrag, sizeof(betrag));
+	GetDlgItemText(IDC_DATUM_TAG, tag, sizeof(tag));
+	GetDlgItemText(IDC_DATUM_MONAT, monat, sizeof(monat));
+	GetDlgItemText(IDC_DATUM_JAHR, jahr, sizeof(jahr));
+	int nBetrag = currency_to_int(betrag);
+	if (nBetrag == 0)
+	{
+		AfxMessageBox("Bitte den zu konvertierenden Betrag angeben.");
+		GetDlgItem(IDC_BETRAG)->SetFocus();
+		return;
+	}
+	int t = atoi(tag);
+	int m = atoi(monat);
+	int j = atoi(jahr);
+
+	if (t < 1 || t > 31)
+	{
+		MessageBox("Bitte zunächst einen Wert für Tag von 1 bis 31 angeben, um einen historisch korrekten Kurs zu erhalten.", NULL, MB_ICONSTOP);
+		GetDlgItem(IDC_DATUM_TAG)->SetFocus();
+		return;
+	}
+	if (m < 1 || m > 12)
+	{
+		MessageBox("Bitte zunächst einen Wert für Monat von 1 bis 12 angeben, um einen historisch korrekten Kurs zu erhalten.", NULL, MB_ICONSTOP);
+		GetDlgItem(IDC_DATUM_MONAT)->SetFocus();
+		return;
+	}
+	if (j < 100 && j > 37)
+	{
+		j += 1900;
+	}
+	else if (j <= 37 && j >= 0)
+	{
+		j += 2000;
+	}
+	if (j < 1990 || j > 3000)
+	{
+		MessageBox("Bitte zunächst einen Wert für Jahr von 2025 bis 3000 angeben, um einen historisch korrekten Kurs zu erhalten.", NULL, MB_ICONSTOP);
+		GetDlgItem(IDC_DATUM_JAHR)->SetFocus();
+		return;
+	}
+	if (j == 2025)
+	{
+		if (m < 3)
+		{
+			MessageBox("Tut mir Leid, der Währungsticker-Server hat nur die Kurse ab 1.3.2025 gespeichert. Bitte den historischen Kurs manuell recherchieren.", NULL, MB_ICONSTOP);
+			GetDlgItem(IDC_BETRAG)->SetFocus();
+			return;
+		}
+	}
+
+	CString csWaehrung;
+	if (n == 0)
+		csWaehrung = "USD";
+	else if (n == 1)
+		csWaehrung = "BTC";
+	else
+		return;
+
+	// URL der REST-API
+	CString url;
+	url.Format(_T("https://easyct.de/ect-forex-api/ect-forex-api.php?currency=%s&date=%04d-%02d-%02d&time=12:00&oneshot=1"), (LPCTSTR)csWaehrung, j, m, t);
+
+	HCURSOR hcWait = theApp.LoadStandardCursor(IDC_WAIT);
+	HCURSOR hcOld = SetCursor(hcWait);
+	try
+	{
+		// Internet-Session erstellen
+		CInternetSession session(_T("EasyCash&Tax-Waehrungsrechneranfrage"), 1, INTERNET_OPEN_TYPE_PRECONFIG);
+
+		// Verbindung zur URL herstellen
+		CHttpFile* pFile = (CHttpFile*)session.OpenURL(url, 1, INTERNET_FLAG_SECURE | INTERNET_FLAG_RELOAD | INTERNET_FLAG_TRANSFER_ASCII);
+
+		if (pFile == nullptr)
+		{
+			AfxMessageBox(_T("Fehler beim Herstellen der Verbindung zur API."));
+			goto exit_restore_cursor;
+		}
+
+		// HTTP-Status überprüfen
+		DWORD dwStatusCode;
+		pFile->QueryInfoStatusCode(dwStatusCode);
+		if (dwStatusCode != HTTP_STATUS_OK)
+		{
+			CString errorMsg;
+			errorMsg.Format(_T("Fehler: HTTP-Status %lu"), dwStatusCode);
+			AfxMessageBox(errorMsg);
+			pFile->Close();
+			delete pFile;
+			goto exit_restore_cursor;
+		}
+
+		// Antwort lesen
+		CString response;
+		CString line;
+		while (pFile->ReadString(line))
+		{
+			response += line;
+		}
+
+		pFile->Close();
+		delete pFile;
+
+		// JSON-Antwort parsen (vereinfachte Verarbeitung)
+		int start = response.Find(_T('"'));
+		int end = response.ReverseFind(_T('"'));
+		if (start == -1 || end == -1)
+		{
+			AfxMessageBox(_T("Ungültige Antwort vom Währungsticker-Server. Eventuell hat sich die Schnittstelle geändert. Versuchen Sie EC&T zu aktualisieren."));
+			goto exit_restore_cursor;
+		}
+		CString convertedAmount = response.Mid(start + 1, end - start - 1);
+		int nKonvertierterBetrag = (int)(nBetrag * atof(convertedAmount));
+		CString konvertierterBetrag;
+		int_to_currency(nKonvertierterBetrag, 4, konvertierterBetrag.GetBuffer(10000));
+
+		// Ergebnis anzeigen
+		SetDlgItemText(IDC_BETRAG, konvertierterBetrag);
+	}
+	catch (CInternetException* e)
+	{
+		TCHAR error[1024];
+		e->GetErrorMessage(error, 1024);
+		AfxMessageBox(CString(_T("Internet-Fehler: ")) + error);
+		e->Delete();
+	}
+
+exit_restore_cursor:
+	SetCursor(hcOld);
 }
 
 void BuchenDlg::OnAlt(int nCtrl, int nItem)

@@ -10,6 +10,7 @@
 #define IDC_RECHNER                     4
 #define IDC_DOWN                        4
 #define IDC_MINUS2                      5
+#define IDC_WAEHRUNGSRECHNER            5
 #define IDC_UP2                         6
 #define IDC_DOWN2                       7
 #define IDC_AENDERN2                    9
@@ -111,6 +112,7 @@
 #define IDB_BITMAP1                     433
 #define IDB_EASYCASH_32                 433
 #define IDB_INFO                        434
+#define IDB_WAEHRUNGSRECHNER            435
 #define IDR_ZOOMFAKTOR                  436
 #define IDR_RIBBON                      438
 #define IDC_DATUM_TAG                   1000

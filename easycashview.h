@@ -400,6 +400,7 @@ inline CEasyCashDoc* CEasyCashView::GetDocument()
 
 #define POPUP_SPLIT		11000
 //					bis	11009
+#define POPUP_WAEHRUNGSRECHNER		11100
 
 #define ID_VIEW_JOURNAL_FUER_KONTO_BASE 12000
 //								bis max 12199
