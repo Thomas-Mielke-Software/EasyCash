@@ -30,9 +30,29 @@
 *.exe
 *.out
 *.app
+*.ocx
+*.pdb
+
+# InstallShield Wizard
+*.iwz
 
 # Visual Studio
 .vs/
+*.clw
+*.suo
+*.aps
+*.user
+*.mdp
+*.plg
+*.reg
+*.001
+*.ncb
+
+*.log
+*.bak
+
+# Formular Screenshots
+*screenshot.png
 
 # projektspezifische Messi-Sammlung
 Crash-Reports/
@@ -60,19 +80,40 @@ ECT_AT/
 ECT_D/
 ECT_Disk/
 ECT_Doc/
-EasyCTX/Debug/
-EasyCTX/Release/
+EasyCash/
+EasyCTX/Debug*/
+EasyCTX/Release*/
 EasyCTX/x64/
 EasyCTXP/Debug/
-EasyCTXP/Release/
+EasyCTXP/Release*/
 EasyCTXP/x64/
 EasyCash/x64/
 EasyCashFormularDuplizierer/.vs/
+EctSDK/
+EUer/2005(Jan)/
+EUer/2009/
+EUer/AT-200?/
+EUer/AT-201?/
+EUer/*/*.zip
+EUer/*/*.pdf
 Jahr*.eca
 Kopie\ von*
+Kopie\ (?)\ von*
+Logs/
 Mailings/
 Publizieren/
+PVCSArch/
 Release/
 Temp/
+UVA/*.*
+UVA/*/*.ini
+UVA/AT-200?/*
+UVA/D-200?/*
+UVA/AT-201?/*
+UVA/D-201?/*
+UVA/*/*.pdf
+UVA/*/*.zip
+UST/*/*.pdf
+UST/*/*.zip
 UpgradeLog*.htm
 x64/
