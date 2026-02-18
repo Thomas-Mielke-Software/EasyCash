@@ -1,3 +1,4 @@
+Um einen Vermögensgegenstand ohne Abnutzung, wie z.B. Grundstücke, im Anlagenverzeichnis zu führen, kann eine Buchung mit einem degressiven Abschreibungssatz von 0% erfasst werden.
 Wenn die Buchhaltungsdaten mobil auf einem USB-Stick gespeichert werden und von verschiedenen PCs aus nutzbar sein sollen, kann das mit dem Haupt-Applikationsknopf links oben und dann 'Neues Datenverzeichnis wählen' eingestellt werden. Es ist empfehlenswert das Programm selbst jeweils auf den Systemfestplatten der PCs zu installieren.
 Durch Drücken der rechten Maustaste im Journalfenster bekommt man ein Menü, mit dem man Buchungen ändern oder löschen kann. Ändern kann man noch schneller mit einem Doppelklick.
 Die Reihenfolge der Konten kann mit den Pfeilknöpfen im Fenster "E/Ü Konten" in "Einstellungen" geändert werden.

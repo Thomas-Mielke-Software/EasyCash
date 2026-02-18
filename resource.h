@@ -153,9 +153,11 @@
 #define IDC_QUARTALSMAESSIG             1016
 #define IDC_ABSCHREIBUNGJAHRE_STATIC2   1016
 #define IDC_Neu                         1017
+#define IDC_ABSCHREIBUNGSATZ_STATIC     1017
 #define IDC_AENDERN                     1018
 #define IDC_ERNST                       1018
 #define IDC_PROPERTY                    1018
+#define IDC_ABSCHREIBUNGSATZ            1018
 #define IDC_LOESCHEN                    1019
 #define IDC_EMAIL                       1019
 #define IDC_HALBJAEHRLICH               1020
@@ -249,6 +251,8 @@
 #define IDC_AFA_GENAUIGKEIT             1059
 #define IDC_JAHR_ENABLED2               1059
 #define IDC_MWST_ENABLED                1059
+#define IDC_DEGRESSIV                   1060
+#define IDC_ABSCHREIBUNGDEGRESSIV       1060
 #define IDC_KONVERTIEREN                1074
 #define IDC_RADIO1                      1075
 #define IDC_RADIO2                      1076

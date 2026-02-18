@@ -151,6 +151,11 @@ BEGIN_MESSAGE_MAP(BuchenDlg, CDialog)
 	ON_CBN_SELCHANGE(IDC_EURECHNUNGSPOSTEN, &BuchenDlg::OnCbnSelchangeEurechnungsposten)
 	ON_BN_CLICKED(IDC_ABGANG_BUCHEN, &BuchenDlg::OnBnClickedAbgangBuchen)
 	ON_BN_CLICKED(IDC_WAEHRUNGSRECHNER, &BuchenDlg::OnBnClickedWaehrungsrechner)
+	ON_CBN_SELCHANGE(IDC_ABSCHREIBUNGSATZ, &BuchenDlg::OnCbnSelchangeAbschreibungsatz)
+	ON_CBN_EDITCHANGE(IDC_ABSCHREIBUNGSATZ, &BuchenDlg::OnCbnEditchangeAbschreibungsatz)
+	ON_BN_CLICKED(IDC_ABSCHREIBUNGDEGRESSIV, &BuchenDlg::OnBnClickedAbschreibungdegressiv)
+	ON_CBN_KILLFOCUS(IDC_ABSCHREIBUNGSATZ, &BuchenDlg::OnCbnKillfocusAbschreibungsatz)
+	ON_BN_KILLFOCUS(IDC_ABSCHREIBUNGDEGRESSIV, &BuchenDlg::OnBnKillfocusAbschreibungdegressiv)
 END_MESSAGE_MAP()
 
 /////////////////////////////////////////////////////////////////////////////
@@ -405,7 +410,31 @@ void BuchenDlg::OnOK()
 		{
 			MessageBox("Das aktuelle Abschreibungsjahr übersteigt den Abschreibungszeitzaum um mehr als 1! (Hinweis: Für den Fall, dass im ersten Jahr keine ganze Jahresrate abgeschrieben wurde, kann das Abschreibungsjahr die Abschreibungsdauer um eins übersteigen.)", NULL, MB_ICONSTOP);
 			goto error_delete_buchung;
-		}	
+		}
+
+		(*p)->AbschreibungDegressiv = ((CButton*)GetDlgItem(IDC_ABSCHREIBUNGDEGRESSIV))->GetCheck();
+
+		GetDlgItemText(IDC_ABSCHREIBUNGSATZ, buf, sizeof(buf));
+		if ((*p)->AbschreibungDegressiv)
+		{
+			if (!strlen(buf))
+			{
+				MessageBox("Keinen Abschreibungssatz angegeben, obwohl degressiv ausgewählt wurde!", NULL, MB_ICONSTOP);
+				GetDlgItem(IDC_ABSCHREIBUNGSATZ)->SetFocus();
+				goto error_delete_buchung;
+			}
+			else
+				(*p)->AbschreibungSatz = atoi(buf);
+
+			if ((*p)->AbschreibungJahre <= 1)
+			{
+				MessageBox("Gesamt-Abschreibungsdauer muss bei degressiven Abschreibungen größer als 1 sein!", NULL, MB_ICONSTOP);
+				GetDlgItem(IDC_ABSCHREIBUNGJAHRE)->SetFocus();
+				goto error_delete_buchung;
+			}
+		}
+		else
+			(*p)->AbschreibungSatz = 0;
 
 		if ((*p)->AbschreibungNr > 1)
 		{
@@ -435,6 +464,22 @@ void BuchenDlg::OnOK()
 			goto error_delete_buchung;
 		}
 		
+		if ((*p)->AbschreibungSatz == 75 && m_pParent->einstellungen2->m_land == 0)
+		{
+			if ((*p)->AbschreibungGenauigkeit != GANZJAHRES_AFA)
+			{
+				if (AfxMessageBox("Wenn es sich bei der Buchung um eine spezielle Abschreibung für Elektroautos handelt, muss ganzjährige AfA ausgewählt sein. Soll ich die AfA-Genauigkeit für diese Buchung auf 'Jahres-AfA' umstellen?", MB_YESNO) == IDYES)
+					(*p)->AbschreibungGenauigkeit = GANZJAHRES_AFA;
+			}
+			else if((*p)->AbschreibungJahre != 6)
+			{
+				if (AfxMessageBox("Wenn es sich bei der Buchung um eine spezielle Abschreibung für Elektroautos handelt, muss als Abschreibungsdauer sechse Jahre ausgewählt sein. Soll ich die Abschreibungsdauer für diese Buchung entsprechend ändern?", MB_YESNO) == IDYES)
+					(*p)->AbschreibungJahre = 6;
+			}
+			else
+				AfxMessageBox("Hinweis: Da die Buchung mit einer degressiven Abschreibungsrate von 75% und ganzjähriger AfA-Genauigkeit angelegt wurde, wird sie als spezielle Abschreibung für Elektroautos behandelt. Dabei werden in den Folgejahren jeweils 10, 5, 5, 3 und 2 Prozent vom Netto-Anschaffungspreis abgeschrieben.");
+		}
+
 		int m = ((CComboBox *)GetDlgItem(IDC_EURECHNUNGSPOSTEN))->GetCurSel();
 		if (m == CB_ERR)
 			/*(*p)->Konto = ""*/;
@@ -807,6 +852,9 @@ void BuchenDlg::InitDlg(BOOL bBelasseEinigeFelder)
 		GetDlgItem(IDC_ABSCHREIBUNGJAHRE_STATIC2)->ShowWindow(SW_SHOW);
 		GetDlgItem(IDC_ABSCHREIBUNGJAHRE)->ShowWindow(SW_SHOW);
 		GetDlgItem(IDC_ABSCHREIBUNGNUMMER)->ShowWindow(SW_SHOW);
+		GetDlgItem(IDC_ABSCHREIBUNGSATZ_STATIC)->ShowWindow(SW_SHOW);
+		GetDlgItem(IDC_ABSCHREIBUNGSATZ)->ShowWindow(SW_SHOW);
+		GetDlgItem(IDC_ABSCHREIBUNGDEGRESSIV)->ShowWindow(SW_SHOW);
 		InitRestwert();
 		GetDlgItem(IDC_ABSCHREIBUNG_GENAUIGKEIT_STATIC)->ShowWindow(SW_SHOW);
 		GetDlgItem(IDC_ABSCHREIBUNG_GENAUIGKEIT)->ShowWindow(SW_SHOW);
@@ -840,6 +888,9 @@ void BuchenDlg::InitDlg(BOOL bBelasseEinigeFelder)
 		GetDlgItem(IDC_ABSCHREIBUNGJAHRE_STATIC2)->ShowWindow(SW_HIDE);
 		GetDlgItem(IDC_ABSCHREIBUNGNUMMER)->ShowWindow(SW_HIDE);
 		GetDlgItem(IDC_ABSCHREIBUNGJAHRE)->ShowWindow(SW_HIDE);
+		GetDlgItem(IDC_ABSCHREIBUNGSATZ_STATIC)->ShowWindow(SW_HIDE);
+		GetDlgItem(IDC_ABSCHREIBUNGSATZ)->ShowWindow(SW_HIDE);
+		GetDlgItem(IDC_ABSCHREIBUNGDEGRESSIV)->ShowWindow(SW_HIDE);
 		GetDlgItem(IDC_ABSCHREIBUNGRESTWERT_STATIC)->ShowWindow(SW_HIDE);
 		GetDlgItem(IDC_ABSCHREIBUNGRESTWERT)->ShowWindow(SW_HIDE);
 		GetDlgItem(IDC_ABSCHREIBUNG_GENAUIGKEIT_STATIC)->ShowWindow(SW_HIDE);
@@ -959,7 +1010,10 @@ void BuchenDlg::InitDlg(BOOL bBelasseEinigeFelder)
 		//	((CComboBox *)GetDlgItem(IDC_ABSCHREIBUNGNUMMER))->AddString(buf);
 		//}
 		sprintf(buf, "%d", (int)(*m_ppb)->AbschreibungJahre);
-		SetDlgItemText(IDC_ABSCHREIBUNGJAHRE, buf);	
+		SetDlgItemText(IDC_ABSCHREIBUNGJAHRE, buf);
+		((CButton*)GetDlgItem(IDC_ABSCHREIBUNGDEGRESSIV))->SetCheck((*m_ppb)->AbschreibungDegressiv);
+		sprintf(buf, "%d", (int)(*m_ppb)->AbschreibungSatz);
+		SetDlgItemText(IDC_ABSCHREIBUNGSATZ, buf);
 		((CComboBox *)GetDlgItem(IDC_ABSCHREIBUNG_GENAUIGKEIT))->SetCurSel((*m_ppb)->AbschreibungGenauigkeit);
 		if (m_ppb && (*m_ppb)->AbschreibungNr > 1)
 			int_to_currency((*m_ppb)->AbschreibungRestwert, 4, buf);
@@ -1011,7 +1065,7 @@ void BuchenDlg::InitDlg(BOOL bBelasseEinigeFelder)
 		GetDlgItemText(IDC_DATUM_TAG, mm);
 		GetDlgItemText(IDC_DATUM_MONAT, dd);
 		GetDlgItemText(IDC_DATUM_JAHR, yyyy);
-		if ((!m_pParent->einstellungen1->m_BuchungsdatumBelassen | !dd.GetLength() | !mm.GetLength() | !yyyy.GetLength()) && !bBelasseEinigeFelder)
+		if ((!m_pParent->einstellungen1->m_BuchungsdatumBelassen || !dd.GetLength() || !mm.GetLength() || !yyyy.GetLength()) && !bBelasseEinigeFelder)
 		{
 			CTime now = CTime::GetCurrentTime();
 			char buf[100];
@@ -1281,44 +1335,50 @@ void BuchenDlg::OnTimer(UINT nIDEvent)
 
 		InitRestwert();
 
-		// Restwert neu ermitteln
-		CBuchung b;
-		// Betrag
-		GetDlgItemText(IDC_BETRAG, buf, sizeof(buf));
-		b.Betrag = currency_to_int(buf);	
-		// Datum
-		GetDlgItemText(IDC_DATUM_MONAT, buf, sizeof(buf)); 
-		int m = atoi(buf);
-		if (m < 1 || m > 12) m = 1;
-		b.Datum = CTime(2000, m, 1, 0, 0, 0);
-		// MWSt
-		GetDlgItemText(IDC_MWST, buf, sizeof(buf)); 
-		if (!strlen(buf) || !b.SetMWSt(buf)) b.SetMWSt("0");
-		// AbschreibungNr
-		b.AbschreibungNr = 1;
-		// AbschreibungJahre
-		GetDlgItemText(IDC_ABSCHREIBUNGJAHRE, buf, sizeof(buf)); 
-		b.AbschreibungJahre = atoi(buf);
-		// AbschreibungRestwert 
-		GetDlgItemText(IDC_ABSCHREIBUNGRESTWERT, buf, sizeof(buf));
-		b.AbschreibungRestwert = b.GetNetto();
-		// AbschreibungGenauigkeit
-		b.AbschreibungGenauigkeit = ((CComboBox *)GetDlgItem(IDC_ABSCHREIBUNG_GENAUIGKEIT))->GetCurSel();
-
-		GetDlgItemText(IDC_ABSCHREIBUNGNUMMER, buf, sizeof(buf)); 
+		// Restwert neu ermitteln, wenn noch im ersten AfA-Jahr
+		GetDlgItemText(IDC_ABSCHREIBUNGNUMMER , buf, sizeof(buf));
 		n = atoi(buf);
-		
-		int i;
-		for (i = 1; i < n; i++)	// bereits abgeschriebene Jahre durchlaufen
+		if (n == 1)
 		{
-			b.AbschreibungNr = i;
-			b.AbschreibungRestwert -= b.GetBuchungsjahrNetto(m_pDoc);
-		}
+			CBuchung b;
+			// Betrag
+			GetDlgItemText(IDC_BETRAG, buf, sizeof(buf));
+			b.Betrag = currency_to_int(buf);
+			// Datum
+			GetDlgItemText(IDC_DATUM_MONAT, buf, sizeof(buf));
+			int m = atoi(buf);
+			if (m < 1 || m > 12) m = 1;
+			b.Datum = CTime(2000, m, 1, 0, 0, 0);
+			// MWSt
+			GetDlgItemText(IDC_MWST, buf, sizeof(buf));
+			if (!strlen(buf) || !b.SetMWSt(buf)) b.SetMWSt("0");
+			// AbschreibungNr
+			b.AbschreibungNr = 1;
+			// AbschreibungJahre
+			GetDlgItemText(IDC_ABSCHREIBUNGJAHRE, buf, sizeof(buf));
+			b.AbschreibungJahre = atoi(buf);
+			// AbschreibungRestwert 
+			GetDlgItemText(IDC_ABSCHREIBUNGRESTWERT, buf, sizeof(buf));
+			b.AbschreibungRestwert = b.GetNetto();
+			// AbschreibungGenauigkeit
+			b.AbschreibungGenauigkeit = ((CComboBox*)GetDlgItem(IDC_ABSCHREIBUNG_GENAUIGKEIT))->GetCurSel();
 
-		if (b.AbschreibungRestwert < 0)
-			b.AbschreibungRestwert = 0;
-		int_to_currency(b.AbschreibungRestwert, 4, buf);
-		SetDlgItemText(IDC_ABSCHREIBUNGRESTWERT, buf);
+			GetDlgItemText(IDC_ABSCHREIBUNGNUMMER, buf, sizeof(buf));
+			n = atoi(buf);
+
+			// das hier kann ich nicht mehr machen, nachdem degressive Abschreibungen die Sache kompliziert haben:
+			//int i;
+			//for (i = 1; i < n; i++)	// bereits abgeschriebene Jahre durchlaufen
+			//{
+			//	b.AbschreibungNr = i;
+			//	b.AbschreibungRestwert -= b.GetBuchungsjahrNetto(m_pDoc);
+			//}
+
+			if (b.AbschreibungRestwert < 0)
+				b.AbschreibungRestwert = 0;
+			int_to_currency(b.AbschreibungRestwert, 4, buf);
+			SetDlgItemText(IDC_ABSCHREIBUNGRESTWERT, buf);
+		}
 
 		KillTimer(nIDEvent);
 	}
@@ -1963,4 +2023,46 @@ void BuchenDlg::OnBnClickedAbgangBuchen()
 		}
 	m_pParent->RedrawWindow();
 	m_pDoc->UpdateAllViews(NULL);
+}
+
+void BuchenDlg::OnCbnSelchangeAbschreibungsatz()
+{
+
+}
+
+void BuchenDlg::OnCbnEditchangeAbschreibungsatz()
+{
+
+}
+
+void BuchenDlg::OnBnClickedAbschreibungdegressiv()
+{
+
+}
+
+void BuchenDlg::OnCbnKillfocusAbschreibungsatz()
+{
+	char buf[1000];
+	GetDlgItemText(IDC_ABSCHREIBUNGSATZ, buf, sizeof(buf));
+	if (atoi(buf) > 0 || !strcmp(buf, "0"))
+	{
+		if (!strcmp(buf, "0"))
+			AfxMessageBox("Eine degressive Abschreibung mit einem Satz von 0% wird dazu führen, dass diese Buchung nicht jährlich abgeschrieben wird und keine Auswirkung auf den Gewinn hat. Dies ist sinnvoll, wenn man Vermögensgegenstände ohne Abnutzung, wie z.B. Grundstücke, im Anlagenverzeichnis führen möchte.");
+		((CButton*)GetDlgItem(IDC_ABSCHREIBUNGDEGRESSIV))->SetCheck(TRUE);
+	}
+	else
+		;// ((CButton*)GetDlgItem(IDC_ABSCHREIBUNGDEGRESSIV))->SetCheck(FALSE);
+}
+
+void BuchenDlg::OnBnKillfocusAbschreibungdegressiv()
+{
+	if (((CButton*)GetDlgItem(IDC_ABSCHREIBUNGDEGRESSIV))->GetCheck())
+	{
+		char buf[1000];
+		GetDlgItemText(IDC_ABSCHREIBUNGJAHRE, buf, sizeof(buf));
+		if (atoi(buf) <= 1)
+			GetDlgItem(IDC_ABSCHREIBUNGJAHRE)->SetFocus();
+		else
+			GetDlgItem(IDC_ABSCHREIBUNGSATZ)->SetFocus();
+	}
 }

@@ -121,4 +121,9 @@ public:
 	afx_msg void OnCbnSelchangeEurechnungsposten();
 	afx_msg void OnBnClickedAbgangBuchen();
 	afx_msg void OnBnClickedWaehrungsrechner();
+	afx_msg void OnCbnSelchangeAbschreibungsatz();
+	afx_msg void OnCbnEditchangeAbschreibungsatz();
+	afx_msg void OnBnClickedAbschreibungdegressiv();
+	afx_msg void OnCbnKillfocusAbschreibungsatz();
+	afx_msg void OnBnKillfocusAbschreibungdegressiv();
 };

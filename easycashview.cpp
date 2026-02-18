@@ -7400,16 +7400,31 @@ void CEasyCashView::OnFileJahreswechsel()
 	{
 		if (pB->AbschreibungJahre > 1 && pB->AbschreibungRestwert > pB->GetBuchungsjahrNetto(pDoc))
 		{
+			// Buchung kopieren und für neues Jahr anpassen
 			*ppB = new CBuchung;
 			**ppB = *pB;
-			if ((*ppB)->Belegnummer.GetLength() && (*ppB)->Belegnummer.Mid((*ppB)->Belegnummer.GetLength()-5, 3) != "/20") (*ppB)->Belegnummer = (*ppB)->Belegnummer + csSlashAltesJahr;
+			if ((*ppB)->Belegnummer.GetLength() && (*ppB)->Belegnummer.Mid((*ppB)->Belegnummer.GetLength()-5, 3) != "/20")
+				(*ppB)->Belegnummer = (*ppB)->Belegnummer + csSlashAltesJahr;  // Belegnummer mit aktueller Jahreszahl erweitern
 			(*ppB)->AbschreibungRestwert -= (*ppB)->GetBuchungsjahrNetto(pDoc);
 			(*ppB)->AbschreibungNr++;
 			(*ppB)->Datum = CTime((*ppB)->Datum.GetYear() + 1, (*ppB)->Datum.GetMonth(), (*ppB)->Datum.GetDay(), 0, 0, 0);
 			(*ppB)->next = NULL;
+
+			// testen, ob degressive AfA im neuen Jahr noch höher ist als lineare AfA (außer bei Elektroauto-AfAs)
+			if ((*ppB)->AbschreibungDegressiv && ((*ppB)->AbschreibungSatz != 75 || (*ppB)->AbschreibungGenauigkeit != GANZJAHRES_AFA))  
+			{
+				int afaRateDegressiv = (*ppB)->GetBuchungsjahrNetto(pDoc);
+				(*ppB)->AbschreibungDegressiv = FALSE;  // temporär für den Test auf lineare AfA umschalten
+				int afaRateLinear = (*ppB)->GetBuchungsjahrNetto(pDoc);
+				if (afaRateDegressiv <= afaRateLinear)		// degressive AfA ist nicht höher als lineare AfA? Dann auf lineare AfA wechseln.					
+					AfxMessageBox("Hinweis: Die degressive Abschreibung der Buchung '" + (*ppB)->Beschreibung + "' ist im neuen Jahr nicht mehr höher als die lineare Abschreibung, daher wird zum 1. Januar automatisch auf lineare Abschreibung gewechselt.");
+				else
+					(*ppB)->AbschreibungDegressiv = TRUE;	// ansonsten: degressive AfA bleibt bestehen
+			}
+
 			ppB   = &((*ppB)->next);
 		}
-		pB    = pB->next;
+		pB = pB->next;
 	}
 
 	CDauerbuchung **ppD, *pD;

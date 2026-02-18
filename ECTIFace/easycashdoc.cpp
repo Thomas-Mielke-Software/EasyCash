@@ -142,7 +142,7 @@ long CBetrag::GetNetto()
 	{
 		double temp = (double)netto * 100.0;
 		temp /= (100.0 + ((double)MWSt / 1000.0));
-		if (Betrag >= 0) // halber Pfennig zum Runden
+		if (Betrag >= 0) // halber Cent zum Runden
 			netto = (long)(temp + 0.5);
 		else
 			netto = (long)(temp - 0.5);
@@ -416,8 +416,29 @@ long CBuchung::GetBuchungsjahrNetto(int angewandte_Abschreibungsgenauigkeit)
 	if (AbschreibungJahre <= 1)
 		return netto;
 
-	long jaehrliche_rate = netto / AbschreibungJahre 
-						 + (netto % AbschreibungJahre >= AbschreibungNr ? 1 : 0);	// Rundungsfehler auf die ersten Jahre aufteilen!
+	long jaehrliche_rate;
+	
+	if (AbschreibungDegressiv)
+	{
+		// Spezialfall: 75%ige AfA im Anschaffungsjahr bei Elektroautos bei gleichzeitier ganzjähriger AfA
+		if (AbschreibungSatz == 75 && AbschreibungGenauigkeit == GANZJAHRES_AFA)
+		{   
+			static int eautoAfa[] = { 75, 10, 5, 5, 3, 2 };  // diese Raten beziehen sich auf den Netto-Anschaffungswert, nicht auf den Restwert
+			if (AbschreibungNr >= 1 && AbschreibungNr <= 6)
+				jaehrliche_rate = GetNetto() * eautoAfa[AbschreibungNr - 1] / 100;
+			else
+				jaehrliche_rate = 0;
+		}
+		else
+		{
+			jaehrliche_rate = AbschreibungRestwert * AbschreibungSatz / 100;
+			if (jaehrliche_rate > AbschreibungRestwert)
+				jaehrliche_rate = AbschreibungRestwert;		// nur zur Sicherheit
+		}
+	}
+	else
+		jaehrliche_rate = netto / AbschreibungJahre
+						  + (netto % AbschreibungJahre >= AbschreibungNr ? 1 : 0);	// Rundungsfehler auf die ersten Jahre aufteilen!
 
 	// Spezialfall: erste Abschreibungsrate
 	if (AbschreibungNr == 1)
