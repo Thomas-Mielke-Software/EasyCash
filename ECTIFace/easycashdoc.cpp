@@ -407,6 +407,8 @@ long CBuchung::GetBuchungsjahrNetto(CEasyCashDoc *pDoc)
 	return GetBuchungsjahrNetto(angewandte_Abschreibungsgenauigkeit);
 }
 
+
+// gibt die jährliche Abschreibung für das aktuelle Buchungsjahr zurück, berücksichtigt dabei die Abschreibungsgenauigkeit
 long CBuchung::GetBuchungsjahrNetto(int angewandte_Abschreibungsgenauigkeit)
 {
 	// Netto-Betrag berechnen
@@ -415,8 +417,6 @@ long CBuchung::GetBuchungsjahrNetto(int angewandte_Abschreibungsgenauigkeit)
 	// keine AfA? dann einfach netto zurückgeben
 	if (AbschreibungJahre <= 1)
 		return netto;
-
-	long jaehrliche_rate;
 	
 	if (AbschreibungDegressiv)
 	{
@@ -425,40 +425,92 @@ long CBuchung::GetBuchungsjahrNetto(int angewandte_Abschreibungsgenauigkeit)
 		{   
 			static int eautoAfa[] = { 75, 10, 5, 5, 3, 2 };  // diese Raten beziehen sich auf den Netto-Anschaffungswert, nicht auf den Restwert
 			if (AbschreibungNr >= 1 && AbschreibungNr <= 6)
-				jaehrliche_rate = GetNetto() * eautoAfa[AbschreibungNr - 1] / 100;
+				return GetNetto() * eautoAfa[AbschreibungNr - 1] / 100;
 			else
-				jaehrliche_rate = 0;
+				return 0L;  // nach 6 Jahren ist nichts mehr abzuschreiben, sollte eigenlich nicht vorkommen, da AbschreibungJahre normalerweise auf 6 eingestellt sein sollte
 		}
 		else
 		{
-			jaehrliche_rate = AbschreibungRestwert * AbschreibungSatz / 100;
-			if (jaehrliche_rate > AbschreibungRestwert)
-				jaehrliche_rate = AbschreibungRestwert;		// nur zur Sicherheit
+			return BuchungsjahrNettoAbschreibungsgenauigkeitBeruecksichtigen(AbschreibungRestwert * AbschreibungSatz / 100, angewandte_Abschreibungsgenauigkeit);
 		}
 	}
-	else
-		jaehrliche_rate = netto / AbschreibungJahre
-						  + (netto % AbschreibungJahre >= AbschreibungNr ? 1 : 0);	// Rundungsfehler auf die ersten Jahre aufteilen!
+	else // lineare AfA
+	{	
+		// alte Methode zur Berechnung der linearen AfA -- geht so seit Einführung der degressiven 
+		// AfA nicht mehr: jetzt geht nur noch strikt von den Restwerten auszugehen
+		// jaehrliche_rate = netto / AbschreibungJahre
+		//				  + (netto % AbschreibungJahre >= AbschreibungNr ? 1 : 0);	// Rundungsfehler auf die ersten Jahre aufteilen!
 
-	// Spezialfall: erste Abschreibungsrate
+		// Restabschreibungsdauer bestimmen
+		int gesamt_monate = 12 * AbschreibungJahre, verbleibende_monate;
+		switch (angewandte_Abschreibungsgenauigkeit)
+		{
+		case GANZJAHRES_AFA:
+			verbleibende_monate = (AbschreibungJahre - AbschreibungNr + 1) * 12;
+			break;
+		case HALBJAHRES_AFA:
+			if (AbschreibungNr == 1)
+				verbleibende_monate = AbschreibungJahre * 12;
+			else
+				if (Datum.GetMonth() < 7)
+					verbleibende_monate = (AbschreibungJahre - AbschreibungNr + 1) * 12;
+				else
+					verbleibende_monate = (AbschreibungJahre - AbschreibungNr + 2) * 12 - 6;
+			break;
+		case MONATSGENAUE_AFA:
+			if (AbschreibungNr == 1)
+				verbleibende_monate = AbschreibungJahre * 12;
+			else
+				verbleibende_monate = (AbschreibungJahre - AbschreibungNr + 2) * 12 - (Datum.GetMonth() - 1);
+			break;
+		}
+
+		// jetzt verbleibende_monate auf den Restwert herunterbrechen und die Jahresrate bestimmen
+		long jaehrliche_rate = AbschreibungRestwert * 12 / verbleibende_monate;
+		if (jaehrliche_rate > AbschreibungRestwert)
+			jaehrliche_rate = AbschreibungRestwert;
+		return BuchungsjahrNettoAbschreibungsgenauigkeitBeruecksichtigen(jaehrliche_rate, angewandte_Abschreibungsgenauigkeit);
+	}
+}
+
+// hier wird die Abschreibungsgenauigkeit berücksichtigt: im ersten Jahr entsprechend der Einstellungen, im letzten Jahr entsprechend der verbleibenden Monate
+long CBuchung::BuchungsjahrNettoAbschreibungsgenauigkeitBeruecksichtigen(long jaehrliche_rate, int angewandte_Abschreibungsgenauigkeit)
+{
 	if (AbschreibungNr == 1)
 	{
 		switch (angewandte_Abschreibungsgenauigkeit)
 		{
-		case GANZJAHRES_AFA: 
+		case GANZJAHRES_AFA:
 			return jaehrliche_rate;
-		case HALBJAHRES_AFA: 
+		case HALBJAHRES_AFA:
 			if (Datum.GetMonth() < 7)
 				return jaehrliche_rate;
 			else
 				return jaehrliche_rate / 2;
-		case MONATSGENAUE_AFA: 
+		case MONATSGENAUE_AFA:
 			return jaehrliche_rate * (13 - Datum.GetMonth()) / 12;
 		}
 	}
-	
-	// sonst:
-	return min(jaehrliche_rate, AbschreibungRestwert);
+	else if (AbschreibungNr <= AbschreibungJahre)	// die Jahre dazwischen (oder im Fall einer vollen 12-Monats-Rate kann 
+	{												// es auch das letzte Jahr sein, macht dann aber keinen Unterschied)
+		return jaehrliche_rate;
+	}
+	else // if (AbschreibungNr > AbschreibungJahre)
+	{	 // letztes Jahr (bei nicht ganzjähriger AfA): hier muss die Anzahl der verbleibenden Monate berücksichtigt werden
+		switch (angewandte_Abschreibungsgenauigkeit)
+		{
+		case GANZJAHRES_AFA:
+			return 0L;
+		case HALBJAHRES_AFA:
+			if (Datum.GetMonth() < 7)
+				return 0L;
+			else
+				return jaehrliche_rate / 2;
+		case MONATSGENAUE_AFA:
+			long verbleibendeMonate = 13 - Datum.GetMonth();
+			return jaehrliche_rate * verbleibendeMonate / 12;
+		}
+	}
 }
 
 
