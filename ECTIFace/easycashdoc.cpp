@@ -431,6 +431,16 @@ long CBuchung::GetBuchungsjahrNetto(int angewandte_Abschreibungsgenauigkeit)
 		}
 		else
 		{
+			// im letzten Jahr den Restwert zurückgeben (ist ein hypothetischer Fall: in der Praxis wäre schon längst auf lineare AfA umgestellt worden)
+			if (AbschreibungNr == AbschreibungJahre)
+				if (angewandte_Abschreibungsgenauigkeit == GANZJAHRES_AFA ||
+					(angewandte_Abschreibungsgenauigkeit == HALBJAHRES_AFA && Datum.GetMonth() <= 6) ||
+					(angewandte_Abschreibungsgenauigkeit == MONATSGENAUE_AFA && Datum.GetMonth() <= 1))
+				{   
+					return AbschreibungRestwert;
+				}
+			if (AbschreibungNr > AbschreibungJahre)  // ggf. extra Jahr bei nicht ganzjähriger AfA-Genauigkeit
+				return AbschreibungRestwert;		 // hier in jedem Fall den Restwert zurückgeben
 			return BuchungsjahrNettoAbschreibungsgenauigkeitBeruecksichtigen(AbschreibungRestwert * AbschreibungSatz / 100, angewandte_Abschreibungsgenauigkeit);
 		}
 	}
