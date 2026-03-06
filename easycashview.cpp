@@ -7366,102 +7366,10 @@ void CEasyCashView::OnFileJahreswechsel()
 			AfxMessageBox("Die Datensicherung konnte nicht erfolgreich durchgeführt werden. Bitte kopieren Sie die relevanten Dateien manuel auf ein externes Sicherungsmedium.");
 	}
 
-	CEasyCashDoc *pNewDoc;	
-	pNewDoc = (CEasyCashDoc*)pDoc->GetDocTemplate()->CreateNewDocument();
-
-	CBuchung **ppB, *pB;
-
-	pNewDoc->Buchungszaehler = pDoc->Buchungszaehler;
-	pNewDoc->Einnahmen = NULL;
-	pNewDoc->nJahr = pDoc->nJahr + 1;
-	// AfA ab 2004 in BRD ändern
-	if (pNewDoc->nJahr == 2004 && einstellungen2->m_land == 0/*BRD*/) 
-	{
-		CAfAGenauigkeit dlg;
-		dlg.m_afa_genauigkeit = MONATSGENAUE_AFA;
-		if (dlg.DoModal() == IDOK)
-			pNewDoc->AbschreibungGenauigkeit = dlg.m_afa_genauigkeit;
-		else
-		{
-			pNewDoc->AbschreibungGenauigkeit = MONATSGENAUE_AFA;
-			AfxMessageBox("Monatsgenaue AfA wird angenommen.");
-		}
-	}
-	pNewDoc->csWaehrung = pDoc->csWaehrung;
-	pNewDoc->csUrspruenglicheWaehrung = pDoc->csUrspruenglicheWaehrung;
-	pNewDoc->Erweiterung = pDoc->Erweiterung;
-	
-	// akt. Dokument selektiv duplizieren - Ausgaben
-	ppB = &(pNewDoc->Ausgaben);
-	pB  = pDoc->Ausgaben;
-	CString csSlashAltesJahr;
-	csSlashAltesJahr.Format("/%04d", pDoc->nJahr);
-	while (pB)
-	{
-		if (pB->AbschreibungJahre > 1 && pB->AbschreibungRestwert > pB->GetBuchungsjahrNetto(pDoc))
-		{
-			// Buchung kopieren und für neues Jahr anpassen
-			*ppB = new CBuchung;
-			**ppB = *pB;
-			if ((*ppB)->Belegnummer.GetLength() && (*ppB)->Belegnummer.Mid((*ppB)->Belegnummer.GetLength()-5, 3) != "/20")
-				(*ppB)->Belegnummer = (*ppB)->Belegnummer + csSlashAltesJahr;  // Belegnummer mit aktueller Jahreszahl erweitern
-			(*ppB)->AbschreibungRestwert -= (*ppB)->GetBuchungsjahrNetto(pDoc);
-			(*ppB)->AbschreibungNr++;
-			(*ppB)->Datum = CTime((*ppB)->Datum.GetYear() + 1, (*ppB)->Datum.GetMonth(), (*ppB)->Datum.GetDay(), 0, 0, 0);
-			(*ppB)->next = NULL;
-
-			// testen, ob degressive AfA im neuen Jahr noch höher ist als lineare AfA (außer bei Elektroauto-AfAs)
-			if ((*ppB)->AbschreibungDegressiv && ((*ppB)->AbschreibungSatz != 75 || (*ppB)->AbschreibungGenauigkeit != GANZJAHRES_AFA))  
-			{
-				int afaRateDegressiv = (*ppB)->GetBuchungsjahrNetto(pDoc);
-				(*ppB)->AbschreibungDegressiv = FALSE;  // temporär für den Test auf lineare AfA umschalten
-				int afaRateLinear = (*ppB)->GetBuchungsjahrNetto(pDoc);
-				if (afaRateDegressiv <= afaRateLinear)		// degressive AfA ist nicht höher als lineare AfA? Dann auf lineare AfA wechseln.					
-					AfxMessageBox("Hinweis: Die degressive Abschreibung der Buchung '" + (*ppB)->Beschreibung + "' ist im neuen Jahr nicht mehr höher als die lineare Abschreibung, daher wird zum 1. Januar automatisch auf lineare Abschreibung gewechselt.");
-				else
-					(*ppB)->AbschreibungDegressiv = TRUE;	// ansonsten: degressive AfA bleibt bestehen
-			}
-
-			ppB   = &((*ppB)->next);
-		}
-		pB = pB->next;
-	}
-
-	CDauerbuchung **ppD, *pD;
-
-	// akt. Dokument komplett duplizieren - Dauerbuchungen
-	ppD = &(pNewDoc->Dauerbuchungen);
-	pD  = pDoc->Dauerbuchungen;
-	while (pD)
-	{
-		*ppD = new CDauerbuchung;
-		**ppD = *pD;
-		(*ppD)->next = NULL;
-		ppD   = &((*ppD)->next);
-
-		pD    = pD->next;
-	}
-
-	if (pNewDoc->nJahr >= 2002)
-	{
-		int i;
-		for (i = 1; i < 11; i++)
-			if (pNewDoc->csWaehrung == CEasyCashDoc::GetWaehrungskuerzel(i))
-			{
-				if (pNewDoc->ConvertToEuro())
-					AfxMessageBox("Die Buchungsdaten wurden in Euro umgerechnet");
-				else
-					AfxMessageBox("Bei der Umrechnung in Euro ist ein Fehler aufgetreten. Daten sind evtl. inkonsistent.");
-				break;
-			}
-	}
-
-	///////pDoc->GetDocTemplate()->AddDocument(pNewDoc);
-	/////CFrameWnd *pfw = pDoc->GetDocTemplate()->CreateNewFrame(pNewDoc, NULL);
+	CEasyCashDoc *pNewDoc = pDoc->Jahreswechsel(einstellungen2->m_land);
 
 	pNewDoc->nLaufendeBuchungsnummerFuerEinnahmen = 1;
 	pNewDoc->nLaufendeBuchungsnummerFuerAusgaben = 1;
-
 
 	char buf[500];
 	strcpy(buf, pDoc->GetPathName());

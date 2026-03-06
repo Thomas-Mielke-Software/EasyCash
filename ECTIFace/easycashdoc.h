@@ -136,7 +136,7 @@ class AFX_EXT_CLASS CEasyCashDoc : public CDocument
 {
 	friend class CFormularCtrl;
 
-protected: // create from serialization only
+public: // normally create from serialization only (except for unit tests)
 	CEasyCashDoc();
 
 	DECLARE_SERIAL(CEasyCashDoc)
@@ -200,6 +200,7 @@ public:
 	virtual void SetModifiedFlag(BOOL bModified = TRUE);
 	//}}AFX_VIRTUAL
 	void ZeigeStartoptionen();
+	CEasyCashDoc* Jahreswechsel(int land);
 
 // Implementation
 public:
