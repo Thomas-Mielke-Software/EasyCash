@@ -443,11 +443,11 @@ long CBuchung::GetBuchungsjahrNetto(int angewandte_Abschreibungsgenauigkeit)
 			}
 			else // im ersten ggf. verminderte Jahresrate Jahr berücksichtigen
 				if (AbschreibungNr == 1)
-					return BuchungsjahrNettoAbschreibungsgenauigkeitBeruecksichtigen(AbschreibungRestwert * AbschreibungSatz / 100, angewandte_Abschreibungsgenauigkeit);
+					return RundenUndDurch10Dividieren(BuchungsjahrNettoAbschreibungsgenauigkeitBeruecksichtigen(10 * AbschreibungRestwert * AbschreibungSatz / 100, angewandte_Abschreibungsgenauigkeit));
 			if (AbschreibungNr > AbschreibungJahre)  // ggf. extra Jahr bei nicht ganzjähriger AfA-Genauigkeit
 				return AbschreibungRestwert;		 // hier in jedem Fall den Restwert zurückgeben
 			// ansonsten in den Jahren dazwischen immer die volle Jahresrate nehmen:
-			return AbschreibungRestwert * AbschreibungSatz / 100;
+			return RundenUndDurch10Dividieren(10 * AbschreibungRestwert * AbschreibungSatz / 100);
 		}
 	}
 	else // lineare AfA
@@ -478,7 +478,7 @@ long CBuchung::GetBuchungsjahrNetto(int angewandte_Abschreibungsgenauigkeit)
 			if (AbschreibungNr == 1)
 				verbleibende_monate = AbschreibungJahre * 12;
 			else
-				verbleibende_monate = (AbschreibungJahre - AbschreibungNr + 2) * 12 - (13 - Datum.GetMonth());
+				verbleibende_monate = gesamt_monate - (AbschreibungNr - 2) * 12 - (13 - Datum.GetMonth());
 			break;
 		}
 
@@ -486,7 +486,7 @@ long CBuchung::GetBuchungsjahrNetto(int angewandte_Abschreibungsgenauigkeit)
 			return AbschreibungRestwert;		 // hier in jedem Fall den Restwert zurückgeben
 		else
 		{	// jetzt verbleibende_monate auf den Restwert herunterbrechen und die Jahresrate bestimmen
-			long jaehrliche_rate = AbschreibungRestwert * 12 / verbleibende_monate;
+			long jaehrliche_rate = RundenUndDurch10Dividieren(10 * AbschreibungRestwert * 12 / verbleibende_monate);
 			if (jaehrliche_rate > AbschreibungRestwert)  // sollte nicht vorkommen, aber sicherheitshalber 
 				jaehrliche_rate = AbschreibungRestwert;  // nie mehr den Restwert abschreiben
 			return BuchungsjahrNettoAbschreibungsgenauigkeitBeruecksichtigen(jaehrliche_rate, angewandte_Abschreibungsgenauigkeit);
@@ -534,6 +534,15 @@ long CBuchung::BuchungsjahrNettoAbschreibungsgenauigkeitBeruecksichtigen(long ja
 	}
 }
 
+// führt Festkommarundung aus, braucht einen mit 10 multiplizierten Centbetrag als Parameter
+long CBuchung::RundenUndDurch10Dividieren(long lBetragInCentMalTausend)
+{
+	if (lBetragInCentMalTausend >= 0) // halber Pfennig zum Runden
+		lBetragInCentMalTausend += 5;
+	else
+		lBetragInCentMalTausend -= 5;
+	return lBetragInCentMalTausend / 10;
+}
 
 /////////////////////////////////////////////////////////////////////////////
 // CDauerbuchung
@@ -938,7 +947,7 @@ CEasyCashDoc* CEasyCashDoc::Jahreswechsel(int land = 0)
 				int afaRateDegressiv = (*ppB)->GetBuchungsjahrNetto(this);
 				(*ppB)->AbschreibungDegressiv = FALSE;  // temporär für den Test auf lineare AfA umschalten
 				int afaRateLinear = (*ppB)->GetBuchungsjahrNetto(this);
-				if (afaRateDegressiv <= afaRateLinear)		// degressive AfA ist nicht höher als lineare AfA? Dann auf lineare AfA wechseln.					
+				if (afaRateDegressiv < afaRateLinear)		// degressive AfA ist nicht höher als lineare AfA? Dann auf lineare AfA wechseln.					
 				{
 					if (!bHeadlessMode)
 						AfxMessageBox("Hinweis: Die degressive Abschreibung der Buchung '" + (*ppB)->Beschreibung + "' ist im neuen Jahr nicht mehr höher als die lineare Abschreibung, daher wird zum 1. Januar automatisch auf lineare Abschreibung gewechselt.");

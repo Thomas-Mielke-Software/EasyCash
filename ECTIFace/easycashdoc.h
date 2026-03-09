@@ -88,11 +88,13 @@ public:
 	CBuchung& operator=(const CBuchung& buchungSrc);
 	long GetBuchungsjahrNetto(CEasyCashDoc *pDoc);	// Nettobetrag des aktuellen Buchungsjahrs entsprechend den Einstellungen fürs Dokument (für AfA!)
 	long GetBuchungsjahrNetto(int angewandte_Abschreibungsgenauigkeit); // Nettobetrag des aktuellen Buchungsjahrs mit diskreter Abschreibungsgenauigkeit (für AfA!)
-	long BuchungsjahrNettoAbschreibungsgenauigkeitBeruecksichtigen(long jaehrliche_rate, int angewandte_Abschreibungsgenauigkeit);
 	int AbschreibungGenauigkeit;		// dazugekommen ab v1.37 oder CDoc Version 10
 	CString Bestandskonto;				// dazugekommen ab v1.49 oder CDoc Version 11
 	CString Betrieb;					// dazugekommen ab v1.49 oder CDoc Version 11
 
+private:
+	long BuchungsjahrNettoAbschreibungsgenauigkeitBeruecksichtigen(long jaehrliche_rate, int angewandte_Abschreibungsgenauigkeit);
+	long RundenUndDurch10Dividieren(long lBetragInCentMalTausend);
 };
 
 class AFX_EXT_CLASS CDauerbuchung : public CBetrag

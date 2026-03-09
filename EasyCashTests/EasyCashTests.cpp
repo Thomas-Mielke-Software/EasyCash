@@ -222,6 +222,77 @@ namespace EasyCashTests
             if (pJahr1Doc) delete pJahr1Doc;
         }
 
+        TEST_METHOD(Test_JahreswechselLineareAfaRundung)
+        {
+			// Arrange: Kette mit drei AfA-Buchungen, die jeweils 3, 4 und 5 Cent betragen
+            CBuchung* pBuchung3 = new CBuchung();
+            pBuchung3->Datum = CTime(2023, 1, 1, 0, 0, 0);
+            pBuchung3->Betrag = 5; // 5 Cent
+            pBuchung3->MWSt = 0; // 0% MWSt
+            pBuchung3->AbschreibungNr = 1;
+            pBuchung3->AbschreibungJahre = 3;
+            pBuchung3->AbschreibungRestwert = 3; // Restwert in Cent
+            pBuchung3->AbschreibungDegressiv = FALSE;
+            pBuchung3->next = NULL;
+
+            CBuchung* pBuchung2 = new CBuchung();
+            pBuchung2->Datum = CTime(2023, 1, 1, 0, 0, 0);
+            pBuchung2->Betrag = 4; // 3 Cent
+            pBuchung2->MWSt = 0; // 0% MWSt
+            pBuchung2->AbschreibungNr = 1;
+            pBuchung2->AbschreibungJahre = 3;
+            pBuchung2->AbschreibungRestwert = 4; // Restwert in Cent
+            pBuchung2->AbschreibungDegressiv = FALSE;
+            pBuchung2->next = pBuchung3;
+
+            CBuchung* pBuchung1 = new CBuchung();
+            pBuchung1->Datum = CTime(2023, 1, 1, 0, 0, 0);
+            pBuchung1->Betrag = 3; // 3 Cent
+            pBuchung1->MWSt = 0; // 0% MWSt
+            pBuchung1->AbschreibungNr = 1;
+            pBuchung1->AbschreibungJahre = 3;
+            pBuchung1->AbschreibungRestwert = 3; // Restwert in Cent
+            pBuchung1->AbschreibungDegressiv = FALSE;
+            pBuchung1->next = pBuchung2;
+
+            CEasyCashDoc* pJahr1Doc = new CEasyCashDoc();
+            pJahr1Doc->nJahr = 2023;
+            pJahr1Doc->AbschreibungGenauigkeit = GANZJAHRES_AFA;
+            pJahr1Doc->Ausgaben = pBuchung1;  // Erstellen eines CEasyCashDoc mit drei AfA-Ausgabenbuchung
+
+            // Jahr 2
+            CEasyCashDoc* pJahr2Doc = pJahr1Doc->Jahreswechsel(0); // Jahreswechsel durchführen, um die AfA-Buchung ins nächste Jahr zu übertragen
+
+            // Assert: Erartete Abschreibung im ersten Jahr waren für Buchung1 1 Cent, für Buchung2 2 Cent und für Buchung 3 auch 2 Cent
+            Assert::IsNotNull(pJahr2Doc);
+            Assert::IsNotNull(pJahr2Doc->Ausgaben);
+            Assert::AreEqual(2L, (long)pJahr2Doc->Ausgaben->AbschreibungRestwert);  // Buchung 1: noch 2 Cent übrig von ursprünglich 3
+            Assert::AreEqual(3L, (long)pJahr2Doc->Ausgaben->next->AbschreibungRestwert);  // Buchung 2: noch 3 Cent übrig von ursprünglich 4
+            Assert::AreEqual(2L, (long)pJahr2Doc->Ausgaben->next->next->AbschreibungRestwert);  // Buchung 3: noch 2 Cent übrig von ursprünglich 5
+            
+            // Jahr 3
+            CEasyCashDoc* pJahr3Doc = pJahr2Doc->Jahreswechsel(0); // Jahreswechsel durchführen, um die AfA-Buchung ins nächste Jahr zu übertragen
+
+            // Assert: Erartete Abschreibung im zweiten Jahr waren für Buchung1 1 Cent, für Buchung2 1 Cent und für Buchung 3 2 Cent
+            Assert::IsNotNull(pJahr3Doc);
+            Assert::IsNotNull(pJahr3Doc->Ausgaben);
+            Assert::AreEqual(1L, (long)pJahr3Doc->Ausgaben->AbschreibungRestwert);  // Buchung 1: noch 1 Cent übrig von ursprünglich 3
+			Assert::AreEqual(1L, (long)pJahr3Doc->Ausgaben->next->AbschreibungRestwert);  // Buchung 2: noch 1 Cent übrig von ursprünglich 4, da der Restwert von 3 Cent im zweiten Jahr auf die beiden verbliebenen Jahre verteilt wird, also 3 / 2 = 1,5 Cent, wird aufgerundet
+            Assert::AreEqual(1L, (long)pJahr3Doc->Ausgaben->next->next->AbschreibungRestwert);  // Buchung 3: noch 1 Cent übrig von ursprünglich 5
+
+            // Jahr 4 (Rest-AfA wegen unterjähriger Anschaffung bei monatsgenauer AfA-Genauigkeit)
+            CEasyCashDoc* pJahr4Doc = pJahr3Doc->Jahreswechsel(0); // Jahreswechsel durchführen, um die AfA-Buchung ins nächste Jahr zu übertragen
+
+            // Assert
+            Assert::IsNotNull(pJahr4Doc);
+            Assert::IsNull(pJahr4Doc->Ausgaben);  // Buchungen sollten nun nicht mehr auftauchen, da komplett abgeschrieben
+
+            if (pJahr4Doc) delete pJahr4Doc;
+            if (pJahr3Doc) delete pJahr3Doc;
+            if (pJahr2Doc) delete pJahr2Doc;
+            if (pJahr1Doc) delete pJahr1Doc;
+        }
+
         TEST_METHOD(Test_JahreswechselDegressiveAfa)
         {
             // Arrange
@@ -264,20 +335,19 @@ namespace EasyCashTests
             Assert::IsNotNull(pJahr3Doc->Ausgaben);
             long lErwarteterRestwertJahr3 = 131250L;  // == 262500L / 2
             Assert::AreEqual(lErwarteterRestwertJahr3, (long)pJahr3Doc->Ausgaben->AbschreibungRestwert);
-			Assert::IsFalse(lErwarteterRestwertJahr3, (long)pJahr3Doc->Ausgaben->AbschreibungDegressiv);  // im 3. Jahr sollte automatisch auf lineare AfA umgestellt worden sein, da die degressive Rate kleiner wäre als die lineare
-            long lGesamtlaufzeit = 3 * 12;                   //  von den 32 Monaten Gesamtlaufzeit
-            long lRestlaufzeitMonate = lGesamtlaufzeit - 16;  // vier Monate sind bereits im ersten Jahr vergangen, 12 im zweiten, sind noch 20 Monate übrig            
-            long lErwarteteJahresrate = lErwarteterRestwertJahr3 * pJahr3Doc->Ausgaben->AbschreibungSatz / 100;
-			long lErwarteteJahresrate = lErwarteterRestwertJahr3 * 12 / lRestlaufzeitMonate;  // lineare AfA-Rate für die restlichen 20 Monate (zwölf im Jahr 3, acht im Jahr 4)
-            Assert::AreEqual(lErwarteteJahresrate, (long)pJahr3Doc->Ausgaben->GetBuchungsjahrNetto(MONATSGENAUE_AFA));  // auch im 3. Jahr die volle Jahresrate
-
+			Assert::IsFalse(pJahr3Doc->Ausgaben->AbschreibungDegressiv);  // im 3. Jahr sollte automatisch auf lineare AfA umgestellt worden sein, da die degressive Rate kleiner wäre als die lineare
+            long lGesamtlaufzeit = 3 * 12;                   //  von den 36 Monaten Gesamtlaufzeit
+            long lRestlaufzeitMonate = lGesamtlaufzeit - 12 - 3;  // drei Monate sind bereits im ersten Jahr vergangen, 12 im zweiten, also sind noch 21 Monate übrig            
+            long lErwarteteLineareJahresrate = lErwarteterRestwertJahr3 * 12 / lRestlaufzeitMonate;  // lineare AfA-Rate für die restlichen 20 Monate (zwölf im Jahr 3, acht im Jahr 4)
+            Assert::AreEqual(lErwarteteLineareJahresrate, (long)pJahr3Doc->Ausgaben->GetBuchungsjahrNetto(MONATSGENAUE_AFA));  // auch im 3. Jahr die volle Jahresrate
+            
             // Jahr 4 (Rest-AfA wegen unterjähriger Anschaffung bei monatsgenauer AfA-Genauigkeit)
             CEasyCashDoc* pJahr4Doc = pJahr3Doc->Jahreswechsel(0); // Jahreswechsel durchführen, um die AfA-Buchung ins nächste Jahr zu übertragen
 
             // Assert
             Assert::IsNotNull(pJahr4Doc);
             Assert::IsNotNull(pJahr4Doc->Ausgaben);
-			long lErwarteterRestwertJahr4 = 52500L;  // == 131250L * 8 / 20 -- restliche acht Monate im vierten Jahr abschreiben
+			long lErwarteterRestwertJahr4 = 56250;  // == 131250L * 9 / 21 -- restliche neun Monate im vierten Jahr abschreiben
             Assert::AreEqual(lErwarteterRestwertJahr4, (long)pJahr4Doc->Ausgaben->GetBuchungsjahrNetto(MONATSGENAUE_AFA));  // im 4. Jahr soll der Restwert komplett abgeschrieben werden
             Assert::AreEqual(lErwarteterRestwertJahr4, (long)pJahr4Doc->Ausgaben->AbschreibungRestwert);
 
@@ -289,6 +359,87 @@ namespace EasyCashTests
             Assert::IsNull(pJahr5Doc->Ausgaben);  // Buchung sollte nun nicht mehr auftauchen
 
             if (pJahr5Doc) delete pJahr5Doc;
+            if (pJahr4Doc) delete pJahr4Doc;
+            if (pJahr3Doc) delete pJahr3Doc;
+            if (pJahr2Doc) delete pJahr2Doc;
+            if (pJahr1Doc) delete pJahr1Doc;
+        }
+
+        TEST_METHOD(Test_JahreswechselDegressiveAfaRundung)
+        {
+            // Arrange: Kette mit drei AfA-Buchungen, die jeweils 3, 4 und 5 Cent betragen
+            CBuchung* pBuchung3 = new CBuchung();
+            pBuchung3->Datum = CTime(2023, 1, 1, 0, 0, 0);
+            pBuchung3->Betrag = 8; // 8 Cent
+            pBuchung3->MWSt = 0; // 0% MWSt
+            pBuchung3->AbschreibungNr = 1;
+            pBuchung3->AbschreibungJahre = 3;
+            pBuchung3->AbschreibungRestwert = 8; // Restwert in Cent
+            pBuchung3->AbschreibungDegressiv = TRUE;
+            pBuchung3->AbschreibungSatz = 50; // hypothetische Rate zur Test-Vereinfachung: normal ist ein Satz von 20%
+            pBuchung3->next = NULL;
+
+            CBuchung* pBuchung2 = new CBuchung();
+            pBuchung2->Datum = CTime(2023, 1, 1, 0, 0, 0);
+            pBuchung2->Betrag = 7; // 7 Cent
+            pBuchung2->MWSt = 0; // 0% MWSt
+            pBuchung2->AbschreibungNr = 1;
+            pBuchung2->AbschreibungJahre = 3;
+            pBuchung2->AbschreibungRestwert = 7; // Restwert in Cent
+            pBuchung2->AbschreibungDegressiv = TRUE;
+            pBuchung2->AbschreibungSatz = 50; // hypothetische Rate zur Test-Vereinfachung: normal ist ein Satz von 20%
+            pBuchung2->next = pBuchung3;
+
+            CBuchung* pBuchung1 = new CBuchung();
+            pBuchung1->Datum = CTime(2023, 1, 1, 0, 0, 0);
+            pBuchung1->Betrag = 5; // 5 Cent
+            pBuchung1->MWSt = 0; // 0% MWSt
+            pBuchung1->AbschreibungNr = 1;
+            pBuchung1->AbschreibungJahre = 3;
+            pBuchung1->AbschreibungRestwert = 5; // Restwert in Cent
+            pBuchung1->AbschreibungDegressiv = TRUE;
+            pBuchung1->AbschreibungSatz = 50; // hypothetische Rate zur Test-Vereinfachung: normal ist ein Satz von 20%
+            pBuchung1->next = pBuchung2;
+
+            CEasyCashDoc* pJahr1Doc = new CEasyCashDoc();
+            pJahr1Doc->nJahr = 2023;
+            pJahr1Doc->AbschreibungGenauigkeit = GANZJAHRES_AFA;
+            pJahr1Doc->Ausgaben = pBuchung1;  // Erstellen eines CEasyCashDoc mit drei AfA-Ausgabenbuchung
+
+            // Jahr 2
+            CEasyCashDoc* pJahr2Doc = pJahr1Doc->Jahreswechsel(0); // Jahreswechsel durchführen, um die AfA-Buchung ins nächste Jahr zu übertragen
+
+            // Assert: Erartete Abschreibung im ersten Jahr waren für Buchung1 1 Cent, für Buchung2 2 Cent und für Buchung 3 auch 2 Cent
+            Assert::IsNotNull(pJahr2Doc);
+            Assert::IsNotNull(pJahr2Doc->Ausgaben);
+            Assert::IsTrue(pJahr2Doc->Ausgaben->AbschreibungDegressiv);
+            Assert::IsTrue(pJahr2Doc->Ausgaben->next->AbschreibungDegressiv); 
+            Assert::IsTrue(pJahr2Doc->Ausgaben->next->next->AbschreibungDegressiv);
+
+            Assert::AreEqual(2L, (long)pJahr2Doc->Ausgaben->AbschreibungRestwert);  // Buchung 1: noch 2 Cent übrig von ursprünglich 5
+            Assert::AreEqual(3L, (long)pJahr2Doc->Ausgaben->next->AbschreibungRestwert);  // Buchung 2: noch 3 Cent übrig von ursprünglich 7
+            Assert::AreEqual(4L, (long)pJahr2Doc->Ausgaben->next->next->AbschreibungRestwert);  // Buchung 3: noch 4 Cent übrig von ursprünglich 8
+
+            // Jahr 3
+            CEasyCashDoc* pJahr3Doc = pJahr2Doc->Jahreswechsel(0); // Jahreswechsel durchführen, um die AfA-Buchung ins nächste Jahr zu übertragen
+
+            // Assert: Erartete Abschreibung im zweiten Jahr waren für Buchung1 1 Cent, für Buchung2 1 Cent und für Buchung 3 2 Cent
+            Assert::IsNotNull(pJahr3Doc);
+            Assert::IsNotNull(pJahr3Doc->Ausgaben);
+            Assert::IsTrue(pJahr3Doc->Ausgaben->AbschreibungDegressiv);
+            Assert::IsTrue(pJahr3Doc->Ausgaben->next->AbschreibungDegressiv);
+            Assert::IsTrue(pJahr3Doc->Ausgaben->next->next->AbschreibungDegressiv);
+            Assert::AreEqual(1L, (long)pJahr3Doc->Ausgaben->AbschreibungRestwert);  // Buchung 1: noch 1 Cent übrig von ursprünglich 5
+            Assert::AreEqual(1L, (long)pJahr3Doc->Ausgaben->next->AbschreibungRestwert);  // Buchung 2: noch 2 Cent übrig von ursprünglich 7, da der Restwert von 3 Cent im zweiten Jahr auf die beiden verbliebenen Jahre verteilt wird, also 3 / 2 = 1,5 Cent, wird aufgerundet
+            Assert::AreEqual(2L, (long)pJahr3Doc->Ausgaben->next->next->AbschreibungRestwert);  // Buchung 3: noch 2 Cent übrig von ursprünglich 8
+
+            // Jahr 4 (Rest-AfA wegen unterjähriger Anschaffung bei monatsgenauer AfA-Genauigkeit)
+            CEasyCashDoc* pJahr4Doc = pJahr3Doc->Jahreswechsel(0); // Jahreswechsel durchführen, um die AfA-Buchung ins nächste Jahr zu übertragen
+
+            // Assert
+            Assert::IsNotNull(pJahr4Doc);
+            Assert::IsNull(pJahr4Doc->Ausgaben);  // Buchungen sollten nun nicht mehr auftauchen, da komplett abgeschrieben
+
             if (pJahr4Doc) delete pJahr4Doc;
             if (pJahr3Doc) delete pJahr3Doc;
             if (pJahr2Doc) delete pJahr2Doc;
