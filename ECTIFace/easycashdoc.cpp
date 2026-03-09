@@ -433,15 +433,21 @@ long CBuchung::GetBuchungsjahrNetto(int angewandte_Abschreibungsgenauigkeit)
 		{
 			// im letzten Jahr den Restwert zurückgeben (ist ein hypothetischer Fall: in der Praxis wäre schon längst auf lineare AfA umgestellt worden)
 			if (AbschreibungNr == AbschreibungJahre)
+			{
 				if (angewandte_Abschreibungsgenauigkeit == GANZJAHRES_AFA ||
 					(angewandte_Abschreibungsgenauigkeit == HALBJAHRES_AFA && Datum.GetMonth() <= 6) ||
 					(angewandte_Abschreibungsgenauigkeit == MONATSGENAUE_AFA && Datum.GetMonth() <= 1))
-				{   
+				{
 					return AbschreibungRestwert;
 				}
+			}
+			else // im ersten ggf. verminderte Jahresrate Jahr berücksichtigen
+				if (AbschreibungNr == 1)
+					return BuchungsjahrNettoAbschreibungsgenauigkeitBeruecksichtigen(AbschreibungRestwert * AbschreibungSatz / 100, angewandte_Abschreibungsgenauigkeit);
 			if (AbschreibungNr > AbschreibungJahre)  // ggf. extra Jahr bei nicht ganzjähriger AfA-Genauigkeit
 				return AbschreibungRestwert;		 // hier in jedem Fall den Restwert zurückgeben
-			return BuchungsjahrNettoAbschreibungsgenauigkeitBeruecksichtigen(AbschreibungRestwert * AbschreibungSatz / 100, angewandte_Abschreibungsgenauigkeit);
+			// ansonsten in den Jahren dazwischen immer die volle Jahresrate nehmen:
+			return AbschreibungRestwert * AbschreibungSatz / 100;
 		}
 	}
 	else // lineare AfA
@@ -874,10 +880,14 @@ CEasyCashDoc* CEasyCashDoc::Jahreswechsel(int land = 0)
 {
 	CDocTemplate* pTemplate = GetDocTemplate();
 	CEasyCashDoc* pNewDoc = NULL;
+	int bHeadlessMode = FALSE;
 	if (pTemplate)
 		pNewDoc = (CEasyCashDoc*)pTemplate->CreateNewDocument();
 	else
+	{
 		pNewDoc = new CEasyCashDoc();  // fallback für unit tests im headless-Betrieb
+		bHeadlessMode = TRUE;
+	}
 	if (!pNewDoc) return NULL;
 
 	CBuchung** ppB, * pB;
@@ -895,7 +905,8 @@ CEasyCashDoc* CEasyCashDoc::Jahreswechsel(int land = 0)
 		else
 		{
 			pNewDoc->AbschreibungGenauigkeit = MONATSGENAUE_AFA;
-			AfxMessageBox("Monatsgenaue AfA wird angenommen.");
+			if (!bHeadlessMode)
+				AfxMessageBox("Monatsgenaue AfA wird angenommen.");
 		}
 	}
 	pNewDoc->csWaehrung = csWaehrung;
@@ -928,7 +939,10 @@ CEasyCashDoc* CEasyCashDoc::Jahreswechsel(int land = 0)
 				(*ppB)->AbschreibungDegressiv = FALSE;  // temporär für den Test auf lineare AfA umschalten
 				int afaRateLinear = (*ppB)->GetBuchungsjahrNetto(this);
 				if (afaRateDegressiv <= afaRateLinear)		// degressive AfA ist nicht höher als lineare AfA? Dann auf lineare AfA wechseln.					
-					AfxMessageBox("Hinweis: Die degressive Abschreibung der Buchung '" + (*ppB)->Beschreibung + "' ist im neuen Jahr nicht mehr höher als die lineare Abschreibung, daher wird zum 1. Januar automatisch auf lineare Abschreibung gewechselt.");
+				{
+					if (!bHeadlessMode)
+						AfxMessageBox("Hinweis: Die degressive Abschreibung der Buchung '" + (*ppB)->Beschreibung + "' ist im neuen Jahr nicht mehr höher als die lineare Abschreibung, daher wird zum 1. Januar automatisch auf lineare Abschreibung gewechselt.");
+				}
 				else
 					(*ppB)->AbschreibungDegressiv = TRUE;	// ansonsten: degressive AfA bleibt bestehen
 			}
@@ -960,9 +974,15 @@ CEasyCashDoc* CEasyCashDoc::Jahreswechsel(int land = 0)
 			if (pNewDoc->csWaehrung == CEasyCashDoc::GetWaehrungskuerzel(i))
 			{
 				if (pNewDoc->ConvertToEuro())
-					AfxMessageBox("Die Buchungsdaten wurden in Euro umgerechnet");
+				{
+					if (!bHeadlessMode)
+						AfxMessageBox("Die Buchungsdaten wurden in Euro umgerechnet");
+				}
 				else
-					AfxMessageBox("Bei der Umrechnung in Euro ist ein Fehler aufgetreten. Daten sind evtl. inkonsistent.");
+				{
+					if (!bHeadlessMode)
+						AfxMessageBox("Bei der Umrechnung in Euro ist ein Fehler aufgetreten. Daten sind evtl. inkonsistent.");
+				}
 				break;
 			}
 	}
