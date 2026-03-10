@@ -445,5 +445,91 @@ namespace EasyCashTests
             if (pJahr2Doc) delete pJahr2Doc;
             if (pJahr1Doc) delete pJahr1Doc;
         }
+
+        TEST_METHOD(Test_JahreswechselElektroautoSpezialAfa)
+        {
+            // Arrange: Kette mit drei AfA-Buchungen, die jeweils 3, 4 und 5 Cent betragen
+            CBuchung* pBuchung = new CBuchung();
+            pBuchung->Datum = CTime(2023, 1, 1, 0, 0, 0);
+            pBuchung->Betrag = 2000000; // 20.000 € in Cent
+            pBuchung->MWSt = 0; // 0% MWSt
+            pBuchung->AbschreibungNr = 1;
+            pBuchung->AbschreibungJahre = 5;
+            pBuchung->AbschreibungRestwert = pBuchung->Betrag; // Restwert in Cent
+            pBuchung->AbschreibungDegressiv = TRUE;
+            pBuchung->AbschreibungSatz = 75; // Elektroauto-Turboabschreibung 2025-2029 in Deutschland
+            pBuchung->AbschreibungGenauigkeit = GANZJAHRES_AFA;
+            pBuchung->next = NULL;           // muss über 6 Jahre mit 75, 10, 5, 5, 3 und 2 Prozent vom Anschaffungswert abgeschrieben werden
+
+            CEasyCashDoc* pJahr1Doc = new CEasyCashDoc();
+            pJahr1Doc->nJahr = 2025;
+            pJahr1Doc->AbschreibungGenauigkeit = MONATSGENAUE_AFA;
+            pJahr1Doc->Ausgaben = pBuchung;  // Erstellen eines CEasyCashDoc mit einer AfA-Ausgabenbuchung
+
+            // Jahr 1 Assert
+            Assert::AreEqual(1500000L, (long)pBuchung->GetBuchungsjahrNetto(GANZJAHRES_AFA));  // im ersten Jahr wird 75% des Anschaffungswerts, also 15.000 €, abgezogen            
+
+            // Jahr 2
+            CEasyCashDoc* pJahr2Doc = pJahr1Doc->Jahreswechsel(0); // Jahreswechsel durchführen, um die AfA-Buchung ins nächste Jahr zu übertragen
+
+            // Assert
+            Assert::IsNotNull(pJahr2Doc);
+            Assert::IsNotNull(pJahr2Doc->Ausgaben);
+            Assert::IsTrue(pJahr2Doc->Ausgaben->AbschreibungDegressiv);
+            Assert::AreEqual(500000L, (long)pJahr2Doc->Ausgaben->AbschreibungRestwert);  // noch 5.000 € übrig von ursprünglich 20.000 €
+            Assert::AreEqual(200000L, (long)pJahr2Doc->Ausgaben->GetBuchungsjahrNetto(GANZJAHRES_AFA));  // im zweiten Jahr wird nur noch 10% des Anschaffungswerts, also 2.000 €, abgezogen            
+
+            // Jahr 3
+            CEasyCashDoc* pJahr3Doc = pJahr2Doc->Jahreswechsel(0);
+
+            // Assert
+            Assert::IsNotNull(pJahr3Doc);
+            Assert::IsNotNull(pJahr3Doc->Ausgaben);
+            Assert::AreEqual(300000L, (long)pJahr3Doc->Ausgaben->AbschreibungRestwert);  // noch 2.500 € übrig
+            Assert::AreEqual(100000L, (long)pJahr3Doc->Ausgaben->GetBuchungsjahrNetto(GANZJAHRES_AFA));  // 5% des Anschaffungswerts
+
+            // Jahr 4
+            CEasyCashDoc* pJahr4Doc = pJahr3Doc->Jahreswechsel(0);
+
+            // Assert
+            Assert::IsNotNull(pJahr4Doc);
+            Assert::IsNotNull(pJahr4Doc->Ausgaben);
+            Assert::AreEqual(200000L, (long)pJahr4Doc->Ausgaben->AbschreibungRestwert);  // noch 1.500 € übrig
+            Assert::AreEqual(100000L, (long)pJahr4Doc->Ausgaben->GetBuchungsjahrNetto(GANZJAHRES_AFA));  // 5% des Anschaffungswerts
+
+            // Jahr 5
+            CEasyCashDoc* pJahr5Doc = pJahr4Doc->Jahreswechsel(0);
+
+            // Assert
+            Assert::IsNotNull(pJahr5Doc);
+            Assert::IsNotNull(pJahr5Doc->Ausgaben);
+            Assert::AreEqual(100000L, (long)pJahr5Doc->Ausgaben->AbschreibungRestwert);  // noch 1.000 € übrig
+            Assert::AreEqual(60000L, (long)pJahr5Doc->Ausgaben->GetBuchungsjahrNetto(GANZJAHRES_AFA));  // 3% des Anschaffungswerts
+
+            // Jahr 6
+            CEasyCashDoc* pJahr6Doc = pJahr5Doc->Jahreswechsel(0);
+
+            // Assert
+            Assert::IsNotNull(pJahr6Doc);
+            Assert::IsNotNull(pJahr6Doc->Ausgaben);
+            Assert::AreEqual(40000L, (long)pJahr6Doc->Ausgaben->AbschreibungRestwert);  // noch 400 € übrig
+            Assert::AreEqual(40000L, (long)pJahr6Doc->Ausgaben->GetBuchungsjahrNetto(GANZJAHRES_AFA));  // 2% des Anschaffungswerts
+
+            // Jahr 7
+            CEasyCashDoc* pJahr7Doc = pJahr6Doc->Jahreswechsel(0);
+
+            // Assert
+            Assert::IsNotNull(pJahr7Doc);
+            Assert::IsNull(pJahr7Doc->Ausgaben);  // Buchungen sollten nun nicht mehr auftauchen, da komplett abgeschrieben
+
+            // Cleanup
+            if (pJahr7Doc) delete pJahr7Doc;
+            if (pJahr6Doc) delete pJahr6Doc;
+            if (pJahr5Doc) delete pJahr5Doc;
+            if (pJahr4Doc) delete pJahr4Doc;
+            if (pJahr3Doc) delete pJahr3Doc;
+            if (pJahr2Doc) delete pJahr2Doc;
+            if (pJahr1Doc) delete pJahr1Doc;
+        }
     };
 }
