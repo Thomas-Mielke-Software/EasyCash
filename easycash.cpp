@@ -908,7 +908,7 @@ Die Registriercode-Anforderung konnte nicht geöffnet werden. Bitte sende sie man
 	}
 	else
 	{
-		AfxMessageBox("Die Registrierung sollte jetzt im E-Mail-Programm geöffnet worden sein. (Wenn nicht, bitte das Mail-Programm manuell starten und eine E-Mail mit Betreff 'EasyCash-Registrierung' an MielkeT@gmx.de senden.) Nach dem Absenden sollte der Code in wenigen Tagen eintreffen.", MB_ICONINFORMATION);
+		AfxMessageBox("Die Registrierung sollte jetzt im E-Mail-Programm geöffnet worden sein. (Wenn nicht, bitte das Mail-Programm manuell starten und eine E-Mail mit Betreff 'EasyCash-Registrierung' an thomas@mielke.software senden.) Nach dem Absenden sollte der Code in wenigen Tagen eintreffen.", MB_ICONINFORMATION);
 
 		GetDlgItem(IDC_KONTAKT_REGISTRIERCODE)->EnableWindow(FALSE);
 	}

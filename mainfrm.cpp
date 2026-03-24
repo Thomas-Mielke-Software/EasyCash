@@ -1986,11 +1986,11 @@ void CMainFrame::OnSpendeBank()
 	int n = (int)ShellExecute(m_hWnd, "open", csBodytext, NULL, ".", SW_SHOWNORMAL);
 	if (n <= 32)
 	{
-		AfxMessageBox("Herzlichen Dank! Es gab aber ein kleines Problem mit dem E-Mail Programm auf diesem Rechner. Bitte das Mail-Programm manuell starten und Eine E-Mail an MielkeT@gmx.de mit Betreff 'EasyCash-Registrierung-Spende (Bank)' und Betrag sowie Rechnungsadresse im Mailtext angeben. Nach dem Absenden sollte der Code in wenigen Tagen eintreffen. Die IBAN wurde aber in die Zwischenablage kopiert und kann ggf. in Ihr Online-Banking eingefügt werden. Der Kontoinhaber lautet 'Thomas Mielke' und die BIC, für den Fall einer Auslandsüberweisung, ist " + (CString)GLOBAL_BIC + ".", MB_ICONSTOP);
+		AfxMessageBox((CString)"Herzlichen Dank! Es gab aber ein kleines Problem mit dem E-Mail Programm auf diesem Rechner. Bitte das Mail-Programm manuell starten und Eine E-Mail an thomas@mielke.software  mit Betreff 'EasyCash-Registrierung-Spende (Bank)' und Betrag sowie Rechnungsadresse im Mailtext angeben. Nach dem Absenden sollte der Code in wenigen Tagen eintreffen. Die IBAN (" + GLOBAL_IBAN + ") wurde aber in die Zwischenablage kopiert und kann ggf. in Ihr Online-Banking eingefügt werden. Der Kontoinhaber lautet 'Thomas Mielke' und die BIC, für den Fall einer Auslandsüberweisung, ist " + (CString)GLOBAL_BIC + ".", MB_ICONSTOP);
 	}
 	else
 	{
-		AfxMessageBox("Herzlichen Dank! Die Spenden-Registrierung sollte jetzt im E-Mail-Programm geöffnet worden sein. (Wenn nicht, bitte das Mail-Programm manuell starten und Eine E-Mail an MielkeT@gmx.de mit Betreff 'EasyCash-Registrierung-Spende (Bank)' und Betrag sowie Rechnungsadresse im Mailtext angeben. Nach dem Absenden sollte der Code in wenigen Tagen eintreffen. Die IBAN wurde übrigens in die Zwischenablage kopiert und kann ggf. in Ihr Online-Banking eingefügt werden. Der Kontoinhaber lautet 'Thomas Mielke' und die BIC, für den Fall einer Auslandsüberweisung, ist " + (CString)GLOBAL_BIC + ".", MB_ICONINFORMATION);
+		AfxMessageBox((CString)"Herzlichen Dank! Die Spenden-Registrierung sollte jetzt im E-Mail-Programm geöffnet worden sein. (Wenn nicht, bitte das Mail-Programm manuell starten und Eine E-Mail an thomas@mielke.software  mit Betreff 'EasyCash-Registrierung-Spende (Bank)' und Betrag sowie Rechnungsadresse im Mailtext angeben. Nach dem Absenden sollte der Code in wenigen Tagen eintreffen. Die IBAN (" + GLOBAL_IBAN + ") wurde übrigens in die Zwischenablage kopiert und kann ggf. in Ihr Online-Banking eingefügt werden. Der Kontoinhaber lautet 'Thomas Mielke' und die BIC, für den Fall einer Auslandsüberweisung, ist " + (CString)GLOBAL_BIC + ".", MB_ICONINFORMATION);
 	}
 }
 
@@ -2016,11 +2016,11 @@ void CMainFrame::OnSpendePayPal()
 	n = (int)ShellExecute(m_hWnd, "open", csBodytext, NULL, ".", SW_SHOWNORMAL);
 	if (n <= 32)
 	{
-		AfxMessageBox("Es gab ein kleines Problem mit dem E-Mail Programm auf diesem Rechner. Bitte das Mail-Programm manuell starten und Eine E-Mail an MielkeT@gmx.de mit Betreff 'EasyCash-Registrierung-Spende (PayPal)' und Betrag sowie Rechnungsadresse im Mailtext angeben.) Nach dem Absenden sollte der Code in wenigen Tagen eintreffen.", MB_ICONSTOP);
+		AfxMessageBox("Es gab ein kleines Problem mit dem E-Mail Programm auf diesem Rechner. Bitte das Mail-Programm manuell starten und Eine E-Mail an thomas@mielke.software  mit Betreff 'EasyCash-Registrierung-Spende (PayPal)' und Betrag sowie Rechnungsadresse im Mailtext angeben.) Nach dem Absenden sollte der Code in wenigen Tagen eintreffen.", MB_ICONSTOP);
 	}
 	else
 	{
-		AfxMessageBox("Die Spenden-Registrierung sollte jetzt im E-Mail-Programm geöffnet worden sein. (Wenn nicht, bitte das Mail-Programm manuell starten und Eine E-Mail an MielkeT@gmx.de mit Betreff 'EasyCash-Registrierung-Spende (PayPal)' und Betrag sowie Rechnungsadresse im Mailtext angeben.) Nach dem Absenden sollte der Code in wenigen Tagen eintreffen.", MB_ICONINFORMATION);
+		AfxMessageBox("Die Spenden-Registrierung sollte jetzt im E-Mail-Programm geöffnet worden sein. (Wenn nicht, bitte das Mail-Programm manuell starten und Eine E-Mail an thomas@mielke.software  mit Betreff 'EasyCash-Registrierung-Spende (PayPal)' und Betrag sowie Rechnungsadresse im Mailtext angeben.) Nach dem Absenden sollte der Code in wenigen Tagen eintreffen.", MB_ICONINFORMATION);
 	}
 }
 
@@ -2074,11 +2074,11 @@ void CMainFrame::OnSpendeBitcoin()
 	n = (int)ShellExecute(m_hWnd, "open", csBodytext, NULL, ".", SW_SHOWNORMAL);
 	if (n <= 32)
 	{
-		AfxMessageBox("Es gab ein kleines Problem mit dem E-Mail Programm auf diesem Rechner. Bitte das Mail-Programm manuell starten und Eine E-Mail an MielkeT@gmx.de mit Betreff 'EasyCash-Registrierung-Spende' und BTC-Betrag sowie Rechnungsadresse im Mailtext angeben.) Nach dem Absenden sollte der Code in wenigen Tagen eintreffen.", MB_ICONSTOP);
+		AfxMessageBox("Es gab ein kleines Problem mit dem E-Mail Programm auf diesem Rechner. Bitte das Mail-Programm manuell starten und Eine E-Mail an thomas@mielke.software  mit Betreff 'EasyCash-Registrierung-Spende' und BTC-Betrag sowie Rechnungsadresse im Mailtext angeben.) Nach dem Absenden sollte der Code in wenigen Tagen eintreffen.", MB_ICONSTOP);
 	}
 	else
 	{
-		AfxMessageBox("Die Spenden-Registrierung sollte jetzt im E-Mail-Programm geöffnet worden sein. (Wenn nicht, bitte das Mail-Programm manuell starten und Eine E-Mail an MielkeT@gmx.de mit Betreff 'EasyCash-Registrierung-Spende' und BTC-Betrag sowie Rechnungsadresse im Mailtext angeben.) Nach dem Absenden sollte der Code in wenigen Tagen eintreffen.", MB_ICONINFORMATION);
+		AfxMessageBox("Die Spenden-Registrierung sollte jetzt im E-Mail-Programm geöffnet worden sein. (Wenn nicht, bitte das Mail-Programm manuell starten und Eine E-Mail an thomas@mielke.software  mit Betreff 'EasyCash-Registrierung-Spende' und BTC-Betrag sowie Rechnungsadresse im Mailtext angeben.) Nach dem Absenden sollte der Code in wenigen Tagen eintreffen.", MB_ICONINFORMATION);
 	}
 }
 

@@ -3,7 +3,7 @@
 
 [Setup]
 AppName=EasyCash&Tax
-AppVerName=EasyCash&Tax 3.5 TEST
+AppVerName=EasyCash&Tax 3.6
 DiskSpanning=no
 AppPublisher=tm
 AppPublisherURL=http://www.easyct.de
@@ -16,7 +16,7 @@ OutputBaseFilename=ECTSetupTEST
 OutputDir=.\EasyCash 
 MinVersion=6.1
 LicenseFile=.\LIZENZ.txt      
-;SignTool=winsdk10sha1   ; no longer dual sign the installer?
+;SignTool=winsdk10sha1   ; no longer dual sign the installer
 SignTool=winsdk10sha256
 ;Menu -> Tools -> Configure Sign Tool...
 ;winsdk81sha1: (deprecated sha1 signature) "C:\Program Files (x86)\Windows Kits\8.1\bin\x86\signtool.exe" sign /p mysecretpw /f C:\My\Path\To\cert.p12 /t http://timestamp.comodoca.com $f
