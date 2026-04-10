@@ -24,4 +24,9 @@
       <Filter>Headerdateien</Filter>
     </ClInclude>
   </ItemGroup>
+  <ItemGroup>
+    <None Include="ECTEngine.Tests\DocumentTests.cs" />
+    <None Include="ECTEngine.Tests\BuchungTests.cs" />
+    <None Include="ECTEngine.Tests.csproj" />
+  </ItemGroup>
 </Project>

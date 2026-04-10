@@ -552,6 +552,20 @@
     <None Include="Formularabschnitt.htm" />
     <None Include="README.md" />
     <None Include="res\ribbon.mfcribbon-ms" />
+    <None Include="ECTEngine.csproj" />
+    <None Include="ECTEngine\Models\Betrag.cs" />
+    <None Include="ECTEngine\Models\AbschreibungsGenauigkeit.cs" />
+    <None Include="ECTEngine\Models\Buchung.cs" />
+    <None Include="ECTEngine\Models\Dauerbuchung.cs" />
+    <None Include="ECTEngine\Models\EasyCashDocument.cs" />
+    <None Include="ECTEngine\Helpers\WaehrungsHelper.cs" />
+    <None Include="ECTEngine\Serialization\DocumentSerializer.cs" />
+    <None Include="ECTEngine\README.md" />
+    <None Include="ECTEngine\Calculations\SortingEngine.cs" />
+    <None Include="ECTEngine\Calculations\YearTransitionEngine.cs" />
+    <None Include="ECTEngine\Calculations\CurrencyConverter.cs" />
+    <None Include="ECTEngine\Calculations\BackupManager.cs" />
+    <None Include="ECTEngine\Helpers\ConfigurationManager.cs" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="LIZENZ.txt" />
