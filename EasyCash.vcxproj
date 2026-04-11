@@ -31,6 +31,7 @@
     <UseOfMfc>Dynamic</UseOfMfc>
     <CharacterSet>MultiByte</CharacterSet>
     <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CLRSupport>NetCore</CLRSupport>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
@@ -161,13 +162,15 @@
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <DisableSpecificWarnings>4996;4018;%(DisableSpecificWarnings)</DisableSpecificWarnings>
+      <CompileAsManaged>true</CompileAsManaged>
+      <AdditionalIncludeDirectories>.;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <Culture>0x0407</Culture>
     </ResourceCompile>
     <Link>
-      <AdditionalDependencies>ECTIFace\Debug\ECTIFace.lib;../GrafLib/png/Debug/png.lib;../GrafLib/jpeg/Debug/jpeg.lib;../GrafLib/zlib/Debug/zlib.lib;../GrafLib/cimage/Debug/cimage.lib;rpcrt4.lib;Wininet.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>mscoree.lib;ECTIFace\Debug\ECTIFace.lib;../GrafLib/png/Debug/png.lib;../GrafLib/jpeg/Debug/jpeg.lib;../GrafLib/zlib/Debug/zlib.lib;../GrafLib/cimage/Debug/cimage.lib;rpcrt4.lib;Wininet.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>.\Debug_x64\EasyCT.exe</OutputFile>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -237,6 +240,8 @@ copy ..\CrashRpt\lang_files\crashrpt_lang_DE.ini .\Release\crashrpt_lang.ini</Co
       <RandomizedBaseAddress>false</RandomizedBaseAddress>
       <DataExecutionPrevention>true</DataExecutionPrevention>
       <TargetMachine>MachineX86</TargetMachine>
+      <CompileAsManaged>true</CompileAsManaged>
+      <AdditionalIncludeDirectories>.;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </Link>
     <Bscmake>
       <SuppressStartupBanner>true</SuppressStartupBanner>
@@ -296,6 +301,8 @@ copy ..\EasyCash\Release\crashrpt_lang.ini .\Release
       <LinkTimeCodeGeneration>UseLinkTimeCodeGeneration</LinkTimeCodeGeneration>
       <RandomizedBaseAddress>false</RandomizedBaseAddress>
       <DataExecutionPrevention>true</DataExecutionPrevention>
+      <CompileAsManaged>true</CompileAsManaged>
+      <AdditionalIncludeDirectories>.;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </Link>
     <Bscmake>
       <SuppressStartupBanner>true</SuppressStartupBanner>
@@ -341,6 +348,10 @@ copy ..\EasyCash\Release\crashrpt_lang.ini .\Release
       <Optimization Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Disabled</Optimization>
     </ClCompile>
     <ClCompile Include="EasyCashView.cpp">
+      <Optimization Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Disabled</Optimization>
+      <Optimization Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Disabled</Optimization>
+    </ClCompile>
+    <ClCompile Include="ECTEngineInterop.cpp">
       <Optimization Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Disabled</Optimization>
       <Optimization Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Disabled</Optimization>
     </ClCompile>
@@ -522,6 +533,7 @@ copy ..\EasyCash\Release\crashrpt_lang.ini .\Release
     <ClInclude Include="DSAMessageBox.h" />
     <ClInclude Include="easycash.h" />
     <ClInclude Include="easycashview.h" />
+    <ClInclude Include="ECTEngineInterop.h" />
     <ClInclude Include="einstellungen1.h" />
     <ClInclude Include="einstellungen2.h" />
     <ClInclude Include="einstellungen3.h" />
