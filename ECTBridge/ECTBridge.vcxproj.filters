@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Quelldateien (nativ)">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Quelldateien (Bridge, /clr)">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Headerdateien">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Headerdateien\Bridge">
+      <UniqueIdentifier>{51091F7B-4E81-4e3d-BC93-01B2A7876D92}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="stdafx.cpp">
+      <Filter>Quelldateien (nativ)</Filter>
+    </ClCompile>
+    <ClCompile Include="dllmain.cpp">
+      <Filter>Quelldateien (nativ)</Filter>
+    </ClCompile>
+    <ClCompile Include="EasyCashDoc.cpp">
+      <Filter>Quelldateien (nativ)</Filter>
+    </ClCompile>
+    <ClCompile Include="XMLite.cpp">
+      <Filter>Quelldateien (nativ)</Filter>
+    </ClCompile>
+    <ClCompile Include="BuchungConverter.cpp">
+      <Filter>Quelldateien (Bridge, /clr)</Filter>
+    </ClCompile>
+    <ClCompile Include="EasyCashDocBridge.cpp">
+      <Filter>Quelldateien (Bridge, /clr)</Filter>
+    </ClCompile>
+    <ClCompile Include="XMLite.cpp">
+      <Filter>Quelldateien (nativ)</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="stdafx.h">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="EasyCashDoc.h">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="EasyCashDocBridge.h">
+      <Filter>Headerdateien\Bridge</Filter>
+    </ClInclude>
+    <ClInclude Include="EngineHost.h">
+      <Filter>Headerdateien\Bridge</Filter>
+    </ClInclude>
+    <ClInclude Include="Marshalling.h">
+      <Filter>Headerdateien\Bridge</Filter>
+    </ClInclude>
+    <ClInclude Include="BuchungConverter.h">
+      <Filter>Headerdateien\Bridge</Filter>
+    </ClInclude>
+    <ClInclude Include="XMLite.h">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>

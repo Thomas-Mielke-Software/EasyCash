@@ -1,0 +1,18 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net48</TargetFramework>
+    <RootNamespace>ECTEngine</RootNamespace>
+    <AssemblyName>ECTEngine</AssemblyName>
+    <LangVersion>latest</LangVersion>
+    <Nullable>annotations</Nullable>
+    <GenerateAssemblyInfo>true</GenerateAssemblyInfo>
+    <Description>Geschäftslogik-Engine für EasyCash&amp;Tax – ersetzt ECTIFace.dll</Description>
+    <Company>Thomas Mielke Software</Company>
+    <Copyright>Copyleft (GPLv3) 2024 Thomas Mielke</Copyright>
+
+    <!-- COM-Visible für Plugin-Kompatibilität (Phase 4) -->
+    <ComVisible>false</ComVisible>
+  </PropertyGroup>
+
+</Project>

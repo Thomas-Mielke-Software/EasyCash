@@ -39,6 +39,8 @@ char LocaleMinuszeichen = '-';
 extern "C" int APIENTRY
 DllMain(HINSTANCE hInstance, DWORD dwReason, LPVOID lpReserved)
 {
+	UNREFERENCED_PARAMETER(lpReserved);
+
 	if (dwReason == DLL_PROCESS_ATTACH)
 	{
 		TRACE0("ECTIFACE.DLL Initializing!\n");
@@ -58,6 +60,7 @@ DllMain(HINSTANCE hInstance, DWORD dwReason, LPVOID lpReserved)
 	else if (dwReason == DLL_PROCESS_DETACH)
 	{
 		TRACE0("ECTIFACE.DLL Terminating!\n");
+		AfxTermExtensionModule(ECTIFaceDLL);
 	}
 	return 1;   // ok
 }

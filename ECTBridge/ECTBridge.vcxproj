@@ -1,0 +1,175 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="Current" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <VCProjectVersion>17.0</VCProjectVersion>
+    <ProjectGuid>{B5C6D7E8-F9A0-4B1C-8D2E-3F4A5B6C7D8E}</ProjectGuid>
+    <RootNamespace>ECTBridge</RootNamespace>
+    <Keyword>MFCDLLProj</Keyword>
+    <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
+    <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <!-- Debug Konfiguration: Mixed-Mode (nativ + CLR) -->
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <PlatformToolset>v143</PlatformToolset>
+    <UseOfMfc>Dynamic</UseOfMfc>
+    <CharacterSet>MultiByte</CharacterSet>
+    <!-- CLR-Unterstützung auf Projektebene aktivieren -->
+    <CLRSupport>true</CLRSupport>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <PlatformToolset>v143</PlatformToolset>
+    <UseOfMfc>Dynamic</UseOfMfc>
+    <CharacterSet>MultiByte</CharacterSet>
+    <CLRSupport>true</CLRSupport>
+    <WholeProgramOptimization>false</WholeProgramOptimization>
+    <!-- WICHTIG: LTCG/WPO ist mit /clr nicht kompatibel -->
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup>
+    <OutDir>.\$(Configuration)\</OutDir>
+    <IntDir>.\$(Configuration)\</IntDir>
+    <TargetName>ECTBridge</TargetName>
+  </PropertyGroup>
+  <!-- ═══════════════════════════════════════════════════════════════ -->
+  <!-- Debug Build Settings                                             -->
+  <!-- ═══════════════════════════════════════════════════════════════ -->
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <Optimization>Disabled</Optimization>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;_USRDLL;ECTBRIDGE_EXPORTS;_AFXEXT;EXPORT_ECT_DLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <!-- MultiThreadedDebugDLL (/MDd) ist für /clr zwingend erforderlich -->
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeaderFile>stdafx.h</PrecompiledHeaderFile>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <!-- WICHTIG: Mit /clr keine Edit-and-Continue; keine /RTC -->
+      <BasicRuntimeChecks>Default</BasicRuntimeChecks>
+      <MinimalRebuild>false</MinimalRebuild>
+      <WarningLevel>Level3</WarningLevel>
+      <DisableSpecificWarnings>4996;4018;4793;%(DisableSpecificWarnings)</DisableSpecificWarnings>
+      <!-- Auf ECTEngine.dll verweisen -->
+      <AdditionalUsingDirectories>$(SolutionDir)ECTEngine\bin\Debug\net48;%(AdditionalUsingDirectories)</AdditionalUsingDirectories>
+    </ClCompile>
+    <Link>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <SubSystem>Windows</SubSystem>
+      <!-- Kein RandomizedBaseAddress/DEP bei /clr Debug -->
+      <RandomizedBaseAddress>false</RandomizedBaseAddress>
+      <DataExecutionPrevention>false</DataExecutionPrevention>
+      <ImageHasSafeExceptionHandlers>false</ImageHasSafeExceptionHandlers>
+    </Link>
+  </ItemDefinitionGroup>
+  <!-- ═══════════════════════════════════════════════════════════════ -->
+  <!-- Release Build Settings                                           -->
+  <!-- ═══════════════════════════════════════════════════════════════ -->
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <Optimization>MaxSpeed</Optimization>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;_USRDLL;ECTBRIDGE_EXPORTS;_AFXEXT;EXPORT_ECT_DLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <PrecompiledHeader>Create</PrecompiledHeader>
+      <PrecompiledHeaderFile>stdafx.h</PrecompiledHeaderFile>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <!-- WICHTIG: Intrinsics sind mit /clr eingeschränkt erlaubt -->
+      <IntrinsicFunctions>false</IntrinsicFunctions>
+      <!-- /GL (Whole Program Optimization) ist INKOMPATIBEL mit /clr -->
+      <WholeProgramOptimization>false</WholeProgramOptimization>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <WarningLevel>Level3</WarningLevel>
+      <DisableSpecificWarnings>4996;4018;4793;%(DisableSpecificWarnings)</DisableSpecificWarnings>
+      <AdditionalUsingDirectories>$(SolutionDir)ECTEngine\bin\Release\net48;%(AdditionalUsingDirectories)</AdditionalUsingDirectories>
+      <LanguageStandard>stdcpp17</LanguageStandard>
+    </ClCompile>
+    <Link>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <SubSystem>Windows</SubSystem>
+      <!-- LinkTimeCodeGeneration INKOMPATIBEL mit /clr -->
+      <LinkTimeCodeGeneration>Default</LinkTimeCodeGeneration>
+      <RandomizedBaseAddress>false</RandomizedBaseAddress>
+      <DataExecutionPrevention>false</DataExecutionPrevention>
+    </Link>
+  </ItemDefinitionGroup>
+  <!-- ═══════════════════════════════════════════════════════════════ -->
+  <!-- Quell-Dateien                                                    -->
+  <!--                                                                  -->
+  <!-- Native Dateien: CLR-Support pro Datei deaktivieren               -->
+  <!-- Managed Dateien: nutzen das globale /clr                         -->
+  <!-- ═══════════════════════════════════════════════════════════════ -->
+  <ItemGroup>
+    <!-- ─── PCH-Setup (reines C++) ─── -->
+    <ClCompile Include="ectifacemisc.cpp">
+      <CompileAsManaged>false</CompileAsManaged>
+    </ClCompile>
+    <ClCompile Include="stdafx.cpp">
+      <PrecompiledHeader>Create</PrecompiledHeader>
+      <CompileAsManaged>false</CompileAsManaged>
+    </ClCompile>
+    <!-- ─── keine DllMain mehr, sondern Klassen-Initialisierung für Extension-DLL benutzen ─── -->
+    <ClCompile Include="NativeInit.cpp">
+      <CompileAsManaged>false</CompileAsManaged>
+    </ClCompile>
+    <!-- ─── Die originalen ECTIFace-Dateien (ALLE nativ!) ─── -->
+    <!-- Diese Dateien werden aus dem alten ECTIFace-Verzeichnis      -->
+    <!-- hierherbewegt und bleiben unverändert.                       -->
+    <!-- Sie müssen explizit als nativ markiert werden, damit         -->
+    <!-- das projektweite /clr sie nicht erfasst.                     -->
+    <ClCompile Include="EasyCashDoc.cpp">
+      <CompileAsManaged>false</CompileAsManaged>
+    </ClCompile>
+    <ClCompile Include="XMLite.cpp">
+      <CompileAsManaged>false</CompileAsManaged>
+    </ClCompile>
+    <!-- Weitere ECTIFace-Dateien hier ergänzen: AfAGenauigkeit.cpp,   -->
+    <!-- Konvertierung.cpp, BuchungsjahrWaehlen.cpp, XMLite.cpp, ...  -->
+    <!-- ─── Bridge-Dateien (MANAGED, /clr) ─── -->
+    <ClCompile Include="BuchungConverter.cpp">
+      <!-- Projektweites /clr greift — kein Override nötig -->
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <!-- /clr-Dateien können keinen nativen PCH nutzen -->
+    </ClCompile>
+    <ClCompile Include="EasyCashDocBridge.cpp">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="ectiface.h" />
+    <ClInclude Include="stdafx.h" />
+    <ClInclude Include="EasyCashDoc.h" />
+    <!-- aus ECTIFace übernommen -->
+    <ClInclude Include="EasyCashDocBridge.h" />
+    <ClInclude Include="EngineHost.h" />
+    <ClInclude Include="Marshalling.h" />
+    <ClInclude Include="BuchungConverter.h" />
+    <ClInclude Include="XMLite.h" />
+  </ItemGroup>
+  <!-- ═══════════════════════════════════════════════════════════════ -->
+  <!-- Verweis auf die C#-Engine-Assembly                               -->
+  <!-- ═══════════════════════════════════════════════════════════════ -->
+  <ItemGroup>
+    <Reference Include="ECTEngine">
+      <HintPath>$(SolutionDir)ECTEngine\bin\$(Configuration)\net48\ECTEngine.dll</HintPath>
+      <CopyLocalSatelliteAssemblies>true</CopyLocalSatelliteAssemblies>
+      <ReferenceOutputAssembly>true</ReferenceOutputAssembly>
+    </Reference>
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+</Project>
