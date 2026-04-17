@@ -22,3 +22,14 @@
 // Standard-Library
 #include <string>
 #include <vector>
+
+// Ohne _AFXEXT setzt MFC AFX_EXT_CLASS auf dllimport.
+// ECTBridge IST die exportierende DLL, daher manuell überschreiben.
+#ifdef ECTBRIDGE_EXPORTS
+#undef  AFX_EXT_CLASS
+#undef  AFX_EXT_API
+#undef  AFX_EXT_DATA
+#define AFX_EXT_CLASS __declspec(dllexport)
+#define AFX_EXT_API   __declspec(dllexport)
+#define AFX_EXT_DATA  __declspec(dllexport)
+#endif

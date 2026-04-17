@@ -21,6 +21,7 @@
 #include "stdafx.h"
 #include "afxadv.h"
 #include "EasyCash.h"
+#include "ECTBridge\Exports.h"
 
 #include "ExtSplitter.h"
 #include "MainFrm.h"
@@ -180,6 +181,10 @@ BOOL CEasyCashApp::InitInstance()
 		crAddScreenshot2(CR_AS_MAIN_WINDOW|CR_AS_USE_JPEG_FORMAT, 95);
 	}
 #endif
+
+	// Test der Bridge
+	//TRACE("ECTBridge: %s\n", ECT_BridgeVersion());
+	//TRACE("ECTBridge: Selbsttest = %d\n", ECT_BridgeSelfTest());
 
 	// Don't Show Again Messagebox
 	DSASetModule(hExe);

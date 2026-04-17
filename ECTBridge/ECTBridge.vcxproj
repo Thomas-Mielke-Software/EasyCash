@@ -55,7 +55,7 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <Optimization>Disabled</Optimization>
-      <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;_USRDLL;ECTBRIDGE_EXPORTS;_AFXEXT;EXPORT_ECT_DLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;ECTBRIDGE_EXPORTS;EXPORT_ECT_DLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <!-- MultiThreadedDebugDLL (/MDd) ist für /clr zwingend erforderlich -->
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
       <PrecompiledHeader>Use</PrecompiledHeader>
@@ -84,9 +84,9 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
       <Optimization>MaxSpeed</Optimization>
-      <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;_USRDLL;ECTBRIDGE_EXPORTS;_AFXEXT;EXPORT_ECT_DLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;ECTBRIDGE_EXPORTS;EXPORT_ECT_DLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
-      <PrecompiledHeader>Create</PrecompiledHeader>
+      <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>stdafx.h</PrecompiledHeaderFile>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <!-- WICHTIG: Intrinsics sind mit /clr eingeschränkt erlaubt -->
@@ -149,6 +149,10 @@
     <ClCompile Include="EasyCashDocBridge.cpp">
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
     </ClCompile>
+    <!-- ─── Native C-Export-API (managed, greift auf ECTEngine zu) ─── -->
+    <ClCompile Include="Exports.cpp">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ectiface.h" />
@@ -159,6 +163,7 @@
     <ClInclude Include="EngineHost.h" />
     <ClInclude Include="Marshalling.h" />
     <ClInclude Include="BuchungConverter.h" />
+    <ClInclude Include="Exports.h" />
     <ClInclude Include="XMLite.h" />
   </ItemGroup>
   <!-- ═══════════════════════════════════════════════════════════════ -->
@@ -171,5 +176,36 @@
       <ReferenceOutputAssembly>true</ReferenceOutputAssembly>
     </Reference>
   </ItemGroup>
+  <!-- ═══════════════════════════════════════════════════════════════ -->
+  <!-- PostBuild: DLLs ins EasyCash-Ausgabeverzeichnis kopieren        -->
+  <!-- ═══════════════════════════════════════════════════════════════ -->
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <PostBuildEventUseInBuild>true</PostBuildEventUseInBuild>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <PostBuildEvent>
+      <Command>
+        if exist "$(SolutionDir)Debug\" (
+          copy /Y "$(TargetDir)ECTBridge.dll" "$(SolutionDir)Debug\"
+          copy /Y "$(TargetDir)ECTEngine.dll" "$(SolutionDir)Debug\"
+        )
+      </Command>
+      <Message>ECTBridge + ECTEngine DLLs ins EasyCash-Debug-Verzeichnis kopieren</Message>
+    </PostBuildEvent>
+  </ItemDefinitionGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <PostBuildEventUseInBuild>true</PostBuildEventUseInBuild>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <PostBuildEvent>
+      <Command>
+        if exist "$(SolutionDir)Release\" (
+          copy /Y "$(TargetDir)ECTBridge.dll" "$(SolutionDir)Release\"
+          copy /Y "$(TargetDir)ECTEngine.dll" "$(SolutionDir)Release\"
+        )
+      </Command>
+      <Message>ECTBridge + ECTEngine DLLs ins EasyCash-Release-Verzeichnis kopieren</Message>
+    </PostBuildEvent>
+  </ItemDefinitionGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
 </Project>
