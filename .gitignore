@@ -37,6 +37,7 @@
 *.iwz
 
 # Visual Studio
+Directory.Build.props
 .vs/
 *.clw
 *.suo

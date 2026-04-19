@@ -70,7 +70,7 @@
       <AdditionalUsingDirectories>$(SolutionDir)ECTEngine\bin\Debug\net48;%(AdditionalUsingDirectories)</AdditionalUsingDirectories>
     </ClCompile>
     <Link>
-      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <GenerateDebugInformation>DebugFull</GenerateDebugInformation>
       <SubSystem>Windows</SubSystem>
       <!-- Kein RandomizedBaseAddress/DEP bei /clr Debug -->
       <RandomizedBaseAddress>false</RandomizedBaseAddress>
@@ -188,6 +188,11 @@
         if exist "$(SolutionDir)Debug\" (
           copy /Y "$(TargetDir)ECTBridge.dll" "$(SolutionDir)Debug\"
           copy /Y "$(TargetDir)ECTEngine.dll" "$(SolutionDir)Debug\"
+          copy /Y "$(TargetDir)ECTBridge.pdb" "$(SolutionDir)Debug\"
+          copy /Y "$(TargetDir)ECTEngine.pdb" "$(SolutionDir)Debug\"
+          copy /Y "$(SolutionDir)ECTBridge\ECTBridge.ini" "$(TargetDir)"
+          copy /Y "$(SolutionDir)ECTBridge\ECTBridge.ini" "$(SolutionDir)Debug\"
+          copy /Y "$(SolutionDir)ECTBridge\EasyCT.exe.config" "$(SolutionDir)Debug\"
         )
       </Command>
       <Message>ECTBridge + ECTEngine DLLs ins EasyCash-Debug-Verzeichnis kopieren</Message>

@@ -19,15 +19,54 @@
 // Software Foundation, Inc., 51 Franklin St, 5th Floor, Boston, MA 02110, USA. 
 
 #include "stdafx.h"
+#include <iostream>
 #include "afxadv.h"
-#include "EasyCash.h"
+
+// dafür sorgen, dass eine bewusste Entscheidung getroffen wird zwischen den beiden möglichen ECT-Kernklassenimplementierungen:
+#if !defined(USE_ECTENGINE) && !defined(USE_ECTIFACE)
+#pragma message("")
+#pragma message("vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv")
+#pragma message("ACHTUNG: Keine ECT-Kernklassenimplementierung ausgewählt.")
+#pragma message("Bitte entweder USE_ECTENGINE oder USE_ECTIFACE definieren,")
+#pragma message("z.B. in einer Datei 'Directory.Build.props' mit dem Inhalt:")
+#pragma message("")
+#pragma message("<Project>")
+#pragma message("  <ItemDefinitionGroup>")
+#pragma message("    <ClCompile>")
+#pragma message("      <PreprocessorDefinitions>USE_ECTENGINE;%(PreprocessorDefinitions)</PreprocessorDefinitions>")
+#pragma message("    </ClCompile>")
+#pragma message("  </ItemDefinitionGroup>")
+#pragma message("</Project>")
+#pragma message("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^")
+#pragma message("")
+#pragma error "Keine ECT-Kernklassenimplementierung ausgewählt. Bitte entweder USE_ECTENGINE oder USE_ECTIFACE definieren."
+#endif
+#if defined(USE_ECTENGINE) && defined(USE_ECTIFACE)
+#pragma message("")
+#pragma message("vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv")
+#pragma message("ACHTUNG: Beide ECT-Kernklassenimplementierung ausgewählt.")
+#pragma message("Bitte entweder USE_ECTENGINE _oder_ USE_ECTIFACE definieren,")
+#pragma message("Evtl sind die Präprozessor-Definitionen definiertin der Datei")
+#pragma message("'Directory.Build.props' _und_ in den Projekteinstellungen...?")
+#pragma message("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^")
+#pragma message("")
+#pragma error "Beide ECT-Kernklassenimplementierungen ausgewählt. Bitte zwische USE_ECTENGINE und USE_ECTIFACE entscheden."
+#endif
+
+#include "EasyCash.h" 
+
+// Wählen: alte ECTIFace unmanaged Klassen oder neue ECTBridge zu ECTEngine mixed-mode Bridge-Klassen
+#ifdef USE_ECTENGINE
 #include "ECTBridge\Exports.h"
+#include "ECTBridge\EasyCashDocBridge.h"
+#else
+#include "ECTIFace\EasyCashDoc.h"
+#endif
+
 
 #include "ExtSplitter.h"
 #include "MainFrm.h"
 #include "ChildFrm.h"
-//#include "ECTIFace\EasyCashDoc.h"
-#include "ECTBridge\EasyCashDocBridge.h"
 #include "BuchenDlg.h"
 #include "EasyCashView.h"
 #include "RegistrierenDlg.h"
@@ -392,7 +431,11 @@ BOOL CEasyCashApp::InitInstance()
 	CMultiDocTemplate* pDocTemplate;		// CMultiDocTemplate erlaubt mehrere Dateiendungen, aber nur die erste ist wirklich Shell-Registriert :(
 	pDocTemplate = new CMyMultiDocTemplate( 
 		IDR_EASYCATYPE,
+#ifdef USE_ECTENGINE
 		RUNTIME_CLASS(CEasyCashDocBridge),
+#else
+		RUNTIME_CLASS(CEasyCashDoc),
+#endif
 		RUNTIME_CLASS(CChildFrame), // custom MDI child frame
 		RUNTIME_CLASS(CEasyCashView));
 	AddDocTemplate(pDocTemplate);
@@ -518,6 +561,12 @@ BOOL CEasyCashApp::InitInstance()
 		SetIniFileName(szIniFileName);
 	}
 
+#include <iostream>
+#include <ctime>
+	using namespace std;
+	unsigned long long Int64 = 0;
+	clock_t start = clock();
+
 	// Dispatch commands specified on the command line
 	if (!ProcessShellCommand(cmdInfo))
 	{
@@ -531,6 +580,8 @@ BOOL CEasyCashApp::InitInstance()
 			return FALSE;*/
 		return TRUE;
 	}
+
+	TRACE1("Time Difference: %d", (int)clock() - start);
 
 	// Registrierungs-Kram
 	CString csReg = theApp.GetProfileString("Allgemein", "RegKey", "");
