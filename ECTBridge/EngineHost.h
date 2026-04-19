@@ -1,34 +1,65 @@
-// EngineHost.h — Interner /clr-only Wrapper für die managed Engine
+// EngineHost.h — Managed-Engine-Handle für CEasyCashDocBridge
 //
-// Diese Header-Datei DARF NUR von /clr-kompilierten .cpp-Dateien eingebunden
-// werden, niemals von nativen Client-Code. Sie enthält msclr::gcroot, das
-// /clr-Kontext benötigt.
+// Kapselt den gcroot<BuchungsDocument^> so, dass der Header auch aus
+// nativen Übersetzungseinheiten inkludiert werden kann (dort wird
+// die Engine-Klasse als opaker Pointer behandelt).
 //
-// Externer Zugriff geht über den opaken Pointer EngineHost* aus
-// EasyCashDocBridge.h.
+// Nutzung:
+//   #include "EngineHost.h"
+//   // In managed Code:
+//   auto doc = host.GetEngine();
+//   // In nativem Code:
+//   EngineHost host; // kompiliert, aber GetEngine() nicht aufrufbar
 
 #pragma once
 
-#ifndef __cplusplus_cli
-#error "EngineHost.h darf nur in /clr-kompilierten Dateien included werden."
-#endif
-
-#include <msclr/gcroot.h>
-#include <msclr/marshal_cppstd.h>
+#ifdef __cplusplus_cli
+// ── Managed-Kontext: voller Zugriff ──
 
 #using "ECTEngine.dll"
+#include <vcclr.h>
 
-/// <summary>
-/// Host-Struktur, die ein gcroot-Handle auf die managed
-/// ECTEngine::BuchungsDocument-Instanz hält. Aus nativem Code wird
-/// diese Struktur nur als opaker Pointer (struct EngineHost*) gesehen.
-/// </summary>
-struct EngineHost
+namespace ECTBridge
 {
-    msclr::gcroot<ECTEngine::BuchungsDocument^> Engine;
-
-    EngineHost()
+    class EngineHost
     {
-        Engine = gcnew ECTEngine::BuchungsDocument();
-    }
-};
+    public:
+        EngineHost()
+        {
+            m_engine = gcnew ECTEngine::BuchungsDocument();
+        }
+
+        ~EngineHost()
+        {
+            m_engine = nullptr;
+        }
+
+        /// <summary>Zugriff auf die managed BuchungsDocument-Instanz.</summary>
+        ECTEngine::BuchungsDocument^ GetEngine()
+        {
+            return m_engine;
+        }
+
+        /// <summary>Engine-Instanz austauschen (z.B. nach Jahreswechsel).</summary>
+        void SetEngine(ECTEngine::BuchungsDocument^ newDoc)
+        {
+            m_engine = newDoc;
+        }
+
+    private:
+        gcroot<ECTEngine::BuchungsDocument^> m_engine;
+    };
+}
+
+#else
+// ── Nativer Kontext: opake Deklaration ──
+// Damit EasyCashDocBridge.h auch aus rein nativem Code inkludiert
+// werden kann (z.B. wenn Views den Bridge-Header brauchen, aber
+// selbst nicht mit /clr kompiliert werden).
+
+namespace ECTBridge
+{
+    class EngineHost;  // opak — nur als Pointer verwendbar
+}
+
+#endif // __cplusplus_cli

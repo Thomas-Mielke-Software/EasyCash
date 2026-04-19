@@ -26,7 +26,8 @@
 #include "ExtSplitter.h"
 #include "MainFrm.h"
 #include "ChildFrm.h"
-#include "ECTIFace\EasyCashDoc.h"
+//#include "ECTIFace\EasyCashDoc.h"
+#include "ECTBridge\EasyCashDocBridge.h"
 #include "BuchenDlg.h"
 #include "EasyCashView.h"
 #include "RegistrierenDlg.h"
@@ -391,7 +392,7 @@ BOOL CEasyCashApp::InitInstance()
 	CMultiDocTemplate* pDocTemplate;		// CMultiDocTemplate erlaubt mehrere Dateiendungen, aber nur die erste ist wirklich Shell-Registriert :(
 	pDocTemplate = new CMyMultiDocTemplate( 
 		IDR_EASYCATYPE,
-		RUNTIME_CLASS(CEasyCashDoc),
+		RUNTIME_CLASS(CEasyCashDocBridge),
 		RUNTIME_CLASS(CChildFrame), // custom MDI child frame
 		RUNTIME_CLASS(CEasyCashView));
 	AddDocTemplate(pDocTemplate);

@@ -1,297 +1,184 @@
-// EasyCashDocBridge.cpp — Implementierung der Bridge-Dokumentenklasse
+// EasyCashDocBridge.cpp — Bridge-Dokumentenklasse, Implementierung
 //
-// Kompilierflag: /clr (Common Language Runtime Support)
+// Diese Datei wird MIT /clr kompiliert (Projektstandard).
+// KEIN Precompiled Header (weil managed #using nicht mit nativem PCH geht).
 //
-// Diese Datei koordiniert die Synchronisation zwischen den nativen
-// Linked-Lists des CEasyCashDoc und der managed ECTEngine-Instanz.
+// Dateieigenschaften in vcxproj:
+//   PrecompiledHeader = NotUsing
+//   CompileAsManaged  = (Standard, d.h. /clr vom Projekt)
 
-#include "stdafx.h"
+#include "stdafx.h"  
 #include "EasyCashDocBridge.h"
 #include "EngineHost.h"
-#include "BuchungConverter.h"
 #include "Marshalling.h"
+#include "BuchungConverter.h"
 
+#using "ECTEngine.dll"
+
+using namespace System;
+using namespace ECTEngine;
 using namespace ECTBridge;
 
-// ─────────────────────────────────────────────────
-// MFC-Serialisierung: muss auf v143 registriert werden,
-// damit der DocTemplate die Klasse kennt
-// ─────────────────────────────────────────────────
+// ══════════════════════════════════════════════════════════
+// MFC-Infrastruktur
+// ══════════════════════════════════════════════════════════
 
-IMPLEMENT_SERIAL(CEasyCashDocBridge, CEasyCashDoc, VERSIONABLE_SCHEMA | VERSION)
+// IMPLEMENT_DYNCREATE statt IMPLEMENT_SERIAL, weil CEasyCashDoc
+// bereits IMPLEMENT_SERIAL hat und die Serialize-Logik erbt.
+// CEasyCashDocBridge braucht nur DYNCREATE für die Doc-Template-
+// Registrierung in EasyCash.cpp.
+IMPLEMENT_DYNCREATE(CEasyCashDocBridge, CEasyCashDoc)
 
-// ─────────────────────────────────────────────────
+// ══════════════════════════════════════════════════════════
 // Konstruktor / Destruktor
-// ─────────────────────────────────────────────────
+// ══════════════════════════════════════════════════════════
 
 CEasyCashDocBridge::CEasyCashDocBridge()
     : CEasyCashDoc()
-    , m_pEngineHost(nullptr)
 {
-    m_pEngineHost = new EngineHost();
+    m_pEngineHost = new ECTBridge::EngineHost();
+    TRACE0("CEasyCashDocBridge: Engine-Host erstellt\n");
 }
 
 CEasyCashDocBridge::~CEasyCashDocBridge()
 {
     delete m_pEngineHost;
-    m_pEngineHost = nullptr;
-    // Linked-Lists werden von ~CEasyCashDoc() freigegeben
+    m_pEngineHost = NULL;
+    TRACE0("CEasyCashDocBridge: Engine-Host freigegeben\n");
 }
 
-// ─────────────────────────────────────────────────
-// OnNewDocument — Engine für neues Dokument initialisieren
-// ─────────────────────────────────────────────────
+// ══════════════════════════════════════════════════════════
+// CDocument Overrides
+// ══════════════════════════════════════════════════════════
+
+void CEasyCashDocBridge::Serialize(CArchive& ar)
+{
+    if (ar.IsStoring())
+    {
+        // VOR dem Speichern: Managed → Native synchronisieren,
+        // damit Änderungen aus der Engine in die nativen Linked Lists
+        // zurückfließen, bevor CEasyCashDoc::Serialize sie schreibt.
+        SyncManagedToNative();
+
+        TRACE0("CEasyCashDocBridge::Serialize — speichere (nach Sync M→N)\n");
+    }
+
+    // Das eigentliche Serialize — der gesamte native Code aus
+    // CEasyCashDoc::Serialize() läuft hier unverändert durch.
+    // Er liest/schreibt Magic Key, Version, Linked Lists, Zähler, etc.
+    CEasyCashDoc::Serialize(ar);
+
+    if (!ar.IsStoring())
+    {
+        // NACH dem Laden: Native → Managed synchronisieren,
+        // damit die Engine die gerade gelesenen Daten hat.
+        SyncNativeToManaged();
+
+        TRACE("CEasyCashDocBridge::Serialize — geladen und synchronisiert\n");
+    }
+}
 
 BOOL CEasyCashDocBridge::OnNewDocument()
 {
     if (!CEasyCashDoc::OnNewDocument())
         return FALSE;
 
-    // Frische Engine für das neue Dokument
-    m_pEngineHost->Engine = gcnew ECTEngine::BuchungsDocument();
-    m_pEngineHost->Engine->Jahr = this->nJahr;
-    m_pEngineHost->Engine->Waehrung = ToManaged(this->csWaehrung);
-    m_pEngineHost->Engine->UrspruenglicheWaehrung =
-        ToManaged(this->csUrspruenglicheWaehrung);
-    m_pEngineHost->Engine->GlobaleAfaGenauigkeit =
-        (ECTEngine::AfaGenauigkeit)this->AbschreibungGenauigkeit;
-    m_pEngineHost->Engine->DokumentVersion = this->Version;
+    // Nach dem nativen Init: leeres Dokument in die Engine übernehmen
+    SyncNativeToManaged();
 
+    TRACE("CEasyCashDocBridge::OnNewDocument — Jahr %d, Engine synchronisiert\n", nJahr);
     return TRUE;
 }
-
-// ─────────────────────────────────────────────────
-// OnOpenDocument — nach dem Laden synchronisieren
-// ─────────────────────────────────────────────────
 
 BOOL CEasyCashDocBridge::OnOpenDocument(LPCTSTR lpszPathName)
 {
-    // CEasyCashDoc::OnOpenDocument ruft intern Serialize() auf.
-    // Unser überschriebenes Serialize() synchronisiert automatisch.
-    if (!CEasyCashDoc::OnOpenDocument(lpszPathName))
-        return FALSE;
-
-    // Nach dem Öffnen ist die Engine über Serialize() bereits befüllt.
-    return TRUE;
+    // CEasyCashDoc::OnOpenDocument ruft intern Serialize() auf,
+    // das wiederum SyncNativeToManaged() aufruft.
+    // Also brauchen wir hier keinen zusätzlichen Sync.
+    return CEasyCashDoc::OnOpenDocument(lpszPathName);
 }
 
-// ─────────────────────────────────────────────────
-// Serialize — das Herzstück der Bridge
-// ─────────────────────────────────────────────────
+// ══════════════════════════════════════════════════════════
+// Synchronisierung: Native → Managed
+// ══════════════════════════════════════════════════════════
 
-void CEasyCashDocBridge::Serialize(CArchive& ar)
+void CEasyCashDocBridge::SyncNativeToManaged()
 {
-    if (ar.IsStoring())
-    {
-        // 1. Vor dem Schreiben: managed Daten in die nativen
-        //    Linked-Lists zurückspielen.
-        ManagedToNative();
-    }
+    auto engine = GetEngine(this);
 
-    // 2. Der existierende native Serialize-Code liest/schreibt wie bisher.
-    //    Er kennt das CArchive-Binärformat inkl. aller Versionsweichen
-    //    (v1 bis v13) und sollte nicht angefasst werden.
-    CEasyCashDoc::Serialize(ar);
-
-    if (ar.IsLoading())
-    {
-        // 3. Nach dem Laden: Engine aus den nativen Linked-Lists befüllen.
-        NativeToManaged();
-    }
-}
-
-void CEasyCashDocBridge::OnCloseDocument()
-{
-    // Engine freigeben — gcroot<> gibt die Wurzelreferenz frei,
-    // der GC kümmert sich um den Rest.
-    if (m_pEngineHost)
-    {
-        m_pEngineHost->Engine = nullptr;
-    }
-
-    CEasyCashDoc::OnCloseDocument();
-}
-
-// ─────────────────────────────────────────────────
-// Engine-Zugriff
-// ─────────────────────────────────────────────────
-
-BOOL CEasyCashDocBridge::IsEngineReady() const
-{
-    return m_pEngineHost != nullptr
-        && static_cast<ECTEngine::BuchungsDocument^>(m_pEngineHost->Engine) != nullptr;
-}
-
-// ─────────────────────────────────────────────────
-// NativeToManaged — nach dem Laden Linked-Lists → List<T>
-// ─────────────────────────────────────────────────
-
-void CEasyCashDocBridge::NativeToManaged()
-{
-    ECTEngine::BuchungsDocument^ engine = m_pEngineHost->Engine;
-    if (engine == nullptr)
-    {
-        engine = gcnew ECTEngine::BuchungsDocument();
-        m_pEngineHost->Engine = engine;
-    }
-
+    // Listen leeren
     engine->Buchungen->Clear();
     engine->Dauerbuchungen->Clear();
 
-    // Dokumentmetadaten
-    engine->Jahr                    = this->nJahr;
-    engine->Waehrung                = ToManaged(this->csWaehrung);
-    engine->UrspruenglicheWaehrung  = ToManaged(this->csUrspruenglicheWaehrung);
-    engine->GlobaleAfaGenauigkeit   = (ECTEngine::AfaGenauigkeit)this->AbschreibungGenauigkeit;
-    engine->DokumentVersion         = this->Version;
-    engine->Buchungszaehler         = this->Buchungszaehler;
+    // Einnahmen-Linked-List → managed List
+    LinkedListToManagedList(Einnahmen, Buchungsart::Einnahme, engine->Buchungen);
 
-    engine->LaufendeBelegnrEinnahmen = this->nLaufendeBuchungsnummerFuerEinnahmen;
-    engine->LaufendeBelegnrAusgaben  = this->nLaufendeBuchungsnummerFuerAusgaben;
-    engine->LaufendeBelegnrBank      = this->nLaufendeBuchungsnummerFuerBank;
-    engine->LaufendeBelegnrKasse     = this->nLaufendeBuchungsnummerFuerKasse;
+    // Ausgaben-Linked-List → managed List
+    LinkedListToManagedList(Ausgaben, Buchungsart::Ausgabe, engine->Buchungen);
 
-    engine->BackupNachfrageIntervallTage = this->nNachfrageIntervall;
-    engine->BackupNachfrageTermin        = ToManaged(this->ctNachfrageTermin);
+    // Dauerbuchungen-Linked-List → managed List
+    LinkedListToManagedList(Dauerbuchungen, engine->Dauerbuchungen);
 
-    // Dokument-Ebene Erweiterungen
-    engine->Erweiterungen = ECTEngine::ErweiterungStore::AusPipeFormat(
-        ToManaged(this->Erweiterung));
+    // Dokument-Felder synchronisieren
+    engine->Buchungszaehler             = Buchungszaehler;
+    engine->LaufendeBelegnrEinnahmen    = nLaufendeBuchungsnummerFuerEinnahmen;
+    engine->LaufendeBelegnrAusgaben     = nLaufendeBuchungsnummerFuerAusgaben;
+    engine->LaufendeBelegnrBank         = nLaufendeBuchungsnummerFuerBank;
+    engine->LaufendeBelegnrKasse        = nLaufendeBuchungsnummerFuerKasse;
+    engine->Jahr                        = nJahr;
+    engine->Waehrung                    = ToManaged(csWaehrung);
+    engine->UrspruenglicheWaehrung      = ToManaged(csUrspruenglicheWaehrung);
+    engine->GlobaleAfaGenauigkeit       = (AfaGenauigkeit)AbschreibungGenauigkeit;
+    engine->DokumentVersion             = Version;
+    engine->BackupNachfrageIntervallTage = nNachfrageIntervall;
+    engine->BackupNachfrageTermin       = ToManagedDateTime(ctNachfrageTermin);
 
-    // Einnahmen-Linked-List → List<Buchung>
-    for (CBuchung* p = this->Einnahmen; p != nullptr; p = p->next)
-    {
-        engine->Buchungen->Add(
-            ConvertToManaged(*p, ECTEngine::Buchungsart::Einnahme));
-    }
+    // Dokument-Erweiterungen
+    engine->Erweiterungen = ErweiterungStore::AusPipeFormat(
+        ToManaged(Erweiterung));
 
-    // Ausgaben-Linked-List → List<Buchung>
-    for (CBuchung* p = this->Ausgaben; p != nullptr; p = p->next)
-    {
-        engine->Buchungen->Add(
-            ConvertToManaged(*p, ECTEngine::Buchungsart::Ausgabe));
-    }
-
-    // Dauerbuchungen-Linked-List → List<Dauerbuchung>
-    for (CDauerbuchung* p = this->Dauerbuchungen; p != nullptr; p = p->next)
-    {
-        engine->Dauerbuchungen->Add(ConvertToManaged(*p));
-    }
-
-    // Sortierung herstellen
+    // Sortieren
     engine->Sort();
+
+    TRACE("SyncNativeToManaged: %d Buchungen, %d Dauerbuchungen → Engine\n",
+          engine->Buchungen->Count, engine->Dauerbuchungen->Count);
 }
 
-// ─────────────────────────────────────────────────
-// ManagedToNative — vor dem Speichern List<T> → Linked-Lists
-// ─────────────────────────────────────────────────
+// ══════════════════════════════════════════════════════════
+// Synchronisierung: Managed → Native
+// ══════════════════════════════════════════════════════════
 
-void CEasyCashDocBridge::ManagedToNative()
+void CEasyCashDocBridge::SyncManagedToNative()
 {
-    ECTEngine::BuchungsDocument^ engine = m_pEngineHost->Engine;
-    if (engine == nullptr)
-        return;  // nichts zu synchronisieren
+    auto engine = GetEngine(this);
 
-    // Dokumentmetadaten zurückschreiben
-    this->nJahr                   = engine->Jahr;
-    this->csWaehrung              = ToNative(engine->Waehrung);
-    this->csUrspruenglicheWaehrung = ToNative(engine->UrspruenglicheWaehrung);
-    this->AbschreibungGenauigkeit = (int)engine->GlobaleAfaGenauigkeit;
-    this->Version                 = engine->DokumentVersion;
-    this->Buchungszaehler         = engine->Buchungszaehler;
+    // ── Alte Linked Lists freigeben ──
+    // CBuchung-Destruktor löscht rekursiv über next
+    if (Einnahmen) { delete Einnahmen; Einnahmen = NULL; }
+    if (Ausgaben)  { delete Ausgaben;  Ausgaben  = NULL; }
+    if (Dauerbuchungen) { delete Dauerbuchungen; Dauerbuchungen = NULL; }
 
-    this->nLaufendeBuchungsnummerFuerEinnahmen = engine->LaufendeBelegnrEinnahmen;
-    this->nLaufendeBuchungsnummerFuerAusgaben  = engine->LaufendeBelegnrAusgaben;
-    this->nLaufendeBuchungsnummerFuerBank      = engine->LaufendeBelegnrBank;
-    this->nLaufendeBuchungsnummerFuerKasse     = engine->LaufendeBelegnrKasse;
+    // ── Managed → Native Linked Lists aufbauen ──
+    Einnahmen      = ManagedListToLinkedList(engine->Einnahmen);
+    Ausgaben       = ManagedListToLinkedList(engine->Ausgaben);
+    Dauerbuchungen = ManagedListToLinkedList(engine->Dauerbuchungen);
 
-    this->nNachfrageIntervall = engine->BackupNachfrageIntervallTage;
-    this->ctNachfrageTermin   = ToNative(engine->BackupNachfrageTermin);
+    // ── Dokument-Felder zurückschreiben ──
+    Buchungszaehler                      = engine->Buchungszaehler;
+    nLaufendeBuchungsnummerFuerEinnahmen  = engine->LaufendeBelegnrEinnahmen;
+    nLaufendeBuchungsnummerFuerAusgaben   = engine->LaufendeBelegnrAusgaben;
+    nLaufendeBuchungsnummerFuerBank       = engine->LaufendeBelegnrBank;
+    nLaufendeBuchungsnummerFuerKasse      = engine->LaufendeBelegnrKasse;
+    nJahr                                = engine->Jahr;
+    csWaehrung                           = ToNative(engine->Waehrung);
+    csUrspruenglicheWaehrung             = ToNative(engine->UrspruenglicheWaehrung);
+    AbschreibungGenauigkeit              = (int)engine->GlobaleAfaGenauigkeit;
+    nNachfrageIntervall                  = engine->BackupNachfrageIntervallTage;
+    ctNachfrageTermin                    = ToNativeTime(engine->BackupNachfrageTermin);
 
-    this->Erweiterung = ToNative(engine->Erweiterungen->ZuPipeFormat());
+    // Erweiterungen zurück ins Pipe-Format
+    Erweiterung = ToNative(engine->Erweiterungen->ZuPipeFormat());
 
-    // Alte Linked-Lists freigeben
-    FreeLinkedList(this->Einnahmen);
-    FreeLinkedList(this->Ausgaben);
-    FreeLinkedList(this->Dauerbuchungen);
-
-    // Buchungen neu aufbauen: Einnahmen getrennt von Ausgaben
-    CBuchung** ppEinn = &this->Einnahmen;
-    CBuchung** ppAusg = &this->Ausgaben;
-
-    for each (ECTEngine::Buchung^ b in engine->Buchungen)
-    {
-        CBuchung* pNeu = CreateNative(b);
-        if (b->Art == ECTEngine::Buchungsart::Einnahme)
-        {
-            *ppEinn = pNeu;
-            ppEinn  = &pNeu->next;
-        }
-        else
-        {
-            *ppAusg = pNeu;
-            ppAusg  = &pNeu->next;
-        }
-    }
-
-    // Dauerbuchungen-Linked-List neu aufbauen
-    CDauerbuchung** ppDauer = &this->Dauerbuchungen;
-    for each (ECTEngine::Dauerbuchung^ d in engine->Dauerbuchungen)
-    {
-        CDauerbuchung* pNeu = CreateNative(d);
-        *ppDauer = pNeu;
-        ppDauer  = &pNeu->next;
-    }
-}
-
-// ─────────────────────────────────────────────────
-// Convenience-API für native Views
-// ─────────────────────────────────────────────────
-
-int CEasyCashDocBridge::GetEinnahmenSumme(int nMonatsFilter, LPCTSTR lpszKontoFilter)
-{
-    if (!IsEngineReady())
-        return CEasyCashDoc::EinnahmenSumme(nMonatsFilter, lpszKontoFilter);
-
-    System::String^ filter = (lpszKontoFilter && *lpszKontoFilter)
-        ? gcnew System::String(lpszKontoFilter)
-        : System::String::Empty;
-
-    return m_pEngineHost->Engine->EinnahmenSumme(nMonatsFilter, filter);
-}
-
-int CEasyCashDocBridge::GetAusgabenSumme(int nMonatsFilter, LPCTSTR lpszKontoFilter)
-{
-    if (!IsEngineReady())
-        return CEasyCashDoc::AusgabenSumme(nMonatsFilter, lpszKontoFilter);
-
-    System::String^ filter = (lpszKontoFilter && *lpszKontoFilter)
-        ? gcnew System::String(lpszKontoFilter)
-        : System::String::Empty;
-
-    return m_pEngineHost->Engine->AusgabenSumme(nMonatsFilter, filter);
-}
-
-int CEasyCashDocBridge::GetEinnahmenSummeNetto(int nMonatsFilter, LPCTSTR lpszKontoFilter)
-{
-    if (!IsEngineReady())
-        return CEasyCashDoc::EinnahmenSummeNetto(nMonatsFilter, lpszKontoFilter);
-
-    System::String^ filter = (lpszKontoFilter && *lpszKontoFilter)
-        ? gcnew System::String(lpszKontoFilter)
-        : System::String::Empty;
-
-    return m_pEngineHost->Engine->EinnahmenSummeNetto(nMonatsFilter, filter);
-}
-
-int CEasyCashDocBridge::GetAusgabenSummeNetto(int nMonatsFilter, LPCTSTR lpszKontoFilter)
-{
-    if (!IsEngineReady())
-        return CEasyCashDoc::AusgabenSummeNetto(nMonatsFilter, lpszKontoFilter);
-
-    System::String^ filter = (lpszKontoFilter && *lpszKontoFilter)
-        ? gcnew System::String(lpszKontoFilter)
-        : System::String::Empty;
-
-    return m_pEngineHost->Engine->AusgabenSummeNetto(nMonatsFilter, filter);
+    TRACE("SyncManagedToNative: %d Buchungen aus Engine → native Linked Lists\n",
+          engine->Buchungen->Count);
 }

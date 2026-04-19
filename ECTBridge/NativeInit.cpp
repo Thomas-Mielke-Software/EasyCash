@@ -17,8 +17,6 @@
 // MFC-Makros wie DECLARE_DYNCREATE im managed Kontext fehl. Deshalb der
 // #pragma managed(push, off)-Block.
 
-#pragma managed(push, off)
-
 #include "stdafx.h"
 #include <afxdllx.h>
 
@@ -104,5 +102,3 @@ namespace ECTBridgeNative
     // Übersetzungseinheit nicht verlässt.
     static BridgeInitializer g_Initializer;
 }
-
-#pragma managed(pop)

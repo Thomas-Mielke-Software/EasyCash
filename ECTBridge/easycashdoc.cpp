@@ -24,7 +24,9 @@
 //#include "resource.h"
 //#include "Datensicherungsoptionen.h"
 //#include "Startoptionen.h"
+#ifndef EXPORT_ECT_DLL
 #define EXPORT_ECT_DLL
+#endif
 #include "EasyCashDoc.h"
 //#include "BuchungsjahrWaehlen.h"
 //#include "Konvertierung.h"

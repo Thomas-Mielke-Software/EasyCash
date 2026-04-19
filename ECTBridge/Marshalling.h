@@ -1,73 +1,64 @@
-// Marshalling.h — Konvertierung zwischen nativen MFC-Typen und managed .NET-Typen
+// Marshalling.h — Typ-Konvertierung zwischen nativ und managed
 //
-// Nur für /clr-kompilierte Dateien.
+// Enthält inline-Helfer für die häufigsten Konvertierungen:
+//   CString  ↔  System::String^
+//   CTime    ↔  System::DateTime
+//
+// Diese Datei wird NUR aus /clr-kompilierten Dateien inkludiert
+// (BuchungConverter.cpp, EasyCashDocBridge.cpp, Exports.cpp).
 
 #pragma once
+#pragma managed(push, on)
 
-#ifndef __cplusplus_cli
-#error "Marshalling.h darf nur in /clr-kompilierten Dateien included werden."
-#endif
+#using "mscorlib.dll"
 
-#include <afx.h>            // CString, CTime
-#include <msclr/marshal.h>
+#include <msclr/marshal_cppstd.h>
 
 namespace ECTBridge
 {
-    // ─────────────────────────────────────────────────
-    // String-Konvertierung
-    // ─────────────────────────────────────────────────
+    // ──────────────────────────────────────────────
+    // CString ↔ System::String^
+    // ──────────────────────────────────────────────
 
-    /// <summary>CString → System::String^</summary>
+    /// <summary>CString → managed String^</summary>
     inline System::String^ ToManaged(const CString& cs)
     {
         return gcnew System::String((LPCTSTR)cs);
     }
 
-    /// <summary>System::String^ → CString</summary>
+    /// <summary>managed String^ → CString</summary>
     inline CString ToNative(System::String^ s)
     {
         if (s == nullptr) return CString("");
-        msclr::interop::marshal_context ctx;
-        return CString(ctx.marshal_as<const char*>(s));
+        using namespace System::Runtime::InteropServices;
+        System::IntPtr ptr = Marshal::StringToHGlobalAnsi(s);
+        CString result((const char*)ptr.ToPointer());
+        Marshal::FreeHGlobal(ptr);
+        return result;
     }
 
-    // ─────────────────────────────────────────────────
-    // Zeit-Konvertierung
-    // CTime speichert UTC-Sekunden seit 1970.
-    // DateTime hat Tick-Auflösung.
-    // ─────────────────────────────────────────────────
+    // ──────────────────────────────────────────────
+    // CTime ↔ System::DateTime
+    // ──────────────────────────────────────────────
 
-    /// <summary>CTime → System::DateTime (lokale Zeit)</summary>
-    inline System::DateTime ToManaged(const CTime& ct)
+    /// <summary>CTime → managed DateTime</summary>
+    inline System::DateTime ToManagedDateTime(const CTime& ct)
     {
-        if (ct.GetTime() == 0)
-            return System::DateTime::MinValue;
+        // CTime kann ungültig sein (Jahr 0, etc.)
+        if (ct.GetYear() < 1 || ct.GetYear() > 9999)
+            return System::DateTime(2000, 1, 1);
 
         return System::DateTime(
             ct.GetYear(), ct.GetMonth(), ct.GetDay(),
             ct.GetHour(), ct.GetMinute(), ct.GetSecond());
     }
 
-    /// <summary>System::DateTime → CTime</summary>
-    inline CTime ToNative(System::DateTime dt)
+    /// <summary>managed DateTime → CTime</summary>
+    inline CTime ToNativeTime(System::DateTime dt)
     {
-        if (dt == System::DateTime::MinValue)
-            return CTime(0);
-
-        return CTime(
-            dt.Year, dt.Month, dt.Day,
-            dt.Hour, dt.Minute, dt.Second);
-    }
-
-    // ─────────────────────────────────────────────────
-    // Betrag-Konvertierung
-    // CBetrag speichert int Cent + int Promille.
-    // ECTEngine.Betrag speichert decimal + decimal.
-    // ─────────────────────────────────────────────────
-
-    /// <summary>int Cent + int Promille → ECTEngine.Betrag (Werttyp)</summary>
-    inline ECTEngine::Betrag ToManagedBetrag(int nCent, int nMwstPromille)
-    {
-        return ECTEngine::Betrag::AusCent(nCent, nMwstPromille);
+        return CTime(dt.Year, dt.Month, dt.Day,
+                     dt.Hour, dt.Minute, dt.Second);
     }
 }
+
+#pragma managed(pop)

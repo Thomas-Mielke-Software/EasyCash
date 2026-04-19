@@ -1,138 +1,246 @@
-// BuchungConverter.cpp — Implementierung der Buchungs-Konverter
+// BuchungConverter.cpp — Konvertierung native CBuchung ↔ managed Buchung
 //
-// Kompilierflag: /clr (Common Language Runtime Support)
+// Diese Datei wird MIT /clr kompiliert (Projektstandard).
+// KEIN Precompiled Header (weil #using nicht mit nativem PCH geht).
+//
+// Dateieigenschaften in vcxproj:
+//   PrecompiledHeader = NotUsing
+//   CompileAsManaged  = (Standard, d.h. /clr vom Projekt)
 
 #include "stdafx.h"
+#include "Marshalling.h"
 #include "BuchungConverter.h"
 
+#using "ECTEngine.dll"
+
 using namespace System;
+using namespace System::Collections::Generic;
+using namespace ECTEngine;
+using namespace ECTBridge;
 
-namespace ECTBridge
+// ══════════════════════════════════════════════════════════
+// Native → Managed
+// ══════════════════════════════════════════════════════════
+
+ECTEngine::Buchung^ ECTBridge::NativeToManaged(
+    CBuchung* p, ECTEngine::Buchungsart art)
 {
-    // ─────────────────────────────────────────────────
-    // CBuchung → ECTEngine.Buchung
-    // ─────────────────────────────────────────────────
+    if (!p) return nullptr;
 
-    ECTEngine::Buchung^ ConvertToManaged(
-        const CBuchung& n, ECTEngine::Buchungsart art)
+    ECTEngine::Buchung^ b = gcnew ECTEngine::Buchung();
+
+    // Betrag + MWSt (aus CBetrag-Basisklasse)
+    b->BruttoBetrag = ECTEngine::Betrag::AusCent(p->Betrag, p->MWSt);
+
+    // Buchungsart (war implizit durch Einnahmen/Ausgaben-Liste)
+    b->Art = art;
+
+    // Kernfelder
+    b->Datum              = ToManagedDateTime(p->Datum);
+    b->Beschreibung       = ToManaged(p->Beschreibung);
+    b->Konto              = ToManaged(p->Konto);
+    b->Belegnummer        = ToManaged(p->Belegnummer);
+
+    // Abschreibung
+    b->AfaNr              = p->AbschreibungNr;
+    b->AfaJahre           = p->AbschreibungJahre;
+    b->AfaRestwertCent    = p->AbschreibungRestwert;
+    b->AfaDegressiv       = (p->AbschreibungDegressiv != 0);
+    b->AfaSatz            = p->AbschreibungSatz;
+    b->AfaGenauigkeit     = (ECTEngine::AfaGenauigkeit)p->AbschreibungGenauigkeit;
+
+    // Zuordnungen (seit v11)
+    b->Bestandskonto      = ToManaged(p->Bestandskonto);
+    b->Betrieb            = ToManaged(p->Betrieb);
+
+    // Erweiterungen: Pipe-Format parsen
+    b->Erweiterungen = ECTEngine::ErweiterungStore::AusPipeFormat(
+        ToManaged(p->Erweiterung));
+
+    return b;
+}
+
+ECTEngine::Dauerbuchung^ ECTBridge::NativeToManaged(CDauerbuchung* p)
+{
+    if (!p) return nullptr;
+
+    ECTEngine::Dauerbuchung^ db = gcnew ECTEngine::Dauerbuchung();
+
+    // Betrag
+    db->BruttoBetrag      = ECTEngine::Betrag::AusCent(p->Betrag, p->MWSt);
+
+    // Kernfelder
+    db->Art               = (ECTEngine::Buchungsart)p->Buchungstyp;
+    db->Beschreibung      = ToManaged(p->Beschreibung);
+    db->Intervall         = (ECTEngine::Intervall)p->Intervall;
+    db->VonDatum          = ToManagedDateTime(p->VonDatum);
+    db->BisDatum          = ToManagedDateTime(p->BisDatum);
+    db->Buchungstag       = p->Buchungstag;
+    db->AusgefuehrtBis    = ToManagedDateTime(p->AktualisiertBisDatum);
+    db->Konto             = ToManaged(p->Konto);
+    db->Belegnummer       = ToManaged(p->Belegnummer);
+
+    // Zuordnungen (seit v12)
+    db->Bestandskonto     = ToManaged(p->Bestandskonto);
+    db->Betrieb           = ToManaged(p->Betrieb);
+
+    // Erweiterungen
+    db->Erweiterungen = ECTEngine::ErweiterungStore::AusPipeFormat(
+        ToManaged(p->Erweiterung));
+
+    return db;
+}
+
+// ══════════════════════════════════════════════════════════
+// Managed → Native
+// ══════════════════════════════════════════════════════════
+
+CBuchung* ECTBridge::ManagedToNative(ECTEngine::Buchung^ b)
+{
+    if (b == nullptr) return NULL;
+
+    CBuchung* p = new CBuchung();
+
+    // Betrag + MWSt
+    p->Betrag                   = b->BruttoBetrag.InCent;
+    p->MWSt                     = b->BruttoBetrag.MwstPromille;
+
+    // Kernfelder
+    p->Datum                    = ToNativeTime(b->Datum);
+    p->Beschreibung             = ToNative(b->Beschreibung);
+    p->Konto                    = ToNative(b->Konto);
+    p->Belegnummer              = ToNative(b->Belegnummer);
+
+    // Abschreibung
+    p->AbschreibungNr           = b->AfaNr;
+    p->AbschreibungJahre        = b->AfaJahre;
+    p->AbschreibungRestwert     = b->AfaRestwertCent;
+    p->AbschreibungDegressiv    = b->AfaDegressiv ? TRUE : FALSE;
+    p->AbschreibungSatz         = b->AfaSatz;
+    p->AbschreibungGenauigkeit  = (int)b->AfaGenauigkeit;
+
+    // Zuordnungen
+    p->Bestandskonto            = ToNative(b->Bestandskonto);
+    p->Betrieb                  = ToNative(b->Betrieb);
+
+    // Erweiterungen: zurück ins Pipe-Format
+    p->Erweiterung              = ToNative(b->Erweiterungen->ZuPipeFormat());
+
+    // next = NULL (wird vom Aufrufer verkettet)
+    p->next = NULL;
+
+    return p;
+}
+
+CDauerbuchung* ECTBridge::ManagedToNative(ECTEngine::Dauerbuchung^ db)
+{
+    if (db == nullptr) return NULL;
+
+    CDauerbuchung* p = new CDauerbuchung();
+
+    // Betrag
+    p->Betrag                   = db->BruttoBetrag.InCent;
+    p->MWSt                     = db->BruttoBetrag.MwstPromille;
+
+    // Kernfelder
+    p->Buchungstyp              = (int)db->Art;
+    p->Beschreibung             = ToNative(db->Beschreibung);
+    p->Intervall                = (int)db->Intervall;
+    p->VonDatum                 = ToNativeTime(db->VonDatum);
+    p->BisDatum                 = ToNativeTime(db->BisDatum);
+    p->Buchungstag              = db->Buchungstag;
+    p->AktualisiertBisDatum     = ToNativeTime(db->AusgefuehrtBis);
+    p->Konto                    = ToNative(db->Konto);
+    p->Belegnummer              = ToNative(db->Belegnummer);
+
+    // Zuordnungen
+    p->Bestandskonto            = ToNative(db->Bestandskonto);
+    p->Betrieb                  = ToNative(db->Betrieb);
+
+    // Erweiterungen
+    p->Erweiterung              = ToNative(db->Erweiterungen->ZuPipeFormat());
+
+    // next = NULL
+    p->next = NULL;
+
+    return p;
+}
+
+// ══════════════════════════════════════════════════════════
+// Bulk: Linked List → List<T>
+// ══════════════════════════════════════════════════════════
+
+void ECTBridge::LinkedListToManagedList(
+    CBuchung* pHead,
+    ECTEngine::Buchungsart art,
+    List<ECTEngine::Buchung^>^ ziel)
+{
+    for (CBuchung* p = pHead; p != NULL; p = p->next)
     {
-        auto m = gcnew ECTEngine::Buchung();
+        ziel->Add(NativeToManaged(p, art));
+    }
+}
 
-        m->BruttoBetrag = ECTEngine::Betrag::AusCent(n.Betrag, n.MWSt);
-        m->Art          = art;
-        m->Datum        = ToManaged(n.Datum);
-        m->Beschreibung = ToManaged(n.Beschreibung);
-        m->Konto        = ToManaged(n.Konto);
-        m->Belegnummer  = ToManaged(n.Belegnummer);
+void ECTBridge::LinkedListToManagedList(
+    CDauerbuchung* pHead,
+    List<ECTEngine::Dauerbuchung^>^ ziel)
+{
+    for (CDauerbuchung* p = pHead; p != NULL; p = p->next)
+    {
+        ziel->Add(NativeToManaged(p));
+    }
+}
 
-        m->AfaNr            = n.AbschreibungNr;
-        m->AfaJahre         = n.AbschreibungJahre;
-        m->AfaRestwertCent  = n.AbschreibungRestwert;
-        m->AfaDegressiv     = n.AbschreibungDegressiv != FALSE;
-        m->AfaSatz          = n.AbschreibungSatz;
-        m->AfaGenauigkeit   = (ECTEngine::AfaGenauigkeit)n.AbschreibungGenauigkeit;
+// ══════════════════════════════════════════════════════════
+// Bulk: List<T> → Linked List
+// ══════════════════════════════════════════════════════════
 
-        m->Bestandskonto = ToManaged(n.Bestandskonto);
-        m->Betrieb       = ToManaged(n.Betrieb);
+CBuchung* ECTBridge::ManagedListToLinkedList(
+    System::Collections::Generic::IEnumerable<ECTEngine::Buchung^>^ quelle)
+{
+    CBuchung* pHead = NULL;
+    CBuchung* pTail = NULL;
 
-        // Pipe-Format parsen
-        m->Erweiterungen = ECTEngine::ErweiterungStore::AusPipeFormat(
-            ToManaged(n.Erweiterung));
+    for each (ECTEngine::Buchung^ b in quelle)
+    {
+        CBuchung* pNeu = ManagedToNative(b);
 
-        return m;
+        if (pHead == NULL)
+        {
+            pHead = pNeu;
+            pTail = pNeu;
+        }
+        else
+        {
+            pTail->next = pNeu;
+            pTail = pNeu;
+        }
     }
 
-    // ─────────────────────────────────────────────────
-    // ECTEngine.Buchung → CBuchung (ohne next)
-    // ─────────────────────────────────────────────────
+    return pHead;
+}
 
-    void FillFromManaged(CBuchung& n, ECTEngine::Buchung^ m)
+CDauerbuchung* ECTBridge::ManagedListToLinkedList(
+    List<ECTEngine::Dauerbuchung^>^ quelle)
+{
+    CDauerbuchung* pHead = NULL;
+    CDauerbuchung* pTail = NULL;
+
+    for each (ECTEngine::Dauerbuchung^ db in quelle)
     {
-        n.Betrag                = m->BruttoBetrag.InCent;
-        n.MWSt                  = m->BruttoBetrag.MwstPromille;
-        n.Datum                 = ToNative(m->Datum);
-        n.Beschreibung          = ToNative(m->Beschreibung);
-        n.Konto                 = ToNative(m->Konto);
-        n.Belegnummer           = ToNative(m->Belegnummer);
+        CDauerbuchung* pNeu = ManagedToNative(db);
 
-        n.AbschreibungNr           = m->AfaNr;
-        n.AbschreibungJahre        = m->AfaJahre;
-        n.AbschreibungRestwert     = m->AfaRestwertCent;
-        n.AbschreibungDegressiv    = m->AfaDegressiv ? TRUE : FALSE;
-        n.AbschreibungSatz         = m->AfaSatz;
-        n.AbschreibungGenauigkeit  = (int)m->AfaGenauigkeit;
-
-        n.Bestandskonto = ToNative(m->Bestandskonto);
-        n.Betrieb       = ToNative(m->Betrieb);
-
-        // Erweiterungen zurück ins Pipe-Format
-        n.Erweiterung = ToNative(m->Erweiterungen->ZuPipeFormat());
-
-        // next wird vom Aufrufer verwaltet
+        if (pHead == NULL)
+        {
+            pHead = pNeu;
+            pTail = pNeu;
+        }
+        else
+        {
+            pTail->next = pNeu;
+            pTail = pNeu;
+        }
     }
 
-    CBuchung* CreateNative(ECTEngine::Buchung^ m)
-    {
-        CBuchung* n = new CBuchung();
-        FillFromManaged(*n, m);
-        n->next = nullptr;
-        return n;
-    }
-
-    // ─────────────────────────────────────────────────
-    // CDauerbuchung → ECTEngine.Dauerbuchung
-    // ─────────────────────────────────────────────────
-
-    ECTEngine::Dauerbuchung^ ConvertToManaged(const CDauerbuchung& n)
-    {
-        auto m = gcnew ECTEngine::Dauerbuchung();
-
-        m->BruttoBetrag = ECTEngine::Betrag::AusCent(n.Betrag, n.MWSt);
-        m->Beschreibung = ToManaged(n.Beschreibung);
-        m->Art          = (ECTEngine::Buchungsart)n.Buchungstyp;
-        m->Intervall    = (ECTEngine::Intervall)n.Intervall;
-        m->VonDatum     = ToManaged(n.VonDatum);
-        m->BisDatum     = ToManaged(n.BisDatum);
-        m->Buchungstag  = n.Buchungstag;
-        m->AusgefuehrtBis = ToManaged(n.AktualisiertBisDatum);
-        m->Konto        = ToManaged(n.Konto);
-        m->Belegnummer  = ToManaged(n.Belegnummer);
-        m->Bestandskonto = ToManaged(n.Bestandskonto);
-        m->Betrieb      = ToManaged(n.Betrieb);
-
-        m->Erweiterungen = ECTEngine::ErweiterungStore::AusPipeFormat(
-            ToManaged(n.Erweiterung));
-
-        return m;
-    }
-
-    // ─────────────────────────────────────────────────
-    // ECTEngine.Dauerbuchung → CDauerbuchung
-    // ─────────────────────────────────────────────────
-
-    void FillFromManaged(CDauerbuchung& n, ECTEngine::Dauerbuchung^ m)
-    {
-        n.Betrag              = m->BruttoBetrag.InCent;
-        n.MWSt                = m->BruttoBetrag.MwstPromille;
-        n.Beschreibung        = ToNative(m->Beschreibung);
-        n.Buchungstyp         = (int)m->Art;
-        n.Intervall           = (int)m->Intervall;
-        n.VonDatum            = ToNative(m->VonDatum);
-        n.BisDatum            = ToNative(m->BisDatum);
-        n.Buchungstag         = m->Buchungstag;
-        n.AktualisiertBisDatum = ToNative(m->AusgefuehrtBis);
-        n.Konto               = ToNative(m->Konto);
-        n.Belegnummer         = ToNative(m->Belegnummer);
-        n.Bestandskonto       = ToNative(m->Bestandskonto);
-        n.Betrieb             = ToNative(m->Betrieb);
-        n.Erweiterung         = ToNative(m->Erweiterungen->ZuPipeFormat());
-    }
-
-    CDauerbuchung* CreateNative(ECTEngine::Dauerbuchung^ m)
-    {
-        CDauerbuchung* n = new CDauerbuchung();
-        FillFromManaged(*n, m);
-        n->next = nullptr;
-        return n;
-    }
+    return pHead;
 }
