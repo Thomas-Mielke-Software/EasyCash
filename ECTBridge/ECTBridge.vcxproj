@@ -67,7 +67,7 @@
       <WarningLevel>Level3</WarningLevel>
       <DisableSpecificWarnings>4996;4018;4793;%(DisableSpecificWarnings)</DisableSpecificWarnings>
       <!-- Auf ECTEngine.dll verweisen -->
-      <AdditionalUsingDirectories>$(SolutionDir)ECTEngine\bin\Debug\net48;%(AdditionalUsingDirectories)</AdditionalUsingDirectories>
+      <AdditionalUsingDirectories>$(SolutionDir)ECTEngine\bin\Debug\net48;$(SolutionDir)ECTViews\bin\Debug\net48;%(AdditionalUsingDirectories)</AdditionalUsingDirectories>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>DebugFull</GenerateDebugInformation>
@@ -153,6 +153,9 @@
     <ClCompile Include="Exports.cpp">
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="ViewExports.cpp">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ectiface.h" />
@@ -164,6 +167,7 @@
     <ClInclude Include="Marshalling.h" />
     <ClInclude Include="BuchungConverter.h" />
     <ClInclude Include="Exports.h" />
+    <ClInclude Include="ViewExports.h" />
     <ClInclude Include="XMLite.h" />
   </ItemGroup>
   <!-- ═══════════════════════════════════════════════════════════════ -->
@@ -187,9 +191,11 @@
       <Command>
         if exist "$(SolutionDir)Debug\" (
           copy /Y "$(TargetDir)ECTBridge.dll" "$(SolutionDir)Debug\"
-          copy /Y "$(TargetDir)ECTEngine.dll" "$(SolutionDir)Debug\"
           copy /Y "$(TargetDir)ECTBridge.pdb" "$(SolutionDir)Debug\"
-          copy /Y "$(TargetDir)ECTEngine.pdb" "$(SolutionDir)Debug\"
+          copy /Y "$(SolutionDir)ECTEngine\bin\Debug\net48\ECTEngine.dll" "$(SolutionDir)Debug\"
+          copy /Y "$(SolutionDir)ECTEngine\bin\Debug\net48\ECTEngine.pdb" "$(SolutionDir)Debug\"
+		  copy /Y "$(SolutionDir)ECTViews\bin\Debug\net48\ECTViews.dll" "$(SolutionDir)Debug\"
+		  copy /Y "$(SolutionDir)ECTViews\bin\Debug\net48\ECTViews.pdb" "$(SolutionDir)Debug\"
           copy /Y "$(SolutionDir)ECTBridge\ECTBridge.ini" "$(TargetDir)"
           copy /Y "$(SolutionDir)ECTBridge\ECTBridge.ini" "$(SolutionDir)Debug\"
           copy /Y "$(SolutionDir)ECTBridge\EasyCT.exe.config" "$(SolutionDir)Debug\"

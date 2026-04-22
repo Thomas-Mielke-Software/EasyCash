@@ -26,6 +26,12 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ECTEngine.Tests", "ECTEngine.Tests\ECTEngine.Tests.csproj", "{35BEA62D-46E1-44D8-5C5F-65F9B772C3A7}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ECTBridge", "ECTBridge\ECTBridge.vcxproj", "{B5C6D7E8-F9A0-4B1C-8D2E-3F4A5B6C7D8E}"
+	ProjectSection(ProjectDependencies) = postProject
+		{285BD113-87EC-7A1A-6E8B-65C3E1496D35} = {285BD113-87EC-7A1A-6E8B-65C3E1496D35}
+		{CC3DC4F0-FFA0-7981-C8DE-5354213A91EC} = {CC3DC4F0-FFA0-7981-C8DE-5354213A91EC}
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ECTViews", "ECTViews\ECTViews.csproj", "{285BD113-87EC-7A1A-6E8B-65C3E1496D35}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -259,6 +265,30 @@ Global
 		{B5C6D7E8-F9A0-4B1C-8D2E-3F4A5B6C7D8E}.Unicode Release|Win32.Build.0 = Release|Win32
 		{B5C6D7E8-F9A0-4B1C-8D2E-3F4A5B6C7D8E}.Unicode Release|x64.ActiveCfg = Release|Win32
 		{B5C6D7E8-F9A0-4B1C-8D2E-3F4A5B6C7D8E}.Unicode Release|x64.Build.0 = Release|Win32
+		{285BD113-87EC-7A1A-6E8B-65C3E1496D35}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{285BD113-87EC-7A1A-6E8B-65C3E1496D35}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{285BD113-87EC-7A1A-6E8B-65C3E1496D35}.Debug|Win32.ActiveCfg = Debug|Any CPU
+		{285BD113-87EC-7A1A-6E8B-65C3E1496D35}.Debug|Win32.Build.0 = Debug|Any CPU
+		{285BD113-87EC-7A1A-6E8B-65C3E1496D35}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{285BD113-87EC-7A1A-6E8B-65C3E1496D35}.Debug|x64.Build.0 = Debug|Any CPU
+		{285BD113-87EC-7A1A-6E8B-65C3E1496D35}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{285BD113-87EC-7A1A-6E8B-65C3E1496D35}.Release|Any CPU.Build.0 = Release|Any CPU
+		{285BD113-87EC-7A1A-6E8B-65C3E1496D35}.Release|Win32.ActiveCfg = Release|Any CPU
+		{285BD113-87EC-7A1A-6E8B-65C3E1496D35}.Release|Win32.Build.0 = Release|Any CPU
+		{285BD113-87EC-7A1A-6E8B-65C3E1496D35}.Release|x64.ActiveCfg = Release|Any CPU
+		{285BD113-87EC-7A1A-6E8B-65C3E1496D35}.Release|x64.Build.0 = Release|Any CPU
+		{285BD113-87EC-7A1A-6E8B-65C3E1496D35}.Unicode Debug|Any CPU.ActiveCfg = Release|Any CPU
+		{285BD113-87EC-7A1A-6E8B-65C3E1496D35}.Unicode Debug|Any CPU.Build.0 = Release|Any CPU
+		{285BD113-87EC-7A1A-6E8B-65C3E1496D35}.Unicode Debug|Win32.ActiveCfg = Release|Any CPU
+		{285BD113-87EC-7A1A-6E8B-65C3E1496D35}.Unicode Debug|Win32.Build.0 = Release|Any CPU
+		{285BD113-87EC-7A1A-6E8B-65C3E1496D35}.Unicode Debug|x64.ActiveCfg = Release|Any CPU
+		{285BD113-87EC-7A1A-6E8B-65C3E1496D35}.Unicode Debug|x64.Build.0 = Release|Any CPU
+		{285BD113-87EC-7A1A-6E8B-65C3E1496D35}.Unicode Release|Any CPU.ActiveCfg = Release|Any CPU
+		{285BD113-87EC-7A1A-6E8B-65C3E1496D35}.Unicode Release|Any CPU.Build.0 = Release|Any CPU
+		{285BD113-87EC-7A1A-6E8B-65C3E1496D35}.Unicode Release|Win32.ActiveCfg = Release|Any CPU
+		{285BD113-87EC-7A1A-6E8B-65C3E1496D35}.Unicode Release|Win32.Build.0 = Release|Any CPU
+		{285BD113-87EC-7A1A-6E8B-65C3E1496D35}.Unicode Release|x64.ActiveCfg = Release|Any CPU
+		{285BD113-87EC-7A1A-6E8B-65C3E1496D35}.Unicode Release|x64.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

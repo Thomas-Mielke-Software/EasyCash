@@ -18,9 +18,6 @@
     <ClCompile Include="stdafx.cpp">
       <Filter>Quelldateien (nativ)</Filter>
     </ClCompile>
-    <ClCompile Include="dllmain.cpp">
-      <Filter>Quelldateien (nativ)</Filter>
-    </ClCompile>
     <ClCompile Include="EasyCashDoc.cpp">
       <Filter>Quelldateien (nativ)</Filter>
     </ClCompile>
@@ -36,6 +33,10 @@
     <ClCompile Include="XMLite.cpp">
       <Filter>Quelldateien (nativ)</Filter>
     </ClCompile>
+    <ClCompile Include="ectifacemisc.cpp" />
+    <ClCompile Include="NativeInit.cpp" />
+    <ClCompile Include="Exports.cpp" />
+    <ClCompile Include="ViewExports.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h">
@@ -59,5 +60,8 @@
     <ClInclude Include="XMLite.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
+    <ClInclude Include="ectiface.h" />
+    <ClInclude Include="Exports.h" />
+    <ClInclude Include="ViewExports.h" />
   </ItemGroup>
 </Project>

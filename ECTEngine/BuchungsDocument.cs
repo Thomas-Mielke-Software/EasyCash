@@ -84,6 +84,20 @@ namespace ECTEngine
         public int DokumentVersion { get; set; } = 13;
 
         // ──────────────────────────────────────────────
+        // Konten (aus INI-Datei, nicht aus .eca)
+        // Die Bridge befüllt diese aus der easyct.ini
+        // ──────────────────────────────────────────────
+
+        /// <summary>
+        /// Einnahmen-Kontennamen (max. 100, aus m_csEinnahmenKonten).
+        /// Werden in der Bridge aus der INI-Datei geladen.
+        /// </summary>
+        public string[] EinnahmenKonten { get; set; } = new string[100];
+
+        /// <summary>Ausgaben-Kontennamen.</summary>
+        public string[] AusgabenKonten { get; set; } = new string[100];
+
+        // ──────────────────────────────────────────────
         // Erweiterungen (Dokument-Ebene)
         // ──────────────────────────────────────────────
 

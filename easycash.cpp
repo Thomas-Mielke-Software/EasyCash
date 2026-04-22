@@ -58,6 +58,7 @@
 // Wählen: alte ECTIFace unmanaged Klassen oder neue ECTBridge zu ECTEngine mixed-mode Bridge-Klassen
 #ifdef USE_ECTENGINE
 #include "ECTBridge\Exports.h"
+#include "ECTBridge\ViewExports.h"
 #include "ECTBridge\EasyCashDocBridge.h"
 #else
 #include "ECTIFace\EasyCashDoc.h"

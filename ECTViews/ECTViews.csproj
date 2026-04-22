@@ -1,0 +1,19 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net48</TargetFramework>
+    <RootNamespace>ECTViews</RootNamespace>
+    <AssemblyName>ECTViews</AssemblyName>
+    <LangVersion>latest</LangVersion>
+    <OutputType>Library</OutputType>
+    <UseWPF>true</UseWPF>
+    <Description>WPF/XAML-basierte Views für EasyCash&amp;Tax</Description>
+    <Company>Thomas Mielke Software</Company>
+    <Copyright>Copyleft (GPLv3) 2024 Thomas Mielke</Copyright>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\ECTEngine\ECTEngine.csproj" />
+  </ItemGroup>
+
+</Project>

@@ -1,0 +1,249 @@
+<Window x:Class="ECTViews.Views.BuchungView"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="{Binding BuchungsartText, StringFormat='Buchung ({0})'}"
+        MinWidth="480" MinHeight="500"
+        SizeToContent="Height"
+        WindowStartupLocation="CenterOwner"
+        ResizeMode="CanResizeWithGrip"
+        ShowInTaskbar="False"
+        Background="#F5F5F5"
+        FontFamily="Segoe UI" FontSize="13">
+
+    <Window.Resources>
+        <!-- Basis-Stil für Labels -->
+        <Style TargetType="TextBlock" x:Key="LabelStyle">
+            <Setter Property="VerticalAlignment" Value="Center"/>
+            <Setter Property="Margin" Value="0,0,8,0"/>
+            <Setter Property="Foreground" Value="#333"/>
+        </Style>
+
+        <!-- Stil für Eingabefelder -->
+        <Style TargetType="TextBox">
+            <Setter Property="Padding" Value="4,3"/>
+            <Setter Property="Margin" Value="0,2"/>
+        </Style>
+        <Style TargetType="ComboBox">
+            <Setter Property="Padding" Value="4,3"/>
+            <Setter Property="Margin" Value="0,2"/>
+        </Style>
+
+        <!-- Gruppenbox-Stil -->
+        <Style TargetType="GroupBox">
+            <Setter Property="Margin" Value="0,4"/>
+            <Setter Property="Padding" Value="8,4"/>
+        </Style>
+    </Window.Resources>
+
+    <Grid Margin="12">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>  <!-- Buchungsart -->
+            <RowDefinition Height="Auto"/>  <!-- Datum -->
+            <RowDefinition Height="Auto"/>  <!-- Betrag + MWSt -->
+            <RowDefinition Height="Auto"/>  <!-- Beschreibung -->
+            <RowDefinition Height="Auto"/>  <!-- Belegnummer + Konto -->
+            <RowDefinition Height="Auto"/>  <!-- Bestandskonto + Betrieb -->
+            <RowDefinition Height="Auto"/>  <!-- AfA -->
+            <RowDefinition Height="*"/>     <!-- Spacer -->
+            <RowDefinition Height="Auto"/>  <!-- Buttons -->
+        </Grid.RowDefinitions>
+
+        <!-- ═══ Zeile 0: Buchungsart ═══ -->
+        <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="0,0,0,8">
+            <RadioButton Content="Einnahme" FontWeight="SemiBold"
+                         IsChecked="{Binding IstEinnahme}"
+                         Foreground="#2E7D32" Margin="0,0,16,0"
+                         VerticalContentAlignment="Center"/>
+            <RadioButton Content="Ausgabe" FontWeight="SemiBold"
+                         IsChecked="{Binding IstAusgabe}"
+                         Foreground="#C62828"
+                         VerticalContentAlignment="Center"/>
+        </StackPanel>
+
+        <!-- ═══ Zeile 1: Datum ═══ -->
+        <GroupBox Grid.Row="1" Header="Datum">
+            <StackPanel Orientation="Horizontal">
+                <TextBlock Text="Tag:" Style="{StaticResource LabelStyle}"/>
+                <TextBox Text="{Binding DatumTag, UpdateSourceTrigger=PropertyChanged}"
+                         Width="40" MaxLength="2" TextAlignment="Center"/>
+                <TextBlock Text="." VerticalAlignment="Center" Margin="2,0"/>
+                <TextBlock Text="Monat:" Style="{StaticResource LabelStyle}" Margin="8,0,8,0"/>
+                <TextBox Text="{Binding DatumMonat, UpdateSourceTrigger=PropertyChanged}"
+                         Width="40" MaxLength="2" TextAlignment="Center"/>
+                <TextBlock Text="." VerticalAlignment="Center" Margin="2,0"/>
+                <TextBlock Text="Jahr:" Style="{StaticResource LabelStyle}" Margin="8,0,8,0"/>
+                <TextBox Text="{Binding DatumJahr, UpdateSourceTrigger=PropertyChanged}"
+                         Width="60" MaxLength="4" TextAlignment="Center"/>
+            </StackPanel>
+        </GroupBox>
+
+        <!-- ═══ Zeile 2: Betrag + MWSt ═══ -->
+        <GroupBox Grid.Row="2" Header="Betrag">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="80"/>
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+
+                <!-- Bruttobetrag -->
+                <TextBlock Grid.Row="0" Grid.Column="0"
+                           Text="Brutto (€):" Style="{StaticResource LabelStyle}"/>
+                <TextBox Grid.Row="0" Grid.Column="1"
+                         Text="{Binding BetragText, UpdateSourceTrigger=PropertyChanged}"
+                         TextAlignment="Right" FontWeight="SemiBold" FontSize="15"/>
+
+                <!-- MWSt -->
+                <TextBlock Grid.Row="0" Grid.Column="2"
+                           Text="MWSt %:" Style="{StaticResource LabelStyle}" Margin="12,0,8,0"/>
+                <CheckBox Grid.Row="0" Grid.Column="3"
+                          IsChecked="{Binding MwstAktiviert}"
+                          VerticalAlignment="Center" Margin="0,0,4,0"/>
+                <ComboBox Grid.Row="0" Grid.Column="4"
+                          Text="{Binding MwstText, UpdateSourceTrigger=PropertyChanged}"
+                          ItemsSource="{Binding MwstOptionen}"
+                          IsEditable="True"
+                          IsEnabled="{Binding MwstAktiviert}"
+                          HorizontalContentAlignment="Right"/>
+
+                <!-- Netto / USt Anzeige -->
+                <TextBlock Grid.Row="1" Grid.Column="0"
+                           Text="Netto:" Style="{StaticResource LabelStyle}"
+                           Foreground="#888"/>
+                <TextBlock Grid.Row="1" Grid.Column="1"
+                           Text="{Binding NettoText}" TextAlignment="Right"
+                           VerticalAlignment="Center" Foreground="#888" Margin="0,2"/>
+                <TextBlock Grid.Row="1" Grid.Column="2" Grid.ColumnSpan="2"
+                           Text="USt:" Style="{StaticResource LabelStyle}"
+                           Foreground="#888" Margin="12,0,8,0"/>
+                <TextBlock Grid.Row="1" Grid.Column="4"
+                           Text="{Binding MwstBetragText}" TextAlignment="Right"
+                           VerticalAlignment="Center" Foreground="#888" Margin="0,2"/>
+            </Grid>
+        </GroupBox>
+
+        <!-- ═══ Zeile 3: Beschreibung ═══ -->
+        <GroupBox Grid.Row="3" Header="Beschreibung">
+            <ComboBox Text="{Binding Beschreibung, UpdateSourceTrigger=PropertyChanged}"
+                      ItemsSource="{Binding BeschreibungsHistorie}"
+                      IsEditable="True"/>
+        </GroupBox>
+
+        <!-- ═══ Zeile 4: Belegnummer + Konto ═══ -->
+        <GroupBox Grid.Row="4" Header="Zuordnung">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="120"/>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+
+                <TextBlock Grid.Column="0" Text="Beleg-Nr.:"
+                           Style="{StaticResource LabelStyle}"/>
+                <TextBox Grid.Column="1"
+                         Text="{Binding Belegnummer, UpdateSourceTrigger=PropertyChanged}"/>
+                <TextBlock Grid.Column="2" Text="Konto:"
+                           Style="{StaticResource LabelStyle}" Margin="12,0,8,0"/>
+                <ComboBox Grid.Column="3"
+                          Text="{Binding SelectedKonto, UpdateSourceTrigger=PropertyChanged}"
+                          ItemsSource="{Binding Konten}"
+                          IsEditable="True"/>
+            </Grid>
+        </GroupBox>
+
+        <!-- ═══ Zeile 5: Bestandskonto + Betrieb ═══ -->
+        <Grid Grid.Row="5">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="8"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+
+            <GroupBox Grid.Column="0" Header="Bestandskonto">
+                <ComboBox Text="{Binding Bestandskonto}"
+                          ItemsSource="{Binding Bestandskonten}"
+                          IsEditable="True"/>
+            </GroupBox>
+
+            <GroupBox Grid.Column="2" Header="Betrieb">
+                <ComboBox Text="{Binding SelectedBetrieb}"
+                          ItemsSource="{Binding Betriebe}"
+                          IsEditable="True"/>
+            </GroupBox>
+        </Grid>
+
+        <!-- ═══ Zeile 6: Abschreibung ═══ -->
+        <GroupBox Grid.Row="6" Header="Abschreibung (AfA)">
+            <StackPanel>
+                <CheckBox Content="Abschreibung aktivieren"
+                          IsChecked="{Binding AfaAktiviert}"
+                          Margin="0,0,0,6"/>
+                <Grid IsEnabled="{Binding AfaAktiviert}">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="60"/>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="60"/>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+
+                    <TextBlock Grid.Row="0" Grid.Column="0" Text="Jahre:"
+                               Style="{StaticResource LabelStyle}"/>
+                    <ComboBox Grid.Row="0" Grid.Column="1"
+                              Text="{Binding AfaJahre}"
+                              ItemsSource="{Binding AfaJahreOptionen}"
+                              IsEditable="True"/>
+
+                    <TextBlock Grid.Row="0" Grid.Column="2" Text="Nr.:"
+                               Style="{StaticResource LabelStyle}" Margin="12,0,8,0"/>
+                    <TextBox Grid.Row="0" Grid.Column="3"
+                             Text="{Binding AfaNr}" TextAlignment="Center"/>
+
+                    <TextBlock Grid.Row="0" Grid.Column="4" Text="Restwert:"
+                               Style="{StaticResource LabelStyle}" Margin="12,0,8,0"/>
+                    <TextBlock Grid.Row="0" Grid.Column="5"
+                               Text="{Binding AfaRestwertText}"
+                               VerticalAlignment="Center" Foreground="#888"/>
+
+                    <CheckBox Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2"
+                              Content="Degressiv"
+                              IsChecked="{Binding AfaDegressiv}" Margin="0,4,0,0"/>
+
+                    <TextBlock Grid.Row="1" Grid.Column="2" Text="Satz %:"
+                               Style="{StaticResource LabelStyle}" Margin="12,0,8,0"/>
+                    <TextBox Grid.Row="1" Grid.Column="3"
+                             Text="{Binding AfaSatz}" TextAlignment="Center"
+                             IsEnabled="{Binding AfaDegressiv}"/>
+                </Grid>
+            </StackPanel>
+        </GroupBox>
+
+        <!-- ═══ Zeile 8: Buttons ═══ -->
+        <StackPanel Grid.Row="8" Orientation="Horizontal"
+                    HorizontalAlignment="Right" Margin="0,8,0,0">
+            <Button Content="{Binding OkButtonText}"
+                    Command="{Binding OkCommand}"
+                    Width="100" Height="32"
+                    IsDefault="True" FontWeight="SemiBold"
+                    Background="#1976D2" Foreground="White"
+                    BorderThickness="0" Margin="0,0,8,0"/>
+            <Button Content="Abbrechen"
+                    Command="{Binding AbbrechenCommand}"
+                    Width="100" Height="32"
+                    IsCancel="True"/>
+        </StackPanel>
+    </Grid>
+</Window>

@@ -57,6 +57,12 @@
 static char THIS_FILE[] = __FILE__;
 #endif
 
+#ifdef USE_ECTENGINE
+#include "ECTBridge\Exports.h"
+#include "ECTBridge\ViewExports.h"
+#include "ECTBridge\EasyCashDocBridge.h"
+#endif
+
 /////////////////////////////////////////////////////////////////////////////
 // CEasyCashView
 
@@ -5711,6 +5717,11 @@ CEasyCashDoc* CEasyCashView::GetDocument() // non-debug version is inline
 void CEasyCashView::OnEditEinnahmeBuchen() 
 {
 /////////////dockable-experiment	((CMainFrame*)AfxGetMainWnd())->m_wndOutput.ShowPane(TRUE, TRUE, TRUE);
+
+	// WPF-Experiment
+	ECT_ShowBuchungBearbeitenDialog(GetDocument(), 1, AfxGetMainWnd()->GetSafeHwnd());
+	//ECT_ShowBuchungDialog(GetDocument(), FALSE, AfxGetMainWnd()->GetSafeHwnd());
+	return;
 
 	if (buchenDlg) 
 	{
