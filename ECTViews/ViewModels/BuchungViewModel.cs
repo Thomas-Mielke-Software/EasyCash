@@ -97,21 +97,33 @@ namespace ECTViews.ViewModels
         public int DatumTag
         {
             get => _datumTag;
-            set => SetProperty(ref _datumTag, Math.Max(1, Math.Min(31, value)));
+            set
+            {
+                if (SetProperty(ref _datumTag, Math.Max(1, Math.Min(31, value))))
+                    ValidiereFeldFallsAktiv(ValidiereDatum);
+            }
         }
 
         private int _datumMonat;
         public int DatumMonat
         {
             get => _datumMonat;
-            set => SetProperty(ref _datumMonat, Math.Max(1, Math.Min(12, value)));
+            set
+            {
+                if (SetProperty(ref _datumMonat, Math.Max(1, Math.Min(12, value))))
+                    ValidiereFeldFallsAktiv(ValidiereDatum);
+            }
         }
 
         private int _datumJahr;
         public int DatumJahr
         {
             get => _datumJahr;
-            set => SetProperty(ref _datumJahr, value);
+            set
+            {
+                if (SetProperty(ref _datumJahr, value))
+                    ValidiereFeldFallsAktiv(ValidiereDatum);
+            }
         }
 
         // ──────────────────────────────────────────────
@@ -128,6 +140,7 @@ namespace ECTViews.ViewModels
                 {
                     OnPropertyChanged(nameof(NettoText));
                     OnPropertyChanged(nameof(MwstBetragText));
+                    ValidiereFeldFallsAktiv(ValidiereBetrag);
                 }
             }
         }
@@ -183,6 +196,7 @@ namespace ECTViews.ViewModels
                 {
                     OnPropertyChanged(nameof(NettoText));
                     OnPropertyChanged(nameof(MwstBetragText));
+                    ValidiereFeldFallsAktiv(ValidiereMwst);
                 }
             }
         }
@@ -210,6 +224,7 @@ namespace ECTViews.ViewModels
                     if (!value) MwstText = "0";
                     OnPropertyChanged(nameof(NettoText));
                     OnPropertyChanged(nameof(MwstBetragText));
+                    ValidiereFeldFallsAktiv(ValidiereMwst);
                 }
             }
         }
@@ -222,7 +237,11 @@ namespace ECTViews.ViewModels
         public string Beschreibung
         {
             get => _beschreibung;
-            set => SetProperty(ref _beschreibung, value ?? "");
+            set
+            {
+                if (SetProperty(ref _beschreibung, value ?? ""))
+                    ValidiereFeldFallsAktiv(ValidiereBeschreibung);
+            }
         }
 
         public ObservableCollection<string> BeschreibungsHistorie { get; } =
@@ -261,7 +280,11 @@ namespace ECTViews.ViewModels
         public bool AfaAktiviert
         {
             get => _afaAktiviert;
-            set => SetProperty(ref _afaAktiviert, value);
+            set
+            {
+                if (SetProperty(ref _afaAktiviert, value))
+                    ValidiereFeldFallsAktiv(ValidiereAfa);
+            }
         }
 
         public ObservableCollection<string> AfaJahreOptionen { get; } =
@@ -272,14 +295,22 @@ namespace ECTViews.ViewModels
         public string AfaJahre
         {
             get => _afaJahre;
-            set => SetProperty(ref _afaJahre, value ?? "1");
+            set
+            {
+                if (SetProperty(ref _afaJahre, value ?? "1"))
+                    ValidiereFeldFallsAktiv(ValidiereAfa);
+            }
         }
 
         private string _afaNr = "1";
         public string AfaNr
         {
             get => _afaNr;
-            set => SetProperty(ref _afaNr, value ?? "1");
+            set
+            {
+                if (SetProperty(ref _afaNr, value ?? "1"))
+                    ValidiereFeldFallsAktiv(ValidiereAfa);
+            }
         }
 
         private int _afaRestwertCent;
@@ -300,14 +331,22 @@ namespace ECTViews.ViewModels
         public bool AfaDegressiv
         {
             get => _afaDegressiv;
-            set => SetProperty(ref _afaDegressiv, value);
+            set
+            {
+                if (SetProperty(ref _afaDegressiv, value))
+                    ValidiereFeldFallsAktiv(ValidiereAfa);
+            }
         }
 
         private string _afaSatz = "0";
         public string AfaSatz
         {
             get => _afaSatz;
-            set => SetProperty(ref _afaSatz, value ?? "0");
+            set
+            {
+                if (SetProperty(ref _afaSatz, value ?? "0"))
+                    ValidiereFeldFallsAktiv(ValidiereAfa);
+            }
         }
 
         // ──────────────────────────────────────────────
@@ -414,16 +453,22 @@ namespace ECTViews.ViewModels
         // Command-Implementierungen
         // ══════════════════════════════════════════════
 
-        private bool CanOk() => BetragInCent != 0;
+        private bool CanOk() => true;  // Validierung passiert in OnOk, nicht vorher
 
         private void OnOk()
         {
-            // Datum zusammenbauen
-            int tag = Math.Max(1, Math.Min(28, DatumTag)); // safe default
-            try { tag = Math.Min(DateTime.DaysInMonth(DatumJahr, DatumMonat), DatumTag); }
-            catch { }
+            // Validierung ab jetzt live — sonst würden Fehler nie verschwinden
+            _validierungAktiv = true;
 
-            var datum = new DateTime(DatumJahr, DatumMonat, tag);
+            if (!ValidiereAlles())
+                return;  // Fenster bleibt offen, Fehler werden angezeigt
+
+            // Datum zusammenbauen (mit evtl. expandiertem 2-stelligem Jahr)
+            int jahr = ExpandiereJahr(DatumJahr);
+            if (jahr != DatumJahr)
+                DatumJahr = jahr;  // expandierten Wert sichtbar machen
+
+            var datum = new DateTime(jahr, DatumMonat, DatumTag);
 
             Ergebnis = new Buchung
             {
@@ -464,6 +509,248 @@ namespace ECTViews.ViewModels
 
         /// <summary>Event zum Schließen des Fensters (vom View abonniert).</summary>
         public event Action RequestClose;
+
+        // ══════════════════════════════════════════════
+        // Validierung
+        // Reimplementiert die Prüfungen aus buchendlg.cpp Zeilen 335-482
+        // ══════════════════════════════════════════════
+
+        /// <summary>
+        /// Wird nach dem ersten OK-Klick auf true gesetzt.
+        /// Ab dann laufen Validierungen live bei jeder Feldänderung,
+        /// damit Fehler beim Korrigieren sofort verschwinden.
+        /// </summary>
+        private bool _validierungAktiv;
+
+        // ── Fehler-Properties ──
+
+        private string _datumError = "";
+        public string DatumError
+        {
+            get => _datumError;
+            private set => SetProperty(ref _datumError, value);
+        }
+
+        private string _betragError = "";
+        public string BetragError
+        {
+            get => _betragError;
+            private set => SetProperty(ref _betragError, value);
+        }
+
+        private string _mwstError = "";
+        public string MwstError
+        {
+            get => _mwstError;
+            private set => SetProperty(ref _mwstError, value);
+        }
+
+        private string _beschreibungError = "";
+        public string BeschreibungError
+        {
+            get => _beschreibungError;
+            private set => SetProperty(ref _beschreibungError, value);
+        }
+
+        private string _afaError = "";
+        public string AfaError
+        {
+            get => _afaError;
+            private set => SetProperty(ref _afaError, value);
+        }
+
+        // ── Validierungs-Methoden ──
+
+        /// <summary>
+        /// Führt alle Validierungen durch und setzt die Error-Properties.
+        /// Gibt true zurück wenn alle Felder gültig sind.
+        /// </summary>
+        public bool ValidiereAlles()
+        {
+            bool ok = true;
+            ok &= ValidiereDatum();
+            ok &= ValidiereBetrag();
+            ok &= ValidiereMwst();
+            ok &= ValidiereBeschreibung();
+            ok &= ValidiereAfa();
+            return ok;
+        }
+
+        /// <summary>Expandiert 2-stellige Jahreszahlen (25 → 2025, 98 → 1998).</summary>
+        private static int ExpandiereJahr(int j)
+        {
+            if (j >= 0 && j <= 37) return j + 2000;
+            if (j > 37 && j < 100) return j + 1900;
+            return j;
+        }
+
+        private bool ValidiereDatum()
+        {
+            // Tag: 1 bis 31
+            if (DatumTag < 1 || DatumTag > 31)
+            {
+                DatumError = "Tag muss zwischen 1 und 31 liegen.";
+                return false;
+            }
+
+            // Monat: 1 bis 12
+            if (DatumMonat < 1 || DatumMonat > 12)
+            {
+                DatumError = "Monat muss zwischen 1 und 12 liegen.";
+                return false;
+            }
+
+            // Jahr: 2-stellig wird auf 4-stellig expandiert, dann 1990-3000
+            int jahr = ExpandiereJahr(DatumJahr);
+            if (jahr < 1990 || jahr > 3000)
+            {
+                DatumError = "Jahr muss zwischen 1990 und 3000 liegen.";
+                return false;
+            }
+
+            // Prüfen, ob das Datum tatsächlich existiert (31.02. etc.)
+            try
+            {
+                var _ = new DateTime(jahr, DatumMonat, DatumTag);
+            }
+            catch (ArgumentOutOfRangeException)
+            {
+                DatumError = $"Ungültiges Datum: {DatumTag}.{DatumMonat}.{jahr}";
+                return false;
+            }
+
+            DatumError = "";
+            return true;
+        }
+
+        private bool ValidiereBetrag()
+        {
+            if (string.IsNullOrWhiteSpace(BetragText))
+            {
+                BetragError = "Bitte einen Betrag angeben.";
+                return false;
+            }
+            if (BetragInCent == 0)
+            {
+                BetragError = "Der Betrag muss ungleich null sein.";
+                return false;
+            }
+            BetragError = "";
+            return true;
+        }
+
+        private bool ValidiereMwst()
+        {
+            if (!MwstAktiviert)
+            {
+                MwstError = "";
+                return true;
+            }
+
+            if (string.IsNullOrWhiteSpace(MwstText))
+            {
+                MwstError = "Kein gültiger MWSt-Satz angegeben.";
+                return false;
+            }
+
+            // Parse-Versuch wie in CBetrag::SetMWSt
+            string s = MwstText.Replace(".", "").Trim();
+            if (!decimal.TryParse(s, NumberStyles.Number, DeDE, out var wert))
+            {
+                MwstError = "MWSt-Satz ist keine gültige Zahl.";
+                return false;
+            }
+            if (wert < 0 || wert > 100)
+            {
+                MwstError = "MWSt-Satz muss zwischen 0 und 100 liegen.";
+                return false;
+            }
+
+            MwstError = "";
+            return true;
+        }
+
+        private bool ValidiereBeschreibung()
+        {
+            if (string.IsNullOrWhiteSpace(Beschreibung))
+            {
+                BeschreibungError = "Bitte eine Beschreibung angeben.";
+                return false;
+            }
+            BeschreibungError = "";
+            return true;
+        }
+
+        private bool ValidiereAfa()
+        {
+            if (!AfaAktiviert)
+            {
+                AfaError = "";
+                return true;
+            }
+
+            // Abschreibungsjahre parsen
+            if (string.IsNullOrWhiteSpace(AfaJahre))
+            {
+                AfaError = "Kein Abschreibungszeitraum angegeben.";
+                return false;
+            }
+            if (!int.TryParse(AfaJahre, out int jahre) || jahre < 1)
+            {
+                AfaError = "Gesamt-Abschreibungsdauer muss mindestens 1 sein.";
+                return false;
+            }
+
+            // Abschreibungsnummer parsen
+            if (string.IsNullOrWhiteSpace(AfaNr))
+            {
+                AfaError = "Kein Abschreibungsjahr angegeben.";
+                return false;
+            }
+            if (!int.TryParse(AfaNr, out int nr) || nr < 1)
+            {
+                AfaError = "Laufende Abschreibungsnummer muss mindestens 1 sein.";
+                return false;
+            }
+
+            // Nr darf Jahre um max. 1 übersteigen (Extra-Jahr bei nicht-ganzjähriger AfA)
+            if (nr > jahre + 1)
+            {
+                AfaError = "Das aktuelle Abschreibungsjahr übersteigt den " +
+                           "Abschreibungszeitraum um mehr als 1.";
+                return false;
+            }
+
+            // Degressive AfA: Satz muss gesetzt sein, Jahre > 1
+            if (AfaDegressiv)
+            {
+                if (string.IsNullOrWhiteSpace(AfaSatz))
+                {
+                    AfaError = "Kein Abschreibungssatz angegeben, obwohl degressiv ausgewählt.";
+                    return false;
+                }
+                if (!int.TryParse(AfaSatz, out int satz) || satz <= 0)
+                {
+                    AfaError = "Abschreibungssatz muss eine positive Zahl sein.";
+                    return false;
+                }
+                if (jahre <= 1)
+                {
+                    AfaError = "Bei degressiver AfA muss die Gesamt-Abschreibungsdauer größer als 1 sein.";
+                    return false;
+                }
+            }
+
+            AfaError = "";
+            return true;
+        }
+
+        /// <summary>Wird aus dem Setter jedes überwachten Feldes aufgerufen.</summary>
+        private void ValidiereFeldFallsAktiv(Func<bool> validator)
+        {
+            if (_validierungAktiv)
+                validator();
+        }
 
         // ══════════════════════════════════════════════
         // Hilfsmethoden

@@ -18,6 +18,21 @@
             <Setter Property="Foreground" Value="#333"/>
         </Style>
 
+        <!-- Stil für Fehlertexte: rot, klein, verschwindet bei leerem Text -->
+        <Style TargetType="TextBlock" x:Key="ErrorStyle">
+            <Setter Property="Foreground" Value="#D32F2F"/>
+            <Setter Property="FontSize" Value="11"/>
+            <Setter Property="FontStyle" Value="Italic"/>
+            <Setter Property="Margin" Value="0,4,0,0"/>
+            <Setter Property="TextWrapping" Value="Wrap"/>
+            <Setter Property="Visibility" Value="Visible"/>
+            <Style.Triggers>
+                <Trigger Property="Text" Value="">
+                    <Setter Property="Visibility" Value="Collapsed"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+
         <!-- Stil für Eingabefelder -->
         <Style TargetType="TextBox">
             <Setter Property="Padding" Value="4,3"/>
@@ -62,18 +77,22 @@
 
         <!-- ═══ Zeile 1: Datum ═══ -->
         <GroupBox Grid.Row="1" Header="Datum">
-            <StackPanel Orientation="Horizontal">
-                <TextBlock Text="Tag:" Style="{StaticResource LabelStyle}"/>
-                <TextBox Text="{Binding DatumTag, UpdateSourceTrigger=PropertyChanged}"
-                         Width="40" MaxLength="2" TextAlignment="Center"/>
-                <TextBlock Text="." VerticalAlignment="Center" Margin="2,0"/>
-                <TextBlock Text="Monat:" Style="{StaticResource LabelStyle}" Margin="8,0,8,0"/>
-                <TextBox Text="{Binding DatumMonat, UpdateSourceTrigger=PropertyChanged}"
-                         Width="40" MaxLength="2" TextAlignment="Center"/>
-                <TextBlock Text="." VerticalAlignment="Center" Margin="2,0"/>
-                <TextBlock Text="Jahr:" Style="{StaticResource LabelStyle}" Margin="8,0,8,0"/>
-                <TextBox Text="{Binding DatumJahr, UpdateSourceTrigger=PropertyChanged}"
-                         Width="60" MaxLength="4" TextAlignment="Center"/>
+            <StackPanel>
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock Text="Tag:" Style="{StaticResource LabelStyle}"/>
+                    <TextBox Text="{Binding DatumTag, UpdateSourceTrigger=PropertyChanged}"
+                             Width="40" MaxLength="2" TextAlignment="Center"/>
+                    <TextBlock Text="." VerticalAlignment="Center" Margin="2,0"/>
+                    <TextBlock Text="Monat:" Style="{StaticResource LabelStyle}" Margin="8,0,8,0"/>
+                    <TextBox Text="{Binding DatumMonat, UpdateSourceTrigger=PropertyChanged}"
+                             Width="40" MaxLength="2" TextAlignment="Center"/>
+                    <TextBlock Text="." VerticalAlignment="Center" Margin="2,0"/>
+                    <TextBlock Text="Jahr:" Style="{StaticResource LabelStyle}" Margin="8,0,8,0"/>
+                    <TextBox Text="{Binding DatumJahr, UpdateSourceTrigger=PropertyChanged}"
+                             Width="60" MaxLength="4" TextAlignment="Center"/>
+                </StackPanel>
+                <TextBlock Style="{StaticResource ErrorStyle}"
+                           Text="{Binding DatumError}"/>
             </StackPanel>
         </GroupBox>
 
@@ -88,6 +107,7 @@
                     <ColumnDefinition Width="80"/>
                 </Grid.ColumnDefinitions>
                 <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
                     <RowDefinition Height="Auto"/>
                     <RowDefinition Height="Auto"/>
                     <RowDefinition Height="Auto"/>
@@ -126,14 +146,26 @@
                 <TextBlock Grid.Row="1" Grid.Column="4"
                            Text="{Binding MwstBetragText}" TextAlignment="Right"
                            VerticalAlignment="Center" Foreground="#888" Margin="0,2"/>
+
+                <!-- Fehler-Zeilen -->
+                <TextBlock Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2"
+                           Style="{StaticResource ErrorStyle}"
+                           Text="{Binding BetragError}"/>
+                <TextBlock Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="5"
+                           Style="{StaticResource ErrorStyle}"
+                           Text="{Binding MwstError}"/>
             </Grid>
         </GroupBox>
 
         <!-- ═══ Zeile 3: Beschreibung ═══ -->
         <GroupBox Grid.Row="3" Header="Beschreibung">
-            <ComboBox Text="{Binding Beschreibung, UpdateSourceTrigger=PropertyChanged}"
-                      ItemsSource="{Binding BeschreibungsHistorie}"
-                      IsEditable="True"/>
+            <StackPanel>
+                <ComboBox Text="{Binding Beschreibung, UpdateSourceTrigger=PropertyChanged}"
+                          ItemsSource="{Binding BeschreibungsHistorie}"
+                          IsEditable="True"/>
+                <TextBlock Style="{StaticResource ErrorStyle}"
+                           Text="{Binding BeschreibungError}"/>
+            </StackPanel>
         </GroupBox>
 
         <!-- ═══ Zeile 4: Belegnummer + Konto ═══ -->
@@ -228,6 +260,8 @@
                              Text="{Binding AfaSatz}" TextAlignment="Center"
                              IsEnabled="{Binding AfaDegressiv}"/>
                 </Grid>
+                <TextBlock Style="{StaticResource ErrorStyle}"
+                           Text="{Binding AfaError}"/>
             </StackPanel>
         </GroupBox>
 
