@@ -1,0 +1,28 @@
+; ECTBridge.def — Exportdefinitionen für ECTBridge.dll
+;
+; Diese DEF-Datei sorgt dafür, dass die extern "C" Funktionen mit
+; sauberen, undekorierten Namen exportiert werden (ohne _ oder @N),
+; damit EasyCTX.ocx sie per __declspec(dllimport) finden kann.
+;
+; Zweck: EasyCTX (die ActiveX-Schnittstelle für Plugins) nutzt diese
+; Hilfsfunktionen direkt. Die Funktionen selbst liegen in ECTBridge.dll
+; (übernommen aus der alten ECTIFace-Codebasis).
+
+LIBRARY ECTBridge
+
+EXPORTS
+    ; ── Erweiterungs-API ──
+    ; Wird von BuchungCtrl, DokumentCtrl (HoleBenutzerdefWert,
+    ; SpeichereBenutzerdefWert) und FormularCtrl verwendet.
+    GetErweiterungKey
+    SetErweiterungKey
+
+    ; ── INI-Verwaltung ──
+    ; Wird von EinstellungCtrl (HoleEinstellung, SpeichereEinstellung)
+    ; und von FormularCtrl indirekt verwendet.
+    GetIniFileName
+    IniSektion
+
+    ; ── Bridge-API (Phase 1 Exports, aus Exports.h) ──
+    ECT_BridgeVersion
+    ECT_BridgeSelfTest

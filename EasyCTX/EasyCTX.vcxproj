@@ -203,7 +203,7 @@ echo regsvr32 exec. time &gt; "$(OutDir)regsvr32.trg"
       <Culture>0x0407</Culture>
     </ResourceCompile>
     <Link>
-      <AdditionalDependencies>..\ECTIFace\Release\ECTIFace.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>..\ECTBridge\Release\ECTBridge.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>..\Release/EasyCTX.ocx</OutputFile>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <ModuleDefinitionFile>.\EasyCTX.def</ModuleDefinitionFile>
@@ -271,7 +271,7 @@ echo regsvr32 exec. time &gt; "$(OutDir)regsvr32.trg"
       <AdditionalIncludeDirectories>.\Release</AdditionalIncludeDirectories>
     </ResourceCompile>
     <Link>
-      <AdditionalDependencies>..\ECTIFace\Release\ECTIFace.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>..\ECTBridge\Release\ECTBridge.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>..\Release_x64/EasyCTX.ocx</OutputFile>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <ModuleDefinitionFile>.\EasyCTX.def</ModuleDefinitionFile>
@@ -435,7 +435,7 @@ echo regsvr32 exec. time &gt; "$(OutDir)regsvr32.trg"
       <Culture>0x0407</Culture>
     </ResourceCompile>
     <Link>
-      <AdditionalDependencies>..\ECTIFace\Debug\ECTIFace.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>..\ECTBridge\Debug\ECTBridge.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <ModuleDefinitionFile>.\EasyCTX.def</ModuleDefinitionFile>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -499,7 +499,7 @@ echo regsvr32 exec. time &gt; "$(OutDir)regsvr32.trg"
       <AdditionalIncludeDirectories>.\Debug</AdditionalIncludeDirectories>
     </ResourceCompile>
     <Link>
-      <AdditionalDependencies>..\ECTIFace\Debug\ECTIFace.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>..\ECTBridge\Debug\ECTBridge.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <ModuleDefinitionFile>.\EasyCTX.def</ModuleDefinitionFile>
       <GenerateDebugInformation>true</GenerateDebugInformation>

@@ -37,6 +37,9 @@
     <ClCompile Include="NativeInit.cpp" />
     <ClCompile Include="Exports.cpp" />
     <ClCompile Include="ViewExports.cpp" />
+    <ClCompile Include="AfAGenauigkeit.cpp">
+      <Filter>Quelldateien %28nativ%29</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h">
@@ -63,5 +66,16 @@
     <ClInclude Include="ectiface.h" />
     <ClInclude Include="Exports.h" />
     <ClInclude Include="ViewExports.h" />
+    <ClInclude Include="AfAGenauigkeit.h">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="resource.h">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="ECTIFace.rc">
+      <Filter>Quelldateien %28nativ%29</Filter>
+    </ResourceCompile>
   </ItemGroup>
 </Project>

@@ -31,7 +31,10 @@
 
 #include "resource.h"       // main symbols
 
-#include "..\ECTIFace\EasyCashDoc.h"
+// Phase 4: ECTBridge hat die ECTIFace-Logik übernommen.
+// Die CBuchung/CEasyCashDoc-Klassen sind unverändert — sie werden
+// jetzt aus dem ECTBridge-Verzeichnis inkludiert.
+#include "..\ECTBridge\EasyCashDoc.h"
 
 #include "comcat.h"
 #include "objsafe.h"

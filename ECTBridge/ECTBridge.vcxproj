@@ -116,6 +116,9 @@
   <!-- ═══════════════════════════════════════════════════════════════ -->
   <ItemGroup>
     <!-- ─── PCH-Setup (reines C++) ─── -->
+    <ClCompile Include="AfAGenauigkeit.cpp">
+      <CompileAsManaged>false</CompileAsManaged>
+    </ClCompile>
     <ClCompile Include="ectifacemisc.cpp">
       <CompileAsManaged>false</CompileAsManaged>
     </ClCompile>
@@ -158,7 +161,9 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="AfAGenauigkeit.h" />
     <ClInclude Include="ectiface.h" />
+    <ClInclude Include="resource.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="EasyCashDoc.h" />
     <!-- aus ECTIFace übernommen -->
@@ -179,6 +184,9 @@
       <CopyLocalSatelliteAssemblies>true</CopyLocalSatelliteAssemblies>
       <ReferenceOutputAssembly>true</ReferenceOutputAssembly>
     </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="ECTIFace.rc" />
   </ItemGroup>
   <!-- ═══════════════════════════════════════════════════════════════ -->
   <!-- PostBuild: DLLs ins EasyCash-Ausgabeverzeichnis kopieren        -->
