@@ -1,0 +1,48 @@
+; ECTIFace.def — Export-Forwarding-Tabelle
+;
+; Diese DEF-Datei erzeugt eine dünne ECTIFace.dll, die KEINEN eigenen
+; Code enthält. Alle Aufrufe werden vom Windows-Loader direkt an
+; ECTBridge.dll weitergeleitet ("DLL Export Forwarding").
+;
+; Warum: Bestehende Plugins (ECTElster, ECTDatev, ECTImport) sind
+; gegen ECTIFace.lib gelinkt. Wenn ECTIFace.dll nicht vorhanden ist,
+; laden die Plugins nicht. Diese Forwarder-DLL löst das, ohne dass
+; Plugins neu kompiliert werden müssen.
+;
+; Quelle der Exports: EasyCashDoc.h (extern "C" AFX_EXT_CLASS ...)
+;
+; HINWEIS: DLL-Export-Forwarding leitet nur Funktionen weiter.
+; Globale Variablen (ExtensionDLLs, shareware, kurse[], 
+; waehrungskuerzel[]) können nicht weitergeleitet werden — sie
+; werden in der Stub-Implementierung (ECTIFaceStub.cpp) behandelt.
+
+LIBRARY ECTIFace
+
+EXPORTS
+    ; ── Währungskonvertierung ──
+    currency_to_int                     = ECTBridge.currency_to_int
+    int_to_currency                     = ECTBridge.int_to_currency
+    int_to_currency_tausenderpunkt      = ECTBridge.int_to_currency_tausenderpunkt
+
+    ; ── Verzeichnis- und INI-Verwaltung ──
+    GetProgrammverzeichnis              = ECTBridge.GetProgrammverzeichnis
+    SetIniFileName                      = ECTBridge.SetIniFileName
+    GetIniFileName                      = ECTBridge.GetIniFileName
+    SetMandant                          = ECTBridge.SetMandant
+    GetMandant                          = ECTBridge.GetMandant
+
+    ; ── Erweiterungs-API (Plugin-Daten in Buchungen/Dokument) ──
+    GetErweiterungKey                   = ECTBridge.GetErweiterungKey
+    GetErweiterungKeyCS                 = ECTBridge.GetErweiterungKeyCS
+    SetErweiterungKey                   = ECTBridge.SetErweiterungKey
+
+    ; ── Formular-Verwaltung ──
+    LadeECFormulare                     = ECTBridge.LadeECFormulare
+    HoleFormularnamenAusCSA             = ECTBridge.HoleFormularnamenAusCSA
+    IniSektion                          = ECTBridge.IniSektion
+    HoleKontoFuerFeld                   = ECTBridge.HoleKontoFuerFeld
+
+    ; ── Plugin-Verwaltung ──
+    CLoadExtensionDLLs                  = ECTBridge.CLoadExtensionDLLs
+    CFreeExtensionDLLs                  = ECTBridge.CFreeExtensionDLLs
+    CIterateExtensionDLLs              = ECTBridge.CIterateExtensionDLLs

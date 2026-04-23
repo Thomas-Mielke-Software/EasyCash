@@ -30,7 +30,7 @@
 #include "EasyCashDoc.h"
 //#include "BuchungsjahrWaehlen.h"
 //#include "Konvertierung.h"
-//#include "AfAGenauigkeit.h"
+#include "AfAGenauigkeit.h"
 //#include "ectiface.h"
 
 #ifdef _DEBUG
@@ -804,6 +804,19 @@ CEasyCashDoc* CEasyCashDoc::Jahreswechsel(int land = 0)
 	pNewDoc->Einnahmen = NULL;
 	pNewDoc->nJahr = nJahr + 1;
 	// AfA ab 2004 in BRD ändern
+	if (pNewDoc->nJahr == 2004 && land == 0/*BRD*/)
+	{
+		CAfAGenauigkeit dlg;
+		dlg.m_afa_genauigkeit = MONATSGENAUE_AFA;
+		if (dlg.DoModal() == IDOK)
+			pNewDoc->AbschreibungGenauigkeit = dlg.m_afa_genauigkeit;
+		else
+		{
+			pNewDoc->AbschreibungGenauigkeit = MONATSGENAUE_AFA;
+			if (!bHeadlessMode)
+				AfxMessageBox("Monatsgenaue AfA wird angenommen.");
+		}
+	}
 
 	pNewDoc->csWaehrung = csWaehrung;
 	pNewDoc->csUrspruenglicheWaehrung = csUrspruenglicheWaehrung;
@@ -1148,6 +1161,14 @@ recover:
 		{
 			Erweiterung = "";
 
+			CAfAGenauigkeit dlg;
+			if (nJahr < 2004)
+				dlg.m_afa_genauigkeit = HALBJAHRES_AFA;
+			else
+				dlg.m_afa_genauigkeit = MONATSGENAUE_AFA;
+			if (dlg.DoModal() == IDOK)
+				AbschreibungGenauigkeit = dlg.m_afa_genauigkeit;
+			else
 			{
 				if (nJahr < 2004)
 				{

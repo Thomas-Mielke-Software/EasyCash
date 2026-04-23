@@ -1,0 +1,41 @@
+; ECTBridge.def — Exportdefinitionen für ECTBridge.dll
+;
+; Stellt sicher, dass die extern "C" Funktionen mit sauberen,
+; undekorierten Namen exportiert werden. Ohne DEF-Datei würde
+; der 32-Bit-Linker ggf. _name oder _name@N-Dekorierung verwenden,
+; was die Forwarder-DLL und Plugins stört.
+
+LIBRARY ECTBridge
+
+EXPORTS
+    ; ── Währungskonvertierung ──
+    currency_to_int
+    int_to_currency
+    int_to_currency_tausenderpunkt
+
+    ; ── Verzeichnis- und INI-Verwaltung ──
+    GetProgrammverzeichnis
+    SetIniFileName
+    GetIniFileName
+    SetMandant
+    GetMandant
+
+    ; ── Erweiterungs-API ──
+    GetErweiterungKey
+    GetErweiterungKeyCS
+    SetErweiterungKey
+
+    ; ── Formular-Verwaltung ──
+    LadeECFormulare
+    HoleFormularnamenAusCSA
+    IniSektion
+    HoleKontoFuerFeld
+
+    ; ── Plugin-Verwaltung ──
+    CLoadExtensionDLLs
+    CFreeExtensionDLLs
+    CIterateExtensionDLLs
+
+    ; ── Bridge-API (Phase 1 Exports) ──
+    ECT_BridgeVersion
+    ECT_BridgeSelfTest

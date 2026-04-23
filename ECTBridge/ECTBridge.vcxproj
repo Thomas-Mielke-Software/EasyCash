@@ -70,6 +70,7 @@
       <AdditionalUsingDirectories>$(SolutionDir)ECTEngine\bin\Debug\net48;$(SolutionDir)ECTViews\bin\Debug\net48;%(AdditionalUsingDirectories)</AdditionalUsingDirectories>
     </ClCompile>
     <Link>
+      <ModuleDefinitionFile>ECTBridge.def</ModuleDefinitionFile>
       <GenerateDebugInformation>DebugFull</GenerateDebugInformation>
       <SubSystem>Windows</SubSystem>
       <!-- Kein RandomizedBaseAddress/DEP bei /clr Debug -->
@@ -100,6 +101,7 @@
       <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
+      <ModuleDefinitionFile>ECTBridge.def</ModuleDefinitionFile>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Windows</SubSystem>
       <!-- LinkTimeCodeGeneration INKOMPATIBEL mit /clr -->
@@ -116,6 +118,9 @@
   <!-- ═══════════════════════════════════════════════════════════════ -->
   <ItemGroup>
     <!-- ─── PCH-Setup (reines C++) ─── -->
+    <ClCompile Include="AfAGenauigkeit.cpp">
+      <CompileAsManaged>false</CompileAsManaged>
+    </ClCompile>
     <ClCompile Include="ectifacemisc.cpp">
       <CompileAsManaged>false</CompileAsManaged>
     </ClCompile>
@@ -158,7 +163,9 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="AfAGenauigkeit.h" />
     <ClInclude Include="ectiface.h" />
+    <ClInclude Include="resource.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="EasyCashDoc.h" />
     <!-- aus ECTIFace übernommen -->
@@ -169,6 +176,7 @@
     <ClInclude Include="Exports.h" />
     <ClInclude Include="ViewExports.h" />
     <ClInclude Include="XMLite.h" />
+    <None Include="ECTBridge.def" />
   </ItemGroup>
   <!-- ═══════════════════════════════════════════════════════════════ -->
   <!-- Verweis auf die C#-Engine-Assembly                               -->
@@ -179,6 +187,9 @@
       <CopyLocalSatelliteAssemblies>true</CopyLocalSatelliteAssemblies>
       <ReferenceOutputAssembly>true</ReferenceOutputAssembly>
     </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="ECTIFace.rc" />
   </ItemGroup>
   <!-- ═══════════════════════════════════════════════════════════════ -->
   <!-- PostBuild: DLLs ins EasyCash-Ausgabeverzeichnis kopieren        -->

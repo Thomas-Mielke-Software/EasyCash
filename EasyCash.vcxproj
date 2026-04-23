@@ -121,7 +121,7 @@
       <Culture>0x0407</Culture>
     </ResourceCompile>
     <Link>
-      <AdditionalDependencies>ECTBridge\Debug\ECTBridge.lib;ECTIFace\Debug\ECTIFace.lib;../GrafLib/png/Debug/png.lib;../GrafLib/jpeg/Debug/jpeg.lib;../GrafLib/zlib/Debug/zlib.lib;../GrafLib/cimage/Debug/cimage.lib;rpcrt4.lib;Wininet.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>ECTBridge\Debug\ECTBridge.lib;../GrafLib/png/Debug/png.lib;../GrafLib/jpeg/Debug/jpeg.lib;../GrafLib/zlib/Debug/zlib.lib;../GrafLib/cimage/Debug/cimage.lib;rpcrt4.lib;Wininet.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>.\Debug\EasyCT.exe</OutputFile>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <GenerateDebugInformation>true</GenerateDebugInformation>
