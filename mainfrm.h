@@ -164,7 +164,6 @@ protected:
 	afx_msg void OnSpendeBank();
 	afx_msg void OnSpendePayPal();
 	afx_msg void OnSpendeBitcoin();
-	afx_msg void OnSpendeFlattr();
 	//}}AFX_MSG
 	DECLARE_MESSAGE_MAP()
 

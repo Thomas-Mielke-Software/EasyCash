@@ -149,7 +149,6 @@ BEGIN_MESSAGE_MAP(CMainFrame, CMDIFrameWndEx)
 	ON_COMMAND(ID_EINSTELLUNGEN_SPENDE_BANK, OnSpendeBank)   
 	ON_COMMAND(ID_EINSTELLUNGEN_SPENDE_PAYPAL, OnSpendePayPal)
 	ON_COMMAND(ID_EINSTELLUNGEN_SPENDE_BITCOIN, OnSpendeBitcoin)
-	ON_COMMAND(ID_EINSTELLUNGEN_SPENDE_FLATTR, OnSpendeFlattr)
 END_MESSAGE_MAP()
 
 static UINT indicators[] =
@@ -707,7 +706,6 @@ void CMainFrame::Add_Category2()
 	pPanel6->Add(new CMFCRibbonButton(ID_EINSTELLUNGEN_SPENDE_BANK, _T("Banküber- weisung"), 2, 2));
 	pPanel6->Add(new CMFCRibbonButton(ID_EINSTELLUNGEN_SPENDE_PAYPAL, _T("PayPal"), 3, 3));
 	pPanel6->Add(new CMFCRibbonButton(ID_EINSTELLUNGEN_SPENDE_BITCOIN, _T("Bitcoin"), 4, 4));
-	pPanel6->Add(new CMFCRibbonButton(ID_EINSTELLUNGEN_SPENDE_FLATTR, _T("Flattr"), 6, 6));
 }
 
 void CMainFrame::DockControlBarLeftOf(CToolBar* Bar, CToolBar* LeftOf)
@@ -1647,7 +1645,7 @@ void CMainFrame::OnFileWaehleDatenverzeichnis()
 
 		if (csDatenverzeichnis != csAltesDatenverzeichnis)
 		{
-			AfxMessageBox("Bitte kopieren Sie die ggf. easyct.ini und alle benötigten Buchungsdateien (Jahr????.eca) in das neue Datenverzeichnis.");
+			AfxMessageBox("Bitte kopieren Sie ggf. die easyct.ini und alle benötigten Buchungsdateien (Jahr????.eca) in das neue Datenverzeichnis.");
 
 			// MRU-Liste aktualisieren mit allen im neuen Datenverzeichnis vorgefundenen .eca-Dateien
 			CStringArray csaFileList, csaFileListSafe;
@@ -2079,18 +2077,5 @@ void CMainFrame::OnSpendeBitcoin()
 	else
 	{
 		AfxMessageBox("Die Spenden-Registrierung sollte jetzt im E-Mail-Programm geöffnet worden sein. (Wenn nicht, bitte das Mail-Programm manuell starten und Eine E-Mail an thomas@mielke.software  mit Betreff 'EasyCash-Registrierung-Spende' und BTC-Betrag sowie Rechnungsadresse im Mailtext angeben.) Nach dem Absenden sollte der Code in wenigen Tagen eintreffen.", MB_ICONINFORMATION);
-	}
-}
-
-void CMainFrame::OnSpendeFlattr()
-{
-	int n = (int)ShellExecute(m_hWnd, "open", "https://flattr.com/submit/auto?fid=7rnje0&url=http%3A%2F%2Fwww.easyct.de", NULL, ".", SW_SHOWNORMAL);
-	if (n <= 32)
-	{
-		AfxMessageBox("Herzlichen Dank! Es gab aber ein kleines Problem mit dem Web-Browser auf diesem Rechner. Bitte starten Sie den Web-Browser manuell und gehen auf www.easyct.de. Dort gleich im Willkommenstext befindet sich ein Flattr-Spenden-Knopf.", MB_ICONSTOP);
-	}
-	else
-	{
-		AfxMessageBox("Herzlichen Dank! Der Web-Browser sollte jetzt mit der Flattr-Spendenseite geöffnet worden sein. (Wenn nicht, starten Sie den Web-Browser manuell und gehen auf www.easyct.de. Dort gleich im Willkommenstext befindet sich ein Flattr-Spenden-Knopf.)", MB_ICONINFORMATION);
 	}
 }
