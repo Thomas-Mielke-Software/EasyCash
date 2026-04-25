@@ -17,9 +17,19 @@
 #define ECTBRIDGE_API __declspec(dllimport)
 #endif
 
+// Forward-Deklaration für die Pointer-basierten Funktionen.
+// Die View-Dateien inkludieren EasyCashDoc.h ohnehin und haben
+// dann die volle Definition; die forward decl hier hält den
+// Header leichtgewichtig und funktioniert auch in reinen C-APIs.
+class CBuchung;
+
 #ifdef __cplusplus
 extern "C" {
 #endif
+
+// ──────────────────────────────────────────────
+// Index-basierte API (Grundfunktionen)
+// ──────────────────────────────────────────────
 
 /// <summary>
 /// Zeigt den WPF-Buchungseingabe-Dialog.
@@ -52,6 +62,53 @@ ECTBRIDGE_API BOOL ECT_ShowBuchungDialog(
 /// </summary>
 ECTBRIDGE_API BOOL ECT_ShowBuchungBearbeitenDialog(
     void* pDocBridge, int nBuchungIdx, HWND hWndOwner);
+
+// ──────────────────────────────────────────────
+// Pointer-basierte API (komfortabel für bestehenden View-Code)
+// ──────────────────────────────────────────────
+//
+// Die folgenden Funktionen nehmen einen nativen CBuchung*-Pointer
+// entgegen, wie er in der existierenden MFC-View-Logik (z.B.
+// ppPosBuchungsliste, *ppb) schon vorhanden ist. Die Bridge
+// identifiziert intern die korrespondierende managed Buchung,
+// führt die Operation aus und synchronisiert native ↔ managed.
+//
+// WICHTIG: Nach jedem dieser Aufrufe muss der View sein Display
+// neu zeichnen, weil sich native Linked-List-Positionen verschoben
+// haben können (Sort, Neueinfügen, Löschen).
+
+/// <summary>
+/// Zeigt den Bearbeiten-Dialog für eine bestehende Buchung,
+/// die per CBuchung*-Pointer identifiziert ist.
+/// </summary>
+ECTBRIDGE_API BOOL ECT_ShowBuchungBearbeitenDialogFuerPointer(
+    void* pDocBridge, CBuchung* pNativeBuchung, HWND hWndOwner);
+
+/// <summary>
+/// Zeigt den Buchungsdialog zum Kopieren einer bestehenden Buchung.
+/// Der Dialog startet mit den Feldwerten der Vorlage; beim OK-Klick
+/// wird eine NEUE Buchung angelegt (nicht die Vorlage überschrieben).
+///
+/// Parameter:
+///   bNeueBelegnummer - TRUE: Belegnummer wird auf die nächste freie
+///                      Nummer gesetzt. FALSE: Belegnummer wird aus
+///                      der Vorlage übernommen (inkl. evtl. Suffix).
+/// </summary>
+ECTBRIDGE_API BOOL ECT_ShowBuchungKopierenDialog(
+    void* pDocBridge, CBuchung* pNativeBuchung,
+    BOOL bNeueBelegnummer, HWND hWndOwner);
+
+/// <summary>
+/// Löscht eine Buchung, die per CBuchung*-Pointer identifiziert ist.
+/// Nach der Löschung sind alle zuvor gehaltenen CBuchung*-Pointer
+/// ungültig (auch der übergebene!), weil SyncManagedToNative die
+/// nativen Linked Lists komplett neu aufbaut.
+///
+/// Rückgabe:
+///   TRUE wenn gelöscht, FALSE wenn der Pointer nicht gefunden wurde.
+/// </summary>
+ECTBRIDGE_API BOOL ECT_LoescheBuchungPerPointer(
+    void* pDocBridge, CBuchung* pNativeBuchung);
 
 #ifdef __cplusplus
 }

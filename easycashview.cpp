@@ -5718,11 +5718,11 @@ void CEasyCashView::OnEditEinnahmeBuchen()
 {
 /////////////dockable-experiment	((CMainFrame*)AfxGetMainWnd())->m_wndOutput.ShowPane(TRUE, TRUE, TRUE);
 
+#ifdef USE_ECTENGINE
 	// WPF-Experiment
-	ECT_ShowBuchungBearbeitenDialog(GetDocument(), 1, AfxGetMainWnd()->GetSafeHwnd());
+	ECT_ShowBuchungBearbeitenDialog(GetDocument(), 0, AfxGetMainWnd()->GetSafeHwnd());
 	//ECT_ShowBuchungDialog(GetDocument(), FALSE, AfxGetMainWnd()->GetSafeHwnd());
-	return;
-
+#else
 	if (buchenDlg) 
 	{
 		buchenDlg->DestroyWindow();
@@ -5732,10 +5732,15 @@ void CEasyCashView::OnEditEinnahmeBuchen()
 	buchenDlg = new BuchenDlg(GetDocument(), FALSE, this);
 	buchenDlg->Create(IDD_BUCHUNG, this);
 	buchenDlg->ShowWindow(SW_SHOW);
+#endif
 }
 
 void CEasyCashView::OnEditAusgabeBuchen() 
 {
+#ifdef USE_ECTENGINE
+	// WPF-Experiment
+	ECT_ShowBuchungBearbeitenDialog(GetDocument(), 1, AfxGetMainWnd()->GetSafeHwnd());
+#else
 	if (buchenDlg) 
 	{
 		buchenDlg->DestroyWindow();
@@ -5745,6 +5750,7 @@ void CEasyCashView::OnEditAusgabeBuchen()
 	buchenDlg = new BuchenDlg(GetDocument(), TRUE, this);
 	buchenDlg->Create(IDD_BUCHUNG, this);
 	buchenDlg->ShowWindow(SW_SHOW);
+#endif
 }
 
 void CEasyCashView::OnEditDauerbuchungenEingeben() 
@@ -6404,18 +6410,17 @@ void CEasyCashView::OnRButtonDown(UINT nFlags, CPoint point)
 	CScrollView::OnRButtonDown(nFlags, point);
 }
 
-BOOL CEasyCashView::OnCommand(WPARAM wParam, LPARAM lParam) 
+BOOL CEasyCashView::OnCommand(WPARAM wParam, LPARAM lParam)
 {
-	CBuchung **ppb, *pb;
+	CBuchung** ppb, * pb;
 	int Buchungstyp, index;
-	CEasyCashDoc *pDoc = GetDocument();
+	CEasyCashDoc* pDoc = GetDocument();
 
 	// Journalansicht-Menü
 	if (wParam == POPUP_AENDERN || wParam == POPUP_LOESCHEN || wParam == POPUP_KOPIEREN || wParam == POPUP_KOPIEREN_BELEGNUMMER || wParam == POPUP_AFA_ABGANG)
 	{
 		// aus Bildschirm/Scropplosition die Zeilennummer berechnen und 
 		// somit den Pointer in ppPosBuchungsliste
-		
 		index = PopUpPosition.y / charheight;
 		ppb = ppPosBuchungsliste[index];
 		pb = pDoc->Einnahmen;
@@ -6430,105 +6435,255 @@ BOOL CEasyCashView::OnCommand(WPARAM wParam, LPARAM lParam)
 			pb = pb->next;
 		}
 
-		if (ppb)
-		{
-			switch (wParam)
-			{
-			case POPUP_AENDERN:
-				if (*ppb)
-				{
-					// Hinweis bei nachträglicher Änderung einer AfA
-					if ((*ppb)->AbschreibungNr > 1)
-						AfxMessageBox("Hinweis: Wenn Abschreibungen nachträglich geändert werden, kann dies zur Inkonsistenz mit den entspr. Buchungen aus den Vorjahren führen, insbesondere wenn Betrag, Abschreibungsdauer oder Restwert geändert werden. Ändern Sie deshalb auch die AfA-Buchungen in den Vorjahren entsprechend (was in der Regel nur bei nachträglicher Erfassung der Buchungen sinnvoll ist) oder erzeugen Sie zusätzlich eine Korrekturbuchung (z.B. Sonderabschreibung wegen ungewöhnlicher Abnutzung). Auch ist die VST im Brutto-Betrag zu berücksichtigen und ggf. noch eine weitere Buchung dafür vorzusehen. In jedem Fall liegt die korrekte Abstimmung von Betrag, Dauer und Restwert in Ihrer Verantwortung.");
-					
-					// Tu es!
-					{
-						BuchenDlg dlg(GetDocument(), Buchungstyp, this, ppb);
-						nSelected = index;
-						RedrawSelection(); // selektieren
-						// GetDocument()->UpdateAllViews(NULL);	
-						pBuchungAendernDlg = &dlg;
-						dlg.DoModal();
-						pBuchungAendernDlg = NULL;
-						RedrawSelection();
-					}
-				}
-				break;
+#ifdef USE_ECTENGINE
+		// CBuchung-Pointer einmalig extrahieren
+		CBuchung* pBuchung = (ppb && *ppb) ? *ppb : NULL;
+		if (!pBuchung) return FALSE;
 
-			case POPUP_LOESCHEN:
-				if (*ppb)
+		switch (wParam)
+		{
+		case POPUP_AENDERN:
+			// Hinweis bei nachträglicher Änderung einer AfA
+			if (pBuchung->AbschreibungNr > 1)
+				AfxMessageBox("Hinweis: Wenn Abschreibungen nachträglich "
+					"geändert werden, kann dies zur Inkonsistenz mit den "
+					"entspr. Buchungen aus den Vorjahren führen ...");
+
+			nSelected = index;
+			RedrawSelection();  // selektieren
+
+			// WPF-Dialog anzeigen — die Bridge kümmert sich um den Sync
+			ECT_ShowBuchungBearbeitenDialogFuerPointer(
+				pDoc, pBuchung, GetSafeHwnd());
+
+			// Nach dem Dialog sind alle CBuchung*-Pointer potentiell
+			// ungültig (SyncManagedToNative baut die Listen neu auf).
+			// Komplettes Redraw:
+			RedrawWindow(NULL, NULL,
+				RDW_INVALIDATE | RDW_UPDATENOW | RDW_ALLCHILDREN);
+			break;
+
+		case POPUP_LOESCHEN:
+			nSelected = index;
+			RedrawSelection();  // selektieren
+
+			{
+				CString csText;
+				csText.Format("Buchung '%s' wirklich löschen?",
+					(LPCTSTR)pBuchung->Beschreibung);
+				int nDoIt = AfxMessageBox(csText, MB_YESNO | MB_DEFBUTTON2);
+
+				nSelected = -nSelected;  // deselektieren
+				RedrawSelection();
+
+				if (nDoIt == IDYES)
 				{
-					int nDoIt;
+					// Split-Buchungs-Warnung (VOR dem Löschen — pBuchung ist
+					// danach ungültig!)
+					if (*GetErweiterungKey(pBuchung->Erweiterung, "EasyCash",
+						"SplitBasisbuchung")
+						|| *GetErweiterungKey(pBuchung->Erweiterung, "EasyCash",
+							"SplitGegenbuchungMitVorsteuerabzug")
+						|| *GetErweiterungKey(pBuchung->Erweiterung, "EasyCash",
+							"SplitGegenbuchungOhneVorsteuerabzug"))
+					{
+						AfxMessageBox("Hinweis: Diese Buchung ist Teil einer "
+							"Split-Buchung. Bitte löschen Sie gegebenenfalls "
+							"auch den korrespondierenden Anteil.",
+							MB_ICONEXCLAMATION);
+					}
+
+					// Löschen — nach diesem Aufruf ist pBuchung ungültig!
+					ECT_LoescheBuchungPerPointer(pDoc, pBuchung);
+					pBuchung = NULL;  // defensiv
+
+					RedrawWindow(NULL, NULL,
+						RDW_INVALIDATE | RDW_UPDATENOW | RDW_ALLCHILDREN);
+				}
+			}
+			break;
+
+		case POPUP_KOPIEREN:
+			nSelected = index;
+			RedrawSelection();
+
+			ECT_ShowBuchungKopierenDialog(
+				pDoc, pBuchung,
+				FALSE,              // Belegnummer aus Vorlage übernehmen
+				GetSafeHwnd());
+
+			nSelected = -nSelected;
+			RedrawSelection();
+			RedrawWindow(NULL, NULL,
+				RDW_INVALIDATE | RDW_UPDATENOW | RDW_ALLCHILDREN);
+			break;
+
+		case POPUP_KOPIEREN_BELEGNUMMER:
+			nSelected = index;
+			RedrawSelection();
+
+			ECT_ShowBuchungKopierenDialog(
+				pDoc, pBuchung,
+				TRUE,               // Neue Belegnummer vergeben
+				GetSafeHwnd());
+
+			nSelected = -nSelected;
+			RedrawSelection();
+			RedrawWindow(NULL, NULL,
+				RDW_INVALIDATE | RDW_UPDATENOW | RDW_ALLCHILDREN);
+			break;
+
+		case POPUP_AFA_ABGANG:
+			// AfAAbgang nutzt ppb direkt — bleibt vorerst native.
+			// Kann später auf eine AfaAbgangPerPointer-Funktion umgestellt
+			// werden, wenn AfAAbgang in die Engine portiert wird.
+			AfAAbgang(ppb);
+			break;
+		}
+
+		// -----------------------------------------------------------------
+		// WICHTIGE REGELN ZUM UMGANG MIT CBuchung*-POINTERN
+		// -----------------------------------------------------------------
+		//
+		// 1. CBuchung*-Pointer sind nur GÜLTIG BIS ZUM NÄCHSTEN SYNC.
+		//    Jede Funktion, die SyncManagedToNative() auslöst, macht alle
+		//    zuvor gehaltenen CBuchung*-Pointer ungültig. Das sind u.a.:
+		//      - ECT_ShowBuchungDialog (neue Buchung)
+		//      - ECT_ShowBuchungBearbeitenDialog(FuerPointer)
+		//      - ECT_ShowBuchungKopierenDialog
+		//      - ECT_LoescheBuchungPerPointer
+		//      - CEasyCashDocBridge::Serialize (Laden/Speichern)
+		//
+		// 2. Nach jedem dieser Aufrufe muss der View das Display KOMPLETT
+		//    neu zeichnen (nicht nur die "aktuelle Zeile"). Die Linked-List-
+		//    Reihenfolge kann sich durch Sort oder Einfügen/Löschen geändert
+		//    haben, und ppPosBuchungsliste[] ist dann veraltet.
+		//
+		// 3. Split-Warnungen, Beschreibungs-Meldungen etc. müssen VOR dem
+		//    Aufruf der Bridge-Funktion ausgewertet werden, weil der Pointer
+		//    danach ungültig ist.
+		//
+		// 4. Falls in einem Aufruf mehrere Operationen nacheinander nötig
+		//    sind, die auf derselben Buchung arbeiten sollen (z.B. Werte
+		//    prüfen -> ändern -> erneut prüfen), den Index einmal per
+		//    FindeManagedIndex ermitteln und mit dem Index arbeiten. Der
+		//    Index bleibt bis zum nächsten Sort stabil.
+
+#else
+	index = PopUpPosition.y / charheight;
+	ppb = ppPosBuchungsliste[index];
+	pb = pDoc->Einnahmen;
+	Buchungstyp = BUCHUNGSTYP_AUSGABEN;
+	while (pb && ppb)
+	{
+		if (pb == *ppb)
+		{
+			Buchungstyp = BUCHUNGSTYP_EINNAHMEN;
+			break;
+		}
+		pb = pb->next;
+	}
+
+	if (ppb)
+	{
+		switch (wParam)
+		{
+		case POPUP_AENDERN:
+			if (*ppb)
+			{
+				// Hinweis bei nachträglicher Änderung einer AfA
+				if ((*ppb)->AbschreibungNr > 1)
+					AfxMessageBox("Hinweis: Wenn Abschreibungen nachträglich geändert werden, kann dies zur Inkonsistenz mit den entspr. Buchungen aus den Vorjahren führen, insbesondere wenn Betrag, Abschreibungsdauer oder Restwert geändert werden. Ändern Sie deshalb auch die AfA-Buchungen in den Vorjahren entsprechend (was in der Regel nur bei nachträglicher Erfassung der Buchungen sinnvoll ist) oder erzeugen Sie zusätzlich eine Korrekturbuchung (z.B. Sonderabschreibung wegen ungewöhnlicher Abnutzung). Auch ist die VST im Brutto-Betrag zu berücksichtigen und ggf. noch eine weitere Buchung dafür vorzusehen. In jedem Fall liegt die korrekte Abstimmung von Betrag, Dauer und Restwert in Ihrer Verantwortung.");
+
+				// Tu es!
+				{
+					BuchenDlg dlg(GetDocument(), Buchungstyp, this, ppb);
 					nSelected = index;
-					RedrawSelection();	// selektieren
-					CString csText;
-					csText.Format("Buchung '%s' wirklich löschen?", (LPCTSTR)(*ppb)->Beschreibung);
-					nDoIt = AfxMessageBox(csText, MB_YESNO|MB_DEFBUTTON2);
+					RedrawSelection(); // selektieren
+					// GetDocument()->UpdateAllViews(NULL);	
+					pBuchungAendernDlg = &dlg;
+					dlg.DoModal();
+					pBuchungAendernDlg = NULL;
+					RedrawSelection();
+				}
+			}
+			break;
+
+		case POPUP_LOESCHEN:
+			if (*ppb)
+			{
+				int nDoIt;
+				nSelected = index;
+				RedrawSelection();	// selektieren
+				CString csText;
+				csText.Format("Buchung '%s' wirklich löschen?", (LPCTSTR)(*ppb)->Beschreibung);
+				nDoIt = AfxMessageBox(csText, MB_YESNO | MB_DEFBUTTON2);
+				nSelected = -nSelected;	// deselektieren
+				RedrawSelection();
+
+				if (nDoIt == IDYES)
+				{
+					if (*GetErweiterungKey((*ppb)->Erweiterung, "EasyCash", "SplitBasisbuchung")
+						|| *GetErweiterungKey((*ppb)->Erweiterung, "EasyCash", "SplitGegenbuchungMitVorsteuerabzug")
+						|| *GetErweiterungKey((*ppb)->Erweiterung, "EasyCash", "SplitGegenbuchungOhneVorsteuerabzug"))
+						AfxMessageBox("Hinweis: Diese Buchung ist Teil einer Split-Buchung. Bitte löschen Sie gegebenenfalls auch den korrespondierenden Anteil.", MB_ICONEXCLAMATION);
+
+					pb = (*ppb)->next;
+					(*ppb)->next = NULL;	// ganz wichtig wegen Kettenlöschung
+					delete* ppb;			// access violation v2.51.0.1-85be8316-6104-4e0f-8de8-bac7f47bc1ef v2.51.0.1-9511f9c5-8810-4591-a642-9c002744d709
+					*ppb = pb;
+
+					pDoc->SetModifiedFlag("Buchung wurde gelöscht");
+					pDoc->Sort();
+					//RedrawWindow();
+					pDoc->UpdateAllViews(NULL);
+				}
+			}
+			break;
+
+		case POPUP_KOPIEREN:
+			if (*ppb)
+			{
+				{
+					BuchenDlg dlg(GetDocument(), Buchungstyp, this, ppb, TRUE);
+					nSelected = index;
+					RedrawSelection(); // selektieren
+					// GetDocument()->UpdateAllViews(NULL);	
+					pBuchungAendernDlg = &dlg;
+					dlg.DoModal();
+					pBuchungAendernDlg = NULL;
 					nSelected = -nSelected;	// deselektieren
 					RedrawSelection();
-
-					if (nDoIt == IDYES)
-					{
-						if (*GetErweiterungKey((*ppb)->Erweiterung, "EasyCash", "SplitBasisbuchung")
-							|| *GetErweiterungKey((*ppb)->Erweiterung, "EasyCash", "SplitGegenbuchungMitVorsteuerabzug")
-							|| *GetErweiterungKey((*ppb)->Erweiterung, "EasyCash", "SplitGegenbuchungOhneVorsteuerabzug"))
-								AfxMessageBox("Hinweis: Diese Buchung ist Teil einer Split-Buchung. Bitte löschen Sie gegebenenfalls auch den korrespondierenden Anteil.", MB_ICONEXCLAMATION);
-
-						pb = (*ppb)->next;
-						(*ppb)->next = NULL;	// ganz wichtig wegen Kettenlöschung
-						delete *ppb;			// access violation v2.51.0.1-85be8316-6104-4e0f-8de8-bac7f47bc1ef v2.51.0.1-9511f9c5-8810-4591-a642-9c002744d709
-						*ppb = pb;
-
-						pDoc->SetModifiedFlag("Buchung wurde gelöscht");
-						pDoc->Sort();
-						//RedrawWindow();
-						pDoc->UpdateAllViews(NULL);
-					}
 				}
-				break;
-
-			case POPUP_KOPIEREN:
-				if (*ppb)
-				{
-					{
-						BuchenDlg dlg(GetDocument(), Buchungstyp, this, ppb, TRUE);
-						nSelected = index;
-						RedrawSelection(); // selektieren
-						// GetDocument()->UpdateAllViews(NULL);	
-						pBuchungAendernDlg = &dlg;
-						dlg.DoModal();
-						pBuchungAendernDlg = NULL;
-						nSelected = -nSelected;	// deselektieren
-						RedrawSelection();
-					}
-				}
-				break;
-
-			case POPUP_KOPIEREN_BELEGNUMMER:
-				if (*ppb)
-				{
-					{
-						BuchenDlg dlg(GetDocument(), Buchungstyp, this, ppb, TRUE, TRUE);
-						nSelected = index;
-						RedrawSelection(); // selektieren
-						// GetDocument()->UpdateAllViews(NULL);	
-						pBuchungAendernDlg = &dlg;
-						dlg.DoModal();
-						pBuchungAendernDlg = NULL;
-						nSelected = -nSelected;	// deselektieren
-						RedrawSelection();
-					}
-				}
-				break;
-
-			case POPUP_AFA_ABGANG:
-				if (*ppb)
-				{
-					AfAAbgang(ppb);
-				}
-				break;
 			}
+			break;
+
+		case POPUP_KOPIEREN_BELEGNUMMER:
+			if (*ppb)
+			{
+				{
+					BuchenDlg dlg(GetDocument(), Buchungstyp, this, ppb, TRUE, TRUE);
+					nSelected = index;
+					RedrawSelection(); // selektieren
+					// GetDocument()->UpdateAllViews(NULL);	
+					pBuchungAendernDlg = &dlg;
+					dlg.DoModal();
+					pBuchungAendernDlg = NULL;
+					nSelected = -nSelected;	// deselektieren
+					RedrawSelection();
+				}
+			}
+			break;
+
+		case POPUP_AFA_ABGANG:
+			if (*ppb)
+			{
+				AfAAbgang(ppb);
+			}
+			break;
 		}
+
+#endif
 	}
 	// Popup-Menü für Formularansicht
 	else if (wParam == POPUPFORMULAR_NEUES_FELD || wParam == POPUPFORMULAR_NEUER_ABSCHNITT || wParam == POPUPFORMULAR_FELDER_BEARBEITEN 
@@ -6538,37 +6693,36 @@ BOOL CEasyCashView::OnCommand(WPARAM wParam, LPARAM lParam)
 		switch (wParam)
 		{
 		case POPUPFORMULAR_NEUES_FELD:
+			// ggf. vorher Dialog löschen
+			if (pFormularfeldDlg) 
 			{
-				// ggf. vorher Dialog löschen
-				if (pFormularfeldDlg) 
-				{
-					pFormularfeldDlg->DestroyWindow();
-					delete pFormularfeldDlg;
-					pFormularfeldDlg = NULL;
-				}
-				
-				// Feldmarkierung einblenden
-				ptFeldmarke = PopUpPosition;
-				ptFeldmarke.x = ptFeldmarke.x * 1000 / (int)((double)(charheight * (VCHARS + PAGE_GAP) * 1000 / 1414)) / querformat_faktor;
-				ptFeldmarke.y = ptFeldmarke.y * 1414 / (int)((double)(VCHARS + PAGE_GAP) * charheight);
-			
-				// Formulareigenschaften anzeigen
-				pFormularfeldDlg = new CFormularfeld(this);
-				pFormularfeldDlg->m_csFormulardatei = m_csaFormulare[m_GewaehltesFormular];
-				pFormularfeldDlg->m_ausrichtung = 1;	// rechtsbündig
-				pFormularfeldDlg->m_anteil = 1;
-				pFormularfeldDlg->m_nachkommaanteil = 1;
-				pFormularfeldDlg->m_bKeineFeldUeberschreibenMeldung = FALSE;
-				pFormularfeldDlg->m_nNullwertdarstellung = 1;
-				pFormularfeldDlg->m_veraltet = 0;
-				pFormularfeldDlg->Create(IDD_FORMULARFELD, this);
-				pFormularfeldDlg->m_seite = ptFeldmarke.y / 1414 + 1;
-				pFormularfeldDlg->m_vertikal = ptFeldmarke.y - ((pFormularfeldDlg->m_seite-1) * 1414);
-				pFormularfeldDlg->m_horizontal = ptFeldmarke.x;
-				pFormularfeldDlg->UpdateData(FALSE);
-				//pFormularfeldDlg->ShowWindow(SW_SHOW);
+				pFormularfeldDlg->DestroyWindow();
+				delete pFormularfeldDlg;
+				pFormularfeldDlg = NULL;
 			}
+				
+			// Feldmarkierung einblenden
+			ptFeldmarke = PopUpPosition;
+			ptFeldmarke.x = ptFeldmarke.x * 1000 / (int)((double)(charheight * (VCHARS + PAGE_GAP) * 1000 / 1414)) / querformat_faktor;
+			ptFeldmarke.y = ptFeldmarke.y * 1414 / (int)((double)(VCHARS + PAGE_GAP) * charheight);
+			
+			// Formulareigenschaften anzeigen
+			pFormularfeldDlg = new CFormularfeld(this);
+			pFormularfeldDlg->m_csFormulardatei = m_csaFormulare[m_GewaehltesFormular];
+			pFormularfeldDlg->m_ausrichtung = 1;	// rechtsbündig
+			pFormularfeldDlg->m_anteil = 1;
+			pFormularfeldDlg->m_nachkommaanteil = 1;
+			pFormularfeldDlg->m_bKeineFeldUeberschreibenMeldung = FALSE;
+			pFormularfeldDlg->m_nNullwertdarstellung = 1;
+			pFormularfeldDlg->m_veraltet = 0;
+			pFormularfeldDlg->Create(IDD_FORMULARFELD, this);
+			pFormularfeldDlg->m_seite = ptFeldmarke.y / 1414 + 1;
+			pFormularfeldDlg->m_vertikal = ptFeldmarke.y - ((pFormularfeldDlg->m_seite-1) * 1414);
+			pFormularfeldDlg->m_horizontal = ptFeldmarke.x;
+			pFormularfeldDlg->UpdateData(FALSE);
+			//pFormularfeldDlg->ShowWindow(SW_SHOW);
 			break;
+
 		case POPUPFORMULAR_NEUER_ABSCHNITT:
 			{				
 				// Feldmarkierung einblenden
