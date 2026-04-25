@@ -119,68 +119,11 @@ BOOL ECT_ShowBuchungBearbeitenDialog(
 // ══════════════════════════════════════════════════════════
 // Pointer-basierte API
 // ══════════════════════════════════════════════════════════
-
-/// <summary>
-/// Ermittelt den Index einer Buchung in engine->Buchungen anhand
-/// ihres nativen CBuchung*-Pointers.
-///
-/// Vorgehen:
-/// 1. Position des Pointers in der nativen Einnahmen- oder
-///    Ausgaben-Linked-List ermitteln.
-/// 2. Die n-te Einnahme bzw. n-te Ausgabe in engine->Buchungen finden
-///    (die Listen werden beim Sync in derselben Reihenfolge befüllt).
-///
-/// Funktioniert nur direkt nach einem SyncNativeToManaged — wird
-/// daher intern von allen pointer-basierten Funktionen vorab aufgerufen.
-/// </summary>
-static int FindeManagedIndex(
-    CEasyCashDocBridge* bridge, CBuchung* pSuche)
-{
-    if (!bridge || !pSuche) return -1;
-    auto engine = GetEngine(bridge);
-
-    // Position in der nativen Liste + Art ermitteln
-    int posInListe = 0;
-    bool istEinnahme = false;
-    bool gefunden = false;
-
-    for (CBuchung* p = bridge->Einnahmen; p; p = p->next)
-    {
-        if (p == pSuche) { istEinnahme = true; gefunden = true; break; }
-        posInListe++;
-    }
-
-    if (!gefunden)
-    {
-        posInListe = 0;
-        for (CBuchung* p = bridge->Ausgaben; p; p = p->next)
-        {
-            if (p == pSuche) { istEinnahme = false; gefunden = true; break; }
-            posInListe++;
-        }
-    }
-
-    if (!gefunden) return -1;
-
-    // Die n-te Einnahme / n-te Ausgabe in engine->Buchungen finden.
-    // engine->Buchungen ist sortiert, die getrennten Linked Lists
-    // wurden aber aus den sortierten Einnahmen-/Ausgaben-Teilmengen
-    // aufgebaut (siehe ManagedListToLinkedList in BuchungConverter.cpp).
-    auto zielArt = istEinnahme
-        ? ECTEngine::Buchungsart::Einnahme
-        : ECTEngine::Buchungsart::Ausgabe;
-
-    int zaehler = 0;
-    for (int i = 0; i < engine->Buchungen->Count; i++)
-    {
-        if (engine->Buchungen[i]->Art == zielArt)
-        {
-            if (zaehler == posInListe) return i;
-            zaehler++;
-        }
-    }
-    return -1;
-}
+//
+// Lookup über die Pointer-Map in CEasyCashDocBridge. Die Map wird
+// bei jedem Sync (in beide Richtungen) befüllt und enthält die
+// Zuordnung CBuchung* → Buchung^. O(1)-Lookup, unabhängig von der
+// Reihenfolge der Listen oder Sort-Stabilität.
 
 // ──────────────────────────────────────────────
 // ECT_ShowBuchungBearbeitenDialogFuerPointer
@@ -194,16 +137,42 @@ BOOL ECT_ShowBuchungBearbeitenDialogFuerPointer(
         auto* bridge = static_cast<CEasyCashDocBridge*>(pDocBridge);
         if (!bridge || !pNative) return FALSE;
 
-        bridge->SyncNativeToManaged();
-
-        int idx = FindeManagedIndex(bridge, pNative);
-        if (idx < 0)
+        // Direkter Lookup in der Pointer-Map. Die Map ist nach dem
+        // letzten Sync aktuell — solange seitdem keine Buchungen
+        // hinzugefügt/entfernt wurden, stimmt sie.
+        ECTEngine::Buchung^ original = FindManagedFor(bridge, pNative);
+        if (original == nullptr)
         {
-            TRACE0("ECT_ShowBuchungBearbeitenDialogFuerPointer: Pointer nicht gefunden\n");
+            TRACE0("ECT_ShowBuchungBearbeitenDialogFuerPointer: "
+                   "Pointer in Map nicht gefunden — evtl. veraltet?\n");
             return FALSE;
         }
 
-        return ECT_ShowBuchungBearbeitenDialog(pDocBridge, idx, hWndOwner);
+        auto engine = GetEngine(bridge);
+
+        // WPF-Dialog mit der gefundenen Original-Buchung anzeigen
+        IntPtr hwnd = IntPtr((void*)hWndOwner);
+        ECTEngine::Buchung^ geaendert =
+            ECTViews::ViewHost::ZeigeBuchungBearbeitenDialog(
+                engine, original, hwnd);
+
+        if (geaendert == nullptr)
+            return FALSE;  // Abgebrochen
+
+        // Original im Dokument durch geänderte Version ersetzen.
+        // IndexOf nutzt Reference-Equality auf der Buchung^, also
+        // unabhängig vom Sort-Zustand.
+        int idx = engine->Buchungen->IndexOf(original);
+        if (idx < 0) return FALSE;
+        engine->Buchungen[idx] = geaendert;
+        engine->Sort();
+
+        bridge->SyncManagedToNative();
+
+        bridge->SetModifiedFlag(
+            (CString)"Buchung '" + ECTBridge::ToNative(geaendert->Beschreibung) + "' geändert");
+
+        return TRUE;
     }
     catch (Exception^ ex)
     {
@@ -227,16 +196,14 @@ BOOL ECT_ShowBuchungKopierenDialog(
         auto* bridge = static_cast<CEasyCashDocBridge*>(pDocBridge);
         if (!bridge || !pNative) return FALSE;
 
+        ECTEngine::Buchung^ originalRef = FindManagedFor(bridge, pNative);
+        if (originalRef == nullptr) return FALSE;
+
         auto engine = GetEngine(bridge);
-        bridge->SyncNativeToManaged();
 
-        int idx = FindeManagedIndex(bridge, pNative);
-        if (idx < 0) return FALSE;
+        // Vorlage klonen — die Original-Buchung bleibt unverändert
+        ECTEngine::Buchung^ vorlage = originalRef->Clone();
 
-        // Vorlage klonen (nicht die Original-Referenz verwenden!)
-        ECTEngine::Buchung^ vorlage = engine->Buchungen[idx]->Clone();
-
-        // Bei "Neue Belegnummer" auf die nächste freie Nummer setzen
         if (bNeueBelegnummer)
         {
             vorlage->Belegnummer = (vorlage->Art == ECTEngine::Buchungsart::Einnahme)
@@ -244,21 +211,17 @@ BOOL ECT_ShowBuchungKopierenDialog(
                 : engine->LaufendeBelegnrAusgaben.ToString();
         }
 
-        // Dialog im Bearbeiten-Modus öffnen, aber mit der Klon-Vorlage —
-        // das Ergebnis ist eine NEUE Buchung, nicht ein Ersatz.
         IntPtr hwnd = IntPtr((void*)hWndOwner);
         ECTEngine::Buchung^ neu =
             ECTViews::ViewHost::ZeigeBuchungBearbeitenDialog(
                 engine, vorlage, hwnd);
 
-        if (neu == nullptr)
-            return FALSE;  // Abgebrochen
+        if (neu == nullptr) return FALSE;
 
         // Als NEUE Buchung einfügen (nicht ersetzen)
         engine->Buchungen->Add(neu);
         engine->InkrementBuchungszaehler();
 
-        // Belegnummernzähler erhöhen, wenn neu vergeben
         if (bNeueBelegnummer)
         {
             if (neu->Art == ECTEngine::Buchungsart::Einnahme)
@@ -296,26 +259,24 @@ BOOL ECT_LoescheBuchungPerPointer(
         auto* bridge = static_cast<CEasyCashDocBridge*>(pDocBridge);
         if (!bridge || !pNative) return FALSE;
 
-        auto engine = GetEngine(bridge);
-        bridge->SyncNativeToManaged();
-
-        int idx = FindeManagedIndex(bridge, pNative);
-        if (idx < 0)
+        ECTEngine::Buchung^ managed = FindManagedFor(bridge, pNative);
+        if (managed == nullptr)
         {
-            TRACE0("ECT_LoescheBuchungPerPointer: Pointer nicht gefunden\n");
+            TRACE0("ECT_LoescheBuchungPerPointer: Pointer nicht in Map\n");
             return FALSE;
         }
 
-        // Beschreibung für die Modified-Meldung VOR dem Löschen merken
-        CString csBeschreibung = ECTBridge::ToNative(
-            engine->Buchungen[idx]->Beschreibung);
+        auto engine = GetEngine(bridge);
 
-        // Aus der Engine entfernen
-        engine->Buchungen->RemoveAt(idx);
+        // Beschreibung VOR dem Löschen merken
+        CString csBeschreibung = ECTBridge::ToNative(managed->Beschreibung);
 
-        // Native Linked Lists neu aufbauen. ACHTUNG: Der Aufrufer-Pointer
-        // pNative wird dadurch ungültig! Der Aufrufer darf ihn nach diesem
-        // Aufruf nicht mehr verwenden.
+        // Aus der Engine entfernen — Reference-Equality, unabhängig vom Index
+        if (!engine->Buchungen->Remove(managed))
+            return FALSE;
+
+        // Native Linked Lists neu aufbauen.
+        // ACHTUNG: pNative wird dadurch ungültig.
         bridge->SyncManagedToNative();
 
         bridge->SetModifiedFlag(

@@ -2,12 +2,13 @@
 //
 // Diese Datei wird MIT /clr kompiliert (Projektstandard).
 // KEIN Precompiled Header (weil managed #using nicht mit nativem PCH geht).
+// stdafx.h wird aber manuell inkludiert für MFC-Typen.
 //
 // Dateieigenschaften in vcxproj:
 //   PrecompiledHeader = NotUsing
 //   CompileAsManaged  = (Standard, d.h. /clr vom Projekt)
 
-#include "stdafx.h"  
+#include "stdafx.h"              // MFC-Typen — muss zuerst kommen
 #include "EasyCashDocBridge.h"
 #include "EngineHost.h"
 #include "Marshalling.h"
@@ -106,15 +107,26 @@ void CEasyCashDocBridge::SyncNativeToManaged()
 {
     auto engine = GetEngine(this);
 
-    // Listen leeren
+    // Listen leeren + Pointer-Map leeren
     engine->Buchungen->Clear();
     engine->Dauerbuchungen->Clear();
+    m_pEngineHost->ClearPointerMap();
 
-    // Einnahmen-Linked-List → managed List
-    LinkedListToManagedList(Einnahmen, Buchungsart::Einnahme, engine->Buchungen);
+    // Einnahmen-Linked-List → managed List + Pointer-Map
+    for (CBuchung* p = Einnahmen; p != NULL; p = p->next)
+    {
+        ECTEngine::Buchung^ b = NativeToManaged(p, Buchungsart::Einnahme);
+        engine->Buchungen->Add(b);
+        m_pEngineHost->RegisterPointer(p, b);
+    }
 
-    // Ausgaben-Linked-List → managed List
-    LinkedListToManagedList(Ausgaben, Buchungsart::Ausgabe, engine->Buchungen);
+    // Ausgaben-Linked-List → managed List + Pointer-Map
+    for (CBuchung* p = Ausgaben; p != NULL; p = p->next)
+    {
+        ECTEngine::Buchung^ b = NativeToManaged(p, Buchungsart::Ausgabe);
+        engine->Buchungen->Add(b);
+        m_pEngineHost->RegisterPointer(p, b);
+    }
 
     // Dauerbuchungen-Linked-List → managed List
     LinkedListToManagedList(Dauerbuchungen, engine->Dauerbuchungen);
@@ -137,10 +149,11 @@ void CEasyCashDocBridge::SyncNativeToManaged()
     engine->Erweiterungen = ErweiterungStore::AusPipeFormat(
         ToManaged(Erweiterung));
 
-    // Sortieren
+    // Sortieren — die Pointer-Map bleibt korrekt, weil sie auf
+    // Buchung^-Referenzen zeigt, nicht auf Indices.
     engine->Sort();
 
-    TRACE("SyncNativeToManaged: %d Buchungen, %d Dauerbuchungen → Engine\n",
+    TRACE("SyncNativeToManaged: %d Buchungen, %d Dauerbuchungen → Engine (Pointer-Map gefüllt)\n",
           engine->Buchungen->Count, engine->Dauerbuchungen->Count);
 }
 
@@ -152,15 +165,40 @@ void CEasyCashDocBridge::SyncManagedToNative()
 {
     auto engine = GetEngine(this);
 
-    // ── Alte Linked Lists freigeben ──
+    // ── Alte Linked Lists freigeben + Map leeren ──
     // CBuchung-Destruktor löscht rekursiv über next
     if (Einnahmen) { delete Einnahmen; Einnahmen = NULL; }
     if (Ausgaben)  { delete Ausgaben;  Ausgaben  = NULL; }
     if (Dauerbuchungen) { delete Dauerbuchungen; Dauerbuchungen = NULL; }
+    m_pEngineHost->ClearPointerMap();
 
-    // ── Managed → Native Linked Lists aufbauen ──
-    Einnahmen      = ManagedListToLinkedList(engine->Einnahmen);
-    Ausgaben       = ManagedListToLinkedList(engine->Ausgaben);
+    // ── Einnahmen aufbauen + jeden Pointer in der Map registrieren ──
+    {
+        CBuchung* pTail = NULL;
+        for each (ECTEngine::Buchung^ b in engine->Einnahmen)
+        {
+            CBuchung* pNeu = ManagedToNative(b);
+            m_pEngineHost->RegisterPointer(pNeu, b);
+
+            if (Einnahmen == NULL) { Einnahmen = pNeu; pTail = pNeu; }
+            else                   { pTail->next = pNeu; pTail = pNeu; }
+        }
+    }
+
+    // ── Ausgaben aufbauen + Map registrieren ──
+    {
+        CBuchung* pTail = NULL;
+        for each (ECTEngine::Buchung^ b in engine->Ausgaben)
+        {
+            CBuchung* pNeu = ManagedToNative(b);
+            m_pEngineHost->RegisterPointer(pNeu, b);
+
+            if (Ausgaben == NULL) { Ausgaben = pNeu; pTail = pNeu; }
+            else                  { pTail->next = pNeu; pTail = pNeu; }
+        }
+    }
+
+    // ── Dauerbuchungen ohne Map (werden nicht über Pointer-API angesprochen) ──
     Dauerbuchungen = ManagedListToLinkedList(engine->Dauerbuchungen);
 
     // ── Dokument-Felder zurückschreiben ──
@@ -179,6 +217,13 @@ void CEasyCashDocBridge::SyncManagedToNative()
     // Erweiterungen zurück ins Pipe-Format
     Erweiterung = ToNative(engine->Erweiterungen->ZuPipeFormat());
 
-    TRACE("SyncManagedToNative: %d Buchungen aus Engine → native Linked Lists\n",
+    TRACE("SyncManagedToNative: %d Buchungen aus Engine → native Linked Lists (Pointer-Map gefüllt)\n",
           engine->Buchungen->Count);
 }
+
+// ══════════════════════════════════════════════════════════
+// Hinweis: GetEngine, FindManagedFor, FindManagedIndexFor sind
+// inline freie Funktionen im Header (EasyCashDocBridge.h),
+// nicht Member-Funktionen — wegen der dllexport/__clrcall-
+// Inkompatibilität bei Methoden, die managed Typen zurückgeben.
+// ══════════════════════════════════════════════════════════
