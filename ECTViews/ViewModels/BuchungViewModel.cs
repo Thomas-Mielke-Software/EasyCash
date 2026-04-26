@@ -54,7 +54,6 @@ namespace ECTViews.ViewModels
             }
         }
         public string OkButtonText => IstBearbeitung ? "Speichern" : "Buchen";
-
         /// <summary>Das Ergebnis: die fertige Buchung (null wenn abgebrochen).</summary>
         public Buchung Ergebnis { get; private set; }
 
@@ -148,14 +147,41 @@ namespace ECTViews.ViewModels
         /// <summary>Parseter Betrag in Cent.</summary>
         private int BetragInCent
         {
-            get
+            get => ParseBetragInCent(_betragText);
+        }
+
+        /// <summary>
+        /// Parst eine Geldbetrag-Eingabe. Akzeptiert:
+        ///   - Deutsches Format: "1.234,56" (Punkt = Tausender, Komma = Dezimal)
+        ///   - Englisches Format: "1,234.56" oder "119.00" (Punkt = Dezimal)
+        ///   - Einfache Zahlen: "119" oder "119,5"
+        /// Gibt 0 zurück wenn nicht parsbar.
+        /// </summary>
+        private static int ParseBetragInCent(string text)
+        {
+            if (string.IsNullOrWhiteSpace(text)) return 0;
+            string s = text.Trim();
+
+            // Heuristik: Wenn ein Komma vorkommt, ist es deutsches Format
+            // (Komma = Dezimal). Punkte werden dann als Tausendertrenner
+            // entfernt. Wenn KEIN Komma vorkommt, ist Punkt der Dezimal-
+            // trenner (Invariant-Culture).
+            decimal d;
+            if (s.Contains(","))
             {
-                if (string.IsNullOrWhiteSpace(_betragText)) return 0;
-                string s = _betragText.Replace(".", "").Trim();
-                if (decimal.TryParse(s, NumberStyles.Number, DeDE, out var d))
-                    return (int)(d * 100m);
-                return 0;
+                // Deutsches Format: Tausenderpunkte entfernen, dann mit DeDE parsen
+                string s2 = s.Replace(".", "");
+                if (decimal.TryParse(s2, NumberStyles.Number, DeDE, out d))
+                    return (int)decimal.Round(d * 100m, 0, MidpointRounding.AwayFromZero);
             }
+            else
+            {
+                // Kein Komma: Punkt ist Dezimaltrenner (oder gar nichts)
+                if (decimal.TryParse(s, NumberStyles.Number,
+                        CultureInfo.InvariantCulture, out d))
+                    return (int)decimal.Round(d * 100m, 0, MidpointRounding.AwayFromZero);
+            }
+            return 0;
         }
 
         public string NettoText
@@ -206,9 +232,19 @@ namespace ECTViews.ViewModels
             get
             {
                 if (string.IsNullOrWhiteSpace(_mwstText)) return 0;
-                string s = _mwstText.Replace(".", "").Trim();
-                if (decimal.TryParse(s, NumberStyles.Number, DeDE, out var d))
-                    return (int)(d * 1000m);
+                string s = _mwstText.Trim();
+                decimal d;
+                if (s.Contains(","))
+                {
+                    if (decimal.TryParse(s, NumberStyles.Number, DeDE, out d))
+                        return (int)decimal.Round(d * 1000m, 0, MidpointRounding.AwayFromZero);
+                }
+                else
+                {
+                    if (decimal.TryParse(s, NumberStyles.Number,
+                            CultureInfo.InvariantCulture, out d))
+                        return (int)decimal.Round(d * 1000m, 0, MidpointRounding.AwayFromZero);
+                }
                 return 0;
             }
         }
@@ -489,8 +525,25 @@ namespace ECTViews.ViewModels
                 AfaSatz = int.TryParse(AfaSatz, out var s) ? s : 0,
             };
 
-            // Restwert aus Nettobetrag berechnen, wenn neue Buchung mit AfA
-            if (!IstBearbeitung && AfaAktiviert && Ergebnis.AfaJahre > 1)
+            // Restwert aus Nettobetrag berechnen, wenn:
+            //  - neue Buchung mit AfA, ODER
+            //  - bestehende Buchung, die gerade erst zur AfA-Buchung wird
+            //    (Restwert war 0 oder Brutto/MWSt geändert)
+            //
+            // Im Original-MFC-Dialog gab es ein editierbares Restwert-Feld
+            // (IDC_ABSCHREIBUNGRESTWERT), das nur ausgewertet wurde wenn
+            // AbschreibungNr > 1 ist. Im Erstanlage-Fall (Nr=1) wurde der
+            // Restwert IMMER aus dem Netto berechnet — siehe buchendlg.cpp:
+            //
+            //   if ((*p)->AbschreibungNr > 1) {
+            //       GetDlgItemText(IDC_ABSCHREIBUNGRESTWERT, buf, sizeof(buf));
+            //       (*p)->AbschreibungRestwert = currency_to_int(buf);
+            //   } else
+            //       (*p)->AbschreibungRestwert = (*p)->GetNetto();
+            //
+            // Das replizieren wir hier: bei AfaNr == 1 wird der Restwert
+            // immer aus dem Netto gesetzt, unabhängig vom Bearbeitungsmodus.
+            if (AfaAktiviert && Ergebnis.AfaJahre > 1 && Ergebnis.AfaNr == 1)
             {
                 Ergebnis.AfaRestwertCent =
                     (int)Ergebnis.BruttoBetrag.NettoInCent;
@@ -653,9 +706,15 @@ namespace ECTViews.ViewModels
                 return false;
             }
 
-            // Parse-Versuch wie in CBetrag::SetMWSt
-            string s = MwstText.Replace(".", "").Trim();
-            if (!decimal.TryParse(s, NumberStyles.Number, DeDE, out var wert))
+            // Parse-Versuch wie in CBetrag::SetMWSt — culture-aware
+            string s = MwstText.Trim();
+            decimal wert;
+            bool parsed = s.Contains(",")
+                ? decimal.TryParse(s, NumberStyles.Number, DeDE, out wert)
+                : decimal.TryParse(s, NumberStyles.Number,
+                        CultureInfo.InvariantCulture, out wert);
+
+            if (!parsed)
             {
                 MwstError = "MWSt-Satz ist keine gültige Zahl.";
                 return false;
