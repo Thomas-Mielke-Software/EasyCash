@@ -858,10 +858,6 @@ void BuchenDlg::InitDlg(BOOL bBelasseEinigeFelder)
 		InitRestwert();
 		GetDlgItem(IDC_ABSCHREIBUNG_GENAUIGKEIT_STATIC)->ShowWindow(SW_SHOW);
 		GetDlgItem(IDC_ABSCHREIBUNG_GENAUIGKEIT)->ShowWindow(SW_SHOW);
-		if (m_ppb && (*m_ppb)->AbschreibungNr > 1)
-			GetDlgItem(IDC_ABGANG_BUCHEN)->ShowWindow(SW_SHOW);
-		else
-			GetDlgItem(IDC_ABGANG_BUCHEN)->ShowWindow(SW_HIDE);
 
 		((CButton *)GetDlgItem(IDC_EINNAHMEN))->SetCheck(FALSE);
 		((CButton *)GetDlgItem(IDC_AUSGABEN))->SetCheck(TRUE);
@@ -1106,7 +1102,7 @@ void BuchenDlg::InitRestwert()
 {
 	char buf[1000];
 
-	GetDlgItemText(IDC_ABSCHREIBUNGNUMMER, buf, sizeof(buf)); 
+	GetDlgItemText(IDC_ABSCHREIBUNGNUMMER, buf, sizeof(buf));
 	int n = atoi(buf);
 	if (n > 1)
 	{
@@ -1118,6 +1114,12 @@ void BuchenDlg::InitRestwert()
 		GetDlgItem(IDC_ABSCHREIBUNGRESTWERT_STATIC)->ShowWindow(SW_HIDE);
 		GetDlgItem(IDC_ABSCHREIBUNGRESTWERT)->ShowWindow(SW_HIDE);
 	}
+	GetDlgItemText(IDC_ABSCHREIBUNGRESTWERT, buf, sizeof(buf));
+	int nAbschreibungRestwert = atoi(buf);
+	if (m_ppb && nAbschreibungRestwert)
+		GetDlgItem(IDC_ABGANG_BUCHEN)->ShowWindow(SW_SHOW);
+	else
+		GetDlgItem(IDC_ABGANG_BUCHEN)->ShowWindow(SW_HIDE);
 }
 
 void BuchenDlg::OnSelchangeBeschreibung() 
@@ -1312,7 +1314,7 @@ void BuchenDlg::OnTimer(UINT nIDEvent)
 
 		KillTimer(nIDEvent);
 	}
-	else if (nIDEvent == 102)
+	else if (nIDEvent == 102)	// alles was den Restwert beeinflusst triggert dessen Neuberechnung
 	{
 		char buf[1000];
 
@@ -1335,10 +1337,9 @@ void BuchenDlg::OnTimer(UINT nIDEvent)
 
 		InitRestwert();
 
-		// Restwert neu ermitteln, wenn noch im ersten AfA-Jahr
+		// Restwert neu ermitteln
 		GetDlgItemText(IDC_ABSCHREIBUNGNUMMER , buf, sizeof(buf));
 		n = atoi(buf);
-		if (n == 1)
 		{
 			CBuchung b;
 			// Betrag
@@ -1357,33 +1358,122 @@ void BuchenDlg::OnTimer(UINT nIDEvent)
 			// AbschreibungJahre
 			GetDlgItemText(IDC_ABSCHREIBUNGJAHRE, buf, sizeof(buf));
 			b.AbschreibungJahre = atoi(buf);
-			// AbschreibungRestwert 
+			// AbschreibungRestwert
 			GetDlgItemText(IDC_ABSCHREIBUNGRESTWERT, buf, sizeof(buf));
 			b.AbschreibungRestwert = b.GetNetto();
+			GetDlgItemText(IDC_ABSCHREIBUNGSATZ, buf, sizeof(buf));
+			b.AbschreibungSatz = atoi(buf);
 			// AbschreibungGenauigkeit
 			b.AbschreibungGenauigkeit = ((CComboBox*)GetDlgItem(IDC_ABSCHREIBUNG_GENAUIGKEIT))->GetCurSel();
+			b.AbschreibungDegressiv = ((CButton*)GetDlgItem(IDC_ABSCHREIBUNGDEGRESSIV))->GetCheck();
 
 			GetDlgItemText(IDC_ABSCHREIBUNGNUMMER, buf, sizeof(buf));
 			n = atoi(buf);
 
-			// das hier kann ich nicht mehr machen, nachdem degressive Abschreibungen die Sache kompliziert haben:
-			//int i;
-			//for (i = 1; i < n; i++)	// bereits abgeschriebene Jahre durchlaufen
-			//{
-			//	b.AbschreibungNr = i;
-			//	b.AbschreibungRestwert -= b.GetBuchungsjahrNetto(m_pDoc);
-			//}
+			// das hier kann ich nur noch bedingt machen, nachdem degressive Abschreibungen die Sache kompliziert haben:
+			int i;
+			for (i = 1; i < n; i++)	// bereits abgeschriebene Jahre durchlaufen
+			{
+				b.AbschreibungNr = i;
+				b.AbschreibungRestwert -= b.GetBuchungsjahrNetto(m_pDoc);
+			}
 
 			if (b.AbschreibungRestwert < 0)
 				b.AbschreibungRestwert = 0;
 			int_to_currency(b.AbschreibungRestwert, 4, buf);
 			SetDlgItemText(IDC_ABSCHREIBUNGRESTWERT, buf);
+			if (n > 1 && !b.AbschreibungDegressiv)
+				AfxMessageBox((CString)"Hinweis: Der angezeigte Restwert von " + (LPCTSTR)buf + " wurde unter der Annahme rekonstruiert, dass das Anlagegut von Anfang an linear abgeschrieben wurde. Wenn es anfangs jedoch degressiv abgeschreiben wurde, ist der Restwert wahrscheinlich real niedriger und muss hier manuell neu berechnet werden.");
+
 		}
 
 		KillTimer(nIDEvent);
 	}
+	else if (nIDEvent == 103)	// Verzögerte Ausführung in der Folge von OnBnClickedAbschreibungdegressiv()
+	{
+		KillTimer(nIDEvent);
+
+		char buf[1000];
+		GetDlgItemText(IDC_ABSCHREIBUNGNUMMER, buf, sizeof(buf));
+		int nAbschreibungsnummer = atoi(buf);
+		BOOL bAbschreibungDegressiv = ((CButton*)GetDlgItem(IDC_ABSCHREIBUNGDEGRESSIV))->GetCheck();
+		if (nAbschreibungsnummer > 1)
+		{
+			if (m_ppb)
+			{
+				if (!bAbschreibungDegressiv)
+				{
+					if (AfxMessageBox("EC&T stellt den Abschreibungsmodus in der Jahreswechsel-Funktion zum optimalen Zeitpunkt automatisch von degressiv auf linear um. Es ist nicht nötig dies manuell zu tun. Wirklich auf lineare AfA ändern?", MB_OKCANCEL) == IDCANCEL)
+					{
+						((CButton*)GetDlgItem(IDC_ABSCHREIBUNGDEGRESSIV))->SetCheck(TRUE);
+						return;
+					}
+					if (AfxMessageBox("Wenn der degressive Abschreibungsmodus ungewollt gesetzt war, kann EC&T den Restwert unter der Annahme neu berechnen, dass das Anlagegut von Anfang an linear abgeschrieben wurde. Restwert neu berechnen?", MB_YESNO) == IDNO)
+						return;
+				}
+				else
+				{
+					GetDlgItemText(IDC_ABSCHREIBUNGJAHRE, buf, sizeof(buf));
+					int nAbschreibungJahre = atoi(buf);
+					GetDlgItemText(IDC_ABSCHREIBUNGSATZ, buf, sizeof(buf));
+					int nAbschreibungSatz = atoi(buf);
+					if (nAbschreibungSatz <= 0 && nAbschreibungJahre < 99)
+					{
+						AfxMessageBox("Bitte prüfen, ob wirklich beabsichtigt ist, dass der Abschreibungssatz 0 ist. Das ist nur sinnvoll, wenn das Anlagengut nicht abgeschrieben wird, wie z.B. bei Grundstücken. In dem Fall bitte eine Abschreibungsdauer von 99 Jahren angeben.");
+						GetDlgItem(IDC_ABSCHREIBUNGSATZ)->SetFocus();
+					}
+				}
+			}
+		}
+		SetTimer(102, 1, NULL);
+	}
 
 	CDialog::OnTimer(nIDEvent);
+}
+
+void BuchenDlg::OnSelchangeAbschreibungjahre()
+{
+	SetTimer(102, 1, NULL);
+}
+
+void BuchenDlg::OnCbnEditchangeAbschreibungjahre()
+{
+	SetTimer(102, 2000, NULL);
+}
+
+void BuchenDlg::OnCbnSelchangeAbschreibungnummer()
+{
+	SetTimer(102, 1, NULL);
+}
+
+void BuchenDlg::OnCbnEditchangeAbschreibungnummer()
+{
+	SetTimer(102, 2000, NULL);
+}
+
+void BuchenDlg::OnCbnSelchangeMwst()
+{
+	SetTimer(102, 1, NULL);
+}
+
+void BuchenDlg::OnCbnEditchangeMwst()
+{
+	SetTimer(102, 2000, NULL);
+}
+
+void BuchenDlg::OnCbnSelchangeAbschreibungsatz()
+{
+	SetTimer(102, 1, NULL);
+}
+
+void BuchenDlg::OnCbnEditchangeAbschreibungsatz()
+{
+	SetTimer(102, 2000, NULL);
+}
+
+void BuchenDlg::OnBnClickedAbschreibungdegressiv()
+{
+	SetTimer(103, 1, NULL);
 }
 
 void BuchenDlg::OnEditchangeBeschreibung() 
@@ -1550,36 +1640,6 @@ void BuchenDlg::UpdateCombo(CString ea)
 	}
 }
 
-void BuchenDlg::OnSelchangeAbschreibungjahre() 
-{
-	SetTimer(102, 1, NULL);
-}
-
-void BuchenDlg::OnCbnEditchangeAbschreibungjahre()
-{	
-	SetTimer(102, 1, NULL);
-}
-
-void BuchenDlg::OnCbnSelchangeAbschreibungnummer()
-{
-	SetTimer(102, 1, NULL);
-}
-
-void BuchenDlg::OnCbnEditchangeAbschreibungnummer()
-{
-	SetTimer(102, 1, NULL);
-}
-
-void BuchenDlg::OnCbnSelchangeMwst()
-{
-	SetTimer(102, 1, NULL);
-}
-
-void BuchenDlg::OnCbnEditchangeMwst()
-{		
-	SetTimer(102, 1, NULL);
-}
-
 void BuchenDlg::OnDestroy() 
 {
 	CDialog::OnDestroy();
@@ -1644,7 +1704,7 @@ void BuchenDlg::OnChangeBetrag()
 	char buffer[50];
 	int m, n;
 
-	SetTimer(102, 1, NULL);
+	SetTimer(102, 2000, NULL);
 
 	GetDlgItemText(IDC_BETRAG, buffer, sizeof(buffer));
 //	GetDlgItem(IDC_KONVERTIEREN)->EnableWindow(TRUE);
@@ -2023,21 +2083,6 @@ void BuchenDlg::OnBnClickedAbgangBuchen()
 		}
 	m_pParent->RedrawWindow();
 	m_pDoc->UpdateAllViews(NULL);
-}
-
-void BuchenDlg::OnCbnSelchangeAbschreibungsatz()
-{
-
-}
-
-void BuchenDlg::OnCbnEditchangeAbschreibungsatz()
-{
-
-}
-
-void BuchenDlg::OnBnClickedAbschreibungdegressiv()
-{
-
 }
 
 void BuchenDlg::OnCbnKillfocusAbschreibungsatz()
