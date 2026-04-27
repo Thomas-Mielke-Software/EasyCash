@@ -54,6 +54,7 @@ namespace ECTViews.ViewModels
             }
         }
         public string OkButtonText => IstBearbeitung ? "Speichern" : "Buchen";
+
         /// <summary>Das Ergebnis: die fertige Buchung (null wenn abgebrochen).</summary>
         public Buchung Ergebnis { get; private set; }
 
@@ -409,7 +410,7 @@ namespace ECTViews.ViewModels
                 if (SetProperty(ref _afaDegressiv, value))
                 {
                     PruefeDegressivWechsel();
-                    BerechneRestwertHeuristisch();
+                    BerechneRestwertHeuristisch(bewahreVorhandenenHinweis: true);
                     ValidiereFeldFallsAktiv(ValidiereAfa);
                 }
             }
@@ -587,7 +588,13 @@ namespace ECTViews.ViewModels
         ///     degressiver AfA wird ein Hinweis angezeigt.
         ///   - Restwert wird bei 0 abgeschnitten (nie negativ).
         /// </summary>
-        private void BerechneRestwertHeuristisch()
+        /// <param name="bewahreVorhandenenHinweis">
+        /// Wenn true, wird ein bereits gesetzter AfaHinweis (z.B. von
+        /// PruefeDegressivWechsel) erhalten und ggf. mit dem Restwert-
+        /// Hinweis kombiniert. Wenn false, wird der Hinweis vor der
+        /// Neuberechnung geleert.
+        /// </param>
+        private void BerechneRestwertHeuristisch(bool bewahreVorhandenenHinweis = false)
         {
             if (_restwertBerechnungLaeuft) return;
             if (!AfaAktiviert) { AfaHinweis = ""; return; }
@@ -595,6 +602,12 @@ namespace ECTViews.ViewModels
             try
             {
                 _restwertBerechnungLaeuft = true;
+
+                // Bei Aufrufen, die NICHT vom Degressiv-Setter kommen,
+                // wird der bestehende Hinweis verworfen — sonst bliebe
+                // ein veralteter Degressiv-Hinweis stehen.
+                if (!bewahreVorhandenenHinweis)
+                    AfaHinweis = "";
 
                 // Eingabedaten parsen (defensive defaults)
                 int jahre = int.TryParse(_afaJahre, out var j) && j > 0 ? j : 1;
@@ -643,9 +656,15 @@ namespace ECTViews.ViewModels
                 // Hinweistext bei Rekonstruktion (nur wenn nr > 1, da bei
                 // nr == 1 der Wert direkt aus Netto kommt und keine
                 // Annahme nötig ist).
+                //
+                // Falls PruefeDegressivWechsel() bereits einen Hinweis
+                // gesetzt hat, wird der hier nicht überschrieben — beide
+                // Hinweise werden kombiniert. So bleibt der Eingabefluss
+                // ungestört (anders als im Original mit MessageBoxen).
+                string restwertHinweis = "";
                 if (nr > 1 && !AfaDegressiv)
                 {
-                    AfaHinweis = $"Hinweis: Der Restwert von " +
+                    restwertHinweis = $"Hinweis: Der Restwert von " +
                         $"{(AfaRestwertCent / 100m).ToString("N2", DeDE)} " +
                         $"wurde unter der Annahme rekonstruiert, dass das " +
                         $"Anlagegut von Anfang an linear abgeschrieben wurde. " +
@@ -653,10 +672,14 @@ namespace ECTViews.ViewModels
                         $"wahrscheinlich niedriger und muss manuell angepasst " +
                         $"werden.";
                 }
-                else
-                {
-                    AfaHinweis = "";
-                }
+
+                // Existierenden Hinweis (z.B. aus PruefeDegressivWechsel)
+                // mit dem Restwert-Hinweis kombinieren.
+                if (string.IsNullOrEmpty(AfaHinweis))
+                    AfaHinweis = restwertHinweis;
+                else if (!string.IsNullOrEmpty(restwertHinweis))
+                    AfaHinweis = AfaHinweis + "\n\n" + restwertHinweis;
+                // Sonst: AfaHinweis bleibt unverändert (nur Degressiv-Hinweis)
             }
             finally
             {
