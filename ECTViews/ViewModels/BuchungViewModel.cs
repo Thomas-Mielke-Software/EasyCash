@@ -110,7 +110,10 @@ namespace ECTViews.ViewModels
             set
             {
                 if (SetProperty(ref _datumMonat, Math.Max(1, Math.Min(12, value))))
+                {
+                    BerechneRestwertHeuristisch();
                     ValidiereFeldFallsAktiv(ValidiereDatum);
+                }
             }
         }
 
@@ -139,6 +142,7 @@ namespace ECTViews.ViewModels
                 {
                     OnPropertyChanged(nameof(NettoText));
                     OnPropertyChanged(nameof(MwstBetragText));
+                    BerechneRestwertHeuristisch();
                     ValidiereFeldFallsAktiv(ValidiereBetrag);
                 }
             }
@@ -222,6 +226,7 @@ namespace ECTViews.ViewModels
                 {
                     OnPropertyChanged(nameof(NettoText));
                     OnPropertyChanged(nameof(MwstBetragText));
+                    BerechneRestwertHeuristisch();
                     ValidiereFeldFallsAktiv(ValidiereMwst);
                 }
             }
@@ -260,6 +265,7 @@ namespace ECTViews.ViewModels
                     if (!value) MwstText = "0";
                     OnPropertyChanged(nameof(NettoText));
                     OnPropertyChanged(nameof(MwstBetragText));
+                    BerechneRestwertHeuristisch();
                     ValidiereFeldFallsAktiv(ValidiereMwst);
                 }
             }
@@ -319,7 +325,20 @@ namespace ECTViews.ViewModels
             set
             {
                 if (SetProperty(ref _afaAktiviert, value))
+                {
+                    if (value)
+                    {
+                        // Beim Einschalten der AfA-Checkbox: passendes Konto
+                        // vorschlagen falls noch keins gewählt + Restwert berechnen
+                        WaehleAfaKontoFallsLeer();
+                        BerechneRestwertHeuristisch();
+                    }
+                    else
+                    {
+                        AfaHinweis = "";
+                    }
                     ValidiereFeldFallsAktiv(ValidiereAfa);
+                }
             }
         }
 
@@ -334,7 +353,10 @@ namespace ECTViews.ViewModels
             set
             {
                 if (SetProperty(ref _afaJahre, value ?? "1"))
+                {
+                    BerechneRestwertHeuristisch();
                     ValidiereFeldFallsAktiv(ValidiereAfa);
+                }
             }
         }
 
@@ -345,7 +367,10 @@ namespace ECTViews.ViewModels
             set
             {
                 if (SetProperty(ref _afaNr, value ?? "1"))
+                {
+                    BerechneRestwertHeuristisch();
                     ValidiereFeldFallsAktiv(ValidiereAfa);
+                }
             }
         }
 
@@ -363,6 +388,18 @@ namespace ECTViews.ViewModels
         public string AfaRestwertText =>
             (AfaRestwertCent / 100m).ToString("N2", DeDE);
 
+        /// <summary>
+        /// Hinweistext zur AfA-Heuristik (z.B. zur Restwert-Rekonstruktion
+        /// oder zum degressiv-linear-Wechsel). Wird in der View in einer
+        /// anderen Farbe als die Validierungsfehler angezeigt.
+        /// </summary>
+        private string _afaHinweis = "";
+        public string AfaHinweis
+        {
+            get => _afaHinweis;
+            private set => SetProperty(ref _afaHinweis, value);
+        }
+
         private bool _afaDegressiv;
         public bool AfaDegressiv
         {
@@ -370,7 +407,11 @@ namespace ECTViews.ViewModels
             set
             {
                 if (SetProperty(ref _afaDegressiv, value))
+                {
+                    PruefeDegressivWechsel();
+                    BerechneRestwertHeuristisch();
                     ValidiereFeldFallsAktiv(ValidiereAfa);
+                }
             }
         }
 
@@ -381,7 +422,10 @@ namespace ECTViews.ViewModels
             set
             {
                 if (SetProperty(ref _afaSatz, value ?? "0"))
+                {
+                    BerechneRestwertHeuristisch();
                     ValidiereFeldFallsAktiv(ValidiereAfa);
+                }
             }
         }
 
@@ -486,6 +530,180 @@ namespace ECTViews.ViewModels
         }
 
         // ══════════════════════════════════════════════
+        // AfA-Heuristik (live-getriggert in den Settern)
+        // Reimplementiert die OnTimer(102)-Logik aus buchendlg.cpp.
+        // Statt SetTimer/KillTimer-Verzögerung wird direkt bei jeder
+        // Property-Änderung neu berechnet.
+        // ══════════════════════════════════════════════
+
+        /// <summary>
+        /// Verhindert rekursive Berechnungen, wenn die Heuristik selbst
+        /// eine Property setzt (z.B. AfaRestwertCent), die ihrerseits
+        /// einen PropertyChanged-Trigger auslösen würde.
+        /// </summary>
+        private bool _restwertBerechnungLaeuft;
+
+        /// <summary>
+        /// Sucht in der Konten-Liste nach einem AfA-üblichen Konto und
+        /// wählt es aus, falls noch keins gewählt ist und AfaJahre > 1.
+        /// 1:1-Port der Logik aus buchendlg.cpp::OnTimer(102).
+        /// </summary>
+        private void WaehleAfaKontoFallsLeer()
+        {
+            if (!string.IsNullOrEmpty(SelectedKonto)) return;
+
+            int.TryParse(_afaJahre, out int jahre);
+            if (jahre <= 1) return;
+
+            // Prioritätsliste wie im Original (substring match, case-sensitive)
+            string[] kandidaten = {
+                "Abschreibungen",
+                "AfA",
+                "AfA auf bewegliche Wirtschaftsgüter",
+                "Abschreibung auf das Anlagevermögen (Afa, GWG)"
+            };
+
+            foreach (var kandidat in kandidaten)
+            {
+                var treffer = Konten.FirstOrDefault(k =>
+                    !string.IsNullOrEmpty(k) && k.IndexOf(kandidat,
+                        StringComparison.Ordinal) >= 0);
+                if (treffer != null)
+                {
+                    SelectedKonto = treffer;
+                    return;
+                }
+            }
+        }
+
+        /// <summary>
+        /// Berechnet den Restwert heuristisch wie buchendlg.cpp::OnTimer(102).
+        ///
+        /// Der Algorithmus:
+        ///   - Bei AfaNr == 1: Restwert = Netto (ganzer Anschaffungspreis)
+        ///   - Bei AfaNr > 1: für die schon abgelaufenen Jahre wird der
+        ///     jeweilige Jahresanteil simuliert subtrahiert. Das Ergebnis
+        ///     ist eine Schätzung unter der Annahme linearer AfA — bei
+        ///     degressiver AfA wird ein Hinweis angezeigt.
+        ///   - Restwert wird bei 0 abgeschnitten (nie negativ).
+        /// </summary>
+        private void BerechneRestwertHeuristisch()
+        {
+            if (_restwertBerechnungLaeuft) return;
+            if (!AfaAktiviert) { AfaHinweis = ""; return; }
+
+            try
+            {
+                _restwertBerechnungLaeuft = true;
+
+                // Eingabedaten parsen (defensive defaults)
+                int jahre = int.TryParse(_afaJahre, out var j) && j > 0 ? j : 1;
+                int nr    = int.TryParse(_afaNr, out var n) && n > 0 ? n : 1;
+                int satz  = int.TryParse(_afaSatz, out var s) && s > 0 ? s : 0;
+
+                int monat = (DatumMonat >= 1 && DatumMonat <= 12) ? DatumMonat : 1;
+
+                if (jahre <= 1)
+                {
+                    // Keine echte AfA — Restwert = 0, kein Hinweis
+                    AfaRestwertCent = 0;
+                    AfaHinweis = "";
+                    return;
+                }
+
+                // Simulationsbuchung anlegen, die den Original-Algorithmus
+                // schrittweise durchläuft.
+                var simulation = new Buchung
+                {
+                    BruttoBetrag = Betrag.AusCent(BetragInCent, MwstPromille),
+                    Datum = new DateTime(2000, monat, 1),
+                    AfaJahre = jahre,
+                    AfaNr = 1,
+                    AfaDegressiv = AfaDegressiv,
+                    AfaSatz = satz,
+                    AfaGenauigkeit = AfaGenauigkeit.EntsprechendEinstellungen,
+                    AfaRestwertCent = (int)Betrag.AusCent(
+                        BetragInCent, MwstPromille).NettoInCent
+                };
+
+                // Jahre vor der aktuellen AfaNr "durchlaufen" und vom
+                // Restwert abziehen.
+                for (int i = 1; i < nr; i++)
+                {
+                    simulation.AfaNr = i;
+                    long jahresAfa = AfaCalculator.GetBuchungsjahrNetto(simulation);
+                    simulation.AfaRestwertCent -= (int)jahresAfa;
+                }
+
+                if (simulation.AfaRestwertCent < 0)
+                    simulation.AfaRestwertCent = 0;
+
+                AfaRestwertCent = simulation.AfaRestwertCent;
+
+                // Hinweistext bei Rekonstruktion (nur wenn nr > 1, da bei
+                // nr == 1 der Wert direkt aus Netto kommt und keine
+                // Annahme nötig ist).
+                if (nr > 1 && !AfaDegressiv)
+                {
+                    AfaHinweis = $"Hinweis: Der Restwert von " +
+                        $"{(AfaRestwertCent / 100m).ToString("N2", DeDE)} " +
+                        $"wurde unter der Annahme rekonstruiert, dass das " +
+                        $"Anlagegut von Anfang an linear abgeschrieben wurde. " +
+                        $"Bei früher degressiver AfA ist der reale Restwert " +
+                        $"wahrscheinlich niedriger und muss manuell angepasst " +
+                        $"werden.";
+                }
+                else
+                {
+                    AfaHinweis = "";
+                }
+            }
+            finally
+            {
+                _restwertBerechnungLaeuft = false;
+            }
+        }
+
+        /// <summary>
+        /// Reimplementiert die OnTimer(103)-Logik aus buchendlg.cpp:
+        /// wird beim Umschalten der Degressiv-Checkbox aufgerufen, um
+        /// Hinweise zu unsinnigen Konfigurationen anzuzeigen.
+        ///
+        /// Im Original wurden hier MessageBoxen mit OK/Abbrechen-Logik
+        /// genutzt. Hier wird das durch einen passiven Hinweistext
+        /// ersetzt — das stört den Eingabefluss nicht.
+        /// </summary>
+        private void PruefeDegressivWechsel()
+        {
+            int.TryParse(_afaNr, out int nr);
+            int.TryParse(_afaJahre, out int jahre);
+            int.TryParse(_afaSatz, out int satz);
+
+            // Nur relevant wenn dies eine Folgejahres-Buchung einer
+            // bestehenden Buchung ist (nr > 1 + IstBearbeitung)
+            if (nr > 1 && IstBearbeitung)
+            {
+                if (!AfaDegressiv)
+                {
+                    AfaHinweis = "Hinweis: EC&T stellt den Abschreibungsmodus " +
+                        "in der Jahreswechsel-Funktion zum optimalen Zeitpunkt " +
+                        "automatisch von degressiv auf linear um — eine manuelle " +
+                        "Umstellung ist meist nicht nötig.";
+                    return;
+                }
+                else if (satz <= 0 && jahre < 99)
+                {
+                    AfaHinweis = "Hinweis: Bei degressiver AfA ist ein " +
+                        "Abschreibungssatz von 0 ungewöhnlich. Sinnvoll nur " +
+                        "bei nicht-abnutzbaren Anlagegütern (z.B. Grundstücke); " +
+                        "in dem Fall bitte 99 Jahre Abschreibungsdauer eintragen.";
+                    return;
+                }
+            }
+            // Sonst: Hinweis bleibt leer (oder wird von BerechneRestwertHeuristisch gesetzt)
+        }
+
+        // ══════════════════════════════════════════════
         // Command-Implementierungen
         // ══════════════════════════════════════════════
 
@@ -517,37 +735,15 @@ namespace ECTViews.ViewModels
                 Bestandskonto = Bestandskonto,
                 Betrieb = SelectedBetrieb,
 
-                // AfA
+                // AfA — AfaRestwertCent kommt aus dem ViewModel-Wert, der
+                // durch BerechneRestwertHeuristisch() live aktuell gehalten
+                // wird. Bei deaktivierter AfA wird er auf 0 gesetzt.
                 AfaJahre = AfaAktiviert && int.TryParse(AfaJahre, out var j) ? j : 1,
                 AfaNr = int.TryParse(AfaNr, out var n) ? n : 1,
                 AfaRestwertCent = AfaAktiviert ? AfaRestwertCent : 0,
                 AfaDegressiv = AfaDegressiv,
                 AfaSatz = int.TryParse(AfaSatz, out var s) ? s : 0,
             };
-
-            // Restwert aus Nettobetrag berechnen, wenn:
-            //  - neue Buchung mit AfA, ODER
-            //  - bestehende Buchung, die gerade erst zur AfA-Buchung wird
-            //    (Restwert war 0 oder Brutto/MWSt geändert)
-            //
-            // Im Original-MFC-Dialog gab es ein editierbares Restwert-Feld
-            // (IDC_ABSCHREIBUNGRESTWERT), das nur ausgewertet wurde wenn
-            // AbschreibungNr > 1 ist. Im Erstanlage-Fall (Nr=1) wurde der
-            // Restwert IMMER aus dem Netto berechnet — siehe buchendlg.cpp:
-            //
-            //   if ((*p)->AbschreibungNr > 1) {
-            //       GetDlgItemText(IDC_ABSCHREIBUNGRESTWERT, buf, sizeof(buf));
-            //       (*p)->AbschreibungRestwert = currency_to_int(buf);
-            //   } else
-            //       (*p)->AbschreibungRestwert = (*p)->GetNetto();
-            //
-            // Das replizieren wir hier: bei AfaNr == 1 wird der Restwert
-            // immer aus dem Netto gesetzt, unabhängig vom Bearbeitungsmodus.
-            if (AfaAktiviert && Ergebnis.AfaJahre > 1 && Ergebnis.AfaNr == 1)
-            {
-                Ergebnis.AfaRestwertCent =
-                    (int)Ergebnis.BruttoBetrag.NettoInCent;
-            }
 
             Bestaetigt = true;
             RequestClose?.Invoke();
