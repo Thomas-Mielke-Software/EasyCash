@@ -12,6 +12,10 @@
     <Copyright>Copyleft (GPLv3) 2024 Thomas Mielke</Copyright>
   </PropertyGroup>
 
+  <ItemGroup>
+    <Compile Remove="Views\ScrollIntoViewForListBox.cs" />
+  </ItemGroup>
+
   <!-- Sprite-Bitmaps für Betrieb/Bestandskonto-Icons als WPF-Ressourcen.
        Werden zur Laufzeit über pack://-URI geladen. Die Dateien müssen
        im Projektverzeichnis unter Resources/ liegen — am einfachsten

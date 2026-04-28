@@ -1,6 +1,7 @@
 <Window x:Class="ECTViews.Views.BuchungView"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:local="clr-namespace:ECTViews.Views"
         Title="{Binding BuchungsartText, StringFormat='Buchung ({0})'}"
         MinWidth="480" MinHeight="640"
         Width="800"
@@ -239,11 +240,11 @@
                       Visibility="{Binding BestandskontenAnzeigen,
                                    Converter={StaticResource BoolToVis}}">
                 <StackPanel>
-                    <ListBox ItemsSource="{Binding Bestandskonten}"
-                             SelectedItem="{Binding SelectedBestandskonto}"
-                             ItemTemplate="{StaticResource IconItemTemplate}"
-                             Height="160"
-                             ScrollViewer.VerticalScrollBarVisibility="Auto"/>
+                    <local:ListBoxScroll ItemsSource="{Binding Bestandskonten}"
+                                   SelectedItem="{Binding SelectedBestandskonto}"
+                                   ItemTemplate="{StaticResource IconItemTemplate}"
+                                   Height="160"
+                                   ScrollViewer.VerticalScrollBarVisibility="Auto"/>
                     <TextBlock Style="{StaticResource ErrorStyle}"
                                Text="{Binding BestandskontoError}"/>
                 </StackPanel>
