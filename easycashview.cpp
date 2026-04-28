@@ -759,6 +759,7 @@ void CEasyCashView::UpdateBetriebe()
 		GetPrivateProfileString("Betriebe", csKey.GetBuffer(0), "0", buffer, sizeof(buffer), inifile);
 		m_csaBetriebeIcons.Add(buffer);
 	}
+	SetzeListenFuerBuchungsdialog();
 }
 
 void CEasyCashView::UpdateBestandskonten()
@@ -785,6 +786,7 @@ void CEasyCashView::UpdateBestandskonten()
 		GetPrivateProfileString("Bestandskonten", csKey.GetBuffer(0), "0", buffer, sizeof(buffer), inifile);
 		m_csaBestandskontenIcons.Add(buffer);
 	}
+	SetzeListenFuerBuchungsdialog();
 }
 
 // callback für sortierte Gruppen (Bestandskonten) in der Navigations-Seitenleiste
@@ -797,6 +799,38 @@ int CALLBACK GroupCompare(int Arg1, int Arg2, void *Arg3)
 		return 1;
 }
 
+void CEasyCashView::SetzeListenFuerBuchungsdialog()
+{
+	// Pointer-Arrays aufbauen (LPCSTR* für Bridge-Aufruf)
+	auto BuildArr = [](const CStringArray& src,
+		std::vector<CStringA>& utf8Storage,
+		std::vector<LPCSTR>& ptrs)
+		{
+			utf8Storage.clear();
+			ptrs.clear();
+			for (int i = 0; i < src.GetSize(); i++)
+			{
+				utf8Storage.emplace_back(src[i]);  // CString ? CStringA
+				ptrs.push_back(utf8Storage.back());
+			}
+		};
+
+	std::vector<CStringA> bn, bi, kn, ki;
+	std::vector<LPCSTR>   bnp, bip, knp, kip;
+	BuildArr(m_csaBetriebeNamen, bn, bnp);
+	BuildArr(m_csaBetriebeIcons, bi, bip);
+	BuildArr(m_csaBestandskontenNamen, kn, knp);
+	BuildArr(m_csaBestandskontenIcons, ki, kip);
+
+	ECT_SetzeBetriebeUndBestandskonten(
+		bnp.empty() ? nullptr : bnp.data(),
+		bip.empty() ? nullptr : bip.data(),
+		(int)bnp.size(),
+		knp.empty() ? nullptr : knp.data(),
+		kip.empty() ? nullptr : kip.data(),
+		(int)knp.size());
+}
+
 void CEasyCashView::OnUpdate(CView* pSender, LPARAM lHint, CObject* pHint) 
 {
 	CEasyCashDoc* pDoc = GetDocument();
@@ -805,6 +839,7 @@ void CEasyCashView::OnUpdate(CView* pSender, LPARAM lHint, CObject* pHint)
 
 	if (m_GewaehltesFormular >= 0)
 		BerechneFormularfeldwerte();
+
 
 	// Hook Erweiterungs-DLLs
 	CIterateExtensionDLLs("ECTE_UpdateDocument", (void *)GetDocument());

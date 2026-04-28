@@ -12,6 +12,15 @@
     <Copyright>Copyleft (GPLv3) 2024 Thomas Mielke</Copyright>
   </PropertyGroup>
 
+  <!-- Sprite-Bitmaps für Betrieb/Bestandskonto-Icons als WPF-Ressourcen.
+       Werden zur Laufzeit über pack://-URI geladen. Die Dateien müssen
+       im Projektverzeichnis unter Resources/ liegen — am einfachsten
+       per Kopie aus dem alten EasyCash-Hauptprojekt. -->
+  <ItemGroup>
+    <EmbeddedResource Include="Resources\icons.bmp" Condition="Exists('Resources\icons.bmp')" />
+    <EmbeddedResource Include="Resources\icons_bestandskonten.bmp" Condition="Exists('Resources\icons_bestandskonten.bmp')" />
+  </ItemGroup>
+
   <ItemGroup>
     <ProjectReference Include="..\ECTEngine\ECTEngine.csproj" />
   </ItemGroup>

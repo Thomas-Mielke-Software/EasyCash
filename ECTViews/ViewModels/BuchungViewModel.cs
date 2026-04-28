@@ -53,6 +53,13 @@ namespace ECTViews.ViewModels
                     OnPropertyChanged(nameof(OkButtonText));  // abhängige Property benachrichtigen
             }
         }
+
+        /// <summary>
+        /// Beschriftung des OK-Buttons. Wechselt zwischen "Buchen" (neue
+        /// Buchung) und "Speichern" (Bearbeitung). Über an IstBearbeitung
+        /// gebunden — dort feuert der Setter OnPropertyChanged für diese
+        /// Property mit.
+        /// </summary>
         public string OkButtonText => IstBearbeitung ? "Speichern" : "Buchen";
 
         /// <summary>Das Ergebnis: die fertige Buchung (null wenn abgebrochen).</summary>
@@ -332,7 +339,8 @@ namespace ECTViews.ViewModels
                         // Beim Einschalten der AfA-Checkbox: passendes Konto
                         // vorschlagen falls noch keins gewählt + Restwert berechnen
                         WaehleAfaKontoFallsLeer();
-                        BerechneRestwertHeuristisch();
+                        PruefeDegressivWechsel();
+                        BerechneRestwertHeuristisch(bewahreVorhandenenHinweis: true);
                     }
                     else
                     {
@@ -355,7 +363,8 @@ namespace ECTViews.ViewModels
             {
                 if (SetProperty(ref _afaJahre, value ?? "1"))
                 {
-                    BerechneRestwertHeuristisch();
+                    PruefeDegressivWechsel();
+                    BerechneRestwertHeuristisch(bewahreVorhandenenHinweis: true);
                     ValidiereFeldFallsAktiv(ValidiereAfa);
                 }
             }
@@ -369,7 +378,8 @@ namespace ECTViews.ViewModels
             {
                 if (SetProperty(ref _afaNr, value ?? "1"))
                 {
-                    BerechneRestwertHeuristisch();
+                    PruefeDegressivWechsel();
+                    BerechneRestwertHeuristisch(bewahreVorhandenenHinweis: true);
                     ValidiereFeldFallsAktiv(ValidiereAfa);
                 }
             }
@@ -386,8 +396,34 @@ namespace ECTViews.ViewModels
             }
         }
 
-        public string AfaRestwertText =>
-            (AfaRestwertCent / 100m).ToString("N2", DeDE);
+        /// <summary>
+        /// Editierbare Text-Repräsentation des Restwerts.
+        /// Get: formatiert AfaRestwertCent als deutsche Währung.
+        /// Set: parst die Eingabe (culture-aware) und schreibt in AfaRestwertCent.
+        ///
+        /// Das Restwert-Feld muss benutzer-editierbar sein, weil das Anlagegut
+        /// anfangs degressiv abgeschrieben worden sein könnte. In dem Fall
+        /// kann die Software die Abschreibungshistorie nicht rekonstruieren —
+        /// der korrekte Restwert ist nur dem Benutzer bekannt.
+        /// </summary>
+        public string AfaRestwertText
+        {
+            get => (AfaRestwertCent / 100m).ToString("N2", DeDE);
+            set
+            {
+                int neuerCent = ParseBetragInCent(value);
+                if (neuerCent != _afaRestwertCent)
+                {
+                    // Direkt das Backing-Field schreiben, um keine
+                    // BerechneRestwertHeuristisch()-Schleife auszulösen.
+                    // _restwertBerechnungLaeuft schützt zusätzlich, falls
+                    // dieser Setter durch eine Heuristik getriggert wird.
+                    _afaRestwertCent = neuerCent;
+                    OnPropertyChanged(nameof(AfaRestwertCent));
+                    OnPropertyChanged(nameof(AfaRestwertText));
+                }
+            }
+        }
 
         /// <summary>
         /// Hinweistext zur AfA-Heuristik (z.B. zur Restwert-Rekonstruktion
@@ -424,7 +460,8 @@ namespace ECTViews.ViewModels
             {
                 if (SetProperty(ref _afaSatz, value ?? "0"))
                 {
-                    BerechneRestwertHeuristisch();
+                    PruefeDegressivWechsel();
+                    BerechneRestwertHeuristisch(bewahreVorhandenenHinweis: true);
                     ValidiereFeldFallsAktiv(ValidiereAfa);
                 }
             }
@@ -432,26 +469,71 @@ namespace ECTViews.ViewModels
 
         // ──────────────────────────────────────────────
         // Bestandskonto und Betrieb
+        //
+        // Listen mit Icon-Items (analog zu CListCtrl im MFC-Original).
+        // Wenn die Listen leer bleiben, werden die zugehörigen UI-Elemente
+        // ausgeblendet und der jeweilige String-Wert (Bestandskonto bzw.
+        // SelectedBetrieb) bleibt unverändert beim Speichern.
         // ──────────────────────────────────────────────
 
-        public ObservableCollection<string> Bestandskonten { get; } =
-            new ObservableCollection<string>();
+        public ObservableCollection<IconListItem> Bestandskonten { get; } =
+            new ObservableCollection<IconListItem>();
 
-        private string _bestandskonto = "";
-        public string Bestandskonto
+        public bool BestandskontenAnzeigen => Bestandskonten.Count > 0;
+
+        /// <summary>True wenn mindestens eine der beiden Listen Inhalte hat.</summary>
+        public bool ListenAnzeigen =>
+            BestandskontenAnzeigen || BetriebeAnzeigen;
+
+        private IconListItem _selectedBestandskonto;
+        public IconListItem SelectedBestandskonto
         {
-            get => _bestandskonto;
-            set => SetProperty(ref _bestandskonto, value ?? "");
+            get => _selectedBestandskonto;
+            set
+            {
+                if (SetProperty(ref _selectedBestandskonto, value))
+                    ValidiereFeldFallsAktiv(ValidiereBestandskonto);
+            }
         }
 
-        public ObservableCollection<string> Betriebe { get; } =
-            new ObservableCollection<string>();
+        /// <summary>
+        /// Initialer String-Wert (vor dem Befüllen der Liste) — nur relevant
+        /// wenn die Liste leer bleibt. Beim Speichern wird in diesem Fall
+        /// der ursprüngliche Wert beibehalten (oder Leerstring bei neuer Buchung).
+        /// </summary>
+        private string _bestandskontoFallback = "";
 
-        private string _betrieb = "";
-        public string SelectedBetrieb
+        public ObservableCollection<IconListItem> Betriebe { get; } =
+            new ObservableCollection<IconListItem>();
+
+        public bool BetriebeAnzeigen => Betriebe.Count > 0;
+
+        private IconListItem _selectedBetrieb;
+        public IconListItem SelectedBetrieb
         {
-            get => _betrieb;
-            set => SetProperty(ref _betrieb, value ?? "");
+            get => _selectedBetrieb;
+            set
+            {
+                if (SetProperty(ref _selectedBetrieb, value))
+                    ValidiereFeldFallsAktiv(ValidiereBetrieb);
+            }
+        }
+
+        private string _betriebFallback = "";
+
+        // Validierungsfehler für die zwei Listen
+        private string _bestandskontoError = "";
+        public string BestandskontoError
+        {
+            get => _bestandskontoError;
+            private set => SetProperty(ref _bestandskontoError, value);
+        }
+
+        private string _betriebError = "";
+        public string BetriebError
+        {
+            get => _betriebError;
+            private set => SetProperty(ref _betriebError, value);
         }
 
         // ──────────────────────────────────────────────
@@ -515,8 +597,8 @@ namespace ECTViews.ViewModels
             _beschreibung = buchung.Beschreibung;
             _belegnummer = buchung.Belegnummer;
             _selectedKonto = buchung.Konto;
-            _bestandskonto = buchung.Bestandskonto;
-            _betrieb = buchung.Betrieb;
+            _bestandskontoFallback = buchung.Bestandskonto ?? "";
+            _betriebFallback = buchung.Betrieb ?? "";
 
             // AfA
             if (buchung.HatAfA)
@@ -689,12 +771,13 @@ namespace ECTViews.ViewModels
 
         /// <summary>
         /// Reimplementiert die OnTimer(103)-Logik aus buchendlg.cpp:
-        /// wird beim Umschalten der Degressiv-Checkbox aufgerufen, um
-        /// Hinweise zu unsinnigen Konfigurationen anzuzeigen.
+        /// wird beim Umschalten der Degressiv-Checkbox UND bei Änderungen
+        /// am Satz/Jahre-Feld aufgerufen, um Hinweise zu unsinnigen
+        /// Konfigurationen anzuzeigen.
         ///
         /// Im Original wurden hier MessageBoxen mit OK/Abbrechen-Logik
-        /// genutzt. Hier wird das durch einen passiven Hinweistext
-        /// ersetzt — das stört den Eingabefluss nicht.
+        /// genutzt. Hier wird das durch passive Hinweistexte ersetzt —
+        /// das stört den Eingabefluss nicht.
         /// </summary>
         private void PruefeDegressivWechsel()
         {
@@ -702,26 +785,31 @@ namespace ECTViews.ViewModels
             int.TryParse(_afaJahre, out int jahre);
             int.TryParse(_afaSatz, out int satz);
 
-            // Nur relevant wenn dies eine Folgejahres-Buchung einer
-            // bestehenden Buchung ist (nr > 1 + IstBearbeitung)
-            if (nr > 1 && IstBearbeitung)
+            // Hinweis 1: Bei degressiver AfA ist Satz=0 fast immer ein Fehler.
+            // Sinnvoll nur bei nicht-abnutzbaren Anlagegütern (Grundstücke),
+            // dort werden konventionell 99 Jahre Abschreibungsdauer eingetragen.
+            // Diese Prüfung gilt unabhängig vom Abschreibungsjahr (nr) und
+            // unabhängig davon, ob die Buchung neu oder bearbeitet wird —
+            // denn die Inkonsistenz ist immer dieselbe.
+            if (AfaDegressiv && satz <= 0 && jahre < 99)
             {
-                if (!AfaDegressiv)
-                {
-                    AfaHinweis = "Hinweis: EC&T stellt den Abschreibungsmodus " +
-                        "in der Jahreswechsel-Funktion zum optimalen Zeitpunkt " +
-                        "automatisch von degressiv auf linear um — eine manuelle " +
-                        "Umstellung ist meist nicht nötig.";
-                    return;
-                }
-                else if (satz <= 0 && jahre < 99)
-                {
-                    AfaHinweis = "Hinweis: Bei degressiver AfA ist ein " +
-                        "Abschreibungssatz von 0 ungewöhnlich. Sinnvoll nur " +
-                        "bei nicht-abnutzbaren Anlagegütern (z.B. Grundstücke); " +
-                        "in dem Fall bitte 99 Jahre Abschreibungsdauer eintragen.";
-                    return;
-                }
+                AfaHinweis = "Hinweis: Bei degressiver AfA ist ein " +
+                    "Abschreibungssatz von 0 ungewöhnlich. Sinnvoll nur " +
+                    "bei nicht-abnutzbaren Anlagegütern (z.B. Grundstücke); " +
+                    "in dem Fall bitte 99 Jahre Abschreibungsdauer eintragen.";
+                return;
+            }
+
+            // Hinweis 2: Wenn bei einer Folgejahres-Buchung (nr > 1, also
+            // bestehende AfA-Reihe) der Modus auf linear gesetzt wird,
+            // ist das meist überflüssig — EC&T regelt das automatisch.
+            if (nr > 1 && IstBearbeitung && !AfaDegressiv)
+            {
+                AfaHinweis = "Hinweis: EC&T stellt den Abschreibungsmodus " +
+                    "in der Jahreswechsel-Funktion zum optimalen Zeitpunkt " +
+                    "automatisch von degressiv auf linear um — eine manuelle " +
+                    "Umstellung ist meist nicht nötig.";
+                return;
             }
             // Sonst: Hinweis bleibt leer (oder wird von BerechneRestwertHeuristisch gesetzt)
         }
@@ -755,8 +843,17 @@ namespace ECTViews.ViewModels
                 Beschreibung = Beschreibung,
                 Belegnummer = Belegnummer,
                 Konto = SelectedKonto,
-                Bestandskonto = Bestandskonto,
-                Betrieb = SelectedBetrieb,
+                // Bestandskonto/Betrieb:
+                //   - Wenn Liste sichtbar: Name aus der Selektion
+                //     (oder Leerstring wenn nichts gewählt)
+                //   - Wenn Liste leer: Fallback-Wert beibehalten
+                //     (also den ursprünglichen Wert aus der Buchung)
+                Bestandskonto = BestandskontenAnzeigen
+                    ? (SelectedBestandskonto?.Name ?? "")
+                    : _bestandskontoFallback,
+                Betrieb = BetriebeAnzeigen
+                    ? (SelectedBetrieb?.Name ?? "")
+                    : _betriebFallback,
 
                 // AfA — AfaRestwertCent kommt aus dem ViewModel-Wert, der
                 // durch BerechneRestwertHeuristisch() live aktuell gehalten
@@ -845,7 +942,45 @@ namespace ECTViews.ViewModels
             ok &= ValidiereMwst();
             ok &= ValidiereBeschreibung();
             ok &= ValidiereAfa();
+            ok &= ValidiereBestandskonto();
+            ok &= ValidiereBetrieb();
             return ok;
+        }
+
+        /// <summary>
+        /// Prüft, dass ein Bestandskonto gewählt ist — aber nur wenn die
+        /// Liste überhaupt befüllt wurde. Bei leerer Liste keine Validierung.
+        /// </summary>
+        private bool ValidiereBestandskonto()
+        {
+            if (!BestandskontenAnzeigen)
+            {
+                BestandskontoError = "";
+                return true;
+            }
+            if (SelectedBestandskonto == null)
+            {
+                BestandskontoError = "Bitte ein Bestandskonto auswählen.";
+                return false;
+            }
+            BestandskontoError = "";
+            return true;
+        }
+
+        private bool ValidiereBetrieb()
+        {
+            if (!BetriebeAnzeigen)
+            {
+                BetriebError = "";
+                return true;
+            }
+            if (SelectedBetrieb == null)
+            {
+                BetriebError = "Bitte einen Betrieb auswählen.";
+                return false;
+            }
+            BetriebError = "";
+            return true;
         }
 
         /// <summary>Expandiert 2-stellige Jahreszahlen (25 → 2025, 98 → 1998).</summary>
@@ -1075,22 +1210,82 @@ namespace ECTViews.ViewModels
         }
 
         /// <summary>
-        /// Lädt die verfügbaren Betriebe und Bestandskonten.
+        /// Lädt die Liste der Betriebe mit zugehörigen Icons.
         /// </summary>
-        public void LadeBetriebe(IEnumerable<string> betriebe)
+        /// <param name="namen">Namen der Betriebe (entspricht m_csaBetriebeNamen).</param>
+        /// <param name="iconIndizes">Icon-Indizes (entspricht m_csaBetriebeIcons), als Strings.</param>
+        /// <param name="sprite">Die Sprite-Bitmap mit den 32x32-Icons.</param>
+        public void LadeBetriebe(
+            System.Collections.Generic.IList<string> namen,
+            System.Collections.Generic.IList<string> iconIndizes,
+            System.Windows.Media.Imaging.BitmapSource sprite)
         {
             Betriebe.Clear();
-            Betriebe.Add(""); // leerer Eintrag = kein Betrieb
-            foreach (var b in betriebe)
-                Betriebe.Add(b);
+            if (namen == null || namen.Count == 0)
+            {
+                OnPropertyChanged(nameof(BetriebeAnzeigen)); OnPropertyChanged(nameof(ListenAnzeigen));
+                return;
+            }
+
+            for (int i = 0; i < namen.Count; i++)
+            {
+                int idx = 0;
+                if (iconIndizes != null && i < iconIndizes.Count)
+                    int.TryParse(iconIndizes[i], out idx);
+
+                Betriebe.Add(new IconListItem
+                {
+                    Name = namen[i],
+                    IconIndex = idx,
+                    Icon = IconSpriteSplitter.Crop(sprite, idx)
+                });
+            }
+            OnPropertyChanged(nameof(BetriebeAnzeigen)); OnPropertyChanged(nameof(ListenAnzeigen));
+
+            // Vorauswahl: den Eintrag selektieren, dessen Name dem Fallback-Wert
+            // (aus dem Konstruktor übernommen) entspricht.
+            if (!string.IsNullOrEmpty(_betriebFallback))
+            {
+                SelectedBetrieb = Betriebe.FirstOrDefault(
+                    b => b.Name == _betriebFallback);
+            }
         }
 
-        public void LadeBestandskonten(IEnumerable<string> konten)
+        /// <summary>
+        /// Lädt die Liste der Bestandskonten mit Icons.
+        /// </summary>
+        public void LadeBestandskonten(
+            System.Collections.Generic.IList<string> namen,
+            System.Collections.Generic.IList<string> iconIndizes,
+            System.Windows.Media.Imaging.BitmapSource sprite)
         {
             Bestandskonten.Clear();
-            Bestandskonten.Add("");
-            foreach (var k in konten)
-                Bestandskonten.Add(k);
+            if (namen == null || namen.Count == 0)
+            {
+                OnPropertyChanged(nameof(BestandskontenAnzeigen)); OnPropertyChanged(nameof(ListenAnzeigen));
+                return;
+            }
+
+            for (int i = 0; i < namen.Count; i++)
+            {
+                int idx = 0;
+                if (iconIndizes != null && i < iconIndizes.Count)
+                    int.TryParse(iconIndizes[i], out idx);
+
+                Bestandskonten.Add(new IconListItem
+                {
+                    Name = namen[i],
+                    IconIndex = idx,
+                    Icon = IconSpriteSplitter.Crop(sprite, idx)
+                });
+            }
+            OnPropertyChanged(nameof(BestandskontenAnzeigen)); OnPropertyChanged(nameof(ListenAnzeigen));
+
+            if (!string.IsNullOrEmpty(_bestandskontoFallback))
+            {
+                SelectedBestandskonto = Bestandskonten.FirstOrDefault(
+                    k => k.Name == _bestandskontoFallback);
+            }
         }
     }
 }

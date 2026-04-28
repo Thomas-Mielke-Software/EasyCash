@@ -110,6 +110,33 @@ ECTBRIDGE_API BOOL ECT_ShowBuchungKopierenDialog(
 ECTBRIDGE_API BOOL ECT_LoescheBuchungPerPointer(
     void* pDocBridge, CBuchung* pNativeBuchung);
 
+// ──────────────────────────────────────────────
+// Listen-Initialisierung (Betrieb + Bestandskonto)
+// ──────────────────────────────────────────────
+//
+// EasyCash hält die Betriebs-/Bestandskonten-Namen und zugehörigen
+// Icon-Indizes in CStringArrays (m_csaBetriebeNamen, m_csaBetriebeIcons,
+// m_csaBestandskontenNamen, m_csaBestandskontenIcons in der View).
+//
+// Diese Funktion übergibt eine Schnappschuss-Kopie an den ViewHost,
+// der ihn beim nächsten Dialog-Aufruf nutzt. Wenn die Listen leer sind,
+// werden die zugehörigen UI-Elemente im Dialog ausgeblendet.
+
+/// <summary>
+/// Setzt die Betriebs- und Bestandskonten-Listen für nachfolgende
+/// Buchungsdialog-Aufrufe.
+///
+/// Parameter sind 4 parallele Arrays von C-Strings (LPCSTR), terminiert
+/// durch nCount-Angabe. Die Bridge kopiert die Inhalte intern, der
+/// Aufrufer kann die Arrays nach dem Aufruf verwerfen.
+///
+/// Übergibt man nCount = 0 für eine Liste, wird diese im Dialog
+/// ausgeblendet.
+/// </summary>
+ECTBRIDGE_API void ECT_SetzeBetriebeUndBestandskonten(
+    LPCSTR* pBetriebeNamen, LPCSTR* pBetriebeIcons, int nBetriebeCount,
+    LPCSTR* pBestandskontenNamen, LPCSTR* pBestandskontenIcons, int nBestandskontenCount);
+
 #ifdef __cplusplus
 }
 #endif

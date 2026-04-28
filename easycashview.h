@@ -278,6 +278,7 @@ protected:
 	void UpdateBestandskontenMenu();
 	void UpdateBetriebe();
 	void UpdateBestandskonten();
+	void SetzeListenFuerBuchungsdialog();
 	BOOL Export(char *_Efilename, char *_Afilename, BOOL bExplorerOeffnen);
 	BOOL Backup(char *backupdir);
 	void DestroyPlugin();

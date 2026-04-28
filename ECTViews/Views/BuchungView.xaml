@@ -3,7 +3,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         Title="{Binding BuchungsartText, StringFormat='Buchung ({0})'}"
         MinWidth="480" MinHeight="640"
-        Width="800" Height="640"
+        Width="800"
         SizeToContent="Height"
         WindowStartupLocation="CenterOwner"
         ResizeMode="CanResizeWithGrip"
@@ -66,6 +66,23 @@
             <Setter Property="Margin" Value="0,4"/>
             <Setter Property="Padding" Value="8,4"/>
         </Style>
+
+        <!-- Konverter: bool → Visibility (Collapsed bei false) -->
+        <BooleanToVisibilityConverter x:Key="BoolToVis"/>
+
+        <!-- DataTemplate für Icon-Listen-Items: Icon links, Name rechts.
+             Stretch="Uniform" skaliert das gecroppte Icon proportional auf
+             die Image-Größe — funktioniert egal ob die Quell-Sprites 16x16,
+             32x32 oder andere Größen verwenden. -->
+        <DataTemplate x:Key="IconItemTemplate">
+            <StackPanel Orientation="Horizontal">
+                <Image Source="{Binding Icon}" Width="32" Height="32"
+                       Margin="0,0,8,0" Stretch="Uniform"
+                       VerticalAlignment="Center"/>
+                <TextBlock Text="{Binding Name}"
+                           VerticalAlignment="Center" FontSize="13"/>
+            </StackPanel>
+        </DataTemplate>
     </Window.Resources>
 
     <Grid Margin="12">
@@ -209,24 +226,41 @@
             </Grid>
         </GroupBox>
 
-        <!-- ═══ Zeile 5: Bestandskonto + Betrieb ═══ -->
-        <Grid Grid.Row="5">
+        <!-- ═══ Zeile 5: Bestandskonto + Betrieb (mit Icon-Listen) ═══ -->
+        <Grid Grid.Row="5"
+              Visibility="{Binding ListenAnzeigen, Converter={StaticResource BoolToVis}}">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*"/>
                 <ColumnDefinition Width="8"/>
                 <ColumnDefinition Width="*"/>
             </Grid.ColumnDefinitions>
 
-            <GroupBox Grid.Column="0" Header="Bestandskonto">
-                <ComboBox Text="{Binding Bestandskonto}"
-                          ItemsSource="{Binding Bestandskonten}"
-                          IsEditable="True"/>
+            <GroupBox Grid.Column="0" Header="Bestandskonto"
+                      Visibility="{Binding BestandskontenAnzeigen,
+                                   Converter={StaticResource BoolToVis}}">
+                <StackPanel>
+                    <ListBox ItemsSource="{Binding Bestandskonten}"
+                             SelectedItem="{Binding SelectedBestandskonto}"
+                             ItemTemplate="{StaticResource IconItemTemplate}"
+                             Height="160"
+                             ScrollViewer.VerticalScrollBarVisibility="Auto"/>
+                    <TextBlock Style="{StaticResource ErrorStyle}"
+                               Text="{Binding BestandskontoError}"/>
+                </StackPanel>
             </GroupBox>
 
-            <GroupBox Grid.Column="2" Header="Betrieb">
-                <ComboBox Text="{Binding SelectedBetrieb}"
-                          ItemsSource="{Binding Betriebe}"
-                          IsEditable="True"/>
+            <GroupBox Grid.Column="2" Header="Betrieb"
+                      Visibility="{Binding BetriebeAnzeigen,
+                                   Converter={StaticResource BoolToVis}}">
+                <StackPanel>
+                    <ListBox ItemsSource="{Binding Betriebe}"
+                             SelectedItem="{Binding SelectedBetrieb}"
+                             ItemTemplate="{StaticResource IconItemTemplate}"
+                             Height="160"
+                             ScrollViewer.VerticalScrollBarVisibility="Auto"/>
+                    <TextBlock Style="{StaticResource ErrorStyle}"
+                               Text="{Binding BetriebError}"/>
+                </StackPanel>
             </GroupBox>
         </Grid>
 
@@ -264,9 +298,9 @@
 
                     <TextBlock Grid.Row="0" Grid.Column="4" Text="Restwert:"
                                Style="{StaticResource LabelStyle}" Margin="12,0,8,0"/>
-                    <TextBlock Grid.Row="0" Grid.Column="5"
-                               Text="{Binding AfaRestwertText}"
-                               VerticalAlignment="Center" Foreground="#888"/>
+                    <TextBox Grid.Row="0" Grid.Column="5"
+                             Text="{Binding AfaRestwertText, UpdateSourceTrigger=LostFocus}"
+                             TextAlignment="Right"/>
 
                     <CheckBox Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2"
                               Content="Degressiv"

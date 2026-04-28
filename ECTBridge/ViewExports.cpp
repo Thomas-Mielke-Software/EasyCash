@@ -292,3 +292,48 @@ BOOL ECT_LoescheBuchungPerPointer(
         return FALSE;
     }
 }
+
+// ══════════════════════════════════════════════════════════
+// Listen-Initialisierung
+// ══════════════════════════════════════════════════════════
+
+/// Hilfsfunktion: native LPCSTR-Array → managed List<String^>
+static System::Collections::Generic::List<System::String^>^
+MachListe(LPCSTR* pArray, int nCount)
+{
+    auto liste = gcnew System::Collections::Generic::List<System::String^>();
+    for (int i = 0; i < nCount; i++)
+    {
+        if (pArray[i])
+            liste->Add(gcnew System::String(pArray[i]));
+        else
+            liste->Add(System::String::Empty);
+    }
+    return liste;
+}
+
+void ECT_SetzeBetriebeUndBestandskonten(
+    LPCSTR* pBetriebeNamen, LPCSTR* pBetriebeIcons, int nBetriebeCount,
+    LPCSTR* pBestandskontenNamen, LPCSTR* pBestandskontenIcons, int nBestandskontenCount)
+{
+    try
+    {
+        ECTViews::ViewHost::BetriebeNamen =
+            MachListe(pBetriebeNamen, nBetriebeCount);
+        ECTViews::ViewHost::BetriebeIcons =
+            MachListe(pBetriebeIcons, nBetriebeCount);
+        ECTViews::ViewHost::BestandskontenNamen =
+            MachListe(pBestandskontenNamen, nBestandskontenCount);
+        ECTViews::ViewHost::BestandskontenIcons =
+            MachListe(pBestandskontenIcons, nBestandskontenCount);
+
+        TRACE("ECT_SetzeBetriebeUndBestandskonten: %d Betriebe, %d Bestandskonten\n",
+              nBetriebeCount, nBestandskontenCount);
+    }
+    catch (Exception^ ex)
+    {
+        CString msg;
+        msg.Format("Fehler in ECT_SetzeBetriebeUndBestandskonten: %S", ex->Message);
+        AfxMessageBox(msg, MB_ICONERROR);
+    }
+}

@@ -21,10 +21,69 @@ namespace ECTViews
     /// - WPF Application-Initialisierung (falls noch keine existiert)
     /// - Fenster-Erzeugung mit korrektem Owner (MFC HWND)
     /// - Rückgabe der Ergebnis-Buchung
+    /// - Befüllen der Bestandskonto-/Betrieb-Listen mit Icons
     /// </summary>
     public static class ViewHost
     {
         private static bool _wpfInitialized;
+
+        // ──────────────────────────────────────────────
+        // Sprite-Bitmaps für Betrieb/Bestandskonto-Icons
+        // Werden lazily aus den Embedded Resources geladen.
+        // ──────────────────────────────────────────────
+
+        private static System.Windows.Media.Imaging.BitmapSource _spriteBetriebe;
+        private static System.Windows.Media.Imaging.BitmapSource _spriteBestandskonten;
+
+        /// <summary>
+        /// Sprite-Bitmap für Betrieb-Icons. Standardmäßig aus
+        /// "Resources/icons.bmp" der ECTViews-Assembly geladen.
+        /// Kann vom Aufrufer überschrieben werden.
+        /// </summary>
+        public static System.Windows.Media.Imaging.BitmapSource SpriteBetriebe
+        {
+            get
+            {
+                if (_spriteBetriebe == null)
+                    _spriteBetriebe = IconSpriteSplitter.LoadFromResource(
+                        "icons.bmp");
+                return _spriteBetriebe;
+            }
+            set => _spriteBetriebe = value;
+        }
+
+        /// <summary>
+        /// Sprite-Bitmap für Bestandskonto-Icons. Standardmäßig aus
+        /// "Resources/icons_bestandskonten.bmp".
+        /// </summary>
+        public static System.Windows.Media.Imaging.BitmapSource SpriteBestandskonten
+        {
+            get
+            {
+                if (_spriteBestandskonten == null)
+                    _spriteBestandskonten = IconSpriteSplitter.LoadFromResource(
+                        "icons_bestandskonten.bmp");
+                return _spriteBestandskonten;
+            }
+            set => _spriteBestandskonten = value;
+        }
+
+        /// <summary>
+        /// Vom Aufrufer übergebene Listen — werden bei jedem Dialog-Aufruf
+        /// in das ViewModel kopiert. Zentrale Stelle, damit der C++/CLI-
+        /// Aufrufer diese nur einmal setzen muss.
+        /// </summary>
+        public static System.Collections.Generic.IList<string> BetriebeNamen { get; set; }
+        public static System.Collections.Generic.IList<string> BetriebeIcons { get; set; }
+        public static System.Collections.Generic.IList<string> BestandskontenNamen { get; set; }
+        public static System.Collections.Generic.IList<string> BestandskontenIcons { get; set; }
+
+        private static void BefuelleListen(BuchungViewModel vm)
+        {
+            vm.LadeBetriebe(BetriebeNamen, BetriebeIcons, SpriteBetriebe);
+            vm.LadeBestandskonten(BestandskontenNamen, BestandskontenIcons,
+                SpriteBestandskonten);
+        }
 
         /// <summary>
         /// Stellt sicher, dass ein WPF Application-Objekt existiert.
@@ -74,6 +133,7 @@ namespace ECTViews
             EnsureWpfInitialized();
 
             var vm = new BuchungViewModel(doc, ausgaben);
+            BefuelleListen(vm);
             var view = new BuchungView(vm);
 
             // Owner-Fenster setzen (MFC HWND → WPF WindowInteropHelper)
@@ -99,6 +159,7 @@ namespace ECTViews
             EnsureWpfInitialized();
 
             var vm = new BuchungViewModel(doc, buchung);
+            BefuelleListen(vm);
             var view = new BuchungView(vm);
 
             if (ownerHwnd != IntPtr.Zero)
