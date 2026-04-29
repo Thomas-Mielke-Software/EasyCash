@@ -1,0 +1,342 @@
+<UserControl x:Class="ECTViews.Journal.JournalView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:journal="clr-namespace:ECTViews.Journal"
+             FontFamily="Segoe UI"
+             Background="White">
+
+    <UserControl.Resources>
+
+        <!-- bool→Visibility-Konverter (MUSS ganz oben stehen, weil
+             er von DataTriggers in den DataTemplates weiter unten
+             via StaticResource referenziert wird — WPF parst
+             Resources sequenziell.) -->
+        <BooleanToVisibilityConverter x:Key="BoolToVis"/>
+
+        <!-- ───────── Farben ───────── -->
+        <SolidColorBrush x:Key="ColEinnahme" Color="#D03010"/>
+        <SolidColorBrush x:Key="ColAusgabe"  Color="#1030D0"/>
+        <SolidColorBrush x:Key="ColZebraOdd" Color="#F5F5F5"/>
+        <SolidColorBrush x:Key="ColSelection" Color="#FFF59D"/>
+        <SolidColorBrush x:Key="ColHeaderBg" Color="#FAFAFA"/>
+        <SolidColorBrush x:Key="ColBorder"   Color="#888888"/>
+
+        <!-- ───────── Spaltenbreiten ─────────
+             Werden über die einzelnen Cell-DefinitionsHelper auf
+             gleicher Position in allen Templates gesetzt, sodass
+             die Spalten visuell aligned sind. -->
+        <GridLength x:Key="ColW_Icon">28</GridLength>
+        <GridLength x:Key="ColW_Datum">90</GridLength>
+        <GridLength x:Key="ColW_Beleg">80</GridLength>
+        <GridLength x:Key="ColW_Netto">100</GridLength>
+        <GridLength x:Key="ColW_USt">60</GridLength>
+        <GridLength x:Key="ColW_USt_Betrag">100</GridLength>
+        <GridLength x:Key="ColW_Brutto">110</GridLength>
+        <GridLength x:Key="ColW_AfA">60</GridLength>
+
+        <!-- ═══════════════════════════════════════════════════
+             DataTemplate: Section-Title (z.B. "EINNAHMEN für 2024",
+             "- Software-Entwicklung -")
+             ═══════════════════════════════════════════════════ -->
+        <DataTemplate DataType="{x:Type journal:JournalSectionTitle}">
+            <TextBlock Text="{Binding Text}"
+                       Margin="6,12,6,4"
+                       FontWeight="Bold">
+                <TextBlock.Style>
+                    <Style TargetType="TextBlock">
+                        <Setter Property="FontSize" Value="15"/>
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding IsMain}" Value="True">
+                                <Setter Property="FontSize" Value="17"/>
+                            </DataTrigger>
+                            <DataTrigger Binding="{Binding IsEinnahme}" Value="True">
+                                <Setter Property="Foreground" Value="{StaticResource ColEinnahme}"/>
+                            </DataTrigger>
+                            <DataTrigger Binding="{Binding IsEinnahme}" Value="False">
+                                <Setter Property="Foreground" Value="{StaticResource ColAusgabe}"/>
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </TextBlock.Style>
+            </TextBlock>
+        </DataTemplate>
+
+        <!-- ═══════════════════════════════════════════════════
+             DataTemplate: Header-Row (Spaltenüberschriften)
+             ═══════════════════════════════════════════════════ -->
+        <DataTemplate DataType="{x:Type journal:JournalHeaderRow}">
+            <Border Background="{StaticResource ColHeaderBg}"
+                    BorderThickness="0,0,0,1"
+                    BorderBrush="{StaticResource ColBorder}"
+                    Padding="0,4,0,4">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="{StaticResource ColW_Icon}"/>     <!-- Betrieb -->
+                        <ColumnDefinition Width="{StaticResource ColW_Icon}"/>     <!-- Bestandskonto -->
+                        <ColumnDefinition Width="{StaticResource ColW_Datum}"/>
+                        <ColumnDefinition Width="{StaticResource ColW_Beleg}"/>
+                        <ColumnDefinition Width="*" MinWidth="200"/>               <!-- Beschreibung (variabel) -->
+                        <ColumnDefinition Width="{StaticResource ColW_Netto}"/>
+                        <ColumnDefinition Width="{StaticResource ColW_USt}"/>
+                        <ColumnDefinition Width="{StaticResource ColW_USt_Betrag}"/>
+                        <ColumnDefinition Width="{StaticResource ColW_Brutto}"/>
+                        <ColumnDefinition Width="{StaticResource ColW_AfA}"/>
+                    </Grid.ColumnDefinitions>
+
+                    <TextBlock Grid.Column="2" Text="Datum" FontWeight="SemiBold"
+                               Margin="4,0"/>
+                    <TextBlock Grid.Column="3" Text="Beleg" FontWeight="SemiBold"
+                               Margin="4,0"
+                               Visibility="{Binding ZeigeBelegnummer,
+                                   Converter={StaticResource BoolToVis}}"/>
+                    <TextBlock Grid.Column="4" Text="Beschreibung"
+                               FontWeight="SemiBold" Margin="4,0"/>
+                    <TextBlock Grid.Column="5" Text="Netto" FontWeight="SemiBold"
+                               TextAlignment="Right" Margin="4,0"
+                               Visibility="{Binding ZeigeSteuer,
+                                   Converter={StaticResource BoolToVis}}"/>
+                    <TextBlock Grid.Column="6" FontWeight="SemiBold"
+                               TextAlignment="Right" Margin="4,0"
+                               Visibility="{Binding ZeigeSteuer,
+                                   Converter={StaticResource BoolToVis}}">
+                        <TextBlock.Style>
+                            <Style TargetType="TextBlock">
+                                <Setter Property="Text" Value="USt"/>
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding IsAusgabe}" Value="True">
+                                        <Setter Property="Text" Value="VSt"/>
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </TextBlock.Style>
+                    </TextBlock>
+                    <TextBlock Grid.Column="7" FontWeight="SemiBold"
+                               TextAlignment="Right" Margin="4,0"
+                               Visibility="{Binding ZeigeSteuer,
+                                   Converter={StaticResource BoolToVis}}">
+                        <TextBlock.Style>
+                            <Style TargetType="TextBlock">
+                                <Setter Property="Text" Value="USt-Betr"/>
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding IsAusgabe}" Value="True">
+                                        <Setter Property="Text" Value="VSt-Betr"/>
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </TextBlock.Style>
+                    </TextBlock>
+                    <TextBlock Grid.Column="8" Text="Brutto"
+                               FontWeight="SemiBold" TextAlignment="Right" Margin="4,0"/>
+                    <TextBlock Grid.Column="9" Text="AfA-Nr"
+                               FontWeight="SemiBold" TextAlignment="Right" Margin="4,0"
+                               Visibility="{Binding ZeigeAfaNr,
+                                   Converter={StaticResource BoolToVis}}"/>
+                </Grid>
+            </Border>
+        </DataTemplate>
+
+        <!-- ═══════════════════════════════════════════════════
+             DataTemplate: Buchungs-Zeile (eine Zeile pro CBuchung)
+             ═══════════════════════════════════════════════════ -->
+        <DataTemplate DataType="{x:Type journal:JournalBuchungRow}">
+            <!-- Hintergrund kommt vom umschließenden ListBoxItem-Style
+                 (Selection + Zebra). Hier nur Layout + Text. -->
+            <Grid Margin="0,2">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="{StaticResource ColW_Icon}"/>
+                    <ColumnDefinition Width="{StaticResource ColW_Icon}"/>
+                    <ColumnDefinition Width="{StaticResource ColW_Datum}"/>
+                    <ColumnDefinition Width="{StaticResource ColW_Beleg}"/>
+                    <ColumnDefinition Width="*" MinWidth="200"/>
+                    <ColumnDefinition Width="{StaticResource ColW_Netto}"/>
+                    <ColumnDefinition Width="{StaticResource ColW_USt}"/>
+                    <ColumnDefinition Width="{StaticResource ColW_USt_Betrag}"/>
+                    <ColumnDefinition Width="{StaticResource ColW_Brutto}"/>
+                    <ColumnDefinition Width="{StaticResource ColW_AfA}"/>
+                </Grid.ColumnDefinitions>
+
+                <!-- Icons -->
+                <Image Grid.Column="0" Source="{Binding BetriebIcon}"
+                       Width="20" Height="20" Stretch="Uniform"
+                       VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                <Image Grid.Column="1" Source="{Binding BestandskontoIcon}"
+                       Width="20" Height="20" Stretch="Uniform"
+                       VerticalAlignment="Center" HorizontalAlignment="Center"/>
+
+                <!-- Datum -->
+                <TextBlock Grid.Column="2" Text="{Binding DatumText}"
+                           Margin="4,0" VerticalAlignment="Center"/>
+
+                <!-- Belegnummer (gekürzt mit Ellipsis falls zu lang) -->
+                <TextBlock Grid.Column="3" Text="{Binding BelegText}"
+                           Margin="4,0" VerticalAlignment="Center"
+                           TextTrimming="CharacterEllipsis"/>
+
+                <!-- Beschreibung — wickelt sich um, wenn zu lang -->
+                <TextBlock Grid.Column="4" Text="{Binding BeschreibungText}"
+                           Margin="4,0" VerticalAlignment="Center"
+                           TextWrapping="Wrap"/>
+
+                <!-- Steuerspalten -->
+                <TextBlock Grid.Column="5" Text="{Binding NettoText}"
+                           TextAlignment="Right" Margin="4,0"
+                           VerticalAlignment="Center"
+                           FontFamily="Consolas"/>
+                <TextBlock Grid.Column="6" Text="{Binding MwstSatzText}"
+                           TextAlignment="Right" Margin="4,0"
+                           VerticalAlignment="Center"/>
+                <TextBlock Grid.Column="7" Text="{Binding MwstBetragText}"
+                           TextAlignment="Right" Margin="4,0"
+                           VerticalAlignment="Center"
+                           FontFamily="Consolas"/>
+
+                <!-- Brutto -->
+                <TextBlock Grid.Column="8" Text="{Binding BruttoText}"
+                           TextAlignment="Right" Margin="4,0"
+                           VerticalAlignment="Center" FontWeight="SemiBold"
+                           FontFamily="Consolas"/>
+
+                <!-- AfA-Nummer -->
+                <TextBlock Grid.Column="9" Text="{Binding AfaNrText}"
+                           TextAlignment="Right" Margin="4,0"
+                           VerticalAlignment="Center"/>
+            </Grid>
+        </DataTemplate>
+
+        <!-- ═══════════════════════════════════════════════════
+             DataTemplate: Footer (Summenzeile)
+             ═══════════════════════════════════════════════════ -->
+        <DataTemplate DataType="{x:Type journal:JournalFooterRow}">
+            <Border BorderThickness="0,1,0,1"
+                    BorderBrush="{StaticResource ColBorder}"
+                    Padding="0,4,0,4">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="{StaticResource ColW_Icon}"/>
+                        <ColumnDefinition Width="{StaticResource ColW_Icon}"/>
+                        <ColumnDefinition Width="{StaticResource ColW_Datum}"/>
+                        <ColumnDefinition Width="{StaticResource ColW_Beleg}"/>
+                        <ColumnDefinition Width="*" MinWidth="200"/>
+                        <ColumnDefinition Width="{StaticResource ColW_Netto}"/>
+                        <ColumnDefinition Width="{StaticResource ColW_USt}"/>
+                        <ColumnDefinition Width="{StaticResource ColW_USt_Betrag}"/>
+                        <ColumnDefinition Width="{StaticResource ColW_Brutto}"/>
+                        <ColumnDefinition Width="{StaticResource ColW_AfA}"/>
+                    </Grid.ColumnDefinitions>
+
+                    <TextBlock Grid.Column="4" Text="Summe"
+                               FontWeight="Bold" Margin="4,0"/>
+
+                    <TextBlock Grid.Column="5" Text="{Binding NettoSummeText}"
+                               TextAlignment="Right" Margin="4,0"
+                               FontWeight="Bold" FontFamily="Consolas"
+                               Visibility="{Binding ZeigeSteuer,
+                                   Converter={StaticResource BoolToVis}}"/>
+                    <TextBlock Grid.Column="7" Text="{Binding SteuerSummeText}"
+                               TextAlignment="Right" Margin="4,0"
+                               FontWeight="Bold" FontFamily="Consolas"
+                               Visibility="{Binding ZeigeSteuer,
+                                   Converter={StaticResource BoolToVis}}"/>
+                    <TextBlock Grid.Column="8" Text="{Binding BruttoSummeText}"
+                               TextAlignment="Right" Margin="4,0"
+                               FontWeight="Bold" FontFamily="Consolas"/>
+                    <TextBlock Grid.Column="9" Text="{Binding Waehrung}"
+                               TextAlignment="Right" Margin="4,0"
+                               FontWeight="Bold"/>
+                </Grid>
+            </Border>
+        </DataTemplate>
+
+        <!-- ═══════════════════════════════════════════════════
+             DataTemplate: Spacer (Leerzeile)
+             ═══════════════════════════════════════════════════ -->
+        <DataTemplate DataType="{x:Type journal:JournalSpacerRow}">
+            <Rectangle Height="{Binding Height}" Fill="Transparent"/>
+        </DataTemplate>
+
+        <!-- bool→Visibility-Konverter steht oben (siehe Anfang von Resources) -->
+
+        <!-- ═══════════════════════════════════════════════════
+             ListBoxItem-Style: Selection (gelb) + Zebra-Streifen
+             ═══════════════════════════════════════════════════ -->
+        <Style x:Key="JournalRowStyle" TargetType="ListBoxItem">
+            <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+            <Setter Property="Padding" Value="0"/>
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <!-- Nur Buchungs-Zeilen sind selektierbar — andere Zeilentypen
+                 erlauben keine Selektion (würde optisch nicht passen) -->
+            <Setter Property="Focusable" Value="False"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="ListBoxItem">
+                        <Border x:Name="Bd" Background="{TemplateBinding Background}"
+                                Padding="{TemplateBinding Padding}">
+                            <ContentPresenter HorizontalAlignment="Stretch"/>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+            <Style.Triggers>
+                <!-- Nur Buchungs-Zeilen bekommen Zebra + Hover + Selection.
+                     Wir aktivieren Focusable nur für JournalBuchungRow. -->
+                <DataTrigger Binding="{Binding}" Value="{x:Null}">
+                    <Setter Property="Focusable" Value="False"/>
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
+
+        <!-- Item-Container-Style-Selector: setzt Zebra-Hintergrund
+             nur bei Buchungs-Zeilen (über DataTrigger auf den Typ) -->
+        <Style x:Key="BuchungRowStyle" TargetType="ListBoxItem"
+               BasedOn="{StaticResource JournalRowStyle}">
+            <Setter Property="Focusable" Value="True"/>
+            <Style.Triggers>
+                <!-- Zebra-Streifen über Index der ZebraIndex-Property -->
+                <DataTrigger Binding="{Binding Path=., Converter={x:Static journal:ZebraConverter.Instance}}"
+                             Value="True">
+                    <Setter Property="Background" Value="{StaticResource ColZebraOdd}"/>
+                </DataTrigger>
+                <!-- Selection: gelb -->
+                <Trigger Property="IsSelected" Value="True">
+                    <Setter Property="Background" Value="{StaticResource ColSelection}"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+
+    </UserControl.Resources>
+
+    <!-- ═══════════════════════════════════════════════════
+         Hauptlayout: ScrollViewer + ItemsControl
+         (ListBox wegen Selection + ItemContainerStyleSelector)
+         ═══════════════════════════════════════════════════ -->
+    <Grid>
+        <ListBox x:Name="lstZeilen"
+                 ItemsSource="{Binding Zeilen}"
+                 SelectedItem="{Binding SelektierteZeile}"
+                 SelectionMode="Single"
+                 BorderThickness="0"
+                 ScrollViewer.HorizontalScrollBarVisibility="Auto"
+                 ScrollViewer.VerticalScrollBarVisibility="Auto"
+                 VirtualizingPanel.IsVirtualizing="True"
+                 VirtualizingPanel.VirtualizationMode="Recycling"
+                 FontSize="{Binding Schriftgroesse}"
+                 KeyboardNavigation.DirectionalNavigation="Continue"
+                 ItemContainerStyleSelector="{x:Static journal:JournalRowStyleSelector.Instance}"
+                 MouseDoubleClick="OnZeilenDoppelklick">
+            <ListBox.ContextMenu>
+                <ContextMenu>
+                    <MenuItem Header="Ändern" Command="{Binding BearbeitenCommand}"/>
+                    <MenuItem Header="Löschen" Command="{Binding LoeschenCommand}"/>
+                    <Separator/>
+                    <MenuItem Header="Kopieren" Command="{Binding KopierenCommand}"/>
+                    <MenuItem Header="Kopieren mit neuer Belegnummer"
+                              Command="{Binding KopierenMitNeuerBelegnummerCommand}"/>
+                    <Separator/>
+                    <MenuItem Header="AfA-Abgang buchen"
+                              Command="{Binding AfaAbgangCommand}"/>
+                </ContextMenu>
+            </ListBox.ContextMenu>
+        </ListBox>
+    </Grid>
+</UserControl>

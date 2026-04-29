@@ -244,6 +244,7 @@ protected:
 	void Icon(DrawInfo *pDrawInfo, int left, int top, /*int right,*/ int bottom, CBitmap *bitmap, int n);
 	void DrawToDC_Datum(CDC* pDC, DrawInfo *pDrawInfo);
 	void DrawToDC_Konten(CDC* pDC, DrawInfo *pDrawInfo);
+	void OnViewJournalDatumWpf();
 	BOOL BestandskontoExistiertInBuchungen(CString &bestandskontoname);
 	void DrawToDC_Bestandskonten(CDC* pDC, DrawInfo *pDrawInfo);
 	void DrawToDC_Anlagenverzeichnis(CDC* pDC, DrawInfo *pDrawInfo);

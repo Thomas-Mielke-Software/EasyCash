@@ -137,6 +137,42 @@ ECTBRIDGE_API void ECT_SetzeBetriebeUndBestandskonten(
     LPCSTR* pBetriebeNamen, LPCSTR* pBetriebeIcons, int nBetriebeCount,
     LPCSTR* pBestandskontenNamen, LPCSTR* pBestandskontenIcons, int nBestandskontenCount);
 
+// ──────────────────────────────────────────────
+// Buchungsjournal
+// ──────────────────────────────────────────────
+
+/// <summary>
+/// Öffnet das Buchungsjournal-Fenster (modeless) als WPF-View.
+/// Replikat von DrawToDC_Datum/DrawToDC_Konten aus easycashview.cpp.
+///
+/// Der Aufrufer sollte vorher per ECT_SetzeBetriebeUndBestandskonten
+/// die Listen für die Icons gesetzt haben.
+///
+/// Rückgabe:
+///   TRUE wenn das Fenster geöffnet werden konnte.
+/// </summary>
+ECTBRIDGE_API BOOL ECT_ZeigeJournal(void* pDocBridge, HWND hWndOwner);
+
+/// <summary>
+/// Aktualisiert das offene Journal-Fenster — z.B. nach
+/// Buchungsänderungen. Wenn kein Fenster offen ist, passiert nichts.
+///
+/// Parameter:
+///   nAnzeigeModus      - 0 = nach Datum, 1 = nach Konten
+///   pszKontenFilter    - "" oder "<alle Konten>" für kein Filter
+///   nMonatsFilter      - 0=alle, 1-12=Monat, 13-16=Quartal
+///   pszBetriebFilter   - "" für kein Filter
+///   pszBestandskontoFilter - "" für kein Filter
+///   dSchriftgroesse    - Zoom (z.B. 13.0 = Standard)
+/// </summary>
+ECTBRIDGE_API void ECT_AktualisiereJournal(
+    int nAnzeigeModus,
+    LPCSTR pszKontenFilter,
+    int nMonatsFilter,
+    LPCSTR pszBetriebFilter,
+    LPCSTR pszBestandskontoFilter,
+    double dSchriftgroesse);
+
 #ifdef __cplusplus
 }
 #endif

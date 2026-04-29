@@ -3118,6 +3118,12 @@ void CEasyCashView::DrawToDC_Konten(CDC* pDC_par, DrawInfo *pDrawInfo)
 	}
 }
 
+void CEasyCashView::OnViewJournalDatumWpf()
+{
+	SetzeListenFuerBuchungsdialog();	// Vorher (einmal pro Session) Listen + Bitmaps setzen
+	ECT_ZeigeJournal(GetDocument(), GetSafeHwnd());
+}
+
 // Hilfsfunktion für DrawToDC_Bestandskonten
 BOOL CEasyCashView::BestandskontoExistiertInBuchungen(CString &bestandskontoname)
 {
@@ -8074,6 +8080,10 @@ void CEasyCashView::OnViewOptions()
 
 void CEasyCashView::OnViewJournalDatum() 
 {
+#ifdef USE_ECTENGINE
+	OnViewJournalDatumWpf();
+#else
+
 	// Wenn Plugin aktiv im Fenster, erstmal Plugin deaktivieren
 	DestroyPlugin();
 			
@@ -8087,6 +8097,7 @@ void CEasyCashView::OnViewJournalDatum()
 	m_nAnzeige = 0;	
 	//RedrawWindow();
 	GetDocument()->UpdateAllViews(NULL);
+#endif
 }
 
 void CEasyCashView::OnViewJournalKonten() 

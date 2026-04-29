@@ -337,3 +337,173 @@ void ECT_SetzeBetriebeUndBestandskonten(
         AfxMessageBox(msg, MB_ICONERROR);
     }
 }
+
+// ══════════════════════════════════════════════════════════
+// Buchungsjournal
+// ══════════════════════════════════════════════════════════
+
+namespace ECTBridge
+{
+    /// <summary>
+    /// Managed Helfer-Klasse, die Native-Pointer als IntPtr-Felder
+    /// hält und Methoden bereitstellt, die als Delegate-Targets
+    /// für die JournalViewModel-Events dienen.
+    ///
+    /// Der Umweg über eine ref class ist nötig, weil C++/CLI keine
+    /// Lambdas erlaubt, die managed Variablen capturen, und reine
+    /// native Lambdas können nicht direkt einem managed Delegate
+    /// (System::Action&lt;T&gt;) zugewiesen werden.
+    /// </summary>
+    ref class JournalEventHandler
+    {
+    public:
+        // Native Pointer als IntPtr-Felder. Sicher, weil das Journal-
+        // Fenster spätestens beim Schließen des Dokuments geschlossen
+        // wird und der Bridge-Pointer bis dahin gültig ist.
+        System::IntPtr m_pBridge;
+        System::IntPtr m_hwnd;
+
+        void OnBearbeiten(ECTEngine::Buchung^ b)
+        {
+            auto* bridge = static_cast<CEasyCashDocBridge*>(m_pBridge.ToPointer());
+            HWND hwnd = static_cast<HWND>(m_hwnd.ToPointer());
+            if (!bridge) return;
+
+            int idx = GetEngine(bridge)->Buchungen->IndexOf(b);
+            if (idx >= 0)
+            {
+                ECT_ShowBuchungBearbeitenDialog(bridge, idx, hwnd);
+                ECTViews::Journal::JournalHost::AktualisiereOffenesJournal();
+            }
+        }
+
+        void OnLoeschen(ECTEngine::Buchung^ b)
+        {
+            auto* bridge = static_cast<CEasyCashDocBridge*>(m_pBridge.ToPointer());
+            if (!bridge) return;
+            auto eng = GetEngine(bridge);
+
+            // Konfirmation
+            CString frage;
+            frage.Format("Buchung '%s' wirklich löschen?",
+                (LPCTSTR)ECTBridge::ToNative(b->Beschreibung));
+            if (AfxMessageBox(frage, MB_YESNO | MB_DEFBUTTON2) != IDYES)
+                return;
+
+            eng->Buchungen->Remove(b);
+            bridge->SyncManagedToNative();
+            bridge->SetModifiedFlag("Buchung über Journal gelöscht");
+            ECTViews::Journal::JournalHost::AktualisiereOffenesJournal();
+        }
+
+        void OnKopieren(ECTEngine::Buchung^ b)
+        {
+            auto* bridge = static_cast<CEasyCashDocBridge*>(m_pBridge.ToPointer());
+            HWND hwnd = static_cast<HWND>(m_hwnd.ToPointer());
+            if (!bridge) return;
+
+            // Klon in Engine einfügen, dann Standard-Bearbeitungsdialog
+            // mit dem Index des Klons öffnen.
+            auto eng = GetEngine(bridge);
+            auto klon = b->Clone();
+            eng->Buchungen->Add(klon);
+            int idx = eng->Buchungen->IndexOf(klon);
+            bridge->SyncManagedToNative();
+
+            ECT_ShowBuchungBearbeitenDialog(bridge, idx, hwnd);
+            ECTViews::Journal::JournalHost::AktualisiereOffenesJournal();
+        }
+
+        void OnKopierenMitNeuerBelegnummer(ECTEngine::Buchung^ b)
+        {
+            auto* bridge = static_cast<CEasyCashDocBridge*>(m_pBridge.ToPointer());
+            HWND hwnd = static_cast<HWND>(m_hwnd.ToPointer());
+            if (!bridge) return;
+
+            auto eng = GetEngine(bridge);
+            auto klon = b->Clone();
+            klon->Belegnummer = (klon->Art == ECTEngine::Buchungsart::Einnahme)
+                ? eng->LaufendeBelegnrEinnahmen.ToString()
+                : eng->LaufendeBelegnrAusgaben.ToString();
+            eng->Buchungen->Add(klon);
+            int idx = eng->Buchungen->IndexOf(klon);
+            bridge->SyncManagedToNative();
+
+            ECT_ShowBuchungBearbeitenDialog(bridge, idx, hwnd);
+            ECTViews::Journal::JournalHost::AktualisiereOffenesJournal();
+        }
+    };
+}
+
+BOOL ECT_ZeigeJournal(void* pDocBridge, HWND hWndOwner)
+{
+    try
+    {
+        auto* bridge = static_cast<CEasyCashDocBridge*>(pDocBridge);
+        if (!bridge) return FALSE;
+
+        // Vor dem Anzeigen: Engine-Stand garantieren
+        bridge->SyncNativeToManaged();
+
+        auto engine = GetEngine(bridge);
+        IntPtr hwnd = IntPtr((void*)hWndOwner);
+
+        auto vm = ECTViews::Journal::JournalHost::ZeigeJournal(engine, hwnd);
+
+        // Eventhandler — eine einzige managed Helper-Instanz,
+        // die alle Native-Pointer als IntPtr-Felder hält.
+        auto handler = gcnew ECTBridge::JournalEventHandler();
+        handler->m_pBridge = IntPtr(pDocBridge);
+        handler->m_hwnd = hwnd;
+
+        vm->BuchungBearbeiten += gcnew System::Action<ECTEngine::Buchung^>(
+            handler, &ECTBridge::JournalEventHandler::OnBearbeiten);
+        vm->BuchungLoeschen += gcnew System::Action<ECTEngine::Buchung^>(
+            handler, &ECTBridge::JournalEventHandler::OnLoeschen);
+        vm->BuchungKopieren += gcnew System::Action<ECTEngine::Buchung^>(
+            handler, &ECTBridge::JournalEventHandler::OnKopieren);
+        vm->BuchungKopierenMitNeuerBelegnummer += gcnew System::Action<ECTEngine::Buchung^>(
+            handler, &ECTBridge::JournalEventHandler::OnKopierenMitNeuerBelegnummer);
+
+        return TRUE;
+    }
+    catch (Exception^ ex)
+    {
+        CString msg = L"Fehler in ECT_ZeigeJournal: " + ECTBridge::ToNative(ex->Message);
+        AfxMessageBox(msg, MB_ICONERROR);
+        return FALSE;
+    }
+}
+
+void ECT_AktualisiereJournal(
+    int nAnzeigeModus,
+    LPCSTR pszKontenFilter,
+    int nMonatsFilter,
+    LPCSTR pszBetriebFilter,
+    LPCSTR pszBestandskontoFilter,
+    double dSchriftgroesse)
+{
+    try
+    {
+        auto filter = gcnew ECTViews::Journal::JournalFilter();
+        filter->AnzeigeModus = (nAnzeigeModus == 1)
+            ? ECTViews::Journal::JournalAnzeigeModus::Konten
+            : ECTViews::Journal::JournalAnzeigeModus::Datum;
+        filter->KontenFilter = pszKontenFilter
+            ? gcnew System::String(pszKontenFilter) : System::String::Empty;
+        filter->MonatsFilter = nMonatsFilter;
+        filter->BetriebFilter = pszBetriebFilter
+            ? gcnew System::String(pszBetriebFilter) : System::String::Empty;
+        filter->BestandskontoFilter = pszBestandskontoFilter
+            ? gcnew System::String(pszBestandskontoFilter) : System::String::Empty;
+        filter->Schriftgroesse = dSchriftgroesse > 0 ? dSchriftgroesse : 13.0;
+
+        ECTViews::Journal::JournalHost::AktualisiereOffenesJournal(filter);
+    }
+    catch (Exception^ ex)
+    {
+        CString msg;
+        msg.Format("Fehler in ECT_AktualisiereJournal: %S", ex->Message);
+        AfxMessageBox(msg, MB_ICONERROR);
+    }
+}
