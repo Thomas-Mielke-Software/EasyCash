@@ -101,6 +101,40 @@ ECTBRIDGE_API void ECT_JournalAktualisiere(
 /// </summary>
 ECTBRIDGE_API void ECT_JournalSetzeZoom(double dSchriftgroesse);
 
+// ----------------------------------------------------------
+// Navigation-Pane (replaces CNavigation)
+// ----------------------------------------------------------
+//
+// Die Navigation ist ein zweites HwndSource-Fenster, das LINKS neben
+// dem Journal sitzt und Schnell-Sprungziele in das Journal anbietet.
+// Inhalt der Navigation passt sich an den aktuellen Journal-Modus an
+// (Datum: Monate, Konten: Kontonamen, etc.) - bei jedem
+// ECT_JournalAktualisiere wird sie automatisch mitgezeichnet.
+//
+// Aufrufmuster ist analog zum Journal:
+//   1. ECT_JournalEinbetten(...) -> hwndJournal
+//   2. ECT_NavigationEinbetten(parent, x, y, w, h, hwndJournal) -> hwndNav
+//   3. Beide HWNDs mit SetWindowPos positionieren (Splitter-Logik)
+//   4. Beim Verlassen des Modus:
+//      ECT_NavigationAbloesen(hwndNav)
+//      ECT_JournalAbloesen(hwndJournal)
+//      (oder einmal ECT_JournalAlleAbloesen() fuer beide)
+
+/// <summary>
+/// Bettet eine Navigation-Pane als Kind des angegebenen Parent-HWND
+/// ein und verknuepft sie mit dem bereits eingebetteten Journal.
+/// Liefert das HWND der Navigation zurueck, NULL bei Fehler.
+/// </summary>
+ECTBRIDGE_API HWND ECT_NavigationEinbetten(
+    HWND hwndParent,
+    int x, int y, int width, int height,
+    HWND hwndJournal);
+
+/// <summary>
+/// Loest eine eingebettete Navigation-Pane ab.
+/// </summary>
+ECTBRIDGE_API void ECT_NavigationAbloesen(HWND hwndNav);
+
 #ifdef __cplusplus
 }
 #endif

@@ -638,6 +638,7 @@ copy ..\EasyCash\Release\crashrpt_lang.ini .\Release
     <Image Include="res\waehrungsrechner.bmp" />
   </ItemGroup>
   <ItemGroup>
+    <None Include=".gitignore" />
     <None Include="Formularabschnitt.htm">
       <DeploymentContent>true</DeploymentContent>
     </None>

@@ -20,6 +20,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Windows;
 using System.Windows.Interop;
 using ECTEngine;
@@ -38,6 +39,12 @@ namespace ECTViews.Journal
             public JournalViewModel ViewModel;
             public IntPtr HwndKind;     // HWND des HwndSource (= an MFC zurueckgegeben)
             public IntPtr HwndParent;   // HWND des MFC-Parent
+
+            // Navigation, wenn sie zu diesem Journal gehoert
+            public HwndSource NavSource;
+            public NavigationView NavView;
+            public NavigationViewModel NavViewModel;
+            public IntPtr NavHwndKind;
         }
 
         private static readonly List<Eintrag> _aktiveHosts = new List<Eintrag>();
@@ -126,6 +133,7 @@ namespace ECTViews.Journal
                 {
                     var e = _aktiveHosts[i];
                     _aktiveHosts.RemoveAt(i);
+                    try { e.NavSource?.Dispose(); } catch { }
                     try { e.Source.Dispose(); } catch { }
                     return;
                 }
@@ -141,6 +149,7 @@ namespace ECTViews.Journal
         {
             foreach (var e in _aktiveHosts)
             {
+                try { e.NavSource?.Dispose(); } catch { }
                 try { e.Source.Dispose(); } catch { }
             }
             _aktiveHosts.Clear();
@@ -149,13 +158,15 @@ namespace ECTViews.Journal
         /// <summary>
         /// Aktualisiert ALLE eingebetteten Journals - z.B. wenn eine
         /// Buchung geaendert wurde. Aufrufer braucht das einzelne
-        /// HWND nicht zu kennen.
+        /// HWND nicht zu kennen. Die Navigation wird automatisch
+        /// mit-aktualisiert.
         /// </summary>
         public static void AktualisiereAlle(JournalFilter filter = null)
         {
             foreach (var e in _aktiveHosts)
             {
                 e.ViewModel.Aktualisiere(filter);
+                e.NavViewModel?.Aktualisiere();
             }
         }
 
@@ -168,6 +179,73 @@ namespace ECTViews.Journal
             foreach (var e in _aktiveHosts)
             {
                 e.ViewModel.Schriftgroesse = schriftgroesse;
+            }
+        }
+
+        /// <summary>
+        /// Bettet einen NavigationView als zweites Kind-HWND ein und
+        /// verknuepft ihn mit dem Journal-Eintrag. Beim AktualisiereAlle()
+        /// wird die Navigation automatisch mit-aktualisiert.
+        ///
+        /// Findet das Journal anhand seines HWND und haengt sich daran an.
+        /// </summary>
+        /// <param name="parentHwnd">HWND des MFC-Parents fuer die Nav-Pane.</param>
+        /// <param name="hwndJournal">HWND des bereits eingebetteten Journals
+        /// (Rueckgabe von Einbetten).</param>
+        public static IntPtr NavigationEinbetten(
+            IntPtr parentHwnd, int x, int y, int width, int height,
+            IntPtr hwndJournal)
+        {
+            if (parentHwnd == IntPtr.Zero) return IntPtr.Zero;
+
+            var eintrag = _aktiveHosts.FirstOrDefault(e => e.HwndKind == hwndJournal);
+            if (eintrag == null) return IntPtr.Zero;
+
+            EnsureWpfApplication();
+
+            var navVm = new NavigationViewModel(
+                eintrag.ViewModel.Doc, eintrag.ViewModel);
+            navVm.Aktualisiere();
+
+            var navView = new NavigationView { DataContext = navVm };
+
+            var hwndParams = new HwndSourceParameters("ECT_Navigation")
+            {
+                ParentWindow = parentHwnd,
+                WindowStyle = unchecked((int)0x40000000) | 0x10000000, // WS_CHILD | WS_VISIBLE
+                PositionX = x,
+                PositionY = y,
+                Width = width,
+                Height = height
+            };
+            var navSource = new HwndSource(hwndParams)
+            {
+                RootVisual = navView
+            };
+
+            eintrag.NavSource = navSource;
+            eintrag.NavView = navView;
+            eintrag.NavViewModel = navVm;
+            eintrag.NavHwndKind = navSource.Handle;
+            return navSource.Handle;
+        }
+
+        /// <summary>
+        /// Loest das zu diesem Journal gehoerende Navigations-Fenster ab.
+        /// </summary>
+        public static void NavigationAbloesen(IntPtr hwndNav)
+        {
+            foreach (var e in _aktiveHosts)
+            {
+                if (e.NavHwndKind == hwndNav)
+                {
+                    try { e.NavSource?.Dispose(); } catch { }
+                    e.NavSource = null;
+                    e.NavView = null;
+                    e.NavViewModel = null;
+                    e.NavHwndKind = IntPtr.Zero;
+                    return;
+                }
             }
         }
 

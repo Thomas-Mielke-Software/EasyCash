@@ -154,3 +154,46 @@ void ECT_JournalSetzeZoom(double dSchriftgroesse)
         AfxMessageBox(msg, MB_ICONERROR);
     }
 }
+
+// ----------------------------------------------------------
+// ECT_NavigationEinbetten
+// ----------------------------------------------------------
+HWND ECT_NavigationEinbetten(
+    HWND hwndParent,
+    int x, int y, int width, int height,
+    HWND hwndJournal)
+{
+    try
+    {
+        IntPtr hParent(hwndParent);
+        IntPtr hJ(hwndJournal);
+        IntPtr hN = ECTViews::Journal::JournalEmbed::NavigationEinbetten(
+            hParent, x, y, width, height, hJ);
+        return (HWND)hN.ToPointer();
+    }
+    catch (Exception^ ex)
+    {
+        CString msg = L"Fehler in ECT_NavigationEinbetten: ";
+        msg += CString(ex->Message);
+        AfxMessageBox(msg, MB_ICONERROR);
+        return NULL;
+    }
+}
+
+// ----------------------------------------------------------
+// ECT_NavigationAbloesen
+// ----------------------------------------------------------
+void ECT_NavigationAbloesen(HWND hwndNav)
+{
+    try
+    {
+        IntPtr h(hwndNav);
+        ECTViews::Journal::JournalEmbed::NavigationAbloesen(h);
+    }
+    catch (Exception^ ex)
+    {
+        CString msg = L"Fehler in ECT_NavigationAbloesen: ";
+        msg += CString(ex->Message);
+        AfxMessageBox(msg, MB_ICONERROR);
+    }
+}

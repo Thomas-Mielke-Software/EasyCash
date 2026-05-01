@@ -141,11 +141,13 @@ private:
 	// Lebt parallel zum alten DrawToDC-Modus, sodass beide Pfade
 	// koexistieren koennen.
 	HWND m_hwndJournalWpf;
+	HWND m_hwndNavigationWpf;
 
-	// Hilfsfunktion: Journal anzeigen / verstecken
-	void ZeigeJournalWpf(int nAnzeigeModus);   // 0=Datum, 1=Konten
-	void VerstecktJournalWpf();                // beim Verlassen des Modus
-	void GroessenAnpassungJournalWpf();        // bei OnSize
+	// Hilfsfunktionen
+	void ZeigeJournalWpf(int nAnzeigeModus);   // 0=Datum, 1=Konten, 2=BK, 3=AfA
+	void VerstecktJournalWpf();
+	void GroessenAnpassungJournalWpf();
+	void AktualisiereJournalFilter();          // bei Filter-Aenderung
 #endif
 
 // Operations

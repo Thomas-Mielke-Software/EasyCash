@@ -27,6 +27,8 @@ namespace ECTViews.Journal
         private static readonly CultureInfo DeDE = new CultureInfo("de-DE");
 
         private readonly BuchungsDocument _doc;
+        /// <summary>Internal access to the underlying document for related ViewModels (e.g. Navigation).</summary>
+        public BuchungsDocument Doc => _doc;
 
         // Icon-Daten
         private readonly IList<string> _betriebeNamen;
@@ -64,12 +66,121 @@ namespace ECTViews.Journal
             }
         }
 
+        // Maximale Breite der Belegspalte (1/4 der ListBox-Breite). Wird
+        // vom JournalView-Code-Behind in OnSizeChanged aktualisiert.
+        // Die XAML-ColumnDefinitions binden ihr MaxWidth an diese Property,
+        // sodass die Belegspalte sich an den Inhalt anpasst, aber nie
+        // breiter als 1/4 der Gesamtbreite wird.
+        private double _belegMaxBreite = 200;
+        public double BelegMaxBreite
+        {
+            get => _belegMaxBreite;
+            set => SetProperty(ref _belegMaxBreite, value);
+        }
+
         // Selektion
         private JournalBuchungRow _selektierteZeile;
         public JournalBuchungRow SelektierteZeile
         {
             get => _selektierteZeile;
             set => SetProperty(ref _selektierteZeile, value);
+        }
+
+        // Event, das der View abonniert. Liefert die Zeile, die in den
+        // sichtbaren Bereich gescrollt werden soll. Wird von den
+        // ScrolleZu*-Methoden ausgeloest.
+        public event Action<JournalRow> ScrollIntoViewRequest;
+
+        /// <summary>
+        /// Sucht die erste Buchungs-Zeile mit passendem Monat in der
+        /// gewuenschten Buchungsart und scrollt sie in den sichtbaren
+        /// Bereich. Wenn kein exakter Monatstreffer existiert, wird zur
+        /// zeitlich naechsten Buchung gescrollt (analog OnNMClick im
+        /// Original-CNavigation, Zeile 109 ff.).
+        /// </summary>
+        public void ScrolleZuMonat(int monat, bool istEinnahme)
+        {
+            JournalBuchungRow exakter = null;
+            JournalBuchungRow naehester = null;
+            int besteDistanz = 13;
+
+            foreach (var z in Zeilen.OfType<JournalBuchungRow>())
+            {
+                if (z.Buchung == null) continue;
+                bool zIstEinnahme = z.Buchung.Art == Buchungsart.Einnahme;
+                if (zIstEinnahme != istEinnahme) continue;
+
+                int zMonat = z.Buchung.Datum.Month;
+                if (zMonat == monat)
+                {
+                    exakter = z;
+                    break;
+                }
+                int dist = Math.Abs(zMonat - monat);
+                if (dist < besteDistanz)
+                {
+                    besteDistanz = dist;
+                    naehester = z;
+                }
+            }
+
+            var ziel = exakter ?? naehester;
+            if (ziel != null)
+            {
+                SelektierteZeile = ziel;
+                ScrollIntoViewRequest?.Invoke(ziel);
+            }
+        }
+
+        /// <summary>
+        /// Scrollt zur ersten Buchung mit passendem Konto in der
+        /// gewuenschten Buchungsart. Leerer kontoName = "unzugewiesen".
+        /// </summary>
+        public void ScrolleZuKonto(string kontoName, bool istEinnahme)
+        {
+            foreach (var z in Zeilen.OfType<JournalBuchungRow>())
+            {
+                if (z.Buchung == null) continue;
+                bool zIstEinnahme = z.Buchung.Art == Buchungsart.Einnahme;
+                if (zIstEinnahme != istEinnahme) continue;
+                if ((z.Buchung.Konto ?? "") != (kontoName ?? "")) continue;
+
+                SelektierteZeile = z;
+                ScrollIntoViewRequest?.Invoke(z);
+                return;
+            }
+        }
+
+        /// <summary>
+        /// Scrollt zur ersten Buchung im angegebenen Bestandskonto und
+        /// Monat. Wenn der Monat nicht existiert, wird zur ersten Buchung
+        /// im Bestandskonto gescrollt.
+        /// </summary>
+        public void ScrolleZuBestandskontoMonat(string bestandskonto, int monat)
+        {
+            JournalBuchungRow exakter = null;
+            JournalBuchungRow ersterImKonto = null;
+
+            foreach (var z in Zeilen.OfType<JournalBuchungRow>())
+            {
+                if (z.Buchung == null) continue;
+                if ((z.Buchung.Bestandskonto ?? "") != (bestandskonto ?? ""))
+                    continue;
+
+                if (ersterImKonto == null) ersterImKonto = z;
+                if (z.Buchung.Datum.Month == monat)
+                {
+                    exakter = z;
+                    break;
+                }
+            }
+
+            var ziel = exakter ?? ersterImKonto;
+            if (ziel != null)
+            {
+                SelektierteZeile = ziel;
+                ScrollIntoViewRequest?.Invoke(ziel);
+            }
         }
 
         // Commands
@@ -137,6 +248,12 @@ namespace ECTViews.Journal
                     break;
                 case JournalAnzeigeModus.Konten:
                     BaueAnzeigeNachKonten();
+                    break;
+                case JournalAnzeigeModus.Bestandskonten:
+                    BaueAnzeigeBestandskonten();
+                    break;
+                case JournalAnzeigeModus.Anlagenverzeichnis:
+                    BaueAnzeigeAnlagenverzeichnis();
                     break;
             }
 
@@ -367,6 +484,287 @@ namespace ECTViews.Journal
                     Zeilen.Add(BaueFooter(true, netto, vst, brutto));
                     Zeilen.Add(new JournalSpacerRow());
                 }
+            }
+        }
+
+        // Modus 3: Bestandskonten
+        // Pro Bestandskonto eine Tabelle mit Anfangssaldo, Buchungen
+        // (Einnahmen + Ausgaben gemischt), Endsaldo.
+        // Reimplementiert DrawToDC_Bestandskonten aus easycashview.cpp.
+        private void BaueAnzeigeBestandskonten()
+        {
+            var f = AktuellerFilter;
+
+            // Liste aller Bestandskonten, fuer die es Buchungen gibt
+            var bestandskonten = SammleBestandskonten();
+            if (bestandskonten.Count == 0) return;
+
+            Zeilen.Add(new JournalSectionTitle
+            {
+                Text = "BESTANDSKONTEN",
+                IsMain = true,
+                IsEinnahme = null
+            });
+
+            foreach (var bk in bestandskonten)
+            {
+                // Anfangssaldo aus den Doc-Properties holen, falls vorhanden.
+                // Fallback 0, wenn die Engine den Saldo nicht kennt.
+                long anfangssaldoCent = HoleAnfangssaldoCent(bk);
+
+                // Buchungen fuer dieses Bestandskonto sammeln.
+                // Filter dabei beachten (Monat, Betrieb, Konto), aber NICHT
+                // BestandskontoFilter - der wird hier durch das Konto selbst
+                // ueberschrieben.
+                var alleBuchungen = new List<Buchung>();
+                alleBuchungen.AddRange(FilterBuchungenOhneBestandskonto(_doc.Einnahmen, true)
+                    .Where(b => (b.Bestandskonto ?? "") == bk));
+                alleBuchungen.AddRange(FilterBuchungenOhneBestandskonto(_doc.Ausgaben, false)
+                    .Where(b => (b.Bestandskonto ?? "") == bk));
+
+                // Buchungen chronologisch sortieren
+                alleBuchungen = alleBuchungen.OrderBy(b => b.Datum).ToList();
+
+                // Wenn kein Anfangssaldo und keine Buchungen - Konto ueberspringen
+                if (anfangssaldoCent == 0 && alleBuchungen.Count == 0) continue;
+
+                // Filter: einzelnes Bestandskonto
+                if (!string.IsNullOrEmpty(f.BestandskontoFilter)
+                    && bk != f.BestandskontoFilter)
+                    continue;
+
+                Zeilen.Add(new JournalSectionTitle
+                {
+                    Text = string.IsNullOrEmpty(bk)
+                        ? "[Bestandskonto: leer]"
+                        : "[" + bk + "]",
+                    IsMain = false,
+                    IsEinnahme = null
+                });
+
+                // "Anfangssaldo"-Pseudozeile als Header-Ersatz
+                Zeilen.Add(new JournalHeaderRow
+                {
+                    IsAusgabe = false,
+                    ZeigeBelegnummer = f.ZeigeBelegnummernspalte,
+                    ZeigeSteuer = f.ZeigeSteuerspalte
+                });
+
+                // Lauf-Saldo
+                long saldoCent = anfangssaldoCent;
+                int idx = 0;
+
+                // Pseudozeile fuer Anfangssaldo - als JournalBuchungRow
+                // ohne Buchung-Referenz (keine Bearbeiten-Aktion)
+                Zeilen.Add(new JournalBuchungRow
+                {
+                    Buchung = null,
+                    IstAusgabe = false,
+                    ZebraIndex = idx++,
+                    DatumText = $"01.01.{_doc.Jahr}",
+                    BelegText = "",
+                    BeschreibungText = "Anfangssaldo",
+                    NettoText = "",
+                    MwstSatzText = "",
+                    MwstBetragText = "",
+                    BruttoText = FormatBetrag(saldoCent),
+                    AfaNrText = ""
+                });
+
+                long bruttoSumme = 0;
+                foreach (var b in alleBuchungen)
+                {
+                    bool istEinnahme = b.Art == Buchungsart.Einnahme;
+                    long bruttoCent = istEinnahme
+                        ? b.BruttoBetrag.InCent
+                        : -b.BruttoBetrag.InCent;
+                    saldoCent += bruttoCent;
+                    bruttoSumme += bruttoCent;
+
+                    var zeile = BaueBuchungZeile(b, !istEinnahme, idx++);
+                    // Vorzeichen sichtbar machen
+                    if (!istEinnahme)
+                        zeile.BruttoText = "-" + zeile.BruttoText;
+                    Zeilen.Add(zeile);
+                }
+
+                // Footer: Endsaldo
+                Zeilen.Add(new JournalFooterRow
+                {
+                    IsAusgabe = false,
+                    ZeigeSteuer = false,
+                    NettoSummeText = "",
+                    SteuerSummeText = "",
+                    BruttoSummeText = FormatBetrag(saldoCent),
+                    Waehrung = "Endsaldo " + (_doc.Waehrung ?? "EUR")
+                });
+                Zeilen.Add(new JournalSpacerRow());
+            }
+        }
+
+        // Modus 4: Anlagenverzeichnis
+        // Pro AfA-Konto eine Tabelle mit den Anlageguetern + AfA-Status.
+        // Im Original-MFC zeigt es Buchungen mit AfaJahre>1 an.
+        private void BaueAnzeigeAnlagenverzeichnis()
+        {
+            var f = AktuellerFilter;
+
+            // Nur Ausgaben mit AfA (Jahre > 1)
+            var anlageBuchungen = FilterBuchungen(_doc.Ausgaben, false)
+                .Where(b => b.AfaJahre > 1)
+                .ToList();
+            if (anlageBuchungen.Count == 0) return;
+
+            Zeilen.Add(new JournalSectionTitle
+            {
+                Text = "ANLAGENVERZEICHNIS",
+                IsMain = true,
+                IsEinnahme = false
+            });
+
+            // Gruppiere nach Konto
+            var byKonto = anlageBuchungen
+                .GroupBy(b => b.Konto ?? "")
+                .OrderBy(g => g.Key);
+
+            foreach (var grp in byKonto)
+            {
+                Zeilen.Add(new JournalSectionTitle
+                {
+                    Text = string.IsNullOrEmpty(grp.Key)
+                        ? "[noch zu keinem Konto zugewiesene Anlagegueter]"
+                        : "[" + grp.Key + "]",
+                    IsMain = false,
+                    IsEinnahme = false
+                });
+
+                Zeilen.Add(new JournalHeaderRow
+                {
+                    IsAusgabe = true,
+                    ZeigeBelegnummer = f.ZeigeBelegnummernspalte,
+                    ZeigeSteuer = f.ZeigeSteuerspalte,
+                    ZeigeAfaNr = true
+                });
+
+                long bruttoSumme = 0, nettoSumme = 0, vstSumme = 0;
+                int idx = 0;
+                foreach (var b in grp.OrderBy(b => b.Datum))
+                {
+                    Zeilen.Add(BaueBuchungZeile(b, true, idx++));
+
+                    // Anschaffungsbrutto in der Summe (nicht AfA-Jahresanteil)
+                    long bruttoCent = b.BruttoBetrag.InCent;
+                    long nettoCent = b.BruttoBetrag.NettoInCent;
+                    long vstCent = bruttoCent - nettoCent;
+                    bruttoSumme += bruttoCent;
+                    nettoSumme += nettoCent;
+                    vstSumme += vstCent;
+                }
+
+                Zeilen.Add(BaueFooter(true, nettoSumme, vstSumme, bruttoSumme));
+                Zeilen.Add(new JournalSpacerRow());
+            }
+        }
+
+        // Hilfsmethode: Bestandskonten sammeln, die in Buchungen vorkommen
+        // ODER einen Anfangssaldo haben.
+        private List<string> SammleBestandskonten()
+        {
+            var ergebnis = new List<string>();
+            var seen = new HashSet<string>();
+
+            // Erst die in den Einstellungen definierten Bestandskonten
+            // (Reihenfolge wie im Original)
+            var konfigKonten = HoleKonfigurierteBestandskonten();
+            foreach (var k in konfigKonten)
+            {
+                if (string.IsNullOrEmpty(k)) continue;
+                if (seen.Add(k)) ergebnis.Add(k);
+            }
+
+            // Dann zusaetzliche aus Buchungen
+            foreach (var b in _doc.Einnahmen.Concat(_doc.Ausgaben))
+            {
+                var bk = b.Bestandskonto ?? "";
+                if (!string.IsNullOrEmpty(bk) && seen.Add(bk))
+                    ergebnis.Add(bk);
+            }
+
+            return ergebnis;
+        }
+
+        // Stub: liefert die in den Einstellungen definierten Bestandskonten.
+        // Wird beim Erzeugen des ViewModels mitgegeben (siehe Konstruktor).
+        // Falls leer, werden die Bestandskonten allein aus den Buchungen
+        // ermittelt.
+        private IList<string> HoleKonfigurierteBestandskonten()
+        {
+            return _bestandskontenNamen ?? (IList<string>)new List<string>();
+        }
+
+        // Stub: liefert den konfigurierten Anfangssaldo eines Bestandskontos
+        // in Cent. Aktuell 0, weil die Engine keine Saldo-Property hat -
+        // der Saldo aus der MFC-Welt steht in m_csaBestandskontenSalden,
+        // muesste also ueber eine zusaetzliche Setze-API ans ECTViews-
+        // Modul uebergeben werden. TODO.
+        private long HoleAnfangssaldoCent(string bestandskonto)
+        {
+            // TODO: Engine-Property oder Setze-API fuer Anfangssalden
+            return 0;
+        }
+
+        // Wie FilterBuchungen, aber ohne Bestandskonto-Filter (der wird
+        // beim Bestandskonten-Modus durch das Konto selbst gesetzt).
+        private IEnumerable<Buchung> FilterBuchungenOhneBestandskonto(
+            IEnumerable<Buchung> input, bool istEinnahme)
+        {
+            var f = AktuellerFilter;
+
+            foreach (var b in input)
+            {
+                // Konten-Filter
+                if (f.KontenFilter != "" && f.KontenFilter != "<alle Konten>")
+                {
+                    string praefix = istEinnahme ? "Einnahmen: " : "Ausgaben: ";
+                    string nichtZugewiesenLabel = istEinnahme
+                        ? "--- [noch zu keinem Konto zugewiesene Einnahmen] ---"
+                        : "--- [noch zu keinem Konto zugewiesene Ausgaben] ---";
+
+                    bool kontoLeer = string.IsNullOrEmpty(b.Konto);
+                    if (kontoLeer)
+                    {
+                        if (f.KontenFilter != nichtZugewiesenLabel) continue;
+                    }
+                    else
+                    {
+                        if (f.KontenFilter == nichtZugewiesenLabel) continue;
+                        if (praefix + b.Konto != f.KontenFilter) continue;
+                    }
+                }
+
+                // Monats-Filter
+                if (f.MonatsFilter > 0)
+                {
+                    int monat = b.Datum.Month;
+                    if (f.MonatsFilter <= 12)
+                    {
+                        if (monat != f.MonatsFilter) continue;
+                    }
+                    else
+                    {
+                        int quartal = (monat - 1) / 3 + 1;
+                        if (quartal != f.MonatsFilter - 12) continue;
+                    }
+                }
+
+                // Betriebs-Filter
+                if (!string.IsNullOrEmpty(f.BetriebFilter)
+                    && b.Betrieb != f.BetriebFilter)
+                    continue;
+
+                // KEIN Bestandskonto-Filter hier!
+
+                yield return b;
             }
         }
 

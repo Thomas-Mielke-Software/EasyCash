@@ -3,17 +3,14 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:journal="clr-namespace:ECTViews.Journal"
              FontFamily="Segoe UI"
-             Background="White">
+             Background="White"
+             Grid.IsSharedSizeScope="True"
+             SizeChanged="OnControlSizeChanged">
 
     <UserControl.Resources>
 
-        <!-- bool-to-Visibility Konverter (muss ganz oben stehen, weil
-             er von DataTriggers in den DataTemplates weiter unten
-             via StaticResource referenziert wird; WPF parst Resources
-             sequenziell.) -->
         <BooleanToVisibilityConverter x:Key="BoolToVis"/>
 
-        <!-- Farben -->
         <SolidColorBrush x:Key="ColEinnahme"  Color="#D03010"/>
         <SolidColorBrush x:Key="ColAusgabe"   Color="#1030D0"/>
         <SolidColorBrush x:Key="ColZebraOdd"  Color="#F5F5F5"/>
@@ -21,18 +18,21 @@
         <SolidColorBrush x:Key="ColHeaderBg"  Color="#FAFAFA"/>
         <SolidColorBrush x:Key="ColBorder"    Color="#888888"/>
 
-        <!-- Spaltenbreiten als gemeinsame Resources, sodass Header,
-             Buchungszeile und Footer pixelgenau aligned bleiben. -->
+        <!-- Spaltenbreiten als Resources fuer die fixen Spalten.
+             Die Belegspalte wird ueber SharedSizeGroup="BelegSpalte"
+             dynamisch synchronisiert: Width="Auto" zieht sich an die
+             breiteste Belegnummer zusammen, MaxWidth begrenzt sie auf
+             1/4 der ListBox-Breite (gebunden an
+             ViewModel.BelegMaxBreite, das vom Code-Behind bei
+             SizeChanged aktualisiert wird). -->
         <GridLength x:Key="ColW_Icon">28</GridLength>
         <GridLength x:Key="ColW_Datum">90</GridLength>
-        <GridLength x:Key="ColW_Beleg">80</GridLength>
         <GridLength x:Key="ColW_Netto">100</GridLength>
         <GridLength x:Key="ColW_USt">60</GridLength>
         <GridLength x:Key="ColW_USt_Betrag">100</GridLength>
         <GridLength x:Key="ColW_Brutto">110</GridLength>
         <GridLength x:Key="ColW_AfA">60</GridLength>
 
-        <!-- DataTemplate: Section-Title -->
         <DataTemplate DataType="{x:Type journal:JournalSectionTitle}">
             <TextBlock Text="{Binding Text}"
                        Margin="6,12,6,4"
@@ -56,7 +56,6 @@
             </TextBlock>
         </DataTemplate>
 
-        <!-- DataTemplate: Header-Row -->
         <DataTemplate DataType="{x:Type journal:JournalHeaderRow}">
             <Border Background="{StaticResource ColHeaderBg}"
                     BorderThickness="0,0,0,1"
@@ -67,7 +66,10 @@
                         <ColumnDefinition Width="{StaticResource ColW_Icon}"/>
                         <ColumnDefinition Width="{StaticResource ColW_Icon}"/>
                         <ColumnDefinition Width="{StaticResource ColW_Datum}"/>
-                        <ColumnDefinition Width="{StaticResource ColW_Beleg}"/>
+                        <ColumnDefinition Width="Auto" SharedSizeGroup="BelegSpalte"
+                                          MinWidth="40"
+                                          MaxWidth="{Binding DataContext.BelegMaxBreite,
+                                              RelativeSource={RelativeSource AncestorType=UserControl}}"/>
                         <ColumnDefinition Width="*" MinWidth="200"/>
                         <ColumnDefinition Width="{StaticResource ColW_Netto}"/>
                         <ColumnDefinition Width="{StaticResource ColW_USt}"/>
@@ -128,20 +130,16 @@
             </Border>
         </DataTemplate>
 
-        <!-- DataTemplate: Buchungszeile.
-             TextWrapping="Wrap" auf der Beschreibungs-Spalte sorgt
-             dafuer, dass lange Texte mehrzeilig umbrechen, wenn die
-             Spalte zu schmal wird. Der ScrollViewer am Listbox-Element
-             muss dafuer HorizontalScrollBarVisibility="Disabled" haben,
-             sonst wuerde WPF die Zeile horizontal wachsen lassen statt
-             umzubrechen. -->
         <DataTemplate DataType="{x:Type journal:JournalBuchungRow}">
             <Grid Margin="0,2">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="{StaticResource ColW_Icon}"/>
                     <ColumnDefinition Width="{StaticResource ColW_Icon}"/>
                     <ColumnDefinition Width="{StaticResource ColW_Datum}"/>
-                    <ColumnDefinition Width="{StaticResource ColW_Beleg}"/>
+                    <ColumnDefinition Width="Auto" SharedSizeGroup="BelegSpalte"
+                                      MinWidth="40"
+                                      MaxWidth="{Binding DataContext.BelegMaxBreite,
+                                          RelativeSource={RelativeSource AncestorType=UserControl}}"/>
                     <ColumnDefinition Width="*" MinWidth="120"/>
                     <ColumnDefinition Width="{StaticResource ColW_Netto}"/>
                     <ColumnDefinition Width="{StaticResource ColW_USt}"/>
@@ -164,7 +162,8 @@
 
                 <TextBlock Grid.Column="3" Text="{Binding BelegText}"
                            Margin="4,0" VerticalAlignment="Top"
-                           TextWrapping="Wrap"/>
+                           TextTrimming="CharacterEllipsis"
+                           ToolTip="{Binding BelegText}"/>
 
                 <!-- Beschreibung wickelt sich um, wenn zu lang -->
                 <TextBlock Grid.Column="4" Text="{Binding BeschreibungText}"
@@ -194,7 +193,6 @@
             </Grid>
         </DataTemplate>
 
-        <!-- DataTemplate: Footer (Summenzeile) -->
         <DataTemplate DataType="{x:Type journal:JournalFooterRow}">
             <Border BorderThickness="0,1,0,1"
                     BorderBrush="{StaticResource ColBorder}"
@@ -204,7 +202,10 @@
                         <ColumnDefinition Width="{StaticResource ColW_Icon}"/>
                         <ColumnDefinition Width="{StaticResource ColW_Icon}"/>
                         <ColumnDefinition Width="{StaticResource ColW_Datum}"/>
-                        <ColumnDefinition Width="{StaticResource ColW_Beleg}"/>
+                        <ColumnDefinition Width="Auto" SharedSizeGroup="BelegSpalte"
+                                          MinWidth="40"
+                                          MaxWidth="{Binding DataContext.BelegMaxBreite,
+                                              RelativeSource={RelativeSource AncestorType=UserControl}}"/>
                         <ColumnDefinition Width="*" MinWidth="120"/>
                         <ColumnDefinition Width="{StaticResource ColW_Netto}"/>
                         <ColumnDefinition Width="{StaticResource ColW_USt}"/>
@@ -236,15 +237,10 @@
             </Border>
         </DataTemplate>
 
-        <!-- DataTemplate: Spacer -->
         <DataTemplate DataType="{x:Type journal:JournalSpacerRow}">
             <Rectangle Height="{Binding Height}" Fill="Transparent"/>
         </DataTemplate>
 
-        <!-- ListBoxItem-Style: Selection (gelb) und Zebra-Streifen.
-             HorizontalContentAlignment="Stretch" sorgt dafuer, dass
-             die Grid-Templates die gesamte Listenbreite nutzen und
-             Wrapping korrekt greift. -->
         <Style x:Key="JournalRowStyle" TargetType="ListBoxItem">
             <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
             <Setter Property="Padding" Value="0"/>

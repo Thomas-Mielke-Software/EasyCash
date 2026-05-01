@@ -12,8 +12,10 @@ namespace ECTViews.Journal
 {
     public enum JournalAnzeigeModus
     {
-        Datum,
-        Konten
+        Datum = 0,                  // Einnahmen plus Ausgaben, sortiert nach Datum
+        Konten = 1,                 // pro Konto eine Tabelle, gruppiert E/A
+        Bestandskonten = 2,         // pro Bestandskonto eine Tabelle mit Saldo
+        Anlagenverzeichnis = 3      // pro Konto die Anlagegueter
     }
 
     public class JournalFilter
