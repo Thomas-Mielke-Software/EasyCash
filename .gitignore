@@ -6,6 +6,7 @@
 *.lo
 *.o
 *.obj
+*/obj/
 
 # Precompiled Headers
 *.gch
@@ -52,6 +53,9 @@ Directory.Build.props
 *.log
 *.bak
 
+# RKWard temporäre Dateien
+tmp_rkward_preview*.Rmd
+
 # Formular Screenshots
 *screenshot.png
 
@@ -66,6 +70,7 @@ Diverses/
 Doc/
 Doxygen/
 ECTATSPK/
+ECTBridge/obj/
 ECTChart/
 ECTDebug*
 ECTIFace/Debug/
@@ -83,6 +88,9 @@ ECT_Disk/
 ECT_Doc/
 EasyCash/
 EasyCTX/Hlp/EasyCTX.hm
+EasyCTX/EASYCTX.HLP
+EasyCTX/EASYCTX.ph
+EasyCTX/EASYCTX.zip
 EasyCTX/Debug*/
 EasyCTX/Release*/
 EasyCTX/x64/
@@ -98,15 +106,28 @@ EUer/AT-200?/
 EUer/AT-201?/
 EUer/*/*.zip
 EUer/*/*.pdf
-Jahr*.eca
+*Jahr20*.eca
+*Jahr19*.eca
 Kopie\ von*
 Kopie\ (?)\ von*
+* - Copy.*
 Logs/
 Mailings/
 Publizieren/
 PVCSArch/
 Release/
-Temp/
+RES/Registrierungsw*.png
+RES/Datenverzeichnis*
+RES/EasyCash*x*.png
+RES/EasyCash*x*.xcf
+RES/EasyCash*x*.psd
+RES/EasyCash_Icon.png
+RES/big_icon_checkmark.psd
+RES/toolbar_hicolor.xcf
+RES/* - Kopie.bmp
+RES/*LLL.bmp
+SourceMonitor/
+Tools/
 UVA/*.*
 UVA/*/*.ini
 UVA/AT-200?/*
@@ -114,8 +135,44 @@ UVA/D-200?/*
 UVA/AT-201?/*
 UVA/D-201?/*
 UVA/*/*.pdf
+UVA/*.pdf
 UVA/*/*.zip
+UVA/D-2022/uva-d-2022-0?.ecf
 UST/*/*.pdf
+UST/*.pdf
 UST/*/*.zip
+UST/D-2021/USt-d-2021-AnlageUN.png
 UpgradeLog*.htm
 x64/
+
+# temporäre Verzeichnisse
+Temp/
+*/LLL*
+
+# sonstiges nicht zu Trackendes
+*/*_ANLEITUNG.md
+*INTEGRATION.md
+*.zip
+TestReg.txt
+UmSt?.BMP
+UmStVor2000-?.jpg
+Wie ausdrucken.txt
+easycash 1 Disk.iss
+easycash MFC.iss
+easycash.exe.manifest
+easycash.opt
+easycash2Disks.iss
+easycashLLL.sln
+gray.ico
+green.ico
+red.ico
+re*-activex-debug.bat
+todo2.txt
+update.gif
+update.jpg
+ustv_austria1.jpg
+ustv_austria2.jpg
+uva.ini
+TempUpdate.txt
+
+
