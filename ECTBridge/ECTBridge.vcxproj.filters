@@ -40,6 +40,7 @@
     <ClCompile Include="AfAGenauigkeit.cpp">
       <Filter>Quelldateien %28nativ%29</Filter>
     </ClCompile>
+    <ClCompile Include="JournalExports.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h">
@@ -72,6 +73,7 @@
     <ClInclude Include="resource.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
+    <ClInclude Include="JournalExports.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="ECTIFace.rc">

@@ -1,4 +1,4 @@
-// JournalViewModel.cs — Hauptlogik des Buchungsjournals
+// JournalViewModel.cs - Hauptlogik des Buchungsjournals
 //
 // Reimplementiert DrawToDC_Datum() und DrawToDC_Konten() aus
 // easycashview.cpp als ViewModel, das eine ObservableCollection
@@ -6,9 +6,9 @@
 //
 // Der Aufrufer:
 //   1) erzeugt das ViewModel mit Engine + Icon-Sprites + Listen
-//   2) ruft Aktualisiere(filter) bei Filteränderungen auf
+//   2) ruft Aktualisiere(filter) bei Filteraenderungen auf
 //   3) abonniert die Events (BuchungBearbeiten, BuchungLoeschen, etc.)
-//      für die User-Aktionen
+//      fuer die User-Aktionen
 
 using System;
 using System.Collections.Generic;
@@ -28,7 +28,7 @@ namespace ECTViews.Journal
 
         private readonly BuchungsDocument _doc;
 
-        // Icon-Daten (für Betrieb/Bestandskonto-Icons in der Buchungszeile)
+        // Icon-Daten
         private readonly IList<string> _betriebeNamen;
         private readonly IList<string> _betriebeIcons;
         private readonly IList<string> _bestandskontenNamen;
@@ -36,8 +36,7 @@ namespace ECTViews.Journal
         private readonly BitmapSource _spriteBetriebe;
         private readonly BitmapSource _spriteBestandskonten;
 
-        // Cache für ausgeschnittene Icons (vermeidet wiederholtes Croppen
-        // pro Sprite-Index)
+        // Cache fuer ausgeschnittene Icons
         private readonly Dictionary<string, BitmapSource> _iconCache =
             new Dictionary<string, BitmapSource>();
 
@@ -51,7 +50,7 @@ namespace ECTViews.Journal
             private set => SetProperty(ref _aktuellerFilter, value);
         }
 
-        // Zoom-Property (an Filter.Schriftgroesse gekoppelt)
+        // Zoom-Property
         public double Schriftgroesse
         {
             get => _aktuellerFilter.Schriftgroesse;
@@ -73,23 +72,19 @@ namespace ECTViews.Journal
             set => SetProperty(ref _selektierteZeile, value);
         }
 
-        // Commands für Doppelklick + Kontextmenü
+        // Commands
         public ICommand BearbeitenCommand { get; }
         public ICommand LoeschenCommand { get; }
         public ICommand KopierenCommand { get; }
         public ICommand KopierenMitNeuerBelegnummerCommand { get; }
         public ICommand AfaAbgangCommand { get; }
 
-        // Events, die der View weiterreicht (in MFC-Hostcode):
+        // Events
         public event Action<Buchung> BuchungBearbeiten;
         public event Action<Buchung> BuchungLoeschen;
         public event Action<Buchung> BuchungKopieren;
         public event Action<Buchung> BuchungKopierenMitNeuerBelegnummer;
         public event Action<Buchung> BuchungAfaAbgang;
-
-        // ──────────────────────────────────────────────
-        // Konstruktor
-        // ──────────────────────────────────────────────
 
         public JournalViewModel(
             BuchungsDocument doc,
@@ -125,21 +120,14 @@ namespace ECTViews.Journal
                 () => SelektierteZeile != null);
         }
 
-        // ──────────────────────────────────────────────
-        // Public: Aktualisierung
-        // ──────────────────────────────────────────────
-
         /// <summary>
         /// Baut die Zeilenliste neu auf Basis des aktuellen Filters auf.
-        /// Aufrufen nach: Filteränderung, Zoom, Buchung hinzugefügt/geändert/gelöscht.
         /// </summary>
         public void Aktualisiere(JournalFilter filter = null)
         {
             if (filter != null) AktuellerFilter = filter;
 
-            // Selektion vor Neuaufbau merken (für Wiederherstellung)
             var alteBuchung = SelektierteZeile?.Buchung;
-
             Zeilen.Clear();
 
             switch (AktuellerFilter.AnzeigeModus)
@@ -152,7 +140,7 @@ namespace ECTViews.Journal
                     break;
             }
 
-            // Selektion wiederherstellen (Reference-Equality)
+            // Selektion wiederherstellen
             if (alteBuchung != null)
             {
                 SelektierteZeile = Zeilen.OfType<JournalBuchungRow>()
@@ -160,15 +148,11 @@ namespace ECTViews.Journal
             }
         }
 
-        // ══════════════════════════════════════════════
-        // Modus 1: Anzeige nach Datum (Einnahmen + Ausgaben getrennt)
-        // ══════════════════════════════════════════════
-
+        // Modus 1: Anzeige nach Datum
         private void BaueAnzeigeNachDatum()
         {
             var f = AktuellerFilter;
 
-            // Einnahmen-Sektion (wenn nicht durch Konten-Filter ausgeschlossen)
             bool zeigeEinnahmen =
                 !f.KontenFilter.StartsWith("Ausgaben: ") &&
                 f.KontenFilter != "--- [noch zu keinem Konto zugewiesene Ausgaben] ---";
@@ -208,16 +192,13 @@ namespace ECTViews.Journal
 
                     if (einnahmen.Count > 0)
                     {
-                        Zeilen.Add(BaueFooter(
-                            isAusgabe: false,
-                            netto: netto, steuer: ust, brutto: brutto));
+                        Zeilen.Add(BaueFooter(false, netto, ust, brutto));
                     }
 
                     Zeilen.Add(new JournalSpacerRow());
                 }
             }
 
-            // Ausgaben-Sektion (wenn nicht durch Konten-Filter ausgeschlossen)
             bool zeigeAusgaben =
                 !f.KontenFilter.StartsWith("Einnahmen: ") &&
                 f.KontenFilter != "--- [noch zu keinem Konto zugewiesene Einnahmen] ---";
@@ -248,9 +229,6 @@ namespace ECTViews.Journal
                     {
                         Zeilen.Add(BaueBuchungZeile(b, true, idx++));
 
-                        // Wie im Original: bei AfA-Folgejahr nur Netto-Anteil,
-                        // im Erstjahr Netto+VSt, separate VSt-Buchung als ganze
-                        // Brutto-Summe.
                         if (b.Konto == "VST-Beträge separat")
                         {
                             vst += b.BruttoBetrag.InCent;
@@ -270,24 +248,17 @@ namespace ECTViews.Journal
 
                     if (ausgaben.Count > 0)
                     {
-                        Zeilen.Add(BaueFooter(
-                            isAusgabe: true,
-                            netto: netto, steuer: vst, brutto: brutto));
+                        Zeilen.Add(BaueFooter(true, netto, vst, brutto));
                     }
                 }
             }
         }
 
-        // ══════════════════════════════════════════════
         // Modus 2: Anzeige nach Konten
-        // (Reimplementiert DrawToDC_Konten — eine Tabelle pro Konto)
-        // ══════════════════════════════════════════════
-
         private void BaueAnzeigeNachKonten()
         {
             var f = AktuellerFilter;
 
-            // Einnahmen-Sektion: pro Konto eine Tabelle
             var einnahmenKonten = SammleKonten(_doc.Einnahmen,
                 _doc.EinnahmenKonten, true);
             if (einnahmenKonten.Count > 0)
@@ -309,8 +280,8 @@ namespace ECTViews.Journal
                     Zeilen.Add(new JournalSectionTitle
                     {
                         Text = string.IsNullOrEmpty(konto)
-                            ? "--- [noch zu keinem Konto zugewiesene Einnahmen] ---"
-                            : $"--- {konto} ---",
+                            ? "[noch zu keinem Konto zugewiesene Einnahmen]"
+                            : "[" + konto + "]",
                         IsMain = false,
                         IsEinnahme = true
                     });
@@ -337,7 +308,6 @@ namespace ECTViews.Journal
                 }
             }
 
-            // Ausgaben-Sektion: analog
             var ausgabenKonten = SammleKonten(_doc.Ausgaben,
                 _doc.AusgabenKonten, false);
             if (ausgabenKonten.Count > 0)
@@ -359,8 +329,8 @@ namespace ECTViews.Journal
                     Zeilen.Add(new JournalSectionTitle
                     {
                         Text = string.IsNullOrEmpty(konto)
-                            ? "--- [noch zu keinem Konto zugewiesene Ausgaben] ---"
-                            : $"--- {konto} ---",
+                            ? "[noch zu keinem Konto zugewiesene Ausgaben]"
+                            : "[" + konto + "]",
                         IsMain = false,
                         IsEinnahme = false
                     });
@@ -400,10 +370,7 @@ namespace ECTViews.Journal
             }
         }
 
-        // ══════════════════════════════════════════════
-        // Filter-Logik (einheitlich für beide Modi)
-        // ══════════════════════════════════════════════
-
+        // Filter-Logik
         private IEnumerable<Buchung> FilterBuchungen(
             IEnumerable<Buchung> input, bool istEinnahme)
         {
@@ -423,14 +390,11 @@ namespace ECTViews.Journal
 
                     if (kontoLeer)
                     {
-                        // Buchung ohne Konto: nur durchlassen, wenn explizit
-                        // der "noch nicht zugewiesen"-Filter aktiv ist
                         if (f.KontenFilter != nichtZugewiesenLabel)
                             continue;
                     }
                     else
                     {
-                        // Buchung mit Konto: muss exakt dem Filter entsprechen
                         if (f.KontenFilter == nichtZugewiesenLabel)
                             continue;
                         if (praefix + b.Konto != f.KontenFilter)
@@ -448,7 +412,6 @@ namespace ECTViews.Journal
                     }
                     else
                     {
-                        // Quartal: 13=Q1, 14=Q2, 15=Q3, 16=Q4
                         int quartal = (monat - 1) / 3 + 1;
                         if (quartal != f.MonatsFilter - 12) continue;
                     }
@@ -468,10 +431,6 @@ namespace ECTViews.Journal
             }
         }
 
-        // ══════════════════════════════════════════════
-        // Hilfsfunktionen
-        // ══════════════════════════════════════════════
-
         private string TitelEinnahmenAusgaben(bool einnahme)
         {
             string typ = einnahme ? "EINNAHMEN" : "AUSGABEN";
@@ -481,18 +440,15 @@ namespace ECTViews.Journal
             if (f.MonatsFilter > 0)
             {
                 if (f.MonatsFilter > 12)
-                    return $"{typ} für {f.MonatsFilter - 12}. Quartal {jahr}";
-                return $"{typ} für Monat {f.MonatsFilter:D2}/{jahr}";
+                    return $"{typ} fuer {f.MonatsFilter - 12}. Quartal {jahr}";
+                return $"{typ} fuer Monat {f.MonatsFilter:D2}/{jahr}";
             }
-            return $"{typ} für {jahr}";
+            return $"{typ} fuer {jahr}";
         }
 
         private List<string> SammleKonten(IEnumerable<Buchung> buchungen,
             string[] vorgegebeneKonten, bool istEinnahme)
         {
-            // Reihenfolge: erst die in den Einstellungen definierten Konten,
-            // dann zusätzlich aus Buchungen, dann ggf. der "noch nicht
-            // zugewiesen"-Eintrag (leerer String).
             var alle = new List<string>();
             var seen = new HashSet<string>();
 
@@ -512,7 +468,7 @@ namespace ECTViews.Journal
                 else if (seen.Add(b.Konto))
                     alle.Add(b.Konto);
             }
-            if (unzugewiesenVorhanden) alle.Add(""); // leerer String = "noch nicht zugewiesen"
+            if (unzugewiesenVorhanden) alle.Add("");
             return alle;
         }
 

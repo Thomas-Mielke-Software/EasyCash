@@ -1,12 +1,11 @@
-// JournalView.xaml.cs — Code-Behind
+// JournalView.xaml.cs - Code-Behind
 //
-// Hauptaufgabe: Doppelklick-Routing (löst BearbeitenCommand aus, wenn
-// auf eine Buchungs-Zeile geklickt wurde — ListBox unterscheidet das
+// Hauptaufgabe: Doppelklick-Routing (loest BearbeitenCommand aus, wenn
+// auf eine Buchungs-Zeile geklickt wurde - ListBox unterscheidet das
 // nicht von alleine).
 
 using System.Windows.Controls;
 using System.Windows.Input;
-using ECTViews.Journal;
 
 namespace ECTViews.Journal
 {

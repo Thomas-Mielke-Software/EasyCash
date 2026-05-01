@@ -135,6 +135,19 @@ public:
 	CStringArray m_csaFormularfeldwerte;// mit BerechneFormularfeldwerte() berechnete Inhalte der Formularfelder
 	BOOL m_bFormularfelderAnzeigen;		// Felder mit ID und Rahmen anzeigen (zum Bearbeiten)
 
+private:
+#ifdef USE_ECTENGINE
+	// HWND des eingebetteten WPF-Journals (NULL wenn nicht aktiv).
+	// Lebt parallel zum alten DrawToDC-Modus, sodass beide Pfade
+	// koexistieren koennen.
+	HWND m_hwndJournalWpf;
+
+	// Hilfsfunktion: Journal anzeigen / verstecken
+	void ZeigeJournalWpf(int nAnzeigeModus);   // 0=Datum, 1=Konten
+	void VerstecktJournalWpf();                // beim Verlassen des Modus
+	void GroessenAnpassungJournalWpf();        // bei OnSize
+#endif
+
 // Operations
 public:
 	BuchenDlg *buchenDlg;

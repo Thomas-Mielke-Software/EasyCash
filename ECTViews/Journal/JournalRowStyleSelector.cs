@@ -1,7 +1,7 @@
-// JournalRowStyleSelector.cs — Wählt das passende ListBoxItem-Style
+// JournalRowStyleSelector.cs - Waehlt das passende ListBoxItem-Style
 // pro Zeilentyp (nur Buchungs-Zeilen sind selektierbar mit Zebra).
 //
-// ZebraConverter.cs — Liefert true wenn ZebraIndex gerade ist
+// ZebraConverter.cs - Liefert true wenn ZebraIndex gerade ist
 // (wird im DataTrigger-Style genutzt, weil DataTrigger keinen
 // arithmetischen Vergleich erlaubt).
 

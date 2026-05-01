@@ -1,40 +1,39 @@
-// JournalRow.cs — Datenmodell für die einzelnen Zeilentypen im Journal
+// JournalRow.cs - Datenmodell fuer die einzelnen Zeilentypen im Journal.
 //
 // Das Journal besteht aus einer flachen Liste von Zeilen unterschiedlichen
-// Typs (Sektions-Titel, Header, Buchungszeile, Footer). Per DataTemplate-
-// Selector wählt das ItemsControl pro Zeile das richtige visuelle Template.
-//
-// Diese Aufteilung in flache, gemischte Liste statt geschachtelter
-// Sections macht UI-Virtualisierung möglich, was bei vielen Buchungen
-// massiv Performance bringt.
+// Typs (Sektions-Titel, Header, Buchungszeile, Footer, Spacer). Per
+// DataTemplate-Selector waehlt die ListBox pro Zeile das richtige
+// visuelle Template. Die flache Struktur (statt geschachtelter Sections)
+// ermoeglicht UI-Virtualisierung, was bei vielen Buchungen massiv
+// Performance bringt.
 
 using System.Windows.Media.Imaging;
 using ECTEngine;
 
 namespace ECTViews.Journal
 {
-    /// <summary>Basisklasse für alle Zeilentypen.</summary>
+    /// <summary>Basisklasse fuer alle Zeilentypen.</summary>
     public abstract class JournalRow
     {
     }
 
     /// <summary>
-    /// Sektions-Überschrift wie "EINNAHMEN für 2024" oder
-    /// "--- Software-Entwicklung ---". Wird in farbiger Schrift,
-    /// größer und fett gerendert.
+    /// Sektions-Ueberschrift wie "EINNAHMEN fuer 2024" oder
+    /// "[Software-Entwicklung]". Wird in farbiger Schrift,
+    /// groesser und fett gerendert.
     /// </summary>
     public class JournalSectionTitle : JournalRow
     {
         public string Text { get; set; }
-        /// <summary>Hauptüberschrift (groß) vs. Unterüberschrift (mittel).</summary>
+        /// <summary>Hauptueberschrift (gross) vs. Unterueberschrift (mittel).</summary>
         public bool IsMain { get; set; }
-        /// <summary>true für Einnahmen-Färbung, false für Ausgaben-Färbung, null für neutral.</summary>
+        /// <summary>true fuer Einnahmen-Faerbung, false fuer Ausgaben-Faerbung, null fuer neutral.</summary>
         public bool? IsEinnahme { get; set; }
     }
 
     /// <summary>
-    /// Header-Zeile mit den Spaltenüberschriften (Datum, Beleg,
-    /// Beschreibung, Netto, USt%, USt-Betrag, Brutto, AfA-Nr).
+    /// Header-Zeile mit den Spaltenueberschriften (Datum, Beleg,
+    /// Beschreibung, Netto, USt-Prozent, USt-Betrag, Brutto, AfA-Nr).
     /// </summary>
     public class JournalHeaderRow : JournalRow
     {
@@ -45,20 +44,19 @@ namespace ECTViews.Journal
     }
 
     /// <summary>
-    /// Buchungszeile — der häufigste Zeilentyp. Enthält die formatierten
+    /// Buchungszeile - der haeufigste Zeilentyp. Enthaelt die formatierten
     /// Spaltenwerte, eine Referenz auf die zugrundeliegende Buchung
-    /// (für Selektion + Bearbeiten), und Hintergrund-Eigenschaften
-    /// (gerade/ungerade für Zebra-Streifen, selektiert für gelb).
+    /// (fuer Selektion plus Bearbeiten), und den Zebra-Index.
     /// </summary>
     public class JournalBuchungRow : JournalRow
     {
-        /// <summary>Die zugrundeliegende Buchung (für Doppelklick/Kontextmenü).</summary>
+        /// <summary>Die zugrundeliegende Buchung.</summary>
         public Buchung Buchung { get; set; }
 
         /// <summary>True = Ausgabe, False = Einnahme.</summary>
         public bool IstAusgabe { get; set; }
 
-        /// <summary>Index für Zebra-Streifen-Hintergrund.</summary>
+        /// <summary>Index fuer Zebra-Streifen-Hintergrund.</summary>
         public int ZebraIndex { get; set; }
 
         // Vorberechnete Anzeigewerte (formatiert):
@@ -85,7 +83,7 @@ namespace ECTViews.Journal
         public bool IsAusgabe { get; set; }
         public bool ZeigeSteuer { get; set; }
         public string NettoSummeText { get; set; }
-        public string SteuerSummeText { get; set; }   // USt oder VST
+        public string SteuerSummeText { get; set; }
         public string BruttoSummeText { get; set; }
         public string Waehrung { get; set; }
     }

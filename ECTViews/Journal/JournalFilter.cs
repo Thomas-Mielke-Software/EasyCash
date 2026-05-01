@@ -1,12 +1,12 @@
-// JournalFilter.cs — Filter-Optionen für das Buchungsjournal
+// JournalFilter.cs - Filter-Optionen fuer das Buchungsjournal
 //
 // Replikat der Display-Filter aus easycashview.cpp:
 //   m_KontenFilterDisplay, m_MonatsFilterDisplay,
 //   m_BetriebFilterDisplay, m_BestandskontoFilterDisplay
 //
 // Anzeige-Modus (m_nAnzeige im Original):
-//   Datum   → Buchungen sortiert nach Datum, gruppiert in Einnahmen + Ausgaben
-//   Konten  → Buchungen gruppiert nach EÜR-Konto
+//   Datum   - Buchungen sortiert nach Datum, gruppiert in Einnahmen plus Ausgaben
+//   Konten  - Buchungen gruppiert nach EUER-Konto
 
 namespace ECTViews.Journal
 {
@@ -22,28 +22,28 @@ namespace ECTViews.Journal
         public JournalAnzeigeModus AnzeigeModus { get; set; } = JournalAnzeigeModus.Datum;
 
         /// <summary>
-        /// Konten-Filter. "" oder "&lt;alle Konten&gt;" = kein Filter.
+        /// Konten-Filter. Leer oder "[alle Konten]" = kein Filter.
         /// Spezialwerte wie "Einnahmen: Honorar" oder
-        /// "--- [noch zu keinem Konto zugewiesene Einnahmen] ---" werden
+        /// die "noch zu keinem Konto zugewiesene"-Labels werden
         /// 1:1 wie im Original behandelt.
         /// </summary>
         public string KontenFilter { get; set; } = "";
 
         /// <summary>
         /// Monats-Filter:
-        ///   0   = alle Monate
+        ///   0    = alle Monate
         ///   1-12 = einzelner Monat
         ///   13-16 = Quartal 1-4
         /// </summary>
         public int MonatsFilter { get; set; }
 
-        /// <summary>Betriebs-Filter. "" = kein Filter.</summary>
+        /// <summary>Betriebs-Filter. Leer = kein Filter.</summary>
         public string BetriebFilter { get; set; } = "";
 
-        /// <summary>Bestandskonto-Filter. "" = kein Filter.</summary>
+        /// <summary>Bestandskonto-Filter. Leer = kein Filter.</summary>
         public string BestandskontoFilter { get; set; } = "";
 
-        /// <summary>Schriftgröße (Zoom).</summary>
+        /// <summary>Schriftgroesse (Zoom).</summary>
         public double Schriftgroesse { get; set; } = 13.0;
 
         /// <summary>Optionale Spalten anzeigen.</summary>

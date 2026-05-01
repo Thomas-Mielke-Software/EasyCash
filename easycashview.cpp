@@ -60,6 +60,7 @@ static char THIS_FILE[] = __FILE__;
 #ifdef USE_ECTENGINE
 #include "ECTBridge\Exports.h"
 #include "ECTBridge\ViewExports.h"
+#include "ECTBridge\JournalExports.h"
 #include "ECTBridge\EasyCashDocBridge.h"
 #endif
 
@@ -163,6 +164,9 @@ CEasyCashView::CEasyCashView()
 	m_nFeldMove = -1;
 	max_seitenzahl = 1;
 	m_zoomfaktor = 100;
+#ifdef USE_ECTENGINE
+	m_hwndJournalWpf = NULL;
+#endif
 	m_vt = 1;
 	m_vm = 1;
 	m_bt = 31;
@@ -201,11 +205,19 @@ CEasyCashView::CEasyCashView()
 	m_GewaehltesFormular = -1;
 	m_bFormularfelderAnzeigen = FALSE;
 	for (i = 0; i < FORMULARSEITENCACHESIZE; i++)
-		m_pFormularseitenImageCache[i] = NULL;	
+		m_pFormularseitenImageCache[i] = NULL;
 }
 
 CEasyCashView::~CEasyCashView()
 {
+#ifdef USE_ECTENGINE
+	if (m_hwndJournalWpf)
+	{
+		ECT_JournalAbloesen(m_hwndJournalWpf);
+		m_hwndJournalWpf = NULL;
+	}
+#endif
+
 	if (buchenDlg) delete buchenDlg;
 	if (dauerbuchungenDlg) delete dauerbuchungenDlg;
 	DestroyPlugin();
@@ -1476,7 +1488,11 @@ void CEasyCashView::OnSize(UINT nType, int cx, int cy)
 			m_zoomfaktor = m_wunschzoomfaktor; 
 	cx_old = cx;
 
-	SetupScroll();	
+	SetupScroll();
+
+#ifdef USE_ECTENGINE
+	GroessenAnpassungJournalWpf();
+#endif
 }
 
 // zoomfaktor in prozent
@@ -8078,43 +8094,79 @@ void CEasyCashView::OnViewOptions()
 	}
 }
 
-void CEasyCashView::OnViewJournalDatum() 
+void CEasyCashView::OnViewJournalDatum()
 {
 #ifdef USE_ECTENGINE
-	OnViewJournalDatumWpf();
+	// Plugin-Fenster (falls offen) deaktivieren
+	DestroyPlugin();
+
+	// Formularansicht zuruecksetzen
+	m_GewaehltesFormular = nSelected = -1;
+
+	// Eigenes View verstecken (analog Plugin-Code, Zeile 9561)
+	ShowWindow(SW_HIDE);
+
+	// Menue-Eintrag setzen
+	if (AfxGetMainWnd() && AfxGetMainWnd()->GetMenu()
+		&& AfxGetMainWnd()->GetMenu()->GetSubMenu(3))
+	{
+		AfxGetMainWnd()->GetMenu()->GetSubMenu(3)->CheckMenuRadioItem(
+			ID_VIEW_JOURNAL_DATUM, ID_VIEW_JOURNAL_ANLAGENVERZEICHNIS,
+			ID_VIEW_JOURNAL_DATUM, MF_BYCOMMAND);
+	}
+	m_nAnzeige = 0;
+
+	ZeigeJournalWpf(0);  // 0 = Datum-Modus
 #else
 
 	// Wenn Plugin aktiv im Fenster, erstmal Plugin deaktivieren
 	DestroyPlugin();
-			
-	// Formularansicht zurücksetzen
+
+	// Formularansicht zuruecksetzen
 	m_GewaehltesFormular = nSelected = -1;
 
 	GetParent()->ShowWindow(SW_SHOW);
-//VS9
 	if (AfxGetMainWnd() && AfxGetMainWnd()->GetMenu() && AfxGetMainWnd()->GetMenu()->GetSubMenu(3))
 		(AfxGetMainWnd())->GetMenu()->GetSubMenu(3)->CheckMenuRadioItem(ID_VIEW_JOURNAL_DATUM, ID_VIEW_JOURNAL_ANLAGENVERZEICHNIS, ID_VIEW_JOURNAL_DATUM, MF_BYCOMMAND);
-	m_nAnzeige = 0;	
-	//RedrawWindow();
+	m_nAnzeige = 0;
 	GetDocument()->UpdateAllViews(NULL);
 #endif
 }
 
-void CEasyCashView::OnViewJournalKonten() 
+void CEasyCashView::OnViewJournalKonten()
 {
-	// Wenn Plugin aktiv im Fenster, erstmal Plugin deaktivieren
+#ifdef USE_ECTENGINE
+	// Plugin-Fenster (falls offen) deaktivieren
 	DestroyPlugin();
-			
-	// Formularansicht zurücksetzen
+
+	// Formularansicht zuruecksetzen
 	m_GewaehltesFormular = nSelected = -1;
 
+	// Eigenes View verstecken
+	ShowWindow(SW_HIDE);
+
+	// Menue-Eintrag setzen
+	if (AfxGetMainWnd() && AfxGetMainWnd()->GetMenu()
+		&& AfxGetMainWnd()->GetMenu()->GetSubMenu(3))
+	{
+		AfxGetMainWnd()->GetMenu()->GetSubMenu(3)->CheckMenuRadioItem(
+			ID_VIEW_JOURNAL_DATUM, ID_VIEW_JOURNAL_ANLAGENVERZEICHNIS,
+			ID_VIEW_JOURNAL_KONTEN, MF_BYCOMMAND);
+	}
+	m_nAnzeige = 1;
+
+	ZeigeJournalWpf(1);  // 1 = Konten-Modus
+#else
+
+	// alter Code:
+	DestroyPlugin();
+	m_GewaehltesFormular = nSelected = -1;
 	GetParent()->ShowWindow(SW_SHOW);
-//VS9
 	if (AfxGetMainWnd() && AfxGetMainWnd()->GetMenu() && AfxGetMainWnd()->GetMenu()->GetSubMenu(3))
 		(AfxGetMainWnd())->GetMenu()->GetSubMenu(3)->CheckMenuRadioItem(ID_VIEW_JOURNAL_DATUM, ID_VIEW_JOURNAL_ANLAGENVERZEICHNIS, ID_VIEW_JOURNAL_KONTEN, MF_BYCOMMAND);
-	m_nAnzeige = 1;	
-	//RedrawWindow();
+	m_nAnzeige = 1;
 	GetDocument()->UpdateAllViews(NULL);
+#endif
 }
 
 // Filter auf nächstes Konto
@@ -8131,6 +8183,14 @@ void CEasyCashView::OnViewJournalKonto()
 		}
 	}	
 	GetDocument()->UpdateAllViews(NULL);
+
+#ifdef USE_ECTENGINE
+		if (m_hwndJournalWpf)
+			ECT_JournalAktualisiere(m_nAnzeige, m_KontenFilterDisplay,
+				m_MonatsFilterDisplay, m_BetriebFilterDisplay,
+				m_BestandskontoFilterDisplay,
+				(double)m_zoomfaktor * 13.0 / 100.0);
+#endif
 }
 
 // umschalten zwischen aktuellem Monat und allen Monaten
@@ -9060,6 +9120,15 @@ char *CEasyCashView::GetWaehrungskuerzel()
 
 void CEasyCashView::DestroyPlugin()
 {
+#ifdef USE_ECTENGINE
+	// Falls WPF-Journal aktiv ist, ebenfalls schliessen
+	if (m_hwndJournalWpf)
+	{
+		ECT_JournalAbloesen(m_hwndJournalWpf);
+		m_hwndJournalWpf = NULL;
+	}
+#endif
+
 	if (pPluginWnd) 
 	{
 		CPluginElement *pPluginDaten = ((CMainFrame*)AfxGetMainWnd())->m_pPlugins;
@@ -9936,6 +10005,15 @@ void CEasyCashView::SetzeZoomfaktor()
 	CString csStatusMessage;
 	csStatusMessage.Format("Zoomfaktor auf %d%%", m_zoomfaktor);
 	((CMainFrame*)AfxGetMainWnd())->SetStatus(csStatusMessage);
+
+#ifdef USE_ECTENGINE
+	// WPF-Journal auch zoomen.
+	// Mapping: 100% Zoom -> 13pt Schrift (= WPF-Default).
+	// Der Faktor 13.0/100.0 = 0.13 stellt sicher, dass z.B. 200% Zoom
+	// 26pt Schriftgroesse ergibt - das matcht visuell ungefaehr dem
+	// alten DrawToDC-Verhalten.
+	ECT_JournalSetzeZoom((double)m_zoomfaktor * 13.0 / 100.0);
+#endif
 }
 
 void CEasyCashView::OnKeyUp(UINT nChar, UINT nRepCnt, UINT nFlags) 
@@ -9961,3 +10039,76 @@ BOOL CEasyCashView::OnMouseWheel(UINT nFlags, short zDelta, CPoint pt)
 
 	return CScrollView::OnMouseWheel(nFlags, zDelta, pt);
 }
+
+#ifdef USE_ECTENGINE
+
+void CEasyCashView::ZeigeJournalWpf(int nAnzeigeModus)
+{
+	// Listen+Bitmaps (einmal pro Session) setzen, falls noch nicht geschehen
+	SetzeListenFuerBuchungsdialog();
+
+	// Existierendes Journal-Fenster wiederverwenden, wenn schon offen:
+	// einfach Filter aktualisieren statt ein zweites Fenster anzulegen.
+	if (m_hwndJournalWpf)
+	{
+		ECT_JournalAktualisiere(
+			nAnzeigeModus,
+			"",                         // KontenFilter (kein)
+			0,                          // MonatsFilter (alle)
+			"",                         // BetriebFilter
+			"",                         // BestandskontoFilter
+			(double)m_zoomfaktor / 100.0 * 13.0);  // Zoom in pt
+		return;
+	}
+
+	// Erste Anzeige: WPF-Journal als Kind des ChildFrame einbetten.
+	// GetParent() liefert den Splitter, GetParent()->GetParent() den
+	// ChildFrame - genau wie im Plugin-Code (Zeile 9511).
+	CWnd* pChildFrame = GetParent();   // siehe Plugin-Code
+	if (!pChildFrame) return;
+
+	CRect rc;
+	pChildFrame->GetClientRect(&rc);
+
+	m_hwndJournalWpf = ECT_JournalEinbetten(
+		pChildFrame->m_hWnd,
+		rc.left, rc.top, rc.Width(), rc.Height(),
+		GetDocument(),
+		nAnzeigeModus,
+		(double)m_zoomfaktor / 100.0 * 13.0);
+
+	if (!m_hwndJournalWpf)
+	{
+		AfxMessageBox(_T("Konnte WPF-Journalfenster nicht erzeugen."));
+		return;
+	}
+}
+
+void CEasyCashView::VerstecktJournalWpf()
+{
+	if (m_hwndJournalWpf)
+	{
+		ECT_JournalAbloesen(m_hwndJournalWpf);
+		m_hwndJournalWpf = NULL;
+	}
+	// Eigenes View wieder anzeigen
+	ShowWindow(SW_SHOW);
+}
+
+void CEasyCashView::GroessenAnpassungJournalWpf()
+{
+	if (!m_hwndJournalWpf) return;
+
+	CWnd* pChildFrame = GetParent();
+	if (!pChildFrame) return;
+
+	CRect rc;
+	pChildFrame->GetClientRect(&rc);
+
+	// Das HwndSource-Fenster auf neue Groesse setzen
+	::SetWindowPos(m_hwndJournalWpf, NULL,
+		rc.left, rc.top, rc.Width(), rc.Height(),
+		SWP_NOZORDER | SWP_NOACTIVATE);
+}
+
+#endif // USE_ECTENGINE
