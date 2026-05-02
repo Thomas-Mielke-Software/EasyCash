@@ -274,6 +274,10 @@ void CEasyCashView::OnInitialUpdate()
 {
 	CScrollView::OnInitialUpdate();
 
+#ifdef USE_ECTENGINE
+	ZeigeJournalWpf(m_nAnzeige);
+#endif
+
 	int nMandant;
 	if ((nMandant = GetMandant()) >= 0)
 	{
