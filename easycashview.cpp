@@ -854,7 +854,6 @@ void CEasyCashView::OnUpdate(CView* pSender, LPARAM lHint, CObject* pHint)
 	if (m_GewaehltesFormular >= 0)
 		BerechneFormularfeldwerte();
 
-
 	// Hook Erweiterungs-DLLs
 	CIterateExtensionDLLs("ECTE_UpdateDocument", (void *)GetDocument());
 
@@ -1058,7 +1057,17 @@ void CEasyCashView::OnUpdate(CView* pSender, LPARAM lHint, CObject* pHint)
 		for (i = 0; i < m_KontenMitBuchungen.GetSize(); i++)
 			pBtnFilterKonto->AddSubItem(new CMFCRibbonButton(ID_VIEW_JOURNAL_FUER_KONTO_BASE + i, (LPCTSTR)m_KontenMitBuchungen[i]));
 	}
-	
+
+#ifdef USE_ECTENGINE
+	if (IstJournalWpfAktiv())
+	{
+		// WPF-Navigation kuemmert sich selbst um ihren Inhalt -
+		// hier muessen wir nur die WPF-Daten refreshen
+		AktualisiereJournalFilter();
+		return;  // alter Navigations-Code uebersprungen
+	}
+#endif
+
 #define SPACES_ZU_ITEMS_HINZUFUEGEN 20
 
 	// Navigationsleiste aktualisieren
@@ -1567,6 +1576,19 @@ void CEasyCashView::OnVScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar)
 
 void CEasyCashView::OnDraw(CDC* pDC_par)
 {
+#ifdef USE_ECTENGINE
+	if (IstJournalWpfAktiv())
+	{
+		// Hintergrund weiss machen - dann sieht man nichts vom alten
+		// Layout durchscheinen, falls das WPF-HWND einen Pixel kleiner
+		// gerechnet wird oder ein Refresh aussteht.
+		CRect rc;
+		GetClientRect(&rc);
+		pDC_par->FillSolidRect(&rc, RGB(255, 255, 255));
+		return;
+	}
+#endif
+
 	if (!pPluginWnd) 
 	{
 		DrawInfo di;
@@ -8120,7 +8142,6 @@ void CEasyCashView::OnViewJournalDatum()
 
 	ZeigeJournalWpf(0);  // 0 = Datum-Modus
 #else
-
 	// Wenn Plugin aktiv im Fenster, erstmal Plugin deaktivieren
 	DestroyPlugin();
 
@@ -8143,9 +8164,6 @@ void CEasyCashView::OnViewJournalKonten()
 
 	// Formularansicht zuruecksetzen
 	m_GewaehltesFormular = nSelected = -1;
-
-	// Eigenes View verstecken
-	ShowWindow(SW_HIDE);
 
 	// Menue-Eintrag setzen
 	if (AfxGetMainWnd() && AfxGetMainWnd()->GetMenu()
@@ -8235,7 +8253,6 @@ void CEasyCashView::OnViewJournalBestkonten()
 #ifdef USE_ECTENGINE
 	DestroyPlugin();
 	m_GewaehltesFormular = nSelected = -1;
-	ShowWindow(SW_HIDE);
 	if (AfxGetMainWnd() && AfxGetMainWnd()->GetMenu() && AfxGetMainWnd()->GetMenu()->GetSubMenu(3))
 		(AfxGetMainWnd())->GetMenu()->GetSubMenu(3)->CheckMenuRadioItem(
 			ID_VIEW_JOURNAL_DATUM, ID_VIEW_JOURNAL_ANLAGENVERZEICHNIS,
@@ -8264,7 +8281,6 @@ void CEasyCashView::OnViewJournalAnlagenverzeichnis()
 #ifdef USE_ECTENGINE
 	DestroyPlugin();
 	m_GewaehltesFormular = nSelected = -1;
-	ShowWindow(SW_HIDE);
 	if (AfxGetMainWnd() && AfxGetMainWnd()->GetMenu() && AfxGetMainWnd()->GetMenu()->GetSubMenu(3))
 		(AfxGetMainWnd())->GetMenu()->GetSubMenu(3)->CheckMenuRadioItem(
 			ID_VIEW_JOURNAL_DATUM, ID_VIEW_JOURNAL_ANLAGENVERZEICHNIS,
@@ -8362,27 +8378,32 @@ void CEasyCashView::ZeigeJournalWpf(int nAnzeigeModus)
 		return;
 	}
 
-	CWnd* pChildFrame = GetParent();
-	if (!pChildFrame) return;
+	// Parent fuer das WPF-Fenster: der CExtSplitter, NICHT diese
+	// CScrollView. CScrollView hat eine logische Scroll-Flaeche, die
+	// das HwndSource-Hosting durcheinanderbringt.
+	CWnd* pSplitter = GetParent();
+	if (!pSplitter) return;
 
-	CRect rc;
-	pChildFrame->GetClientRect(&rc);
+	// WS_CLIPCHILDREN am Splitter, damit er nicht ueber das WPF malt
+	pSplitter->ModifyStyle(0, WS_CLIPCHILDREN);
+	if (m_pNavigationWnd)
+		m_pNavigationWnd->ModifyStyle(0, WS_CLIPCHILDREN);
 
-	int navX = rc.left;
-	int navY = rc.top;
-	int navW = NAVIGATION_BREITE;
-	int navH = rc.Height();
+	// Position+Groesse berechnen: in Splitter-Koordinaten dort, wo
+	// diese CEasyCashView sitzt. GetWindowRect liefert Bildschirm-
+	// Koordinaten, ScreenToClient transformiert in Splitter-Koords.
+	CRect rcView;
+	GetWindowRect(&rcView);
+	pSplitter->ScreenToClient(&rcView);
 
-	int jrnX = rc.left + NAVIGATION_BREITE + SPLITTER_BREITE;
-	int jrnY = rc.top;
-	int jrnW = rc.Width() - NAVIGATION_BREITE - SPLITTER_BREITE;
-	int jrnH = rc.Height();
-	if (jrnW < 100) jrnW = 100;
+	TRACE("ZeigeJournalWpf: Modus=%d, Splitter-Rect=%d,%d,%d,%d\n",
+		nAnzeigeModus,
+		rcView.left, rcView.top, rcView.Width(), rcView.Height());
 
-	// Journal einbetten
 	m_hwndJournalWpf = ECT_JournalEinbetten(
-		pChildFrame->m_hWnd,
-		jrnX, jrnY, jrnW, jrnH,
+		pSplitter->m_hWnd,                       // <-- Splitter als Parent!
+		rcView.left, rcView.top,
+		rcView.Width(), rcView.Height(),
 		GetDocument(),
 		nAnzeigeModus,
 		(double)m_zoomfaktor * 13.0 / 100.0);
@@ -8393,11 +8414,40 @@ void CEasyCashView::ZeigeJournalWpf(int nAnzeigeModus)
 		return;
 	}
 
-	// Navigation einbetten - haengt sich an das Journal an
-	m_hwndNavigationWpf = ECT_NavigationEinbetten(
-		pChildFrame->m_hWnd,
-		navX, navY, navW, navH,
-		m_hwndJournalWpf);
+	::ShowWindow(m_hwndJournalWpf, SW_SHOW);
+	::BringWindowToTop(m_hwndJournalWpf);
+
+	TRACE("WPF-Journal HWND = 0x%08X, sichtbar=%d\n",
+		(unsigned)m_hwndJournalWpf,
+		::IsWindowVisible(m_hwndJournalWpf));
+
+	// Damit beim Repaint nichts ueber das WPF-Fenster gemalt wird:
+	// die alte CEasyCashView verstecken. Sie behaelt ihre Position im
+	// Splitter (der Splitter sieht sie weiter), aber ihr WM_PAINT
+	// wird nicht mehr ausgefuehrt - das WPF-HWND deckt den Bereich.
+	ShowWindow(SW_HIDE);
+
+	// Navigation in die rechte Splitter-Pane einbetten - auch hier
+	// den Splitter als Parent (m_pNavigationWnd ist Pane (0,1)).
+	if (m_pNavigationWnd)
+	{
+		CRect rcNav;
+		m_pNavigationWnd->GetWindowRect(&rcNav);
+		pSplitter->ScreenToClient(&rcNav);
+
+		m_hwndNavigationWpf = ECT_NavigationEinbetten(
+			pSplitter->m_hWnd,
+			rcNav.left, rcNav.top,
+			rcNav.Width(), rcNav.Height(),
+			m_hwndJournalWpf);
+
+		if (m_hwndNavigationWpf)
+		{
+			::ShowWindow(m_hwndNavigationWpf, SW_SHOW);
+			::BringWindowToTop(m_hwndNavigationWpf);
+			m_pNavigationWnd->ShowWindow(SW_HIDE);
+		}
+	}
 }
 
 void CEasyCashView::VerstecktJournalWpf()
@@ -8406,39 +8456,40 @@ void CEasyCashView::VerstecktJournalWpf()
 	{
 		ECT_NavigationAbloesen(m_hwndNavigationWpf);
 		m_hwndNavigationWpf = NULL;
+		if (m_pNavigationWnd) m_pNavigationWnd->ShowWindow(SW_SHOW);
 	}
 	if (m_hwndJournalWpf)
 	{
 		ECT_JournalAbloesen(m_hwndJournalWpf);
 		m_hwndJournalWpf = NULL;
+		ShowWindow(SW_SHOW);
+		Invalidate();
 	}
-	ShowWindow(SW_SHOW);
 }
 
 void CEasyCashView::GroessenAnpassungJournalWpf()
 {
-	if (!m_hwndJournalWpf) return;
+	CWnd* pSplitter = GetParent();
+	if (!pSplitter) return;
 
-	CWnd* pChildFrame = GetParent();
-	if (!pChildFrame) return;
-
-	CRect rc;
-	pChildFrame->GetClientRect(&rc);
-
-	if (m_hwndNavigationWpf)
+	if (m_hwndJournalWpf)
 	{
-		::SetWindowPos(m_hwndNavigationWpf, NULL,
-			rc.left, rc.top, NAVIGATION_BREITE, rc.Height(),
+		CRect rc;
+		GetWindowRect(&rc);
+		pSplitter->ScreenToClient(&rc);
+		::SetWindowPos(m_hwndJournalWpf, NULL,
+			rc.left, rc.top, rc.Width(), rc.Height(),
 			SWP_NOZORDER | SWP_NOACTIVATE);
 	}
-
-	int jrnX = rc.left + NAVIGATION_BREITE + SPLITTER_BREITE;
-	int jrnW = rc.Width() - NAVIGATION_BREITE - SPLITTER_BREITE;
-	if (jrnW < 100) jrnW = 100;
-
-	::SetWindowPos(m_hwndJournalWpf, NULL,
-		jrnX, rc.top, jrnW, rc.Height(),
-		SWP_NOZORDER | SWP_NOACTIVATE);
+	if (m_hwndNavigationWpf && m_pNavigationWnd)
+	{
+		CRect rc;
+		m_pNavigationWnd->GetWindowRect(&rc);
+		pSplitter->ScreenToClient(&rc);
+		::SetWindowPos(m_hwndNavigationWpf, NULL,
+			rc.left, rc.top, rc.Width(), rc.Height(),
+			SWP_NOZORDER | SWP_NOACTIVATE);
+	}
 }
 
 void CEasyCashView::AktualisiereJournalFilter()

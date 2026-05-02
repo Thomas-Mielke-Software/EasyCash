@@ -148,6 +148,11 @@ private:
 	void VerstecktJournalWpf();
 	void GroessenAnpassungJournalWpf();
 	void AktualisiereJournalFilter();          // bei Filter-Aenderung
+
+	// True solange ein WPF-Journal aktiv ist - dann sollten alle
+	// alten DrawToDC-Pfade und Navigations-Updates uebersprungen
+	// werden, damit nichts ueber das WPF gemalt wird.
+	bool IstJournalWpfAktiv() const { return m_hwndJournalWpf != NULL; }
 #endif
 
 // Operations

@@ -39,14 +39,60 @@ namespace ECTViews.Journal
         private void OnScrollIntoViewRequest(JournalRow row)
         {
             if (row == null) return;
-            // ScrollIntoView funktioniert nur, nachdem das Layout
-            // aufgebaut wurde. In Edge-Cases (z.B. direkt nach
-            // Aktualisiere()) verzögert sich das auf den nächsten
-            // Dispatcher-Zyklus.
+            // Asynchron, damit das Layout fertig aufgebaut ist (sonst
+            // funktioniert ContainerFromItem nicht zuverlaessig).
             Dispatcher.BeginInvoke(new System.Action(() =>
             {
-                lstZeilen.ScrollIntoView(row);
+                ZentriereVertikal(row);
             }), System.Windows.Threading.DispatcherPriority.Background);
+        }
+
+        /// <summary>
+        /// Scrollt die ListBox so, dass die uebergebene Zeile vertikal
+        /// in der Mitte des sichtbaren Bereichs steht. Falls noetig,
+        /// wird ScrollIntoView vorab aufgerufen, um den Container ueberhaupt
+        /// erst zu materialisieren (UI-Virtualisierung).
+        /// </summary>
+        private void ZentriereVertikal(JournalRow row)
+        {
+            // Schritt 1: Container erzwingen (UI-Virt. baut sonst gar nichts auf)
+            lstZeilen.ScrollIntoView(row);
+            lstZeilen.UpdateLayout();
+
+            var item = lstZeilen.ItemContainerGenerator
+                .ContainerFromItem(row) as System.Windows.Controls.ListBoxItem;
+            if (item == null) return;
+
+            var scrollViewer = FindeScrollViewer(lstZeilen);
+            if (scrollViewer == null) return;
+
+            // Y-Position des Items relativ zum ScrollViewer-Inhalt
+            var transform = item.TransformToAncestor(scrollViewer);
+            double itemTop = transform.Transform(new System.Windows.Point(0, 0)).Y
+                             + scrollViewer.VerticalOffset;
+
+            double zielOffset = itemTop
+                                - scrollViewer.ViewportHeight / 2
+                                + item.ActualHeight / 2;
+
+            zielOffset = System.Math.Max(0,
+                System.Math.Min(zielOffset, scrollViewer.ScrollableHeight));
+
+            scrollViewer.ScrollToVerticalOffset(zielOffset);
+        }
+
+        private static System.Windows.Controls.ScrollViewer FindeScrollViewer(
+            System.Windows.DependencyObject d)
+        {
+            if (d is System.Windows.Controls.ScrollViewer sv) return sv;
+            int n = System.Windows.Media.VisualTreeHelper.GetChildrenCount(d);
+            for (int i = 0; i < n; i++)
+            {
+                var child = System.Windows.Media.VisualTreeHelper.GetChild(d, i);
+                var found = FindeScrollViewer(child);
+                if (found != null) return found;
+            }
+            return null;
         }
 
         private void OnZeilenDoppelklick(object sender, MouseButtonEventArgs e)
