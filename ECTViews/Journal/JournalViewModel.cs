@@ -542,12 +542,15 @@ namespace ECTViews.Journal
                     IsEinnahme = null
                 });
 
-                // "Anfangssaldo"-Pseudozeile als Header-Ersatz
+                // "Anfangssaldo"-Pseudozeile als Header-Ersatz.
+                // Im Bestandskonten-Modus werden die Steuer-Spalten (USt,
+                // USt-Betr) nicht angezeigt - der Saldo ist eine reine
+                // Brutto-Groesse.
                 Zeilen.Add(new JournalHeaderRow
                 {
                     IsAusgabe = false,
                     ZeigeBelegnummer = f.ZeigeBelegnummernspalte,
-                    ZeigeSteuer = f.ZeigeSteuerspalte
+                    ZeigeSteuer = false
                 });
 
                 // Lauf-Saldo
@@ -585,6 +588,11 @@ namespace ECTViews.Journal
                     // Vorzeichen sichtbar machen
                     if (!istEinnahme)
                         zeile.BruttoText = "-" + zeile.BruttoText;
+                    // Im Bestandskonten-Modus die Steuer-Spalten leeren -
+                    // Saldo ist eine reine Brutto-Groesse.
+                    zeile.NettoText = "";
+                    zeile.MwstSatzText = "";
+                    zeile.MwstBetragText = "";
                     Zeilen.Add(zeile);
                 }
 
@@ -593,10 +601,11 @@ namespace ECTViews.Journal
                 {
                     IsAusgabe = false,
                     ZeigeSteuer = false,
+                    LinkesLabel = "Endsaldo",
                     NettoSummeText = "",
                     SteuerSummeText = "",
                     BruttoSummeText = FormatBetrag(saldoCent),
-                    Waehrung = "Endsaldo " + (_doc.Waehrung ?? "EUR")
+                    Waehrung = _doc.Waehrung ?? "EUR"
                 });
                 Zeilen.Add(new JournalSpacerRow());
             }

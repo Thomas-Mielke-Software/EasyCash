@@ -82,6 +82,13 @@ namespace ECTViews.Journal
     {
         public bool IsAusgabe { get; set; }
         public bool ZeigeSteuer { get; set; }
+
+        /// <summary>
+        /// Beschriftung des linken Footer-Felds. Default "Summe", im
+        /// Bestandskonten-Modus auf "Endsaldo" umgestellt.
+        /// </summary>
+        public string LinkesLabel { get; set; } = "Summe";
+
         public string NettoSummeText { get; set; }
         public string SteuerSummeText { get; set; }
         public string BruttoSummeText { get; set; }

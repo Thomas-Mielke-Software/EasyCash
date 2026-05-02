@@ -214,7 +214,7 @@
                         <ColumnDefinition Width="{StaticResource ColW_AfA}"/>
                     </Grid.ColumnDefinitions>
 
-                    <TextBlock Grid.Column="4" Text="Summe"
+                    <TextBlock Grid.Column="4" Text="{Binding LinkesLabel}"
                                FontWeight="Bold" Margin="4,0"/>
 
                     <TextBlock Grid.Column="5" Text="{Binding NettoSummeText}"
@@ -230,8 +230,12 @@
                     <TextBlock Grid.Column="8" Text="{Binding BruttoSummeText}"
                                TextAlignment="Right" Margin="4,0"
                                FontWeight="Bold" FontFamily="Consolas"/>
+                    <!-- Waehrung mit rechtem Margin, damit der vertikale
+                         ListBox-Scrollbar (~17px) den Text nicht abschneidet.
+                         Andere Spalten brauchen das nicht, weil sie den
+                         Scrollbar-Bereich nicht erreichen. -->
                     <TextBlock Grid.Column="9" Text="{Binding Waehrung}"
-                               TextAlignment="Right" Margin="4,0"
+                               TextAlignment="Right" Margin="4,0,20,0"
                                FontWeight="Bold"/>
                 </Grid>
             </Border>
