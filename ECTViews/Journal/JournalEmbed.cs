@@ -21,7 +21,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Windows;
 using System.Windows.Interop;
 using ECTEngine;
 
@@ -247,6 +246,21 @@ namespace ECTViews.Journal
                     return;
                 }
             }
+        }
+
+        /// <summary>
+        /// Liefert das JournalViewModel, das zu einem eingebetteten
+        /// Journal-HWND gehoert. Wird vom Bridge-Code verwendet, um
+        /// Eventhandler (BuchungBearbeiten etc.) an das ViewModel zu
+        /// binden, nachdem ECT_JournalEinbetten aufgerufen wurde.
+        /// </summary>
+        public static JournalViewModel FindeViewModel(IntPtr hwndKind)
+        {
+            foreach (var e in _aktiveHosts)
+            {
+                if (e.HwndKind == hwndKind) return e.ViewModel;
+            }
+            return null;
         }
 
         /// <summary>

@@ -286,6 +286,7 @@
                  ScrollViewer.VerticalScrollBarVisibility="Auto"
                  VirtualizingPanel.IsVirtualizing="True"
                  VirtualizingPanel.VirtualizationMode="Recycling"
+                 VirtualizingPanel.ScrollUnit="Pixel"
                  FontSize="{Binding Schriftgroesse}"
                  KeyboardNavigation.DirectionalNavigation="Continue"
                  ItemContainerStyleSelector="{x:Static journal:JournalRowStyleSelector.Instance}"

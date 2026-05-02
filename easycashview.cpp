@@ -8384,11 +8384,6 @@ void CEasyCashView::ZeigeJournalWpf(int nAnzeigeModus)
 	CWnd* pSplitter = GetParent();
 	if (!pSplitter) return;
 
-	// WS_CLIPCHILDREN am Splitter, damit er nicht ueber das WPF malt
-	pSplitter->ModifyStyle(0, WS_CLIPCHILDREN);
-	if (m_pNavigationWnd)
-		m_pNavigationWnd->ModifyStyle(0, WS_CLIPCHILDREN);
-
 	// Position+Groesse berechnen: in Splitter-Koordinaten dort, wo
 	// diese CEasyCashView sitzt. GetWindowRect liefert Bildschirm-
 	// Koordinaten, ScreenToClient transformiert in Splitter-Koords.
