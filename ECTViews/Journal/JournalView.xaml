@@ -75,6 +75,11 @@
                         <ColumnDefinition Width="{StaticResource ColW_USt}"/>
                         <ColumnDefinition Width="{StaticResource ColW_USt_Betrag}"/>
                         <ColumnDefinition Width="{StaticResource ColW_Brutto}"/>
+                        <ColumnDefinition Width="Auto"
+                                          MinWidth="{Binding DataContext.SaldoSpaltenBreite,
+                                              RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                          MaxWidth="{Binding DataContext.SaldoSpaltenBreite,
+                                              RelativeSource={RelativeSource AncestorType=UserControl}}"/>
                         <ColumnDefinition Width="{StaticResource ColW_AfA}"/>
                     </Grid.ColumnDefinitions>
 
@@ -122,7 +127,11 @@
                     </TextBlock>
                     <TextBlock Grid.Column="8" Text="Brutto"
                                FontWeight="SemiBold" TextAlignment="Right" Margin="4,0"/>
-                    <TextBlock Grid.Column="9" Text="AfA-Nr"
+                    <TextBlock Grid.Column="9" Text="Saldo"
+                               FontWeight="SemiBold" TextAlignment="Right" Margin="4,0"
+                               Visibility="{Binding ZeigeSaldo,
+                                   Converter={StaticResource BoolToVis}}"/>
+                    <TextBlock Grid.Column="10" Text="AfA-Nr"
                                FontWeight="SemiBold" TextAlignment="Right" Margin="4,0"
                                Visibility="{Binding ZeigeAfaNr,
                                    Converter={StaticResource BoolToVis}}"/>
@@ -145,6 +154,11 @@
                     <ColumnDefinition Width="{StaticResource ColW_USt}"/>
                     <ColumnDefinition Width="{StaticResource ColW_USt_Betrag}"/>
                     <ColumnDefinition Width="{StaticResource ColW_Brutto}"/>
+                    <ColumnDefinition Width="Auto"
+                                      MinWidth="{Binding DataContext.SaldoSpaltenBreite,
+                                          RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                      MaxWidth="{Binding DataContext.SaldoSpaltenBreite,
+                                          RelativeSource={RelativeSource AncestorType=UserControl}}"/>
                     <ColumnDefinition Width="{StaticResource ColW_AfA}"/>
                 </Grid.ColumnDefinitions>
 
@@ -187,7 +201,13 @@
                            VerticalAlignment="Top" FontWeight="SemiBold"
                            FontFamily="Consolas"/>
 
-                <TextBlock Grid.Column="9" Text="{Binding AfaNrText}"
+                <!-- Laufender Saldo (nur im Bestandskonten-Modus gefuellt) -->
+                <TextBlock Grid.Column="9" Text="{Binding SaldoText}"
+                           TextAlignment="Right" Margin="4,0"
+                           VerticalAlignment="Top" FontWeight="SemiBold"
+                           FontFamily="Consolas"/>
+
+                <TextBlock Grid.Column="10" Text="{Binding AfaNrText}"
                            TextAlignment="Right" Margin="4,0"
                            VerticalAlignment="Top"/>
             </Grid>
@@ -211,6 +231,11 @@
                         <ColumnDefinition Width="{StaticResource ColW_USt}"/>
                         <ColumnDefinition Width="{StaticResource ColW_USt_Betrag}"/>
                         <ColumnDefinition Width="{StaticResource ColW_Brutto}"/>
+                        <ColumnDefinition Width="Auto"
+                                          MinWidth="{Binding DataContext.SaldoSpaltenBreite,
+                                              RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                          MaxWidth="{Binding DataContext.SaldoSpaltenBreite,
+                                              RelativeSource={RelativeSource AncestorType=UserControl}}"/>
                         <ColumnDefinition Width="{StaticResource ColW_AfA}"/>
                     </Grid.ColumnDefinitions>
 
@@ -230,11 +255,14 @@
                     <TextBlock Grid.Column="8" Text="{Binding BruttoSummeText}"
                                TextAlignment="Right" Margin="4,0"
                                FontWeight="Bold" FontFamily="Consolas"/>
-                    <!-- Waehrung mit rechtem Margin, damit der vertikale
-                         ListBox-Scrollbar (~17px) den Text nicht abschneidet.
-                         Andere Spalten brauchen das nicht, weil sie den
-                         Scrollbar-Bereich nicht erreichen. -->
-                    <TextBlock Grid.Column="9" Text="{Binding Waehrung}"
+                    <!-- Endsaldo (nur im Bestandskonten-Modus gefuellt) -->
+                    <TextBlock Grid.Column="9" Text="{Binding SaldoSummeText}"
+                               TextAlignment="Right" Margin="4,0"
+                               FontWeight="Bold" FontFamily="Consolas"/>
+                    <!-- Waehrung in der AfA-Spaltenposition. Rechtes Margin
+                         (20px) verhindert, dass der vertikale Scrollbar
+                         den Text abschneidet. -->
+                    <TextBlock Grid.Column="10" Text="{Binding Waehrung}"
                                TextAlignment="Right" Margin="4,0,20,0"
                                FontWeight="Bold"/>
                 </Grid>

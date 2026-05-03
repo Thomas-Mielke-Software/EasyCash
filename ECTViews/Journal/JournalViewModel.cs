@@ -78,6 +78,17 @@ namespace ECTViews.Journal
             set => SetProperty(ref _belegMaxBreite, value);
         }
 
+        // Breite der Saldo-Spalte. 0 in den meisten Modi (Spalte ist
+        // dann praktisch nicht da), 110 im Bestandskonten-Modus.
+        // Gebunden an MinWidth + MaxWidth der ColumnDefinition in
+        // allen drei Templates (Header/Buchung/Footer).
+        private double _saldoSpaltenBreite = 0;
+        public double SaldoSpaltenBreite
+        {
+            get => _saldoSpaltenBreite;
+            set => SetProperty(ref _saldoSpaltenBreite, value);
+        }
+
         // Selektion
         private JournalBuchungRow _selektierteZeile;
         public JournalBuchungRow SelektierteZeile
@@ -240,6 +251,13 @@ namespace ECTViews.Journal
 
             var alteBuchung = SelektierteZeile?.Buchung;
             Zeilen.Clear();
+
+            // Saldo-Spalte nur im Bestandskonten-Modus sichtbar machen.
+            // In den anderen Modi auf 0 - die Spalte ist dann ein
+            // Null-Pixel-Strich und stoert das Layout nicht.
+            SaldoSpaltenBreite =
+                AktuellerFilter.AnzeigeModus == JournalAnzeigeModus.Bestandskonten
+                ? 110.0 : 0.0;
 
             switch (AktuellerFilter.AnzeigeModus)
             {
@@ -544,13 +562,13 @@ namespace ECTViews.Journal
 
                 // "Anfangssaldo"-Pseudozeile als Header-Ersatz.
                 // Im Bestandskonten-Modus werden die Steuer-Spalten (USt,
-                // USt-Betr) nicht angezeigt - der Saldo ist eine reine
-                // Brutto-Groesse.
+                // USt-Betr) nicht angezeigt. Stattdessen ist die Saldo-Spalte aktiv.
                 Zeilen.Add(new JournalHeaderRow
                 {
                     IsAusgabe = false,
                     ZeigeBelegnummer = f.ZeigeBelegnummernspalte,
-                    ZeigeSteuer = false
+                    ZeigeSteuer = false,
+                    ZeigeSaldo = true
                 });
 
                 // Lauf-Saldo
@@ -558,7 +576,8 @@ namespace ECTViews.Journal
                 int idx = 0;
 
                 // Pseudozeile fuer Anfangssaldo - als JournalBuchungRow
-                // ohne Buchung-Referenz (keine Bearbeiten-Aktion)
+                // ohne Buchung-Referenz (keine Bearbeiten-Aktion).
+                // Brutto bleibt leer, Saldo enthaelt den Anfangswert.
                 Zeilen.Add(new JournalBuchungRow
                 {
                     Buchung = null,
@@ -570,7 +589,8 @@ namespace ECTViews.Journal
                     NettoText = "",
                     MwstSatzText = "",
                     MwstBetragText = "",
-                    BruttoText = FormatBetrag(saldoCent),
+                    BruttoText = "",
+                    SaldoText = FormatBetrag(saldoCent),
                     AfaNrText = ""
                 });
 
@@ -593,10 +613,15 @@ namespace ECTViews.Journal
                     zeile.NettoText = "";
                     zeile.MwstSatzText = "";
                     zeile.MwstBetragText = "";
+                    // AfA-Nr auch nicht zeigen (die Spalte bleibt fuer
+                    // die Waehrung im Footer reserviert).
+                    zeile.AfaNrText = "";
+                    // Laufender Saldo
+                    zeile.SaldoText = FormatBetrag(saldoCent);
                     Zeilen.Add(zeile);
                 }
 
-                // Footer: Endsaldo
+                // Footer: Endsaldo. Brutto-Summe leer, Saldo gefuellt.
                 Zeilen.Add(new JournalFooterRow
                 {
                     IsAusgabe = false,
@@ -604,7 +629,8 @@ namespace ECTViews.Journal
                     LinkesLabel = "Endsaldo",
                     NettoSummeText = "",
                     SteuerSummeText = "",
-                    BruttoSummeText = FormatBetrag(saldoCent),
+                    BruttoSummeText = "",
+                    SaldoSummeText = FormatBetrag(saldoCent),
                     Waehrung = _doc.Waehrung ?? "EUR"
                 });
                 Zeilen.Add(new JournalSpacerRow());

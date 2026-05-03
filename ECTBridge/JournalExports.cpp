@@ -12,14 +12,14 @@
 
 #include "stdafx.h"
 #include "JournalExports.h"
-#include "EasyCashDocBridge.h"   // CEasyCashDocBridge + GetEngine(bridge)
-#include "ViewExports.h"
+#include "ViewExports.h"            // ECT_ShowBuchungBearbeitenDialog
+#include "EasyCashDocBridge.h"      // CEasyCashDocBridge + GetEngine(bridge)
 
 #using "ECTEngine.dll"
 #using "ECTViews.dll"
+#using <System.dll>                 // INotifyPropertyChanged in ECTViews
 
 using namespace System;
-#using <System.dll>
 
 // ----------------------------------------------------------
 // Helper: native LPCSTR -> managed String^

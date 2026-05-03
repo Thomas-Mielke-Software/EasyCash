@@ -8375,22 +8375,15 @@ void CEasyCashView::ZeigeJournalWpf(int nAnzeigeModus)
 {
 	SetzeListenFuerBuchungsdialog();
 
-	// Wenn schon offen: nur Filter aktualisieren
 	if (m_hwndJournalWpf)
 	{
 		AktualisiereJournalFilter();
 		return;
 	}
 
-	// Parent fuer das WPF-Fenster: der CExtSplitter, NICHT diese
-	// CScrollView. CScrollView hat eine logische Scroll-Flaeche, die
-	// das HwndSource-Hosting durcheinanderbringt.
 	CWnd* pSplitter = GetParent();
 	if (!pSplitter) return;
 
-	// Position+Groesse berechnen: in Splitter-Koordinaten dort, wo
-	// diese CEasyCashView sitzt. GetWindowRect liefert Bildschirm-
-	// Koordinaten, ScreenToClient transformiert in Splitter-Koords.
 	CRect rcView;
 	GetWindowRect(&rcView);
 	pSplitter->ScreenToClient(&rcView);
@@ -8400,7 +8393,7 @@ void CEasyCashView::ZeigeJournalWpf(int nAnzeigeModus)
 		rcView.left, rcView.top, rcView.Width(), rcView.Height());
 
 	m_hwndJournalWpf = ECT_JournalEinbetten(
-		pSplitter->m_hWnd,                       // <-- Splitter als Parent!
+		pSplitter->m_hWnd,
 		rcView.left, rcView.top,
 		rcView.Width(), rcView.Height(),
 		GetDocument(),
@@ -8420,14 +8413,8 @@ void CEasyCashView::ZeigeJournalWpf(int nAnzeigeModus)
 		(unsigned)m_hwndJournalWpf,
 		::IsWindowVisible(m_hwndJournalWpf));
 
-	// Damit beim Repaint nichts ueber das WPF-Fenster gemalt wird:
-	// die alte CEasyCashView verstecken. Sie behaelt ihre Position im
-	// Splitter (der Splitter sieht sie weiter), aber ihr WM_PAINT
-	// wird nicht mehr ausgefuehrt - das WPF-HWND deckt den Bereich.
 	ShowWindow(SW_HIDE);
 
-	// Navigation in die rechte Splitter-Pane einbetten - auch hier
-	// den Splitter als Parent (m_pNavigationWnd ist Pane (0,1)).
 	if (m_pNavigationWnd)
 	{
 		CRect rcNav;

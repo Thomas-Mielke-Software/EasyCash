@@ -41,6 +41,8 @@ namespace ECTViews.Journal
         public bool ZeigeBelegnummer { get; set; }
         public bool ZeigeSteuer { get; set; }
         public bool ZeigeAfaNr { get; set; }
+        /// <summary>True im Bestandskonten-Modus -> Spaltenueberschrift "Saldo".</summary>
+        public bool ZeigeSaldo { get; set; }
     }
 
     /// <summary>
@@ -68,6 +70,11 @@ namespace ECTViews.Journal
         public string MwstBetragText { get; set; }
         public string BruttoText { get; set; }
         public string AfaNrText { get; set; }
+        /// <summary>
+        /// Laufender Saldo - nur im Bestandskonten-Modus gefuellt,
+        /// in den anderen Modi leer.
+        /// </summary>
+        public string SaldoText { get; set; }
 
         // Icons
         public BitmapSource BetriebIcon { get; set; }
@@ -92,6 +99,8 @@ namespace ECTViews.Journal
         public string NettoSummeText { get; set; }
         public string SteuerSummeText { get; set; }
         public string BruttoSummeText { get; set; }
+        /// <summary>Endsaldo - nur im Bestandskonten-Modus gefuellt.</summary>
+        public string SaldoSummeText { get; set; }
         public string Waehrung { get; set; }
     }
 
