@@ -74,9 +74,10 @@ namespace ECTViews
         /// Aufrufer diese nur einmal setzen muss.
         /// </summary>
         public static System.Collections.Generic.IList<string> BetriebeNamen { get; set; }
-        public static System.Collections.Generic.IList<string> BetriebeIcons { get; set; }
+        public static System.Collections.Generic.IList<int>    BetriebeIcons { get; set; }
         public static System.Collections.Generic.IList<string> BestandskontenNamen { get; set; }
-        public static System.Collections.Generic.IList<string> BestandskontenIcons { get; set; }
+        public static System.Collections.Generic.IList<int>    BestandskontenIcons { get; set; }
+        public static System.Collections.Generic.IList<int>    BestandskontenSalden { get; set; }
 
         private static void BefuelleListen(BuchungViewModel vm)
         {

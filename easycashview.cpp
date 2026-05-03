@@ -718,11 +718,11 @@ void CEasyCashView::UpdateBetriebeMenu()
 		m_pBtnFilterBetrieb->AddSubItem(apBtn.release());
 
 		int i;
-		for (i = 0; i < m_csaBetriebeNamen.GetSize(); i++)
+		for (i = 0; i < m_Betriebe.GetSize(); i++)
 		{
-			std::auto_ptr<CMFCRibbonButtonEx> apBtn(new CMFCRibbonButtonEx(ID_BETRIEBEFILTER_BASE + i, (LPCTSTR)m_csaBetriebeNamen[i], 
-														m_tbiIcons.ExtractIcon(atoi(m_csaBetriebeIcons[i])), true, NULL, true, true));
-			apBtn->SetToolTipText(m_csaBetriebeUnternehmensarten[i]);
+			std::auto_ptr<CMFCRibbonButtonEx> apBtn(new CMFCRibbonButtonEx(ID_BETRIEBEFILTER_BASE + i, (LPCTSTR)m_Betriebe[i].name, 
+														m_tbiIcons.ExtractIcon(m_Betriebe[i].icon), true, NULL, true, true));
+			apBtn->SetToolTipText(m_Betriebe[i].unternehmensart);
 			m_pBtnFilterBetrieb->AddSubItem(apBtn.release());
 		}
 	}
@@ -742,12 +742,13 @@ void CEasyCashView::UpdateBestandskontenMenu()
 		m_pBtnFilterBestandskonto->AddSubItem(apBtn.release());
 
 		int i;
-		for (i = 0; i < m_csaBestandskontenNamen.GetSize(); i++)
+		for (i = 0; i < m_Bestandskonten.GetSize(); i++)
 		{
-			std::auto_ptr<CMFCRibbonButtonEx> apBtn(new CMFCRibbonButtonEx(ID_BESTANDSKONTENFILTER_BASE + i, (LPCTSTR)m_csaBestandskontenNamen[i], 
-																		   m_tbiIconsBestandskonten.ExtractIcon(atoi(m_csaBestandskontenIcons[i])),
+			std::auto_ptr<CMFCRibbonButtonEx> apBtn(new CMFCRibbonButtonEx(ID_BESTANDSKONTENFILTER_BASE + i, (LPCTSTR)m_Bestandskonten[i].name, 
+																		   m_tbiIconsBestandskonten.ExtractIcon(m_Bestandskonten[i].icon),
 																		   true, NULL, true, true));
-			apBtn->SetToolTipText("Vorjahressaldo: " + m_csaBestandskontenSalden[i]);
+			char saldoBuf[20]; int_to_currency(m_Bestandskonten[i].saldo, 10, saldoBuf);
+			apBtn->SetToolTipText(CString("Vorjahressaldo: ") + saldoBuf);
 			m_pBtnFilterBestandskonto->AddSubItem(apBtn.release());
 		}
 	}
@@ -756,12 +757,10 @@ void CEasyCashView::UpdateBestandskontenMenu()
 
 void CEasyCashView::UpdateBetriebe()
 {
-	m_csaBetriebeNamen.RemoveAll();
-	m_csaBetriebeIcons.RemoveAll();
-	m_csaBetriebeUnternehmensarten.RemoveAll();
+	m_Betriebe.RemoveAll();
 
-	char inifile[1000], buffer[1000]; 
-	GetIniFileName(inifile, sizeof(inifile)); 
+	char inifile[1000], buffer[1000];
+	GetIniFileName(inifile, sizeof(inifile));
 	int i;
 	for (i = 0; i < 100; i++)
 	{
@@ -769,25 +768,25 @@ void CEasyCashView::UpdateBetriebe()
 		csKey.Format("Betrieb%-02.2dName", i);
 		GetPrivateProfileString("Betriebe", csKey.GetBuffer(0), "", buffer, sizeof(buffer), inifile);
 		if (*buffer == '\0') break;
-		m_csaBetriebeNamen.Add(buffer);
+		CBetrieb b;
+		b.name = buffer;
 		csKey.Format("Betrieb%-02.2dUnternehmensart", i);
 		GetPrivateProfileString("Betriebe", csKey.GetBuffer(0), "", buffer, sizeof(buffer), inifile);
-		m_csaBetriebeUnternehmensarten.Add(buffer);
+		b.unternehmensart = buffer;
 		csKey.Format("Betrieb%-02.2dIcon", i);
 		GetPrivateProfileString("Betriebe", csKey.GetBuffer(0), "0", buffer, sizeof(buffer), inifile);
-		m_csaBetriebeIcons.Add(buffer);
+		b.icon = atoi(buffer);
+		m_Betriebe.Add(b);
 	}
 	SetzeListenFuerBuchungsdialog();
 }
 
 void CEasyCashView::UpdateBestandskonten()
 {
-	m_csaBestandskontenNamen.RemoveAll();
-	m_csaBestandskontenIcons.RemoveAll();
-	m_csaBestandskontenSalden.RemoveAll();
+	m_Bestandskonten.RemoveAll();
 
-	char inifile[1000], buffer[1000]; 
-	GetIniFileName(inifile, sizeof(inifile)); 
+	char inifile[1000], buffer[1000];
+	GetIniFileName(inifile, sizeof(inifile));
 	int i;
 	CEasyCashDoc *pDoc = GetDocument();
 	for (i = 0; i < 100; i++)
@@ -796,13 +795,15 @@ void CEasyCashView::UpdateBestandskonten()
 		csKey.Format("Bestandskonto%-02.2dName", i);
 		GetPrivateProfileString("Bestandskonten", csKey.GetBuffer(0), "", buffer, sizeof(buffer), inifile);
 		if (*buffer == '\0') break;
-		m_csaBestandskontenNamen.Add(buffer);
+		CBestandskonto k;
+		k.name = buffer;
 		csKey.Format("Bestandskonto%-02.2dSaldo%04d", i, pDoc->nJahr-1);
 		GetPrivateProfileString("Bestandskonten", csKey.GetBuffer(0), "", buffer, sizeof(buffer), inifile);
-		m_csaBestandskontenSalden.Add(buffer);
+		k.saldo = currency_to_int(buffer);
 		csKey.Format("Bestandskonto%-02.2dIcon", i);
 		GetPrivateProfileString("Bestandskonten", csKey.GetBuffer(0), "0", buffer, sizeof(buffer), inifile);
-		m_csaBestandskontenIcons.Add(buffer);
+		k.icon = atoi(buffer);
+		m_Bestandskonten.Add(k);
 	}
 	SetzeListenFuerBuchungsdialog();
 }
@@ -819,34 +820,36 @@ int CALLBACK GroupCompare(int Arg1, int Arg2, void *Arg3)
 
 void CEasyCashView::SetzeListenFuerBuchungsdialog()
 {
-	// Pointer-Arrays aufbauen (LPCSTR* für Bridge-Aufruf)
-	auto BuildArr = [](const CStringArray& src,
-		std::vector<CStringA>& utf8Storage,
-		std::vector<LPCSTR>& ptrs)
-		{
-			utf8Storage.clear();
-			ptrs.clear();
-			for (int i = 0; i < src.GetSize(); i++)
-			{
-				utf8Storage.emplace_back(src[i]);  // CString ? CStringA
-				ptrs.push_back(utf8Storage.back());
-			}
-		};
+	int i;
+	int nb = (int)m_Betriebe.GetSize();
+	int nk = (int)m_Bestandskonten.GetSize();
 
-	std::vector<CStringA> bn, bi, kn, ki;
-	std::vector<LPCSTR>   bnp, bip, knp, kip;
-	BuildArr(m_csaBetriebeNamen, bn, bnp);
-	BuildArr(m_csaBetriebeIcons, bi, bip);
-	BuildArr(m_csaBestandskontenNamen, kn, knp);
-	BuildArr(m_csaBestandskontenIcons, ki, kip);
+	std::vector<CStringA> bn, kn;
+	std::vector<LPCSTR>   bnp, knp;
+	std::vector<int>      bis, kis, ks;
+
+	for (i = 0; i < nb; i++)
+	{
+		bn.emplace_back(m_Betriebe[i].name);
+		bnp.push_back(bn.back());
+		bis.push_back(m_Betriebe[i].icon);
+	}
+	for (i = 0; i < nk; i++)
+	{
+		kn.emplace_back(m_Bestandskonten[i].name);
+		knp.push_back(kn.back());
+		kis.push_back(m_Bestandskonten[i].icon);
+		ks.push_back(m_Bestandskonten[i].saldo);
+	}
 
 	ECT_SetzeBetriebeUndBestandskonten(
 		bnp.empty() ? nullptr : bnp.data(),
-		bip.empty() ? nullptr : bip.data(),
-		(int)bnp.size(),
+		bis.empty() ? nullptr : bis.data(),
+		nb,
 		knp.empty() ? nullptr : knp.data(),
-		kip.empty() ? nullptr : kip.data(),
-		(int)knp.size());
+		kis.empty() ? nullptr : kis.data(),
+		ks.empty()  ? nullptr : ks.data(),
+		nk);
 }
 
 void CEasyCashView::OnUpdate(CView* pSender, LPARAM lHint, CObject* pHint) 
@@ -961,11 +964,11 @@ void CEasyCashView::OnUpdate(CView* pSender, LPARAM lHint, CObject* pHint)
 	m_csaBestandskontenMitBuchungen.RemoveAll();
 	int anzahlGroups = csaBestandskontenMitBuchungenUnsortiert.GetSize();
 	int group;
-	for (i = 0, group = 0; i < m_csaBestandskontenNamen.GetSize(); i++)
+	for (i = 0, group = 0; i < m_Bestandskonten.GetSize(); i++)
 		for (j = 0; j < anzahlGroups; j++)
-			if (m_csaBestandskontenNamen[i] == csaBestandskontenMitBuchungenUnsortiert[j])
+			if (m_Bestandskonten[i].name == csaBestandskontenMitBuchungenUnsortiert[j])
 			{
-				TRACE2("\r\nBestandskonto %d: %s", i, m_csaBestandskontenNamen[i]);
+				TRACE2("\r\nBestandskonto %d: %s", i, m_Bestandskonten[i].name);
 				m_csaBestandskontenMitBuchungen.Add(csaBestandskontenMitBuchungenUnsortiert[j]);
 				group++;
 				break;
@@ -1411,7 +1414,7 @@ void CEasyCashView::CaptionBoxCheckOnUpdate()
 		}
 	}
 
-	if (m_csaBetriebeNamen.GetSize())
+	if (m_Betriebe.GetSize())
 	{
 		CEasyCashDoc* pDoc = GetDocument();
 		int nEinnahmenOhneBetrieb = 0, nAusgabenOhneBetrieb = 0;
@@ -1445,7 +1448,7 @@ void CEasyCashView::CaptionBoxCheckOnUpdate()
 		}
 	}
 
-	if (m_csaBestandskontenNamen.GetSize())
+	if (m_Bestandskonten.GetSize())
 	{
 		CEasyCashDoc* pDoc = GetDocument();
 		int nEinnahmenOhneBestandskonto = 0, nAusgabenOhneBestandskonto = 0;
@@ -1635,8 +1638,8 @@ void CEasyCashView::CheckLayout(DrawInfo *pDrawInfo)
 	pDrawInfo->zeige_belegnummernspalte = FALSE;
 	pDrawInfo->zeige_steuerspalte = FALSE;
 
-	if (m_csaBetriebeNamen.GetSize()) pDrawInfo->zeige_betriebicon = 3;
-	if (m_csaBestandskontenNamen.GetSize()) pDrawInfo->zeige_bestandskontoicon = 3;
+	if (m_Betriebe.GetSize()) pDrawInfo->zeige_betriebicon = 3;
+	if (m_Bestandskonten.GetSize()) pDrawInfo->zeige_bestandskontoicon = 3;
 
 	int zusaetzliche_stellen_belegnummernspalte = 0;
 
@@ -1716,7 +1719,7 @@ void CEasyCashView::CheckAnlagenverzeichnisLayout(DrawInfo *pDrawInfo)
 	pDrawInfo->zeige_belegnummernspalte = FALSE;
 	pDrawInfo->zeige_steuerspalte = FALSE;
 
-	if (m_csaBetriebeNamen.GetSize()) pDrawInfo->zeige_betriebicon = 3;
+	if (m_Betriebe.GetSize()) pDrawInfo->zeige_betriebicon = 3;
 
 	CBuchung *p;
 	if (!pDrawInfo->zeige_steuerspalte)
@@ -2070,22 +2073,22 @@ void CEasyCashView::DrawToDC_EinnahmenLine(DrawInfo *pDrawInfo, CBuchung *p)
 	if (pDrawInfo->zeige_betriebicon)
 	{
 		int i;
-		int n = m_csaBetriebeNamen.GetSize();
+		int n = m_Betriebe.GetSize();
 		for (i = 0; i < n; i++)
-		if (m_csaBetriebeNamen.GetAt(i) == p->Betrieb)
+		if (m_Betriebe[i].name == p->Betrieb)
 			{
-				Icon(pDrawInfo, pDrawInfo->spalte_betriebicon, pDrawInfo->line, pDrawInfo->line+1, &m_cbmIcons, atoi(m_csaBetriebeIcons.GetAt(i)));
+				Icon(pDrawInfo, pDrawInfo->spalte_betriebicon, pDrawInfo->line, pDrawInfo->line+1, &m_cbmIcons, m_Betriebe[i].icon);
 				break;
 			}
 	}
 	if (pDrawInfo->zeige_bestandskontoicon)
 	{
 		int i;
-		int n = m_csaBestandskontenNamen.GetSize();
+		int n = m_Bestandskonten.GetSize();
 		for (i = 0; i < n; i++)
-		if (m_csaBestandskontenNamen.GetAt(i) == p->Bestandskonto)
+		if (m_Bestandskonten[i].name == p->Bestandskonto)
 			{
-				Icon(pDrawInfo, pDrawInfo->spalte_bestandskontoicon, pDrawInfo->line, pDrawInfo->line+1, &m_cbmIconsBestandskonten, atoi(m_csaBestandskontenIcons.GetAt(i)));
+				Icon(pDrawInfo, pDrawInfo->spalte_bestandskontoicon, pDrawInfo->line, pDrawInfo->line+1, &m_cbmIconsBestandskonten, m_Bestandskonten[i].icon);
 				break;
 			}
 	}
@@ -2152,22 +2155,22 @@ void CEasyCashView::DrawToDC_AusgabenLine(DrawInfo *pDrawInfo, CBuchung *p)
 	if (pDrawInfo->zeige_betriebicon)
 	{
 		int i;
-		int n = m_csaBetriebeNamen.GetSize();
+		int n = m_Betriebe.GetSize();
 		for (i = 0; i < n; i++)
-		if (m_csaBetriebeNamen.GetAt(i) == p->Betrieb)
+		if (m_Betriebe[i].name == p->Betrieb)
 			{
-				Icon(pDrawInfo, pDrawInfo->spalte_betriebicon, pDrawInfo->line, pDrawInfo->line+1, &m_cbmIcons, atoi(m_csaBetriebeIcons.GetAt(i)));
+				Icon(pDrawInfo, pDrawInfo->spalte_betriebicon, pDrawInfo->line, pDrawInfo->line+1, &m_cbmIcons, m_Betriebe[i].icon);
 				break;
 			}
 	}
 	if (pDrawInfo->zeige_bestandskontoicon)
 	{
 		int i;
-		int n = m_csaBestandskontenNamen.GetSize();
+		int n = m_Bestandskonten.GetSize();
 		for (i = 0; i < n; i++)
-		if (m_csaBestandskontenNamen.GetAt(i) == p->Bestandskonto)
+		if (m_Bestandskonten[i].name == p->Bestandskonto)
 			{
-				Icon(pDrawInfo, pDrawInfo->spalte_bestandskontoicon, pDrawInfo->line, pDrawInfo->line+1, &m_cbmIconsBestandskonten, atoi(m_csaBestandskontenIcons.GetAt(i)));
+				Icon(pDrawInfo, pDrawInfo->spalte_bestandskontoicon, pDrawInfo->line, pDrawInfo->line+1, &m_cbmIconsBestandskonten, m_Bestandskonten[i].icon);
 				break;
 			}
 	}
@@ -2281,11 +2284,11 @@ void CEasyCashView::DrawToDC_AnlagenverzeichnisLine(DrawInfo *pDrawInfo, CBuchun
 	if (pDrawInfo->zeige_betriebicon)
 	{
 		int i;
-		int n = m_csaBetriebeNamen.GetSize();
+		int n = m_Betriebe.GetSize();
 		for (i = 0; i < n; i++)
-		if (m_csaBetriebeNamen.GetAt(i) == p->Betrieb)
+		if (m_Betriebe[i].name == p->Betrieb)
 			{
-				Icon(pDrawInfo, pDrawInfo->spalte_betriebicon, pDrawInfo->line, pDrawInfo->line+1, &m_cbmIcons, atoi(m_csaBetriebeIcons.GetAt(i)));
+				Icon(pDrawInfo, pDrawInfo->spalte_betriebicon, pDrawInfo->line, pDrawInfo->line+1, &m_cbmIcons, m_Betriebe[i].icon);
 				break;
 			}
 	}
@@ -2386,11 +2389,11 @@ void CEasyCashView::DrawToDC_BestandskontenLine(DrawInfo *pDrawInfo, CBuchung *p
 	if (pDrawInfo->zeige_betriebicon)
 	{
 		int i;
-		int n = m_csaBetriebeNamen.GetSize();
+		int n = m_Betriebe.GetSize();
 		for (i = 0; i < n; i++)
-		if (m_csaBetriebeNamen.GetAt(i) == p->Betrieb)
+		if (m_Betriebe[i].name == p->Betrieb)
 			{
-				Icon(pDrawInfo, pDrawInfo->spalte_betriebicon, pDrawInfo->line, pDrawInfo->line+1, &m_cbmIcons, atoi(m_csaBetriebeIcons.GetAt(i)));
+				Icon(pDrawInfo, pDrawInfo->spalte_betriebicon, pDrawInfo->line, pDrawInfo->line+1, &m_cbmIcons, m_Betriebe[i].icon);
 				break;
 			}
 	}
@@ -3268,13 +3271,13 @@ void CEasyCashView::DrawToDC_Bestandskonten(CDC* pDC_par, DrawInfo *pDrawInfo)
 	// Nur ein einzelnes Bestandskonto anzeigen?
 	if ((!pDrawInfo->pm && (m_BestandskontoFilterDisplay != "")) || (pDrawInfo->pm && (m_KontenFilterPrinter != "<alle Konten>")))
 	{
-		for (j = 0; j < m_csaBestandskontenNamen.GetSize(); j++)
+		for (j = 0; j < m_Bestandskonten.GetSize(); j++)
 		{
-			if ((!pDrawInfo->pm && m_csaBestandskontenNamen[j] == m_BestandskontoFilterDisplay) || (pDrawInfo->pm && m_csaBestandskontenNamen[j] == m_KontenFilterPrinter))
+			if ((!pDrawInfo->pm && m_Bestandskonten[j].name == m_BestandskontoFilterDisplay) || (pDrawInfo->pm && m_Bestandskonten[j].name == m_KontenFilterPrinter))
 			{
-				bestandskonto_name[0] = m_csaBestandskontenNamen[j];
-				bestandskonto_icon[0] = atoi(m_csaBestandskontenIcons[j]);
-				bestandskonto_anfangssaldo[0] = currency_to_int(m_csaBestandskontenSalden[j].GetBuffer(0));	
+				bestandskonto_name[0] = m_Bestandskonten[j].name;
+				bestandskonto_icon[0] = m_Bestandskonten[j].icon;
+				bestandskonto_anfangssaldo[0] = m_Bestandskonten[j].saldo;	
 				bestandskonten_anzahl = 1;
 			}
 		}
@@ -3282,15 +3285,15 @@ void CEasyCashView::DrawToDC_Bestandskonten(CDC* pDC_par, DrawInfo *pDrawInfo)
 	else
 	{
 		// erst einmal reguläre Bestandskonten mit der gewohnten Sortierung aus den Einstellungen inkl. Icons/Salden auflisten
-		for (i = 0, bestandskonten_anzahl = 0; i < m_csaBestandskontenNamen.GetSize(); i++)
+		for (i = 0, bestandskonten_anzahl = 0; i < m_Bestandskonten.GetSize(); i++)
 		{
-			int anfangssaldo = currency_to_int(m_csaBestandskontenSalden[i].GetBuffer(0));
-			if (BestandskontoExistiertInBuchungen(m_csaBestandskontenNamen[i]) || anfangssaldo != 0)
+			int anfangssaldo = m_Bestandskonten[i].saldo;
+			if (BestandskontoExistiertInBuchungen(m_Bestandskonten[i].name) || anfangssaldo != 0)
 			{
-				bestandskonto_name[bestandskonten_anzahl] = m_csaBestandskontenNamen[i];
-				bestandskonto_icon[bestandskonten_anzahl] = atoi(m_csaBestandskontenIcons[i]);
+				bestandskonto_name[bestandskonten_anzahl] = m_Bestandskonten[i].name;
+				bestandskonto_icon[bestandskonten_anzahl] = m_Bestandskonten[i].icon;
 				bestandskonto_anfangssaldo[bestandskonten_anzahl] = anfangssaldo;	
-				TRACE2("\r\nreguläres Bestandskonto %d: %s", bestandskonten_anzahl, m_csaBestandskontenNamen[bestandskonten_anzahl]);
+				TRACE2("\r\nreguläres Bestandskonto %d: %s", bestandskonten_anzahl, bestandskonto_name[bestandskonten_anzahl]);
 				bestandskonten_anzahl++;
 			}
 		}
@@ -3317,20 +3320,20 @@ void CEasyCashView::DrawToDC_Bestandskonten(CDC* pDC_par, DrawInfo *pDrawInfo)
 				{
 					bestandskonto_name[i] = p->Bestandskonto;
 
-					for (j = 0; j < m_csaBestandskontenNamen.GetSize(); j++)
+					for (j = 0; j < m_Bestandskonten.GetSize(); j++)
 					{
-						if (m_csaBestandskontenNamen[j] == p->Bestandskonto)
+						if (m_Bestandskonten[j].name == p->Bestandskonto)
 						{
-							 bestandskonto_icon[i] = atoi(m_csaBestandskontenIcons[j]);
-							 bestandskonto_anfangssaldo[i] = currency_to_int(m_csaBestandskontenSalden[j].GetBuffer(0));					 
+							 bestandskonto_icon[i] = m_Bestandskonten[j].icon;
+							 bestandskonto_anfangssaldo[i] = m_Bestandskonten[j].saldo;					 
 							 break;
 						}
 					}
-					if (j >= m_csaBestandskontenNamen.GetSize()) 
+					if (j >= m_Bestandskonten.GetSize()) 
 					{
 						bestandskonto_icon[i] = -1;
 						bestandskonto_anfangssaldo[i] = 0;
-						TRACE2("\r\nirreguläres Bestandskonto %d: %s", bestandskonten_anzahl, m_csaBestandskontenNamen[bestandskonten_anzahl]);
+						TRACE2("\r\nirreguläres Bestandskonto %d: %s", bestandskonten_anzahl, bestandskonto_name[bestandskonten_anzahl]);
 					}
 
 					bestandskonten_anzahl++;
@@ -3389,7 +3392,7 @@ void CEasyCashView::DrawToDC_Bestandskonten(CDC* pDC_par, DrawInfo *pDrawInfo)
 		pDrawInfo->line++; pDrawInfo->line++;
 		DrawToDC_LineBreak(pDrawInfo, 8);
 		pDrawInfo->m_pDC->SetTextColor(m_TextColor);
-		int nSpalteUeberschrift = (!m_csaBetriebeNamen.GetSize() && m_csaBestandskontenNamen.GetSize()) ? pDrawInfo->spalte_datum + 2 : pDrawInfo->spalte_datum;	// wenn nur Bestandskonten und keine Betriebe, dann 2 Zeichen weiter nach rechts schieben, sonst überlappt das Icon des Bestandskontos
+		int nSpalteUeberschrift = (!m_Betriebe.GetSize() && m_Bestandskonten.GetSize()) ? pDrawInfo->spalte_datum + 2 : pDrawInfo->spalte_datum;	// wenn nur Bestandskonten und keine Betriebe, dann 2 Zeichen weiter nach rechts schieben, sonst überlappt das Icon des Bestandskontos
 		if (bestandskonto_name[i] != "")
 			Text(pDrawInfo, nSpalteUeberschrift, pDrawInfo->line++, bestandskonto_name[i].GetBuffer(0));
 		else
@@ -7639,21 +7642,21 @@ void CEasyCashView::OnFileJahreswechsel()
 
 	// Bestandskontensalden speichern als Übertrag ins nächste Jahr
 	int j;
-	for (j = 0; j < m_csaBestandskontenNamen.GetSize(); j++)
+	for (j = 0; j < m_Bestandskonten.GetSize(); j++)
 	{
-		int nSaldo = currency_to_int(m_csaBestandskontenSalden[j].GetBuffer(0));	
+		int nSaldo = m_Bestandskonten[j].saldo;	
 
 		CBuchung *p = pDoc->Einnahmen;
 		while (p)
 		{
-			if (p->Bestandskonto == m_csaBestandskontenNamen[j])
+			if (p->Bestandskonto == m_Bestandskonten[j].name)
 				nSaldo += p->Betrag;
 			p = p->next;
 		}
 		p = pDoc->Ausgaben;
 		while (p)
 		{
-			if (p->Bestandskonto == m_csaBestandskontenNamen[j] && p->AbschreibungNr <= 1)
+			if (p->Bestandskonto == m_Bestandskonten[j].name && p->AbschreibungNr <= 1)
 				nSaldo -= p->Betrag;
 			p = p->next;
 		}
@@ -8242,7 +8245,7 @@ void CEasyCashView::OnViewJournalBestandskonto()
 	if (nReturn == IDOK)
 	{
 		if (dlg.m_nSelected >= 0)
-			m_BestandskontoFilterDisplay = m_csaBestandskontenNamen[dlg.m_nSelected];
+			m_BestandskontoFilterDisplay = m_Bestandskonten[dlg.m_nSelected].name;
 		else
 			m_BestandskontoFilterDisplay = "";
 	}
@@ -8322,7 +8325,7 @@ void CEasyCashView::OnViewJournalBetrieb()
 	if (nReturn == IDOK)
 	{
 		if (dlg.m_nSelected >= 0)
-			m_BetriebFilterDisplay = m_csaBetriebeNamen[dlg.m_nSelected];
+			m_BetriebFilterDisplay = m_Betriebe[dlg.m_nSelected].name;
 		else
 			m_BetriebFilterDisplay = "";
 	}
@@ -9527,7 +9530,7 @@ BOOL CEasyCashView::OnCmdMsg(UINT nID, int nCode, void* pExtra, AFX_CMDHANDLERIN
 		if (nCode == CN_COMMAND)
 		{
 			if (nID >= ID_BETRIEBEFILTER_BASE)
-				m_BetriebFilterDisplay = m_csaBetriebeNamen[nID-ID_BETRIEBEFILTER_BASE];	
+				m_BetriebFilterDisplay = m_Betriebe[nID-ID_BETRIEBEFILTER_BASE].name;	
 			else
 				m_BetriebFilterDisplay = "";
 			GetDocument()->UpdateAllViews(NULL);		
@@ -9536,7 +9539,7 @@ BOOL CEasyCashView::OnCmdMsg(UINT nID, int nCode, void* pExtra, AFX_CMDHANDLERIN
 		{
 			if (nID >= ID_BETRIEBEFILTER_BASE)
 			{
-				((CCmdUI*)pExtra)->SetCheck(m_csaBetriebeNamen[nID-ID_BETRIEBEFILTER_BASE] == m_BetriebFilterDisplay);
+				((CCmdUI*)pExtra)->SetCheck(m_Betriebe[nID-ID_BETRIEBEFILTER_BASE].name == m_BetriebFilterDisplay);
 				CMFCRibbonButton* pBtnFilterBetrieb;
 				if (pBtnFilterBetrieb = ((CMainFrame*)AfxGetMainWnd())->m_pFilterBetriebButton)
 				{
@@ -9544,7 +9547,7 @@ BOOL CEasyCashView::OnCmdMsg(UINT nID, int nCode, void* pExtra, AFX_CMDHANDLERIN
 					for (i = 0; i < pBtnFilterBetrieb->GetSubItems().GetCount(); i++)
 						if (pBtnFilterBetrieb->GetSubItems()[i]->GetID() == nID)
 						{
-							((CMFCRibbonButtonEx*)pBtnFilterBetrieb->GetSubItems()[i])->SetCheck(m_csaBetriebeNamen[nID-ID_BETRIEBEFILTER_BASE] == m_BetriebFilterDisplay);
+							((CMFCRibbonButtonEx*)pBtnFilterBetrieb->GetSubItems()[i])->SetCheck(m_Betriebe[nID-ID_BETRIEBEFILTER_BASE].name == m_BetriebFilterDisplay);
 							break;
 						}
 				}
@@ -9561,7 +9564,7 @@ BOOL CEasyCashView::OnCmdMsg(UINT nID, int nCode, void* pExtra, AFX_CMDHANDLERIN
 		if (nCode == CN_COMMAND)
 		{
 			if (nID >= ID_BESTANDSKONTENFILTER_BASE)
-				m_BestandskontoFilterDisplay = m_csaBestandskontenNamen[nID-ID_BESTANDSKONTENFILTER_BASE];	
+				m_BestandskontoFilterDisplay = m_Bestandskonten[nID-ID_BESTANDSKONTENFILTER_BASE].name;	
 			else
 				m_BestandskontoFilterDisplay = "";
 			GetDocument()->UpdateAllViews(NULL);		
@@ -9570,7 +9573,7 @@ BOOL CEasyCashView::OnCmdMsg(UINT nID, int nCode, void* pExtra, AFX_CMDHANDLERIN
 		{
 			if (nID >= ID_BESTANDSKONTENFILTER_BASE)
 			{
-				((CCmdUI*)pExtra)->SetCheck(m_csaBestandskontenNamen[nID-ID_BESTANDSKONTENFILTER_BASE] == m_BestandskontoFilterDisplay);
+				((CCmdUI*)pExtra)->SetCheck(m_Bestandskonten[nID-ID_BESTANDSKONTENFILTER_BASE].name == m_BestandskontoFilterDisplay);
 				CMFCRibbonButton* pBtnFilterBestandskonto;
 				if (pBtnFilterBestandskonto = ((CMainFrame*)AfxGetMainWnd())->m_pFilterBestandskontoButton)
 				{
@@ -9578,7 +9581,7 @@ BOOL CEasyCashView::OnCmdMsg(UINT nID, int nCode, void* pExtra, AFX_CMDHANDLERIN
 					for (i = 0; i < pBtnFilterBestandskonto->GetSubItems().GetCount(); i++)
 						if (pBtnFilterBestandskonto->GetSubItems()[i]->GetID() == nID)
 						{
-							((CMFCRibbonButtonEx*)pBtnFilterBestandskonto->GetSubItems()[i])->SetCheck(m_csaBestandskontenNamen[nID-ID_BESTANDSKONTENFILTER_BASE] == m_BestandskontoFilterDisplay);
+							((CMFCRibbonButtonEx*)pBtnFilterBestandskonto->GetSubItems()[i])->SetCheck(m_Bestandskonten[nID-ID_BESTANDSKONTENFILTER_BASE].name == m_BestandskontoFilterDisplay);
 							break;
 						}
 				}

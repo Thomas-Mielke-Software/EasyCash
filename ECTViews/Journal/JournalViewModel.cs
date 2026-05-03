@@ -32,9 +32,9 @@ namespace ECTViews.Journal
 
         // Icon-Daten
         private readonly IList<string> _betriebeNamen;
-        private readonly IList<string> _betriebeIcons;
+        private readonly IList<int>    _betriebeIcons;
         private readonly IList<string> _bestandskontenNamen;
-        private readonly IList<string> _bestandskontenIcons;
+        private readonly IList<int>    _bestandskontenIcons;
         private readonly BitmapSource _spriteBetriebe;
         private readonly BitmapSource _spriteBestandskonten;
 
@@ -211,17 +211,17 @@ namespace ECTViews.Journal
         public JournalViewModel(
             BuchungsDocument doc,
             IList<string> betriebeNamen = null,
-            IList<string> betriebeIcons = null,
+            IList<int>    betriebeIcons = null,
             IList<string> bestandskontenNamen = null,
-            IList<string> bestandskontenIcons = null,
+            IList<int>    bestandskontenIcons = null,
             BitmapSource spriteBetriebe = null,
             BitmapSource spriteBestandskonten = null)
         {
             _doc = doc ?? throw new ArgumentNullException(nameof(doc));
             _betriebeNamen = betriebeNamen ?? new List<string>();
-            _betriebeIcons = betriebeIcons ?? new List<string>();
+            _betriebeIcons = betriebeIcons ?? new List<int>();
             _bestandskontenNamen = bestandskontenNamen ?? new List<string>();
-            _bestandskontenIcons = bestandskontenIcons ?? new List<string>();
+            _bestandskontenIcons = bestandskontenIcons ?? new List<int>();
             _spriteBetriebe = spriteBetriebe;
             _spriteBestandskonten = spriteBestandskonten;
 
@@ -737,14 +737,14 @@ namespace ECTViews.Journal
             return _bestandskontenNamen ?? (IList<string>)new List<string>();
         }
 
-        // Stub: liefert den konfigurierten Anfangssaldo eines Bestandskontos
-        // in Cent. Aktuell 0, weil die Engine keine Saldo-Property hat -
-        // der Saldo aus der MFC-Welt steht in m_csaBestandskontenSalden,
-        // muesste also ueber eine zusaetzliche Setze-API ans ECTViews-
-        // Modul uebergeben werden. TODO.
         private long HoleAnfangssaldoCent(string bestandskonto)
         {
-            // TODO: Engine-Property oder Setze-API fuer Anfangssalden
+            var namen = ViewHost.BestandskontenNamen;
+            var salden = ViewHost.BestandskontenSalden;
+            if (namen == null || salden == null) return 0;
+            for (int i = 0; i < namen.Count && i < salden.Count; i++)
+                if (namen[i] == bestandskonto)
+                    return salden[i];
             return 0;
         }
 
@@ -982,7 +982,7 @@ namespace ECTViews.Journal
             return prozent.ToString("0.##", DeDE) + "%";
         }
 
-        private BitmapSource HoleIcon(IList<string> namen, IList<string> indizes,
+        private BitmapSource HoleIcon(IList<string> namen, IList<int> indizes,
             BitmapSource sprite, string name)
         {
             if (sprite == null || string.IsNullOrEmpty(name)) return null;
@@ -990,7 +990,7 @@ namespace ECTViews.Journal
             for (int i = 0; i < namen.Count; i++)
                 if (namen[i] == name) { pos = i; break; }
             if (pos < 0 || pos >= indizes.Count) return null;
-            if (!int.TryParse(indizes[pos], out int idx)) return null;
+            int idx = indizes[pos];
 
             string cacheKey = $"{(sprite == _spriteBetriebe ? "B" : "K")}:{idx}";
             if (_iconCache.TryGetValue(cacheKey, out var cached))

@@ -312,20 +312,33 @@ MachListe(LPCSTR* pArray, int nCount)
     return liste;
 }
 
+/// Hilfsfunktion: native int-Array → managed List<int>
+static System::Collections::Generic::List<int>^
+MachIntListe(const int* pArray, int nCount)
+{
+    auto liste = gcnew System::Collections::Generic::List<int>();
+    for (int i = 0; i < nCount; i++)
+        liste->Add(pArray ? pArray[i] : 0);
+    return liste;
+}
+
 void ECT_SetzeBetriebeUndBestandskonten(
-    LPCSTR* pBetriebeNamen, LPCSTR* pBetriebeIcons, int nBetriebeCount,
-    LPCSTR* pBestandskontenNamen, LPCSTR* pBestandskontenIcons, int nBestandskontenCount)
+    LPCSTR* pBetriebeNamen, const int* pBetriebeIcons, int nBetriebeCount,
+    LPCSTR* pBestandskontenNamen, const int* pBestandskontenIcons,
+    const int* pBestandskontenSalden, int nBestandskontenCount)
 {
     try
     {
         ECTViews::ViewHost::BetriebeNamen =
             MachListe(pBetriebeNamen, nBetriebeCount);
         ECTViews::ViewHost::BetriebeIcons =
-            MachListe(pBetriebeIcons, nBetriebeCount);
+            MachIntListe(pBetriebeIcons, nBetriebeCount);
         ECTViews::ViewHost::BestandskontenNamen =
             MachListe(pBestandskontenNamen, nBestandskontenCount);
         ECTViews::ViewHost::BestandskontenIcons =
-            MachListe(pBestandskontenIcons, nBestandskontenCount);
+            MachIntListe(pBestandskontenIcons, nBestandskontenCount);
+        ECTViews::ViewHost::BestandskontenSalden =
+            MachIntListe(pBestandskontenSalden, nBestandskontenCount);
 
         TRACE("ECT_SetzeBetriebeUndBestandskonten: %d Betriebe, %d Bestandskonten\n",
               nBetriebeCount, nBestandskontenCount);

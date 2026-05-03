@@ -204,12 +204,19 @@ public:
 	CBitmap m_cbmIconsBestandskonten;
 	CMFCToolBarImages m_tbiIcons;
 	CMFCToolBarImages m_tbiIconsBestandskonten;
-	CStringArray m_csaBetriebeNamen;
-	CStringArray m_csaBetriebeIcons;
-	CStringArray m_csaBetriebeUnternehmensarten;
-	CStringArray m_csaBestandskontenNamen;
-	CStringArray m_csaBestandskontenIcons;
-	CStringArray m_csaBestandskontenSalden;
+
+	struct CBetrieb {
+		CString name;
+		CString unternehmensart;
+		int     icon;
+	};
+	struct CBestandskonto {
+		CString name;
+		int     icon;
+		int     saldo; // Anfangssaldo in Cent
+	};
+	CArray<CBetrieb, CBetrieb&>             m_Betriebe;
+	CArray<CBestandskonto, CBestandskonto&> m_Bestandskonten;
 
 // Overrides
 	// ClassWizard generated virtual function overrides

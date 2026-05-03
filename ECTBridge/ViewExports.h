@@ -114,28 +114,28 @@ ECTBRIDGE_API BOOL ECT_LoescheBuchungPerPointer(
 // Listen-Initialisierung (Betrieb + Bestandskonto)
 // ──────────────────────────────────────────────
 //
-// EasyCash hält die Betriebs-/Bestandskonten-Namen und zugehörigen
-// Icon-Indizes in CStringArrays (m_csaBetriebeNamen, m_csaBetriebeIcons,
-// m_csaBestandskontenNamen, m_csaBestandskontenIcons in der View).
+// EasyCash hält die Betriebs-/Bestandskonten-Daten in den Structs
+// CBetrieb (m_Betriebe) und CBestandskonto (m_Bestandskonten) in der View.
 //
 // Diese Funktion übergibt eine Schnappschuss-Kopie an den ViewHost,
-// der ihn beim nächsten Dialog-Aufruf nutzt. Wenn die Listen leer sind,
-// werden die zugehörigen UI-Elemente im Dialog ausgeblendet.
+// der ihn beim nächsten Dialog-/Journal-Aufruf nutzt. Wenn die Listen
+// leer sind, werden die zugehörigen UI-Elemente ausgeblendet.
 
 /// <summary>
 /// Setzt die Betriebs- und Bestandskonten-Listen für nachfolgende
-/// Buchungsdialog-Aufrufe.
+/// Buchungsdialog- und Journal-Aufrufe.
 ///
-/// Parameter sind 4 parallele Arrays von C-Strings (LPCSTR), terminiert
-/// durch nCount-Angabe. Die Bridge kopiert die Inhalte intern, der
-/// Aufrufer kann die Arrays nach dem Aufruf verwerfen.
+/// Icons werden als int-Indizes übergeben (kein atoi mehr nötig).
+/// pBestandskontenSalden enthält Vorjahres-Anfangssalden in Cent.
+/// Die Bridge kopiert die Inhalte intern, der Aufrufer kann die
+/// Arrays nach dem Aufruf verwerfen.
 ///
-/// Übergibt man nCount = 0 für eine Liste, wird diese im Dialog
-/// ausgeblendet.
+/// Übergibt man nCount = 0, werden die Listen ausgeblendet.
 /// </summary>
 ECTBRIDGE_API void ECT_SetzeBetriebeUndBestandskonten(
-    LPCSTR* pBetriebeNamen, LPCSTR* pBetriebeIcons, int nBetriebeCount,
-    LPCSTR* pBestandskontenNamen, LPCSTR* pBestandskontenIcons, int nBestandskontenCount);
+    LPCSTR* pBetriebeNamen, const int* pBetriebeIcons, int nBetriebeCount,
+    LPCSTR* pBestandskontenNamen, const int* pBestandskontenIcons,
+    const int* pBestandskontenSalden, int nBestandskontenCount);
 
 // ──────────────────────────────────────────────
 // Buchungsjournal

@@ -1,17 +1,17 @@
 // DruckauswahlDlg.cpp : implementation file
 //
-// Diese Datei ist Bestandteil von EasyCash&Tax, der freien E‹R-Fibu
+// Diese Datei ist Bestandteil von EasyCash&Tax, der freien E√úR-Fibu
 //
 // Copyleft (GPLv3) 2020  Thomas Mielke
 // 
-// Dies ist freie Software; Sie d¸rfen sie unter den Bedingungen der 
+// Dies ist freie Software; Sie d√ºrfen sie unter den Bedingungen der 
 // GNU General Public License, wie von der Free Software Foundation 
-// verˆffentlicht, weiterverteilen und/oder modifizieren; entweder gem‰ﬂ 
-// Version 3 der Lizenz oder (nach Ihrer Option) jeder sp‰teren Version.
+// ver√∂ffentlicht, weiterverteilen und/oder modifizieren; entweder gem√§√ü 
+// Version 3 der Lizenz oder (nach Ihrer Option) jeder sp√§teren Version.
 //
-// Diese Software wird in der Hoffnung weiterverbreitet, dass sie n¸tzlich 
+// Diese Software wird in der Hoffnung weiterverbreitet, dass sie n√ºtzlich 
 // sein wird, jedoch OHNE IRGENDEINE GARANTIE, auch ohne die implizierte 
-// Garantie der MARKTREIFE oder der VERWENDBARKEIT F‹R EINEN BESTIMMTEN ZWECK.
+// Garantie der MARKTREIFE oder der VERWENDBARKEIT F√úR EINEN BESTIMMTEN ZWECK.
 // Mehr Details finden Sie in der GNU Lesser General Public License.
 //
 // Sie sollten eine Kopie der GNU General Public License Version 3 zusammen mit 
@@ -101,8 +101,8 @@ void DruckauswahlDlg::InitKontenfilter(int n)
 	}
 	else // if (n == 1) Bestandskonten
 	{
-		for (i = 0; i < m_pParent->m_csaBestandskontenNamen.GetSize(); i++)
-			((CComboBox *)GetDlgItem(IDC_KONTENFILTER))->AddString(m_pParent->m_csaBestandskontenNamen[i]);
+		for (i = 0; i < m_pParent->m_Bestandskonten.GetSize(); i++)
+			((CComboBox *)GetDlgItem(IDC_KONTENFILTER))->AddString(m_pParent->m_Bestandskonten[i].name);
 	}
 	((CComboBox *)GetDlgItem(IDC_KONTENFILTER))->SetCurSel(0);
 }
@@ -113,13 +113,13 @@ BOOL DruckauswahlDlg::OnInitDialog()
 	
 	InitKontenfilter(0);
 	
-	if (m_pParent->m_csaBetriebeNamen.GetSize())
+	if (m_pParent->m_Betriebe.GetSize())
 	{
 		int i;
 
 		((CComboBox *)GetDlgItem(IDC_BETRIEBFILTER))->AddString("<alle Betriebe>");
-		for (i = 0; i < m_pParent->m_csaBetriebeNamen.GetSize(); i++)
-			((CComboBox *)GetDlgItem(IDC_BETRIEBFILTER))->AddString(m_pParent->m_csaBetriebeNamen[i]);
+		for (i = 0; i < m_pParent->m_Betriebe.GetSize(); i++)
+			((CComboBox *)GetDlgItem(IDC_BETRIEBFILTER))->AddString(m_pParent->m_Betriebe[i].name);
 		((CComboBox *)GetDlgItem(IDC_BETRIEBFILTER))->SetCurSel(0);	
 	}
 	else
@@ -155,7 +155,7 @@ void DruckauswahlDlg::OnOK()
 		if (von > bis)
 		{
 			char buffer[1000];
-			sprintf(buffer, "Das Enddatum liegt vor dem Anfangsdatum. Soll f¸r das Enddatum das Jahr %04d angenommen werden?", m_nJahr+1);
+			sprintf(buffer, "Das Enddatum liegt vor dem Anfangsdatum. Soll fÔøΩr das Enddatum das Jahr %04d angenommen werden?", m_nJahr+1);
 			if (AfxMessageBox(buffer, MB_YESNO) != IDYES)
 			{
 				GetDlgItem(IDC_DATUM_BIS_TAG)->SetFocus();
@@ -212,7 +212,7 @@ void DruckauswahlDlg::OnOK()
 		return;
 	}
 
-	AfxMessageBox("Bitte eine Druckoption ausw‰hlen.");
+	AfxMessageBox("Bitte eine Druckoption ausw√§hlen.");
 }
 
 void DruckauswahlDlg::OnCancel() 

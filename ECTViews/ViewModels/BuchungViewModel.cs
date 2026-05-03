@@ -1212,12 +1212,12 @@ namespace ECTViews.ViewModels
         /// <summary>
         /// Lädt die Liste der Betriebe mit zugehörigen Icons.
         /// </summary>
-        /// <param name="namen">Namen der Betriebe (entspricht m_csaBetriebeNamen).</param>
-        /// <param name="iconIndizes">Icon-Indizes (entspricht m_csaBetriebeIcons), als Strings.</param>
+        /// <param name="namen">Namen der Betriebe (entspricht m_Betriebe[i].name).</param>
+        /// <param name="iconIndizes">Icon-Indizes (int, entspricht m_Betriebe[i].icon).</param>
         /// <param name="sprite">Die Sprite-Bitmap mit den 32x32-Icons.</param>
         public void LadeBetriebe(
             System.Collections.Generic.IList<string> namen,
-            System.Collections.Generic.IList<string> iconIndizes,
+            System.Collections.Generic.IList<int> iconIndizes,
             System.Windows.Media.Imaging.BitmapSource sprite)
         {
             Betriebe.Clear();
@@ -1229,9 +1229,7 @@ namespace ECTViews.ViewModels
 
             for (int i = 0; i < namen.Count; i++)
             {
-                int idx = 0;
-                if (iconIndizes != null && i < iconIndizes.Count)
-                    int.TryParse(iconIndizes[i], out idx);
+                int idx = (iconIndizes != null && i < iconIndizes.Count) ? iconIndizes[i] : 0;
 
                 Betriebe.Add(new IconListItem
                 {
@@ -1256,7 +1254,7 @@ namespace ECTViews.ViewModels
         /// </summary>
         public void LadeBestandskonten(
             System.Collections.Generic.IList<string> namen,
-            System.Collections.Generic.IList<string> iconIndizes,
+            System.Collections.Generic.IList<int> iconIndizes,
             System.Windows.Media.Imaging.BitmapSource sprite)
         {
             Bestandskonten.Clear();
@@ -1268,9 +1266,7 @@ namespace ECTViews.ViewModels
 
             for (int i = 0; i < namen.Count; i++)
             {
-                int idx = 0;
-                if (iconIndizes != null && i < iconIndizes.Count)
-                    int.TryParse(iconIndizes[i], out idx);
+                int idx = (iconIndizes != null && i < iconIndizes.Count) ? iconIndizes[i] : 0;
 
                 Bestandskonten.Add(new IconListItem
                 {
