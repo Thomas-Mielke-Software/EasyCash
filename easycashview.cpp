@@ -32,6 +32,7 @@
 #include "VoranmeldezeitraumDlg.h"
 #include "MainFrm.h"
 #include "ECTIFace\AfAGenauigkeit.h"
+#include "ECTBridge\EinstellungenExports.h"
 #include "oleidl.h"
 #include "comdef.h"
 #include "NeuesFormular.h"
@@ -331,7 +332,7 @@ void CEasyCashView::OnInitialUpdate()
 
 	LoadProfile();
 	// frisch installiert?
-	if (einstellungen3->m_steuernummer == "")
+	if (ECT_HoleEinstellung("fsteuernummer") == "")
 	{
 		CString Mandant0Existiert = theApp.GetProfileString("Mandanten", "Mandant00Datenverzeichnis", "");
 		if (Mandant0Existiert.IsEmpty())
@@ -2544,13 +2545,13 @@ TRACE1("pDrawInfo->pInfo->m_nCurPage: %d\r\n", (int)pDrawInfo->pInfo->m_nCurPage
 		pDrawInfo->m_pDC->SetTextAlign(TA_LEFT);
 
 		// Steuerpflichtiger
-		strcpy(buffer, einstellungen2->m_vorname);
+		strcpy(buffer, ECT_HoleEinstellung("vorname"));
 		strcat(buffer, " ");
-		strcat(buffer, einstellungen2->m_name);
-		if (*einstellungen3->m_steuernummer)
+		strcat(buffer, ECT_HoleEinstellung("name"));
+		if (*ECT_HoleEinstellung("fsteuernummer"))
 		{
 			strcat(buffer, ", Steuernummer ");
-			strcat(buffer, einstellungen3->m_steuernummer);
+			strcat(buffer, ECT_HoleEinstellung("fsteuernummer"));
 		}
 		strcat(buffer, " ");
 		if (strcmp(m_BetriebFilterPrinter, "<alle Betriebe>"))
@@ -2849,13 +2850,13 @@ void CEasyCashView::DrawToDC_Konten(CDC* pDC_par, DrawInfo *pDrawInfo)
 		pDrawInfo->m_pDC->SetTextAlign(TA_LEFT);
 
 		// Steuerpflichtiger
-		strcpy(buffer, einstellungen2->m_vorname);
+		strcpy(buffer, ECT_HoleEinstellung("vorname"));
 		strcat(buffer, " ");
-		strcat(buffer, einstellungen2->m_name);
-		if (*einstellungen3->m_steuernummer)
+		strcat(buffer, ECT_HoleEinstellung("name"));
+		if (*ECT_HoleEinstellung("fsteuernummer"))
 		{
 			strcat(buffer, ", Steuernummer ");
-			strcat(buffer, einstellungen3->m_steuernummer);
+			strcat(buffer, ECT_HoleEinstellung("fsteuernummer"));
 		}
 		strcat(buffer, " ");
 		if (strcmp(m_BetriebFilterPrinter, "<alle Betriebe>"))
@@ -3017,7 +3018,7 @@ void CEasyCashView::DrawToDC_Konten(CDC* pDC_par, DrawInfo *pDrawInfo)
 			if (pDrawInfo->line > 0) DrawToDC_EinnahmenFooter(pDrawInfo);
 
 			// ggf. Seitenwechsel forcieren
-			if (pDrawInfo->pm && einstellungen4->m_nach_konten_seitenumbruch) DrawToDC_LineBreak(pDrawInfo, 200);
+			if (pDrawInfo->pm && ECT_HoleEinstellungInt("nach_konten_seitenumbruch", 0)) DrawToDC_LineBreak(pDrawInfo, 200);
 
 			if (einnahmen_posten_name[i].IsEmpty()) break;
 		}
@@ -3143,7 +3144,7 @@ void CEasyCashView::DrawToDC_Konten(CDC* pDC_par, DrawInfo *pDrawInfo)
 			if (pDrawInfo->line > 0) DrawToDC_AusgabenFooter(pDrawInfo);
 
 			// ggf. Seitenwechsel forcieren
-			if (pDrawInfo->pm && einstellungen4->m_nach_konten_seitenumbruch) DrawToDC_LineBreak(pDrawInfo, 200);
+			if (pDrawInfo->pm && ECT_HoleEinstellungInt("nach_konten_seitenumbruch", 0)) DrawToDC_LineBreak(pDrawInfo, 200);
 
 			if (ausgaben_posten_name[i].IsEmpty()) break;
 		}
@@ -3481,7 +3482,7 @@ void CEasyCashView::DrawToDC_Bestandskonten(CDC* pDC_par, DrawInfo *pDrawInfo)
 
 		// ggf. Seitenwechsel forcieren
 		if (i < bestandskonten_anzahl-1)
-			if (pDrawInfo->pm && einstellungen4->m_nach_konten_seitenumbruch) DrawToDC_LineBreak(pDrawInfo, 200);
+			if (pDrawInfo->pm && ECT_HoleEinstellungInt("nach_konten_seitenumbruch", 0)) DrawToDC_LineBreak(pDrawInfo, 200);
 
 	}
 
@@ -3590,13 +3591,13 @@ void CEasyCashView::DrawToDC_Anlagenverzeichnis(CDC* pDC_par, DrawInfo *pDrawInf
 		pDrawInfo->m_pDC->SetTextAlign(TA_LEFT);
 
 		// Steuerpflichtiger
-		strcpy(buffer, einstellungen2->m_vorname);
+		strcpy(buffer, ECT_HoleEinstellung("vorname"));
 		strcat(buffer, " ");
-		strcat(buffer, einstellungen2->m_name);
-		if (*einstellungen3->m_steuernummer)
+		strcat(buffer, ECT_HoleEinstellung("name"));
+		if (*ECT_HoleEinstellung("fsteuernummer"))
 		{
 			strcat(buffer, ", Steuernummer ");
-			strcat(buffer, einstellungen3->m_steuernummer);
+			strcat(buffer, ECT_HoleEinstellung("fsteuernummer"));
 		}
 		strcat(buffer, " ");
 		if (strcmp(m_BetriebFilterPrinter, "<alle Betriebe>"))
@@ -3781,7 +3782,7 @@ void CEasyCashView::DrawToDC_Anlagenverzeichnis(CDC* pDC_par, DrawInfo *pDrawInf
 			if (pDrawInfo->line > 0) DrawToDC_AnlagenverzeichnisFooter(pDrawInfo);
 
 			// ggf. Seitenwechsel forcieren
-			if (pDrawInfo->pm && einstellungen4->m_nach_konten_seitenumbruch) DrawToDC_LineBreak(pDrawInfo, 200);
+			if (pDrawInfo->pm && ECT_HoleEinstellungInt("nach_konten_seitenumbruch", 0)) DrawToDC_LineBreak(pDrawInfo, 200);
 
 			if (ausgaben_posten_name[i].IsEmpty()) break;
 		}
@@ -3896,14 +3897,14 @@ void CEasyCashView::DrawUmStErklaerungToDC(CDC* pDC, DrawInfo *pDrawInfo)
 
 	// Steuerzahler incl. Adresse
 	{
-		CString temp = einstellungen2->m_vorname + " " + einstellungen2->m_name;
+		CString temp = CString(ECT_HoleEinstellung("vorname")) + " " + CString(ECT_HoleEinstellung("name"));
 
 		Text(pDrawInfo, 7, 6, temp.Left(30).GetBuffer(0));
-		Text(pDrawInfo, 7, 7, einstellungen2->m_unternehmensart1.GetBuffer(0));
-		Text(pDrawInfo, 7, 8, einstellungen2->m_unternehmensart2.GetBuffer(0));
-		Text(pDrawInfo, 7, 9, einstellungen2->m_strasse.GetBuffer(0));
-		Text(pDrawInfo, 7, 11, einstellungen2->m_plz.GetBuffer(0));
-		Text(pDrawInfo, 13, 11,einstellungen2->m_ort.GetBuffer(0));
+		Text(pDrawInfo, 7, 7, const_cast<char*>(ECT_HoleEinstellung("unternehmensart1")));
+		Text(pDrawInfo, 7, 8, const_cast<char*>(ECT_HoleEinstellung("unternehmensart2")));
+		Text(pDrawInfo, 7, 9, const_cast<char*>(ECT_HoleEinstellung("strasse")));
+		Text(pDrawInfo, 7, 11, const_cast<char*>(ECT_HoleEinstellung("plz")));
+		Text(pDrawInfo, 13, 11, const_cast<char*>(ECT_HoleEinstellung("ort")));
 	}
 
 	int line;
@@ -4244,14 +4245,14 @@ void CEasyCashView::DrawEURechungToDC(CDC* pDC, DrawInfo *pDrawInfo)
 
 	// Steuerzahler incl. Adresse
 	{
-		CString temp = einstellungen2->m_vorname + " " + einstellungen2->m_name;
+		CString temp = CString(ECT_HoleEinstellung("vorname")) + " " + CString(ECT_HoleEinstellung("name"));
 
 		Text(pDrawInfo, 7, 6, temp.Left(30).GetBuffer(0));
-		Text(pDrawInfo, 7, 7, einstellungen2->m_unternehmensart1.GetBuffer(0));
-		Text(pDrawInfo, 7, 8, einstellungen2->m_unternehmensart2.GetBuffer(0));
-		Text(pDrawInfo, 7, 9, einstellungen2->m_strasse.GetBuffer(0));
-		Text(pDrawInfo, 7, 11, einstellungen2->m_plz.GetBuffer(0));
-		Text(pDrawInfo, 13, 11,einstellungen2->m_ort.GetBuffer(0));
+		Text(pDrawInfo, 7, 7, const_cast<char*>(ECT_HoleEinstellung("unternehmensart1")));
+		Text(pDrawInfo, 7, 8, const_cast<char*>(ECT_HoleEinstellung("unternehmensart2")));
+		Text(pDrawInfo, 7, 9, const_cast<char*>(ECT_HoleEinstellung("strasse")));
+		Text(pDrawInfo, 7, 11, const_cast<char*>(ECT_HoleEinstellung("plz")));
+		Text(pDrawInfo, 13, 11, const_cast<char*>(ECT_HoleEinstellung("ort")));
 		
 		Text(pDrawInfo, 60, 6, "Steuernummer");
 		CString csSteuernummer;
@@ -4288,10 +4289,10 @@ void CEasyCashView::DrawEURechungToDC(CDC* pDC, DrawInfo *pDrawInfo)
 				}
 			}
 			if (csSteuernummer == "")  // keine Betriebssteuernummer gefunden? dann Hauptsteuernummer benutzen
-				csSteuernummer = einstellungen3->m_steuernummer.GetBuffer(0);
+				csSteuernummer = ECT_HoleEinstellung("fsteuernummer");
 		}
 		else
-			csSteuernummer = einstellungen3->m_steuernummer.GetBuffer(0);
+			csSteuernummer = ECT_HoleEinstellung("fsteuernummer");
 		Text(pDrawInfo, 60, 7, csSteuernummer.GetBuffer(0));
 	}
 
@@ -4338,7 +4339,7 @@ void CEasyCashView::DrawEURechungToDC(CDC* pDC, DrawInfo *pDrawInfo)
 					netto = p->GetNetto();
 					mwst_betrag = p->Betrag - netto;
 
-					if (einstellungen4->m_ustvst_gesondert)
+					if (ECT_HoleEinstellungInt("ustvst_gesondert", 0))
 					{
 						if (p->Konto[0] != '/')  // neutrale Konten ignorieren
 						{
@@ -4372,12 +4373,12 @@ void CEasyCashView::DrawEURechungToDC(CDC* pDC, DrawInfo *pDrawInfo)
 			}
 		}
 
-		if (einstellungen4->m_ustvst_gesondert || !einnahmen_mwst_summe)
+		if (ECT_HoleEinstellungInt("ustvst_gesondert", 0) || !einnahmen_mwst_summe)
 			Text(pDrawInfo, 7, 14, "1. Betriebseinnahmen");
 		else
 			Text(pDrawInfo, 7, 14, "1. Betriebseinnahmen (einschl. Umsatzsteuer)");
 
-		if (einstellungen4->m_ustvst_gesondert)
+		if (ECT_HoleEinstellungInt("ustvst_gesondert", 0))
 		{
 			for (j = 0; j < 101; j++)
 				if (einnahmen_posten_name[j].IsEmpty()) break;
@@ -4460,7 +4461,7 @@ void CEasyCashView::DrawEURechungToDC(CDC* pDC, DrawInfo *pDrawInfo)
 			if (p->Datum < von || p->Datum > bis) continue;
 			if (!m_BetriebFilterPrinter.IsEmpty() && p->Betrieb != m_BetriebFilterPrinter) continue;	// nur Buchungen für gewählten Betrieb aufsummieren
 
-			if (p->Konto == "VST-Beträge separat" && einstellungen4->m_ustvst_gesondert)	// separate VST einfach nur mitzählen, weil wir sowieso ein VST-Konto haben zum Schluss
+			if (p->Konto == "VST-Beträge separat" && ECT_HoleEinstellungInt("ustvst_gesondert", 0))	// separate VST einfach nur mitzählen, weil wir sowieso ein VST-Konto haben zum Schluss
 			{
 				ausgaben_mwst_summe += p->Betrag;
 				ausgaben_gesamtsumme += p->Betrag;
@@ -4484,7 +4485,7 @@ void CEasyCashView::DrawEURechungToDC(CDC* pDC, DrawInfo *pDrawInfo)
 						else
 							mwst_betrag = 0;
 
-						if (einstellungen4->m_ustvst_gesondert)
+						if (ECT_HoleEinstellungInt("ustvst_gesondert", 0))
 						{
 							if (p->Konto[0] != '/')  // neutrale Konten ignorieren
 							{
@@ -4522,7 +4523,7 @@ void CEasyCashView::DrawEURechungToDC(CDC* pDC, DrawInfo *pDrawInfo)
 		Text(pDrawInfo, 7, line, "2. Betriebsausgaben");
 		line++;
 
-		if (einstellungen4->m_ustvst_gesondert)
+		if (ECT_HoleEinstellungInt("ustvst_gesondert", 0))
 		{
 			for (j = 0; j < 101; j++)
 				if (ausgaben_posten_name[j].IsEmpty()) break;
@@ -4968,8 +4969,8 @@ void CEasyCashView::Text10(DrawInfo *pDrawInfo, int left, int top, char *s)
 	LOGFONT FontStats;
 	memset(&FontStats, 0x00, sizeof(FontStats));
 	standardFont->GetLogFont(&FontStats);
-	strcpy(FontStats.lfFaceName, pDrawInfo->pm ? einstellungen1->m_Druckerschrift : einstellungen1->m_Bildschirmschrift); 
-	FontStats.lfHeight  = pDrawInfo->pm ? (einstellungen1->m_Druckerschriftgroesse ? MulDiv(einstellungen1->m_Druckerschriftgroesse, pDrawInfo->m_pDC->GetDeviceCaps(LOGPIXELSY), 72) : (long)pDrawInfo->printer_charheight) : (einstellungen1->m_Bildschirmschriftgroesse ? MulDiv(einstellungen1->m_Bildschirmschriftgroesse, pDrawInfo->m_pDC->GetDeviceCaps(LOGPIXELSY), 72) * m_zoomfaktor / 100 : charheight);
+	strcpy(FontStats.lfFaceName, pDrawInfo->pm ? ECT_HoleEinstellung("Druckerschrift") : ECT_HoleEinstellung("Bildschirmschrift")); 
+	FontStats.lfHeight  = pDrawInfo->pm ? (ECT_HoleEinstellungInt("Druckerschriftgroesse", 0) ? MulDiv(ECT_HoleEinstellungInt("Druckerschriftgroesse", 0), pDrawInfo->m_pDC->GetDeviceCaps(LOGPIXELSY), 72) : (long)pDrawInfo->printer_charheight) : (ECT_HoleEinstellungInt("Bildschirmschriftgroesse", 0) ? MulDiv(ECT_HoleEinstellungInt("Bildschirmschriftgroesse", 0), pDrawInfo->m_pDC->GetDeviceCaps(LOGPIXELSY), 72) * m_zoomfaktor / 100 : charheight);
 	if (pDrawInfo->pm)
 	{
 		if (FontStats.lfHeight > pDrawInfo->printer_fontsize) FontStats.lfHeight = pDrawInfo->printer_fontsize;
@@ -4979,8 +4980,8 @@ void CEasyCashView::Text10(DrawInfo *pDrawInfo, int left, int top, char *s)
 
 	FontStats.lfWidth   = 0;	// Breite relativ zur Höhe verkleinern
 	FontStats.lfQuality = pDrawInfo->pm ? PROOF_QUALITY : DEFAULT_QUALITY;
-	FontStats.lfWeight  = pDrawInfo->pm ? einstellungen1->m_DruckerschriftFett : einstellungen1->m_BildschirmschriftFett;
-	FontStats.lfItalic  = pDrawInfo->pm ? einstellungen1->m_DruckerschriftKursiv : einstellungen1->m_BildschirmschriftKursiv;
+	FontStats.lfWeight  = pDrawInfo->pm ? ECT_HoleEinstellungInt("[Druck]DruckerschriftFett", 400) : ECT_HoleEinstellungInt("[Druck]BildschirmschriftFett", 400);
+	FontStats.lfItalic  = pDrawInfo->pm ? ECT_HoleEinstellungInt("[Druck]DruckerschriftKursiv", 0) : ECT_HoleEinstellungInt("[Druck]BildschirmschriftKursiv", 0);
 	CFont neuerFont;	// Font kreieren
 	neuerFont.CreateFontIndirect(&FontStats);
 	CFont *oldFont = pDrawInfo->m_pDC->SelectObject(&neuerFont);	// in den device context damit
@@ -5078,14 +5079,14 @@ RECT CEasyCashView::TextEx(DrawInfo *pDrawInfo, int left, int top, int right, in
 	BOOL bPasst;	// Flag
 //CString csTemp;
 //if (*s_param == ' ' && s_param[1] == 0) {
-//csTemp.Format("\n\rfor h=%d", (int)pDrawInfo->pm ? (einstellungen1->m_Druckerschriftgroesse ? -MulDiv(einstellungen1->m_Druckerschriftgroesse, pDrawInfo->m_pDC->GetDeviceCaps(LOGPIXELSY), 72) : (int)pDrawInfo->printer_charheight) : (einstellungen1->m_Bildschirmschriftgroesse ? -MulDiv(einstellungen1->m_Bildschirmschriftgroesse, pDrawInfo->m_pDC->GetDeviceCaps(LOGPIXELSY), 72) : charheight));
+//csTemp.Format("\n\rfor h=%d", (int)pDrawInfo->pm ? (ECT_HoleEinstellungInt("Druckerschriftgroesse", 0) ? -MulDiv(ECT_HoleEinstellungInt("Druckerschriftgroesse", 0), pDrawInfo->m_pDC->GetDeviceCaps(LOGPIXELSY), 72) : (int)pDrawInfo->printer_charheight) : (ECT_HoleEinstellungInt("Bildschirmschriftgroesse", 0) ? -MulDiv(ECT_HoleEinstellungInt("Bildschirmschriftgroesse", 0), pDrawInfo->m_pDC->GetDeviceCaps(LOGPIXELSY), 72) : charheight));
 //debug.WriteString(csTemp); }
 	BOOL bErsterDurchlauf = TRUE;
-	for (h = pDrawInfo->pm ? (einstellungen1->m_Druckerschriftgroesse ?  // Druckerschriftgröße in den Einstellungen gewählt?
-				 MulDiv(einstellungen1->m_Druckerschriftgroesse, pDrawInfo->m_pDC->GetDeviceCaps(LOGPIXELSY), 72)
+	for (h = pDrawInfo->pm ? (ECT_HoleEinstellungInt("Druckerschriftgroesse", 0) ?  // Druckerschriftgröße in den Einstellungen gewählt?
+				 MulDiv(ECT_HoleEinstellungInt("Druckerschriftgroesse", 0), pDrawInfo->m_pDC->GetDeviceCaps(LOGPIXELSY), 72)
 			 : // else
-				 (int)pDrawInfo->printer_charheight) : (einstellungen1->m_Bildschirmschriftgroesse ?
-					  MulDiv(einstellungen1->m_Bildschirmschriftgroesse, pDrawInfo->m_pDC->GetDeviceCaps(LOGPIXELSY), 72)  //  * m_zoomfaktor / 100
+				 (int)pDrawInfo->printer_charheight) : (ECT_HoleEinstellungInt("Bildschirmschriftgroesse", 0) ?
+					  MulDiv(ECT_HoleEinstellungInt("Bildschirmschriftgroesse", 0), pDrawInfo->m_pDC->GetDeviceCaps(LOGPIXELSY), 72)  //  * m_zoomfaktor / 100
 				 : // else
 					  charheight) / 2, increment = -h, bPasst = FALSE;  // for-Initialisierung
 		 (abs(increment) > 0 && !bPasst && h > 0);  // for-Bedingung
@@ -5097,9 +5098,9 @@ RECT CEasyCashView::TextEx(DrawInfo *pDrawInfo, int left, int top, int right, in
 		// Font verkleinern
 		newFontStats.lfHeight  = h;
 		newFontStats.lfWidth   = 0;				// Breite relativ zur Höhe verkleinern
-		strcpy(newFontStats.lfFaceName, pDrawInfo->pm ? einstellungen1->m_Druckerschrift : einstellungen1->m_Bildschirmschrift); 
-		newFontStats.lfWeight  = pDrawInfo->pm ? einstellungen1->m_DruckerschriftFett : einstellungen1->m_BildschirmschriftFett;
-		newFontStats.lfItalic  = pDrawInfo->pm ? einstellungen1->m_DruckerschriftKursiv : einstellungen1->m_BildschirmschriftKursiv;
+		strcpy(newFontStats.lfFaceName, pDrawInfo->pm ? ECT_HoleEinstellung("Druckerschrift") : ECT_HoleEinstellung("Bildschirmschrift")); 
+		newFontStats.lfWeight  = pDrawInfo->pm ? ECT_HoleEinstellungInt("[Druck]DruckerschriftFett", 400) : ECT_HoleEinstellungInt("[Druck]BildschirmschriftFett", 400);
+		newFontStats.lfItalic  = pDrawInfo->pm ? ECT_HoleEinstellungInt("[Druck]DruckerschriftKursiv", 0) : ECT_HoleEinstellungInt("[Druck]BildschirmschriftKursiv", 0);
 		newFontStats.lfOrientation = 0;
 //if (*s_param == ' ' && s_param[1] == 0) {
 //debug.WriteString(newFontStats.lfFaceName);
@@ -5537,7 +5538,7 @@ void CEasyCashView::Icon(DrawInfo *pDrawInfo, int left, int top, /*int right,*/ 
 void CEasyCashView::OnFilePrint2() 
 {
 	WasWirdGedruckt = 0;
-	if (m_GewaehltesFormular > 0 && einstellungen2->m_land == 0)
+	if (m_GewaehltesFormular > 0 && ECT_HoleEinstellungInt("land", 0) == 0)
 		DSAMessageBox(IDS_FORMULARDRUCK_DE, MB_OK);
 
 	CScrollView::OnFilePrint();	
@@ -5546,7 +5547,7 @@ void CEasyCashView::OnFilePrint2()
 void CEasyCashView::OnFilePrintPreview() 
 {
 	WasWirdGedruckt = 0;
-	if (m_GewaehltesFormular > 0 && einstellungen2->m_land == 0)
+	if (m_GewaehltesFormular > 0 && ECT_HoleEinstellungInt("land", 0) == 0)
 		DSAMessageBox(IDS_FORMULARDRUCK_DE, MB_OK);
 
 	//CScrollView::OnFilePrintPreview();
@@ -7012,13 +7013,13 @@ void CEasyCashView::AfAAbgang(CBuchung **ppb)
 		(AfxMessageBox((CString)"Anlagengegenstand aus dem Betriebsvermögen ausscheiden lassen? (Die AfA-Buchung wird dabei in eine einfache Ausgaben-Buchung über den Restwert umgewandelt.)", MB_YESNO) == IDYES))
 	{
 		CString csRestwertKonto;
-		CString csRestwertFeldnummer = einstellungen2->m_land == 1 ? "9210" : "1135";
+		CString csRestwertFeldnummer = ECT_HoleEinstellungInt("land", 0) == 1 ? "9210" : "1135";
 		char *pRestwertKonto = HoleKontoFuerFeld('A', csRestwertFeldnummer);
-		CString csEURoderE1a = einstellungen2->m_land == 1 ? "E1a" : "EÜR";
+		CString csEURoderE1a = ECT_HoleEinstellungInt("land", 0) == 1 ? "E1a" : "EÜR";
 		if (!pRestwertKonto)
 		{
 			csRestwertKonto = "Restbuchwert abgegangener Anlagengüter";
-			if (einstellungen2->m_land == 0 || einstellungen2->m_land == 1)
+			if (ECT_HoleEinstellungInt("land", 0) == 0 || ECT_HoleEinstellungInt("land", 0) == 1)
 				AfxMessageBox("Es wurde kein Konto gefunden, das mit dem Formularfeld " + csRestwertFeldnummer + " verknüpft ist. Deshalb wurde in der Buchung provisorisch das Konto '" 
 							  + csRestwertKonto + "' eingetragen. Wenn Sie Formulare benutzen, sollten Sie dieses Ausgabenkonto in den Einstellungen -> E/Ü-Konten anlegen und dem " + csEURoderE1a + "-Feld "
 							  + csRestwertFeldnummer + " zuweisen.");
@@ -7619,7 +7620,7 @@ void CEasyCashView::OnFileJahreswechsel()
 			AfxMessageBox("Die Datensicherung konnte nicht erfolgreich durchgeführt werden. Bitte kopieren Sie die relevanten Dateien manuel auf ein externes Sicherungsmedium.");
 	}
 
-	CEasyCashDoc *pNewDoc = pDoc->Jahreswechsel(einstellungen2->m_land);
+	CEasyCashDoc *pNewDoc = pDoc->Jahreswechsel(ECT_HoleEinstellungInt("land", 0));
 
 	pNewDoc->nLaufendeBuchungsnummerFuerEinnahmen = 1;
 	pNewDoc->nLaufendeBuchungsnummerFuerAusgaben = 1;
@@ -7978,6 +7979,7 @@ BOOL CEasyCashView::Export(char *_Efilename, char *_Afilename, BOOL bExplorerOef
 
 void CEasyCashView::OnViewOptions() 
 {
+	LoadProfile();  // einstellungen1-5 aus aktuellem Cache neu befuellen
 	einstellungen1->m_lfd_Buchungsnummer_Einnahmen = GetDocument()->nLaufendeBuchungsnummerFuerEinnahmen;
 	einstellungen1->m_lfd_Buchungsnummer_Ausgaben  = GetDocument()->nLaufendeBuchungsnummerFuerAusgaben;
 	einstellungen1->m_lfd_Buchungsnummer_Bank   = GetDocument()->nLaufendeBuchungsnummerFuerBank;
@@ -9249,29 +9251,32 @@ void CEasyCashView::SaveProfile()
 		DeleteFile(EasyCashIniFilenameBuffer);	// temporäre Ini wieder löschen
 	}
 
+	// Cache neu befuellen, damit andere offene Dokumente die Aenderungen sehen
+	ECT_LadeEinstellungen();
+
 	SetCursor(hcOld);
 }
 
 char *CEasyCashView::GetDefaultVAT()
 {
-	return einstellungen2->m_vat1.GetBuffer(0);
+	return const_cast<char*>(ECT_HoleEinstellung("vat1"));
 }
 
 char *CEasyCashView::GetVATs(int n)
 {
 	switch (n)
 	{
-	case 0: return einstellungen2->m_vat1.GetBuffer(0);
-	case 1: return einstellungen2->m_vat2.GetBuffer(0);
-	case 2: return einstellungen2->m_vat3.GetBuffer(0);
-	case 3: return einstellungen2->m_vat4.GetBuffer(0);
+	case 0: return const_cast<char*>(ECT_HoleEinstellung("vat1"));
+	case 1: return const_cast<char*>(ECT_HoleEinstellung("vat2"));
+	case 2: return const_cast<char*>(ECT_HoleEinstellung("vat3"));
+	case 3: return const_cast<char*>(ECT_HoleEinstellung("[Persoenliche_Daten]vat4"));
 	}
 	return "";
 }
 
 char *CEasyCashView::GetLandeskuerzel()
 {
-	switch (einstellungen2->m_land)
+	switch (ECT_HoleEinstellungInt("land", 0))
 	{
 	case 0: return "D";
 	case 1: return "AT";
@@ -9284,7 +9289,7 @@ char *CEasyCashView::GetLandeskuerzel()
 wurde ersetzt durch (LPCSTR)pDoc->csWaehrung
 char *CEasyCashView::GetWaehrungskuerzel()
 {
-	switch (einstellungen2->m_land)
+	switch (ECT_HoleEinstellungInt("land", 0))
 	{
 	case 0: return "DEM";
 	case 1: return "ATS";
@@ -9625,7 +9630,7 @@ BOOL CEasyCashView::OnCmdMsg(UINT nID, int nCode, void* pExtra, AFX_CMDHANDLERIN
 			// aktuelles USt-VA-Formular herausbekommen
 			CTime now = CTime::GetCurrentTime();
 			CString csFromularnamenMatchDE, csFromularnamenMatchAT;
-			if (!einstellungen1->m_monatliche_voranmeldung)
+			if (!ECT_HoleEinstellungInt("monatliche_voranmeldung", 1))
 			{
 				now -= CTimeSpan(28 + daufritage, 0, 0, 0);
 				csFromularnamenMatchDE.Format("Umsatzsteuer-Voranmeldung %d %s (D)", (int)now.GetYear(), (LPCSTR)cpMonat[now.GetMonth()-1]);

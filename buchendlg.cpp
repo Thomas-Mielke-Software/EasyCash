@@ -21,6 +21,7 @@
 #include "stdafx.h"
 #include "EasyCash.h"
 #include "ECTIFace\EasyCashDoc.h"
+#include "ECTBridge\EinstellungenExports.h"
 #include "EasyCashView.h"
 #include "BuchenDlg.h"
 #include "RechnDlg.h"
@@ -185,10 +186,10 @@ BOOL BuchenDlg::OnInitDialog()
 	((CEdit *)GetDlgItem(IDC_DATUM_TAG))->LimitText(2);
 	((CEdit *)GetDlgItem(IDC_DATUM_MONAT))->LimitText(2);
 	((CEdit *)GetDlgItem(IDC_DATUM_JAHR))->LimitText(4);
-	((CButton *)GetDlgItem(IDC_JAHR_ENABLED))->SetCheck(m_pParent->einstellungen1->m_bJahresfeldAktiviert);
-	GetDlgItem(IDC_DATUM_JAHR)->EnableWindow(m_pParent->einstellungen1->m_bJahresfeldAktiviert);
-	((CButton *)GetDlgItem(IDC_MWST_ENABLED))->SetCheck(m_pParent->einstellungen1->m_bMwstFeldAktiviert);
-	GetDlgItem(IDC_MWST)->EnableWindow(m_pParent->einstellungen1->m_bMwstFeldAktiviert);
+	((CButton *)GetDlgItem(IDC_JAHR_ENABLED))->SetCheck(ECT_HoleEinstellungInt("JahresfeldAktiviert", 0));
+	GetDlgItem(IDC_DATUM_JAHR)->EnableWindow(ECT_HoleEinstellungInt("JahresfeldAktiviert", 0));
+	((CButton *)GetDlgItem(IDC_MWST_ENABLED))->SetCheck(ECT_HoleEinstellungInt("MwstFeldAktiviert", 1));
+	GetDlgItem(IDC_MWST)->EnableWindow(ECT_HoleEinstellungInt("MwstFeldAktiviert", 1));
 
 	((CComboBox *)GetDlgItem(IDC_MWST))->ResetContent();
 	int i;
@@ -252,7 +253,7 @@ BOOL BuchenDlg::OnInitDialog()
 	{// BUTTON: Nach EURO konvertieren
 		if (m_pDoc->csUrspruenglicheWaehrung == "" || m_pDoc->csUrspruenglicheWaehrung == "EUR")
 		{
-			switch (m_pParent->einstellungen2->m_land)
+			switch (ECT_HoleEinstellungInt("land", 0))
 			{
 			case 0: m_csZielwaehrung = "DEM"; 
 			case 1: m_csZielwaehrung = "ATS"; 
@@ -464,7 +465,7 @@ void BuchenDlg::OnOK()
 			goto error_delete_buchung;
 		}
 		
-		if ((*p)->AbschreibungSatz == 75 && m_pParent->einstellungen2->m_land == 0)
+		if ((*p)->AbschreibungSatz == 75 && ECT_HoleEinstellungInt("land", 0) == 0)
 		{
 			if ((*p)->AbschreibungGenauigkeit != GANZJAHRES_AFA)
 			{
@@ -490,7 +491,7 @@ void BuchenDlg::OnOK()
 				(*p)->Konto = (*p)->Konto.Mid(3);
 		}
 		
-		if (m_ausgaben && m_pParent->einstellungen1->m_bErzeugeLaufendeBuchungsnummernFuerAusgaben && !m_ppb)
+		if (m_ausgaben && ECT_HoleEinstellungInt("ErzeugeLaufendeBuchungsnummernFuerAusgaben", 0) && !m_ppb)
 		{
 			char buffer[100];
 			sprintf(buffer, "A%04d", m_pDoc->nLaufendeBuchungsnummerFuerAusgaben);
@@ -498,7 +499,7 @@ void BuchenDlg::OnOK()
 				m_pDoc->nLaufendeBuchungsnummerFuerAusgaben++;	// erhöhen nur wenn Belegnummer unverändert geblieben
 		}
 
-		if (!m_ausgaben && m_pParent->einstellungen1->m_bErzeugeLaufendeBuchungsnummernFuerEinnahmen && !m_ppb)
+		if (!m_ausgaben && ECT_HoleEinstellungInt("ErzeugeLaufendeBuchungsnummernFuerEinnahmen", 0) && !m_ppb)
 		{
 			char buffer[100];
 			sprintf(buffer, "E%04d", m_pDoc->nLaufendeBuchungsnummerFuerEinnahmen);
@@ -772,7 +773,7 @@ void BuchenDlg::OnOK()
 		else
 			InitDlg();			// sonst nächste Buchung
 
-		if (m_pParent->einstellungen1->m_taeglich_buchen)
+		if (ECT_HoleEinstellungInt("taeglich_buchen", 0))
 			GetDlgItem(IDC_BETRAG)->SetFocus();
 		else
 		{
@@ -866,7 +867,7 @@ void BuchenDlg::InitDlg(BOOL bBelasseEinigeFelder)
 		((CButton *)GetDlgItem(IDC_EINNAHMEN))->SetCheck(FALSE);
 		((CButton *)GetDlgItem(IDC_AUSGABEN))->SetCheck(TRUE);
 
-		if (m_pParent->einstellungen1->m_bErzeugeLaufendeBuchungsnummernFuerAusgaben && !m_ppb)
+		if (ECT_HoleEinstellungInt("ErzeugeLaufendeBuchungsnummernFuerAusgaben", 0) && !m_ppb)
 		{
 			char buffer[100];
 			sprintf(buffer, "A%04d", m_pDoc->nLaufendeBuchungsnummerFuerAusgaben);
@@ -900,7 +901,7 @@ void BuchenDlg::InitDlg(BOOL bBelasseEinigeFelder)
 		((CButton *)GetDlgItem(IDC_AUSGABEN))->SetCheck(FALSE);
 		((CButton *)GetDlgItem(IDC_EINNAHMEN))->SetCheck(TRUE);
 
-		if (m_pParent->einstellungen1->m_bErzeugeLaufendeBuchungsnummernFuerEinnahmen && !m_ppb)
+		if (ECT_HoleEinstellungInt("ErzeugeLaufendeBuchungsnummernFuerEinnahmen", 0) && !m_ppb)
 		{
 			char buffer[100];
 			sprintf(buffer, "E%04d", m_pDoc->nLaufendeBuchungsnummerFuerEinnahmen);
@@ -978,7 +979,7 @@ void BuchenDlg::InitDlg(BOOL bBelasseEinigeFelder)
 		{
 			if (m_ausgaben)
 			{
-				if (m_pParent->einstellungen1->m_bErzeugeLaufendeBuchungsnummernFuerAusgaben)
+				if (ECT_HoleEinstellungInt("ErzeugeLaufendeBuchungsnummernFuerAusgaben", 0))
 				{
 					char buffer[100];
 					sprintf(buffer, "A%04d", m_pDoc->nLaufendeBuchungsnummerFuerAusgaben);
@@ -987,7 +988,7 @@ void BuchenDlg::InitDlg(BOOL bBelasseEinigeFelder)
 			}
 			else
 			{
-				if (m_pParent->einstellungen1->m_bErzeugeLaufendeBuchungsnummernFuerEinnahmen)
+				if (ECT_HoleEinstellungInt("ErzeugeLaufendeBuchungsnummernFuerEinnahmen", 0))
 				{
 					char buffer[100];
 					sprintf(buffer, "E%04d", m_pDoc->nLaufendeBuchungsnummerFuerEinnahmen);
@@ -1065,7 +1066,7 @@ void BuchenDlg::InitDlg(BOOL bBelasseEinigeFelder)
 		GetDlgItemText(IDC_DATUM_TAG, mm);
 		GetDlgItemText(IDC_DATUM_MONAT, dd);
 		GetDlgItemText(IDC_DATUM_JAHR, yyyy);
-		if ((!m_pParent->einstellungen1->m_BuchungsdatumBelassen || !dd.GetLength() || !mm.GetLength() || !yyyy.GetLength()) && !bBelasseEinigeFelder)
+		if ((!ECT_HoleEinstellungInt("BuchungsdatumBelassen", 0) || !dd.GetLength() || !mm.GetLength() || !yyyy.GetLength()) && !bBelasseEinigeFelder)
 		{
 			CTime now = CTime::GetCurrentTime();
 			char buf[100];
@@ -1090,14 +1091,14 @@ void BuchenDlg::InitDlg(BOOL bBelasseEinigeFelder)
 		if (!bBelasseEinigeFelder) 
 		{
 			SetDlgItemText(IDC_BETRAG, "");
-			if (m_pParent->einstellungen1->m_bMwstFeldAktiviert)
+			if (ECT_HoleEinstellungInt("MwstFeldAktiviert", 1))
 				SetDlgItemText(IDC_MWST, m_pParent->GetDefaultVAT());
 			else
 				SetDlgItemText(IDC_MWST, "0");
 		}
 		SetDlgItemText(IDC_ABSCHREIBUNGNUMMER, "1");
 		SetDlgItemText(IDC_ABSCHREIBUNGJAHRE, "1");
-		((CComboBox *)GetDlgItem(IDC_ABSCHREIBUNG_GENAUIGKEIT))->SetCurSel(m_pParent->einstellungen1->m_AbschreibungGenauigkeit);
+		((CComboBox *)GetDlgItem(IDC_ABSCHREIBUNG_GENAUIGKEIT))->SetCurSel(ECT_HoleEinstellungInt("AbschreibungGenauigkeit", 0));
 		((CComboBox *)GetDlgItem(IDC_EURECHNUNGSPOSTEN))->SetCurSel(-1);
 	}
 }
@@ -1177,8 +1178,8 @@ void BuchenDlg::OnTimer(UINT nIDEvent)
 		CString cs;
 		
 		/*
-		if (  (m_ausgaben && m_pParent->einstellungen1->m_bErzeugeLaufendeBuchungsnummernFuerAusgaben
-			|| !m_ausgaben && m_pParent->einstellungen1->m_bErzeugeLaufendeBuchungsnummernFuerEinnahmen) 
+		if (  (m_ausgaben && ECT_HoleEinstellungInt("ErzeugeLaufendeBuchungsnummernFuerAusgaben", 0)
+			|| !m_ausgaben && ECT_HoleEinstellungInt("ErzeugeLaufendeBuchungsnummernFuerEinnahmen", 0)) 
 			&& !m_ppb)
 			cs.Format("%s #%2.2d/%d", 
 				(LPCSTR)m_pParent->einstellungen1->Buchungsposten[nIDEvent].Beschreibung,
@@ -1427,7 +1428,7 @@ void BuchenDlg::OnEinnahmen()
 	m_ausgaben = FALSE;
 	UpdateCombo("E");
 	InitDlg(TRUE);
-	if (m_pParent->einstellungen1->m_taeglich_buchen)
+	if (ECT_HoleEinstellungInt("taeglich_buchen", 0))
 		GetDlgItem(IDC_BETRAG)->SetFocus();
 	else
 	{
@@ -1441,7 +1442,7 @@ void BuchenDlg::OnAusgaben()
 	m_ausgaben = TRUE;
 	UpdateCombo("A");
 	InitDlg(TRUE);
-	if (m_pParent->einstellungen1->m_taeglich_buchen)
+	if (ECT_HoleEinstellungInt("taeglich_buchen", 0))
 		GetDlgItem(IDC_BETRAG)->SetFocus();
 	else
 	{
@@ -1485,14 +1486,14 @@ void BuchenDlg::OnKillfocusDatumJahr()
 void BuchenDlg::OnJahrEnabled() 
 {
 	GetDlgItem(IDC_DATUM_JAHR)->EnableWindow(((CButton *)GetDlgItem(IDC_JAHR_ENABLED))->GetCheck());
-	m_pParent->einstellungen1->m_bJahresfeldAktiviert = ((CButton *)GetDlgItem(IDC_JAHR_ENABLED))->GetCheck();
+	ECT_SpeichereEinstellungInt("JahresfeldAktiviert", ((CButton *)GetDlgItem(IDC_JAHR_ENABLED))->GetCheck());
 	m_pParent->SaveProfile();
 }
 
 void BuchenDlg::OnBnClickedMwstEnabled()
 {
 	GetDlgItem(IDC_MWST)->EnableWindow(((CButton *)GetDlgItem(IDC_MWST_ENABLED))->GetCheck());
-	m_pParent->einstellungen1->m_bMwstFeldAktiviert = ((CButton *)GetDlgItem(IDC_MWST_ENABLED))->GetCheck();
+	ECT_SpeichereEinstellungInt("MwstFeldAktiviert", ((CButton *)GetDlgItem(IDC_MWST_ENABLED))->GetCheck());
 	m_pParent->SaveProfile();
 }
 
@@ -1665,13 +1666,13 @@ void BuchenDlg::OnChangeBelegnummer()
 
 	if (strlen(buffer) == 1)
 	{
-		if (toupper(*buffer) == 'B' && m_pParent->einstellungen1->m_bErzeugeLaufendeBuchungsnummernFuerBank)
+		if (toupper(*buffer) == 'B' && ECT_HoleEinstellungInt("ErzeugeLaufendeBuchungsnummernFuerBank", 0))
 		{
 			sprintf(buffer, "B%04d", m_pDoc->nLaufendeBuchungsnummerFuerBank);
 			SetDlgItemText(IDC_BELEGNUMMER, buffer);
 			GetDlgItem(IDC_EURECHNUNGSPOSTEN)->SetFocus();
 		}
-		else if (toupper(*buffer) == 'K' && m_pParent->einstellungen1->m_bErzeugeLaufendeBuchungsnummernFuerKasse)
+		else if (toupper(*buffer) == 'K' && ECT_HoleEinstellungInt("ErzeugeLaufendeBuchungsnummernFuerKasse", 0))
 		{
 			sprintf(buffer, "K%04d", m_pDoc->nLaufendeBuchungsnummerFuerKasse);
 			SetDlgItemText(IDC_BELEGNUMMER, buffer);

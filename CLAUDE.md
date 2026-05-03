@@ -240,6 +240,54 @@ im Patch immer **vollständig im `#ifdef USE_ECTENGINE`-Block**
 gekapselt. Der alte MFC-Render-Pfad bleibt unverändert daneben
 existieren und kann durch Wegnehmen des Switches reaktiviert werden.
 
+**Ausnahme**: Beim Refactoring der Einstellungs-Architektur (siehe unten)
+ist `USE_ECTENGINE` explizit nicht zu beachten — der Cache wird global,
+und ein paralleler alter Pfad würde nur Inkonsistenzen schaffen.
+
+## Globaler Einstellungs-Cache (Plugin-API-kompatibel)
+
+Statt der alten Pro-Dokument-Verwaltung (`einstellungen1..5` als
+`CPropertyPage`-Member in jeder `CEasyCashView`) gibt es jetzt einen
+**globalen Key-Value-Cache** in `ECTEngine::Einstellungen`:
+
+```
+ECTEngine/Einstellungen.cs           — Static Dictionary, WertGeaendert-Event
+ECTBridge/EinstellungenExports.h     — Native C-API
+ECTBridge/EinstellungenExports.cpp   — C++/CLI-Bridge, ini-I/O
+```
+
+### Lifecycle
+- App-Start: `SetIniFileName()` (in `ECTBridge/ectifacemisc.cpp`) ruft
+  jetzt automatisch `ECT_LadeEinstellungen()` → Cache wird komplett
+  aus easyct.ini befüllt.
+- Mandantenwechsel: Selbiges, da `OnFileMandanten` / `OnFileWaehleDatenverzeichnis`
+  in `mainfrm.cpp` `SetIniFileName()` aufrufen.
+- Settings-Dialog OK: `SaveProfile()` ruft am Ende `ECT_LadeEinstellungen()`
+  → andere offene MDI-Dokumente sehen die Änderung sofort.
+- `ECT_SpeichereEinstellung()` schreibt synchron in die ini.
+
+### Schlüsselformat (wie Plugin-API)
+- Kurzform: `"fname"` → Sektion `Finanzamt`, Ini-Key `name`
+            (Auflösung via `IniSektion()` aus `ectifacemisc.cpp`).
+- Explizit: `"[Sektion]Key"`.
+- **Variante X**: Cache-Key = exakt was der Aufrufer übergibt.
+  Konvention: immer Kurzform verwenden (so wie Plugin-Interface).
+
+### Zugriff aus nativem Code
+```cpp
+#include "ECTBridge\EinstellungenExports.h"
+int g = ECT_HoleEinstellungInt("AbschreibungGenauigkeit", 0);
+ECT_SpeichereEinstellung("fname", "Finanzamt Musterstadt");
+```
+
+### Stand der Migration
+- Infrastruktur: ✅ fertig
+- Bulk-Replacement von `einstellungen[1-5]->m_xxx`: nur an einer
+  repräsentativen Stelle demonstriert (`buchendlg.cpp:1100`),
+  Rest siehe TODO.md.
+- Arrays (`EinnahmenRechnungsposten` etc.): explizit ausgenommen,
+  später separater Plan.
+
 ## Offene Punkte
 
 Siehe `TODO.md`.

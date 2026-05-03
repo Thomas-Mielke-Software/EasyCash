@@ -21,6 +21,7 @@
 #include "stdafx.h"
 #include "EasyCash.h"
 #include "ECTIFace\EasyCashDoc.h"
+#include "ECTBridge\EinstellungenExports.h"
 #include "EasyCashView.h"
 #include "..\GrafLib\cimage\cimage.h"
 #include "MainFrm.h"
@@ -1016,13 +1017,13 @@ void CMainFrame::UpdateSaldo(CEasyCashView *pecv)
 		// Saldo ist die Differenz aus Ausgaben und Einnahmen
 		if (pecv->einstellungen4)
 		{
-			if (pecv->einstellungen4->m_finanzamtserstattungen != "" || pecv->einstellungen4->m_finanzamtszahlungen != "")
+			if (CString(ECT_HoleEinstellung("[Allgemein]Finanzamtserstattungen")) != "" || CString(ECT_HoleEinstellung("[Allgemein]Finanzamtszahlungen")) != "")
 			{
-				saldo = pDoc->EinnahmenSumme(pecv->m_MonatsFilterDisplay, pecv->einstellungen4->m_finanzamtserstattungen) 
-						- pDoc->AusgabenSumme(pecv->m_MonatsFilterDisplay, pecv->einstellungen4->m_finanzamtszahlungen);
+				saldo = pDoc->EinnahmenSumme(pecv->m_MonatsFilterDisplay, CString(ECT_HoleEinstellung("[Allgemein]Finanzamtserstattungen"))) 
+						- pDoc->AusgabenSumme(pecv->m_MonatsFilterDisplay, CString(ECT_HoleEinstellung("[Allgemein]Finanzamtszahlungen")));
 			
-				nettosaldo = pDoc->EinnahmenSummeNetto(pecv->m_MonatsFilterDisplay, pecv->einstellungen4->m_finanzamtserstattungen) 
-							 - pDoc->AusgabenSummeNetto(pecv->m_MonatsFilterDisplay, pecv->einstellungen4->m_finanzamtszahlungen);
+				nettosaldo = pDoc->EinnahmenSummeNetto(pecv->m_MonatsFilterDisplay, CString(ECT_HoleEinstellung("[Allgemein]Finanzamtserstattungen"))) 
+							 - pDoc->AusgabenSummeNetto(pecv->m_MonatsFilterDisplay, CString(ECT_HoleEinstellung("[Allgemein]Finanzamtszahlungen")));
 			}
 			else
 				nettosaldo = saldo = pDoc->EinnahmenSumme(pecv->m_MonatsFilterDisplay) - pDoc->AusgabenSumme(pecv->m_MonatsFilterDisplay);

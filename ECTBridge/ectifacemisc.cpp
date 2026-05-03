@@ -108,11 +108,14 @@ extern "C" AFX_EXT_CLASS BOOL GetProgrammverzeichnis(char *buffer3, int size)
 		return FALSE;
 }
 
+#include "EinstellungenExports.h"
+
 static char IniFileName[1000] = "";
 
 extern "C" AFX_EXT_CLASS void SetIniFileName(char *buffer3)
 {
 	strcpy(IniFileName, buffer3);
+	ECT_LadeEinstellungen();  // Cache aus neuer ini neu befuellen
 }
 
 extern "C" AFX_EXT_CLASS BOOL GetIniFileName(char *buffer3, int size)

@@ -21,6 +21,7 @@
 #include "stdafx.h"
 #include "easycash.h"
 #include "ECTIFace\easycashdoc.h"
+#include "ECTBridge\EinstellungenExports.h"
 #include "easycashview.h"
 #include "VoranmeldezeitraumDlg.h"
 
@@ -69,7 +70,7 @@ BOOL VoranmeldezeitraumDlg::OnInitDialog()
 	
 	CTime now = CTime::GetCurrentTime();
 
-	if (m_pParent->einstellungen1->m_monatliche_voranmeldung == 1)
+	if (ECT_HoleEinstellungInt("monatliche_voranmeldung", 1) == 1)
 	{ // Quartalsweise
 		jj = m_pParent->GetDocument()->nJahr;
 		if (now >= CTime(jj+1, 1, 1, 0, 0, 0)) // schon neues Jahr? dann letztes Quartal voreinstellen
@@ -120,7 +121,7 @@ void VoranmeldezeitraumDlg::OnOK()
 	int mv, jv, mb, jb;
 	char buf[300];
 
-	if (m_pParent->einstellungen1->m_monatliche_voranmeldung == 1)	// Quartal!
+	if (ECT_HoleEinstellungInt("monatliche_voranmeldung", 1) == 1)	// Quartal!
 	{
 		// ausführen für welches Quartal
 		if (((CButton *)GetDlgItem(IDC_RADIO1))->GetCheck()) mv = 1;
@@ -175,7 +176,7 @@ void VoranmeldezeitraumDlg::OnOK()
 	CTime bis_datum = *temp_datum;
 	delete temp_datum; 
 
-	if (m_pParent->einstellungen1->m_monatliche_voranmeldung == 1)
+	if (ECT_HoleEinstellungInt("monatliche_voranmeldung", 1) == 1)
 	{
 		if (mv != 1 && mv != 4  && mv != 7 && mv != 10)
 		{
