@@ -4,7 +4,8 @@
              xmlns:journal="clr-namespace:ECTViews.Journal"
              FontFamily="Segoe UI"
              FontSize="13"
-             Background="#FCFCFC">
+             Background="#FCFCFC"
+             PreviewKeyDown="OnPreviewKeyDown">
 
     <UserControl.Resources>
         <!-- Style fuer ein klickbares Item.

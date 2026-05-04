@@ -32,6 +32,9 @@ namespace ECTViews.Journal
 
         /// <summary>Liefert das ViewModel — der Aufrufer kann Aktualisiere() aufrufen.</summary>
         public JournalViewModel ViewModel => _vm;
+
+        /// <summary>Liefert die JournalView für direkten Zugriff auf die UI.</summary>
+        public JournalView View => _view;
     }
 
     /// <summary>
@@ -40,6 +43,12 @@ namespace ECTViews.Journal
     public static class JournalHost
     {
         private static JournalWindow _aktuellesFenster;
+
+        /// <summary>
+        /// Liefert die aktuell aktive JournalView, oder null wenn kein Journal offen ist.
+        /// Wird von C++/CLI verwendet, um Tasten an das Journal zu senden.
+        /// </summary>
+        public static JournalView AktiveJournalView => _aktuellesFenster?.View;
 
         /// <summary>
         /// Öffnet das Journal-Fenster (modeless, damit der User

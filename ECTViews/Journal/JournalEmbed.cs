@@ -264,6 +264,17 @@ namespace ECTViews.Journal
         }
 
         /// <summary>
+        /// Leitet einen Scroll-Tastendruck an das erste aktive eingebettete
+        /// Journal weiter. Wird von NavigationView.OnPreviewKeyDown und von
+        /// ECT_JournalSendKey (Ribbon-Pfad) aufgerufen.
+        /// </summary>
+        public static void NavigiereScroll(System.Windows.Input.Key key)
+        {
+            if (_aktiveHosts.Count == 0) return;
+            _aktiveHosts[0].View?.NavigiereZeile(key);
+        }
+
+        /// <summary>
         /// Liefert die Anzahl der aktuell aktiven Journal-Hosts.
         /// (Fuer Logging/Debugging.)
         /// </summary>

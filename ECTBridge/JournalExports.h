@@ -135,6 +135,16 @@ ECTBRIDGE_API HWND ECT_NavigationEinbetten(
 /// </summary>
 ECTBRIDGE_API void ECT_NavigationAbloesen(HWND hwndNav);
 
+/// <summary>
+/// Sendet Tasten-Events an das aktive WPF-Journal fuer Navigation.
+/// Wird von easycashview.cpp::OnKeyDown aufgerufen, wenn das Journal
+/// eingebettet ist (m_hwndJournalWpf != NULL).
+///
+/// Parameter:
+///   nChar - Virtual Key Code (VK_UP, VK_DOWN, VK_PRIOR, VK_NEXT, VK_HOME, VK_END)
+/// </summary>
+ECTBRIDGE_API void ECT_JournalSendKey(UINT nChar);
+
 #ifdef __cplusplus
 }
 #endif

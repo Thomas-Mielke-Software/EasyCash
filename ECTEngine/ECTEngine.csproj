@@ -14,5 +14,4 @@
     <!-- COM-Visible für Plugin-Kompatibilität (Phase 4) -->
     <ComVisible>false</ComVisible>
   </PropertyGroup>
-
 </Project>

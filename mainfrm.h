@@ -157,6 +157,7 @@ protected:
 	afx_msg void OnFilePluginmanager();
 	afx_msg void OnFileOeffneDatenverzeichnis();
 	afx_msg void OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags);
+	virtual BOOL PreTranslateMessage(MSG* pMsg);
 	afx_msg void OnFileMandanten();
 	afx_msg void OnFileWaehleDatenverzeichnis();
 	afx_msg void OnFileRegistrierungsinformationenWiederherstellen();

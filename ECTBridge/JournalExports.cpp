@@ -17,7 +17,8 @@
 
 #using "ECTEngine.dll"
 #using "ECTViews.dll"
-#using <System.dll>                 // INotifyPropertyChanged in ECTViews
+#using <System.dll>
+#using <WindowsBase.dll>
 
 using namespace System;
 
@@ -299,5 +300,32 @@ void ECT_NavigationAbloesen(HWND hwndNav)
         CString msg = L"Fehler in ECT_NavigationAbloesen: ";
         msg += CString(ex->Message);
         AfxMessageBox(msg, MB_ICONERROR);
+    }
+}
+
+// ----------------------------------------------------------
+// ECT_JournalSendKey - Sendet Navigations-Tasten an das Journal
+// ----------------------------------------------------------
+extern "C" ECTBRIDGE_API void ECT_JournalSendKey(UINT nChar)
+{
+    try
+    {
+        System::Windows::Input::Key key;
+        switch (nChar)
+        {
+            case VK_UP:    key = System::Windows::Input::Key::Up;       break;
+            case VK_DOWN:  key = System::Windows::Input::Key::Down;     break;
+            case VK_PRIOR: key = System::Windows::Input::Key::PageUp;   break;
+            case VK_NEXT:  key = System::Windows::Input::Key::PageDown; break;
+            case VK_HOME:  key = System::Windows::Input::Key::Home;     break;
+            case VK_END:   key = System::Windows::Input::Key::End;      break;
+            default: return;
+        }
+        ECTViews::Journal::JournalEmbed::NavigiereScroll(key);
+    }
+    catch (System::Exception^ ex)
+    {
+        AfxTrace("ECT_JournalSendKey: Exception - %S\r\n", 
+            (LPCTSTR)CString(ex->Message));
     }
 }

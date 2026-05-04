@@ -22,6 +22,9 @@
 #include "EasyCash.h"
 #include "ECTIFace\EasyCashDoc.h"
 #include "ECTBridge\EinstellungenExports.h"
+#ifdef USE_ECTENGINE
+#include "ECTBridge\JournalExports.h"
+#endif
 #include "EasyCashView.h"
 #include "..\GrafLib\cimage\cimage.h"
 #include "MainFrm.h"
@@ -1902,6 +1905,28 @@ void CMainFrame::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
 	AfxTrace("CMainFrame::OnKeyDown: %0x (%c) %0x %d\r\n", (int)nChar, (int)nChar, nFlags, nRepCnt);
 	
 	CMDIFrameWndEx::OnKeyDown(nChar, nRepCnt, nFlags);
+}
+
+BOOL CMainFrame::PreTranslateMessage(MSG* pMsg)
+{
+#ifdef USE_ECTENGINE
+	if (pMsg->message == WM_KEYDOWN)
+	{
+		UINT nChar = (UINT)pMsg->wParam;
+		if (nChar == VK_PRIOR || nChar == VK_NEXT ||
+			nChar == VK_UP    || nChar == VK_DOWN  ||
+			nChar == VK_HOME  || nChar == VK_END)
+		{
+			CWnd* pFocused = GetFocus();
+			if (pFocused && m_wndRibbonBar.IsChild(pFocused))
+			{
+				ECT_JournalSendKey(nChar);
+				return TRUE;
+			}
+		}
+	}
+#endif
+	return CMDIFrameWndEx::PreTranslateMessage(pMsg);
 }
 
 LRESULT CMainFrame::WindowProc(UINT message, WPARAM wParam, LPARAM lParam) 

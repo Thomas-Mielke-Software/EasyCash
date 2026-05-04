@@ -1,7 +1,7 @@
 // NavigationView.xaml.cs - Code-Behind fuer das Navigationsfenster.
-// Reines Pass-Through zum NavigationViewModel - keine eigene Logik.
 
 using System.Windows.Controls;
+using System.Windows.Input;
 
 namespace ECTViews.Journal
 {
@@ -10,6 +10,22 @@ namespace ECTViews.Journal
         public NavigationView()
         {
             InitializeComponent();
+        }
+
+        private void OnPreviewKeyDown(object sender, KeyEventArgs e)
+        {
+            switch (e.Key)
+            {
+                case Key.Up:
+                case Key.Down:
+                case Key.PageUp:
+                case Key.PageDown:
+                case Key.Home:
+                case Key.End:
+                    JournalEmbed.NavigiereScroll(e.Key);
+                    e.Handled = true;
+                    break;
+            }
         }
     }
 }

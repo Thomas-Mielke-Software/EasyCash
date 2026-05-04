@@ -9,6 +9,8 @@
 //      angeforderte Zeile in den sichtbaren Bereich (wird vom
 //      Navigations-Klick ausgeloest).
 
+using System;
+using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -115,6 +117,41 @@ namespace ECTViews.Journal
             if (listWidth <= 0) listWidth = ActualWidth;
             double max = System.Math.Max(60, listWidth / 4);
             vm.BelegMaxBreite = max;
+        }
+
+        /// <summary>
+        /// Scrollt das Journal per Tastendruck — wird aus NavigationView und
+        /// CMainFrame::PreTranslateMessage (via ECT_JournalSendKey) aufgerufen.
+        /// </summary>
+        public void NavigiereZeile(Key key)
+        {
+            if (!(DataContext is JournalViewModel vm)) return;
+            var scroll = FindeScrollViewer(lstZeilen);
+
+            switch (key)
+            {
+                case Key.Up:
+                case Key.Down:
+                {
+                    var buchungen = vm.Zeilen.OfType<JournalBuchungRow>().ToList();
+                    if (buchungen.Count == 0) return;
+                    int idx = vm.SelektierteZeile != null
+                        ? buchungen.IndexOf(vm.SelektierteZeile) : -1;
+                    int neu = key == Key.Up
+                        ? Math.Max(0, idx > 0 ? idx - 1 : 0)
+                        : Math.Min(buchungen.Count - 1, idx < 0 ? 0 : idx + 1);
+                    if (buchungen[neu] != vm.SelektierteZeile)
+                    {
+                        vm.SelektierteZeile = buchungen[neu];
+                        ZentriereVertikal(buchungen[neu]);
+                    }
+                    break;
+                }
+                case Key.PageUp:   scroll?.PageUp();        break;
+                case Key.PageDown: scroll?.PageDown();       break;
+                case Key.Home:     scroll?.ScrollToTop();    break;
+                case Key.End:      scroll?.ScrollToBottom(); break;
+            }
         }
     }
 }
