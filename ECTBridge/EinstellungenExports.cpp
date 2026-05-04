@@ -1,4 +1,4 @@
-// EinstellungenExports.cpp — Bridge-Implementierung des Einstellungs-Caches
+// EinstellungenExports.cpp -- Bridge-Implementierung des Einstellungs-Caches
 //
 // - Erst-Befuellung: ECT_LadeEinstellungen() enumeriert ueber
 //   GetPrivateProfileSectionNames + GetPrivateProfileSection alle
@@ -6,6 +6,8 @@
 //   Plugin-API-Schluesselformat um (Finanzamt-Keys bekommen 'f' davor,
 //   EinnahmenRechnungsposten 'e', AusgabenRechnungsposten 'a') und
 //   uebergibt das Dictionary an Einstellungen.LadeAusBridge().
+//   LadeAusBridge() baut daraus auch EinnahmenKonten, AusgabenKonten
+//   und Presets auf.
 //
 // - Sofortiges Schreiben: Wir abonnieren Einstellungen.WertGeaendert
 //   und schreiben jeden geaenderten Wert per WritePrivateProfileString
@@ -109,9 +111,37 @@ namespace
     };
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
+// -----------------------------------------------------------------------------
+// Rotations-Buffer: ein einzelner statischer Buffer wuerde sich bei mehreren
+// ECT_HoleEinstellung-Aufrufen in derselben Expression selbst ueberschreiben
+// (z.B. "ECT_HoleEinstellung(a) + ECT_HoleEinstellung(b)"). Mit 8 Buffern
+// koennen typische Expressions (bis 8 Aufrufe in Folge) sicher konsumiert
+// werden, bevor der erste Buffer recycelt wird.
+// -----------------------------------------------------------------------------
+constexpr int HOLE_BUFFER_COUNT = 8;
+constexpr int HOLE_BUFFER_SIZE  = 10000;
+static char s_holeBuffers[HOLE_BUFFER_COUNT][HOLE_BUFFER_SIZE];
+static int  s_holeBufferIndex = 0;
+
+static char* NaechsterBuffer()
+{
+    char* buf = s_holeBuffers[s_holeBufferIndex];
+    s_holeBufferIndex = (s_holeBufferIndex + 1) % HOLE_BUFFER_COUNT;
+    return buf;
+}
+
+static LPCSTR ManagedStringZuBuffer(System::String^ s)
+{
+    char* buf = NaechsterBuffer();
+    if (s == nullptr) { buf[0] = 0; return buf; }
+    msclr::interop::marshal_context ctx;
+    strncpy_s(buf, HOLE_BUFFER_SIZE, ctx.marshal_as<const char*>(s), _TRUNCATE);
+    return buf;
+}
+
+// -----------------------------------------------------------------------------
 // Public exports
-// ─────────────────────────────────────────────────────────────────────────────
+// -----------------------------------------------------------------------------
 
 void ECT_LadeEinstellungen()
 {
@@ -156,7 +186,7 @@ void ECT_LadeEinstellungen()
     }
 
     // Handler einmalig registrieren (vor dem Lade-Aufruf, damit kein
-    // Race entsteht — LadeAusBridge feuert eh keine Events)
+    // Race entsteht -- LadeAusBridge feuert eh keine Events)
     if (!s_handlerRegistriert)
     {
         ECTEngine::Einstellungen::WertGeaendert +=
@@ -165,34 +195,18 @@ void ECT_LadeEinstellungen()
         s_handlerRegistriert = true;
     }
 
+    // LadeAusBridge befuellt gleichzeitig EinnahmenKonten, AusgabenKonten
+    // und Presets aus dem soeben aufgebauten Dictionary.
     ECTEngine::Einstellungen::LadeAusBridge(dict);
 
     TRACE("ECT_LadeEinstellungen: %d Schluessel aus %s\n", dict->Count, iniBuf);
 }
 
-// Rotations-Buffer: ein einzelner statischer Buffer wuerde sich bei mehreren
-// ECT_HoleEinstellung-Aufrufen in derselben Expression selbst ueberschreiben
-// (z.B. "ECT_HoleEinstellung(a) + ECT_HoleEinstellung(b)"). Mit 8 Buffern
-// koennen typische Expressions (bis 8 Aufrufe in Folge) sicher konsumiert
-// werden, bevor der erste Buffer recycelt wird.
-constexpr int HOLE_BUFFER_COUNT = 8;
-constexpr int HOLE_BUFFER_SIZE  = 10000;
-static char s_holeBuffers[HOLE_BUFFER_COUNT][HOLE_BUFFER_SIZE];
-static int  s_holeBufferIndex = 0;
-
 LPCSTR ECT_HoleEinstellung(LPCSTR key)
 {
-    char* buf = s_holeBuffers[s_holeBufferIndex];
-    s_holeBufferIndex = (s_holeBufferIndex + 1) % HOLE_BUFFER_COUNT;
-    if (!key) { buf[0] = 0; return buf; }
-
+    if (!key) { char* b = NaechsterBuffer(); b[0] = 0; return b; }
     System::String^ result = ECTEngine::Einstellungen::Hole(gcnew System::String(key));
-    if (result == nullptr) { buf[0] = 0; return buf; }
-
-    msclr::interop::marshal_context ctx;
-    const char* p = ctx.marshal_as<const char*>(result);
-    strncpy_s(buf, HOLE_BUFFER_SIZE, p, _TRUNCATE);
-    return buf;
+    return ManagedStringZuBuffer(result);
 }
 
 void ECT_SpeichereEinstellung(LPCSTR key, LPCSTR value)
@@ -224,4 +238,57 @@ void ECT_SpeichereEinstellungBool(LPCSTR key, BOOL value)
 {
     if (!key) return;
     ECTEngine::Einstellungen::Speichere(gcnew System::String(key), value ? true : false);
+}
+
+// -----------------------------------------------------------------------------
+// Listen-Zugriffe
+// -----------------------------------------------------------------------------
+
+LPCSTR ECT_HoleEinnahmenKonto(int index)
+{
+    auto list = ECTEngine::Einstellungen::EinnahmenKonten;
+    if (index < 0 || index >= list->Count)
+    {
+        char* b = NaechsterBuffer(); b[0] = 0; return b;
+    }
+    return ManagedStringZuBuffer(list[index]);
+}
+
+LPCSTR ECT_HoleAusgabenKonto(int index)
+{
+    auto list = ECTEngine::Einstellungen::AusgabenKonten;
+    if (index < 0 || index >= list->Count)
+    {
+        char* b = NaechsterBuffer(); b[0] = 0; return b;
+    }
+    return ManagedStringZuBuffer(list[index]);
+}
+
+BOOL ECT_HolePreset(int index, ECT_Preset* outPreset)
+{
+    if (!outPreset) return FALSE;
+    ZeroMemory(outPreset, sizeof(*outPreset));
+    auto list = ECTEngine::Einstellungen::Presets;
+    if (index < 0 || index >= list->Count) return FALSE;
+    ECTEngine::Preset^ p = list[index];
+    if (p == nullptr) return FALSE;
+    msclr::interop::marshal_context ctx;
+    if (p->Text  != nullptr)
+        strncpy_s(outPreset->text,  ctx.marshal_as<const char*>(p->Text),  _TRUNCATE);
+    if (p->Konto != nullptr)
+        strncpy_s(outPreset->konto, ctx.marshal_as<const char*>(p->Konto), _TRUNCATE);
+    outPreset->ausgabe = p->Ausgabe ? TRUE : FALSE;
+    outPreset->mwst    = p->Mwst;
+    outPreset->afaj    = p->AfaJ;
+    return TRUE;
+}
+
+int ECT_AnzahlEinnahmenKonten()
+{
+    return ECTEngine::Einstellungen::EinnahmenKonten->Count;
+}
+
+int ECT_AnzahlAusgabenKonten()
+{
+    return ECTEngine::Einstellungen::AusgabenKonten->Count;
 }
