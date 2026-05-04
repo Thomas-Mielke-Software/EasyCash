@@ -4,9 +4,38 @@ using System.Globalization;
 
 namespace ECTEngine
 {
-    /// <summary>
-    /// Ein Buchungsposten-Preset aus der ini-Sektion [Buchungsposten].
-    /// </summary>
+    /// <summary>Ein Betrieb aus der ini-Sektion [Betriebe].</summary>
+    public sealed class Betrieb
+    {
+        public string Name            { get; }
+        public string Unternehmensart { get; }  // kann Tabs enthalten, nicht aufloesen
+        public int    Icon            { get; }
+
+        public Betrieb(string name, string unternehmensart, int icon)
+        {
+            Name            = name            ?? "";
+            Unternehmensart = unternehmensart ?? "";
+            Icon            = icon;
+        }
+    }
+
+    /// <summary>Ein Bestandskonto aus der ini-Sektion [Bestandskonten].</summary>
+    public sealed class Bestandskonto
+    {
+        public string                            Name  { get; }
+        public int                               Icon  { get; }
+        /// <summary>Anfangssalden nach Buchungsjahr (leer wenn kein Eintrag in ini).</summary>
+        public IReadOnlyDictionary<int, decimal> Saldo { get; }
+
+        public Bestandskonto(string name, int icon, Dictionary<int, decimal> saldo)
+        {
+            Name  = name ?? "";
+            Icon  = icon;
+            Saldo = saldo ?? new Dictionary<int, decimal>();
+        }
+    }
+
+    /// <summary>Ein Buchungsposten-Preset aus der ini-Sektion [Buchungsposten].</summary>
     public sealed class Preset
     {
         public string Text    { get; }
@@ -35,23 +64,21 @@ namespace ECTEngine
     ///
     /// Schluesselformat (Plugin-API-kompatibel):
     ///   - Kurzform: "fname"  -> Sektion "Finanzamt", Ini-Key "name"
-    ///                "monatliche_voranmeldung" -> Sektion "Allgemein"
-    ///                (Aufloesung passiert in der Bridge via IniSektion()).
     ///   - Explizit: "[Sektion]Key"
     ///
     /// Variante X: Der Cache speichert den Schluessel genau so wie vom
-    /// Aufrufer uebergeben. Wer mal "fname" und mal "[Finanzamt]name"
-    /// nutzt, erzeugt zwei getrennte Cache-Eintraege -- die Konvention
-    /// im Code ist die Kurzform (so wie auch das Plugin-Interface es nutzt).
+    /// Aufrufer uebergeben. Konvention: Kurzform (wie Plugin-Interface).
     /// </summary>
     public static class Einstellungen
     {
         private static readonly Dictionary<string, string> _cache =
             new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
 
-        private static IReadOnlyList<string> _einnahmenKonten = new List<string>();
-        private static IReadOnlyList<string> _ausgabenKonten  = new List<string>();
-        private static IReadOnlyList<Preset> _presets         = new List<Preset>();
+        private static IReadOnlyList<string>       _einnahmenKonten = new List<string>();
+        private static IReadOnlyList<string>       _ausgabenKonten  = new List<string>();
+        private static IReadOnlyList<Preset>       _presets         = new List<Preset>();
+        private static IReadOnlyList<Betrieb>      _betriebe        = new List<Betrieb>();
+        private static IReadOnlyList<Bestandskonto> _bestandskonten  = new List<Bestandskonto>();
 
         /// <summary>
         /// Wird beim Speichern eines Wertes ausgeloest. Die Bridge haengt
@@ -79,12 +106,12 @@ namespace ECTEngine
             _einnahmenKonten = new List<string>();
             _ausgabenKonten  = new List<string>();
             _presets         = new List<Preset>();
+            _betriebe        = new List<Betrieb>();
+            _bestandskonten  = new List<Bestandskonto>();
         }
 
         /// <summary>
         /// Liefert den Wert zum Schluessel, oder Leerstring bei Cache-Miss.
-        /// Kein impliziter ini-Fallback: der Cache muss vor dem ersten
-        /// Hole() per LadeAusBridge() befuellt sein.
         /// </summary>
         public static string Hole(string key)
         {
@@ -131,27 +158,28 @@ namespace ECTEngine
         // Listen-Properties (schreibgeschuetzt, nach LadeAusBridge aktuell)
         // ─────────────────────────────────────────────────────────────────────
 
-        /// <summary>
-        /// Einnahmen-Konten aus [EinnahmenRechnungsposten] (Cache-Praefix "e").
-        /// Nur bis zum ersten leeren Eintrag befullt.
-        /// </summary>
+        /// <summary>Einnahmen-Konten aus [EinnahmenRechnungsposten] (Cache-Praefix "e").</summary>
         public static IReadOnlyList<string> EinnahmenKonten => _einnahmenKonten;
 
-        /// <summary>
-        /// Ausgaben-Konten aus [AusgabenRechnungsposten] (Cache-Praefix "a").
-        /// Nur bis zum ersten leeren Eintrag befullt.
-        /// </summary>
+        /// <summary>Ausgaben-Konten aus [AusgabenRechnungsposten] (Cache-Praefix "a").</summary>
         public static IReadOnlyList<string> AusgabenKonten => _ausgabenKonten;
 
         /// <summary>
-        /// Buchungsposten-Presets aus [Buchungsposten] (Keys "00Text", "00Ausg" usw.).
-        /// Immer alle 100 Eintraege; Luecken ergeben leere Preset-Objekte (IstLeer==true).
+        /// Buchungsposten-Presets aus [Buchungsposten].
+        /// Immer alle 100; Luecken ergeben Preset-Objekte mit IstLeer==true.
         /// </summary>
         public static IReadOnlyList<Preset> Presets => _presets;
 
+        /// <summary>Betriebe aus [Betriebe] (sequenziell bis erstes leeres Name).</summary>
+        public static IReadOnlyList<Betrieb> Betriebe => _betriebe;
+
         /// <summary>
-        /// Diagnose: alle aktuell gecachten Schluessel.
+        /// Bestandskonten aus [Bestandskonten] (sequenziell bis erstes leeres Name).
+        /// Jedes Bestandskonto hat ein Saldo-Dictionary (Jahr => Anfangssaldo in Euro).
         /// </summary>
+        public static IReadOnlyList<Bestandskonto> Bestandskonten => _bestandskonten;
+
+        /// <summary>Diagnose: alle aktuell gecachten Schluessel.</summary>
         public static IEnumerable<string> AlleSchluessel => _cache.Keys;
 
         // ─────────────────────────────────────────────────────────────────────
@@ -191,6 +219,53 @@ namespace ECTEngine
                 ps.Add(new Preset(text, ausgabe, mwst, afaj, konto));
             }
             _presets = ps;
+
+            // Betriebe: Betrieb00Name, Betrieb01Name, ... stopp bei erstem leeren Namen
+            var bt = new List<Betrieb>();
+            for (int i = 0; i < 100; i++)
+            {
+                var pfx  = i.ToString("D2");
+                var name = Hole("Betrieb" + pfx + "Name");
+                if (string.IsNullOrEmpty(name)) break;
+                var ua   = Hole("Betrieb" + pfx + "Unternehmensart");
+                var icon = HoleInt("Betrieb" + pfx + "Icon");
+                bt.Add(new Betrieb(name, ua, icon));
+            }
+            _betriebe = bt;
+
+            // Bestandskonten: Bestandskonto00Name usw., stopp bei erstem leeren Namen;
+            // Saldo-Eintraege fuer jedes Jahr 1990-2049 pruefen
+            var bk = new List<Bestandskonto>();
+            for (int i = 0; i < 100; i++)
+            {
+                var pfx  = i.ToString("D2");
+                var name = Hole("Bestandskonto" + pfx + "Name");
+                if (string.IsNullOrEmpty(name)) break;
+                var icon  = HoleInt("Bestandskonto" + pfx + "Icon");
+                var saldo = new Dictionary<int, decimal>();
+                for (int year = 1990; year <= 2049; year++)
+                {
+                    var saldoStr = Hole("Bestandskonto" + pfx + "Saldo" + year);
+                    if (!string.IsNullOrEmpty(saldoStr))
+                        saldo[year] = ParseSaldo(saldoStr);
+                }
+                bk.Add(new Bestandskonto(name, icon, saldo));
+            }
+            _bestandskonten = bk;
+        }
+
+        private static readonly CultureInfo _deDe = new CultureInfo("de-DE");
+
+        private static decimal ParseSaldo(string s)
+        {
+            if (string.IsNullOrWhiteSpace(s)) return 0m;
+            if (decimal.TryParse(s, NumberStyles.Number, _deDe, out decimal d))
+                return d;
+            // Fallback: Punkt als Dezimaltrennzeichen
+            if (decimal.TryParse(s.Replace(',', '.'), NumberStyles.Number,
+                CultureInfo.InvariantCulture, out d))
+                return d;
+            return 0m;
         }
     }
 }

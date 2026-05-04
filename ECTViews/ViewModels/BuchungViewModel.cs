@@ -1172,18 +1172,13 @@ namespace ECTViews.ViewModels
         private void LadeKonten()
         {
             Konten.Clear();
-            var kontenArray = IstAusgabe
-                ? _doc.AusgabenKonten
-                : _doc.EinnahmenKonten;
+            var kontenListe = IstAusgabe
+                ? Einstellungen.AusgabenKonten
+                : Einstellungen.EinnahmenKonten;
 
-            if (kontenArray != null)
-            {
-                foreach (var k in kontenArray)
-                {
-                    if (!string.IsNullOrEmpty(k))
-                        Konten.Add(k);
-                }
-            }
+            foreach (var k in kontenListe)
+                if (!string.IsNullOrEmpty(k))
+                    Konten.Add(k);
 
             // Auch Konten aus bestehenden Buchungen hinzufügen
             var buchungskonten = _doc.Buchungen
@@ -1198,15 +1193,14 @@ namespace ECTViews.ViewModels
         }
 
         /// <summary>
-        /// Lädt Beschreibungs-Presets aus den Einstellungen.
-        /// In der MFC-Version wurden diese über WritePrivateProfileString
-        /// in der INI-Datei gespeichert. Hier werden sie extern übergeben.
+        /// Lädt Beschreibungs-Presets direkt aus dem globalen Einstellungs-Cache.
         /// </summary>
-        public void LadePresets(IEnumerable<string> presets)
+        public void LadePresets()
         {
             BeschreibungsHistorie.Clear();
-            foreach (var p in presets)
-                BeschreibungsHistorie.Add(p);
+            foreach (var p in Einstellungen.Presets)
+                if (!p.IstLeer)
+                    BeschreibungsHistorie.Add(p.Text);
         }
 
         /// <summary>

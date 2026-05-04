@@ -739,12 +739,17 @@ namespace ECTViews.Journal
 
         private long HoleAnfangssaldoCent(string bestandskonto)
         {
-            var namen = ViewHost.BestandskontenNamen;
-            var salden = ViewHost.BestandskontenSalden;
-            if (namen == null || salden == null) return 0;
-            for (int i = 0; i < namen.Count && i < salden.Count; i++)
-                if (namen[i] == bestandskonto)
-                    return salden[i];
+            var bks  = Einstellungen.Bestandskonten;
+            int jahr = _doc.Jahr;
+            for (int i = 0; i < bks.Count; i++)
+            {
+                if (bks[i].Name == bestandskonto)
+                {
+                    if (bks[i].Saldo.TryGetValue(jahr, out decimal d))
+                        return (long)(d * 100m);
+                    return 0;
+                }
+            }
             return 0;
         }
 

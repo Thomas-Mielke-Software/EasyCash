@@ -1,18 +1,4 @@
 // EinstellungenExports.cpp -- Bridge-Implementierung des Einstellungs-Caches
-//
-// - Erst-Befuellung: ECT_LadeEinstellungen() enumeriert ueber
-//   GetPrivateProfileSectionNames + GetPrivateProfileSection alle
-//   key=value-Paare aus der aktiven easyct.ini, baut sie auf das
-//   Plugin-API-Schluesselformat um (Finanzamt-Keys bekommen 'f' davor,
-//   EinnahmenRechnungsposten 'e', AusgabenRechnungsposten 'a') und
-//   uebergibt das Dictionary an Einstellungen.LadeAusBridge().
-//   LadeAusBridge() baut daraus auch EinnahmenKonten, AusgabenKonten
-//   und Presets auf.
-//
-// - Sofortiges Schreiben: Wir abonnieren Einstellungen.WertGeaendert
-//   und schreiben jeden geaenderten Wert per WritePrivateProfileString
-//   in die ini-Datei. Sektion wird via IniSektion(key) bestimmt
-//   (oder explizit aus "[Sektion]Key" geparst).
 
 #include "stdafx.h"
 #include "EinstellungenExports.h"
@@ -25,6 +11,7 @@
 
 using namespace System;
 using namespace System::Collections::Generic;
+using namespace System::Globalization;
 
 // Aus ectifacemisc.cpp
 extern "C" AFX_EXT_CLASS LPCSTR IniSektion(LPCSTR id);
@@ -32,13 +19,8 @@ extern "C" AFX_EXT_CLASS BOOL   GetIniFileName(char* buffer3, int size);
 
 namespace
 {
-    // Der WertGeaendert-Handler wird beim ersten Aufruf von
-    // ECT_LadeEinstellungen() einmalig registriert.
     static bool s_handlerRegistriert = false;
 
-    // Liefert true, wenn die Sektion ihre Schluessel im Plugin-API-Format
-    // mit Praefixbuchstaben fuehrt (Finanzamt='f', EinnahmenRechnungsposten='e',
-    // AusgabenRechnungsposten='a').
     bool SektionMitPrefix(const char* sektion, char& prefixOut)
     {
         if (!strcmp(sektion, "Finanzamt"))                { prefixOut = 'f'; return true; }
@@ -48,9 +30,6 @@ namespace
         return false;
     }
 
-    // Parst "[Sektion]Key" in (sektion, iniKey).
-    // Bei Kurzform-Key: ruft IniSektion(key) und stripped ggf. 'f'/'e'/'a'.
-    // Liefert false, wenn key syntaktisch ungueltig ist.
     bool ZerlegeSchluessel(LPCSTR key, std::string& sektion, std::string& iniKey)
     {
         if (!key || !*key) return false;
@@ -71,8 +50,6 @@ namespace
         return true;
     }
 
-    // Liefert den Plugin-API-Schluessel (Kurzform mit ggf. Praefix-Buchstaben)
-    // fuer einen aus der ini gelesenen (sektion, iniKey)-Eintrag.
     std::string KuerzelFuerCache(const char* sektion, const char* iniKey)
     {
         char prefix = 0;
@@ -84,39 +61,28 @@ namespace
         return std::string(iniKey);
     }
 
-    // Wird beim Speichern eines Wertes ueber ECTEngine.Einstellungen.WertGeaendert
-    // ausgeloest. Schreibt sofort in die aktive easyct.ini.
     ref class WertGeaendertHandler
     {
     public:
         static void OnWertGeaendert(System::String^ key, System::String^ value)
         {
             if (System::String::IsNullOrEmpty(key)) return;
-
             char keyBuf[1024], valueBuf[10000], iniBuf[1024];
             msclr::interop::marshal_context ctx;
             const char* keyNative = ctx.marshal_as<const char*>(key);
             const char* valNative = value == nullptr ? "" : ctx.marshal_as<const char*>(value);
             strncpy_s(keyBuf,   keyNative, _TRUNCATE);
             strncpy_s(valueBuf, valNative, _TRUNCATE);
-
             std::string sektion, iniKey;
             if (!ZerlegeSchluessel(keyBuf, sektion, iniKey)) return;
-
             if (!GetIniFileName(iniBuf, sizeof(iniBuf))) return;
-
-            ::WritePrivateProfileStringA(sektion.c_str(), iniKey.c_str(),
-                                         valueBuf, iniBuf);
+            ::WritePrivateProfileStringA(sektion.c_str(), iniKey.c_str(), valueBuf, iniBuf);
         }
     };
 }
 
 // -----------------------------------------------------------------------------
-// Rotations-Buffer: ein einzelner statischer Buffer wuerde sich bei mehreren
-// ECT_HoleEinstellung-Aufrufen in derselben Expression selbst ueberschreiben
-// (z.B. "ECT_HoleEinstellung(a) + ECT_HoleEinstellung(b)"). Mit 8 Buffern
-// koennen typische Expressions (bis 8 Aufrufe in Folge) sicher konsumiert
-// werden, bevor der erste Buffer recycelt wird.
+// Rotations-Buffer (8 Slots) fuer LPCSTR-Rueckgaben
 // -----------------------------------------------------------------------------
 constexpr int HOLE_BUFFER_COUNT = 8;
 constexpr int HOLE_BUFFER_SIZE  = 10000;
@@ -139,8 +105,22 @@ static LPCSTR ManagedStringZuBuffer(System::String^ s)
     return buf;
 }
 
+// Hilfsfunktion: Speichere-Aufruf mit std::string-Key und native char*-Value
+static void SpeichereKV(const std::string& key, const char* val)
+{
+    ECTEngine::Einstellungen::Speichere(
+        gcnew System::String(key.c_str()),
+        gcnew System::String(val ? val : ""));
+}
+
+static void SpeichereKVInt(const std::string& key, int val)
+{
+    char buf[32]; sprintf_s(buf, "%d", val);
+    SpeichereKV(key, buf);
+}
+
 // -----------------------------------------------------------------------------
-// Public exports
+// Cache-Lifecycle
 // -----------------------------------------------------------------------------
 
 void ECT_LadeEinstellungen()
@@ -148,7 +128,6 @@ void ECT_LadeEinstellungen()
     char iniBuf[1024];
     if (!GetIniFileName(iniBuf, sizeof(iniBuf))) return;
 
-    // Alle Sektionen-Namen abrufen (durch \0 getrennt, doppeltes \0 am Ende)
     std::vector<char> sectionsBuffer(32 * 1024);
     DWORD nSec = ::GetPrivateProfileSectionNamesA(
         sectionsBuffer.data(), (DWORD)sectionsBuffer.size(), iniBuf);
@@ -160,11 +139,9 @@ void ECT_LadeEinstellungen()
     const char* sectionName = sectionsBuffer.data();
     while (*sectionName)
     {
-        // Alle key=value-Paare dieser Sektion
         std::vector<char> sectionData(64 * 1024);
         DWORD nDat = ::GetPrivateProfileSectionA(
             sectionName, sectionData.data(), (DWORD)sectionData.size(), iniBuf);
-
         if (nDat > 0)
         {
             const char* line = sectionData.data();
@@ -185,8 +162,6 @@ void ECT_LadeEinstellungen()
         sectionName += strlen(sectionName) + 1;
     }
 
-    // Handler einmalig registrieren (vor dem Lade-Aufruf, damit kein
-    // Race entsteht -- LadeAusBridge feuert eh keine Events)
     if (!s_handlerRegistriert)
     {
         ECTEngine::Einstellungen::WertGeaendert +=
@@ -195,18 +170,18 @@ void ECT_LadeEinstellungen()
         s_handlerRegistriert = true;
     }
 
-    // LadeAusBridge befuellt gleichzeitig EinnahmenKonten, AusgabenKonten
-    // und Presets aus dem soeben aufgebauten Dictionary.
     ECTEngine::Einstellungen::LadeAusBridge(dict);
-
     TRACE("ECT_LadeEinstellungen: %d Schluessel aus %s\n", dict->Count, iniBuf);
 }
+
+// -----------------------------------------------------------------------------
+// Einfache Key-Value-Einstellungen
+// -----------------------------------------------------------------------------
 
 LPCSTR ECT_HoleEinstellung(LPCSTR key)
 {
     if (!key) { char* b = NaechsterBuffer(); b[0] = 0; return b; }
-    System::String^ result = ECTEngine::Einstellungen::Hole(gcnew System::String(key));
-    return ManagedStringZuBuffer(result);
+    return ManagedStringZuBuffer(ECTEngine::Einstellungen::Hole(gcnew System::String(key)));
 }
 
 void ECT_SpeichereEinstellung(LPCSTR key, LPCSTR value)
@@ -224,8 +199,8 @@ int ECT_HoleEinstellungInt(LPCSTR key, int defaultValue)
 
 BOOL ECT_HoleEinstellungBool(LPCSTR key, BOOL defaultValue)
 {
-    return ECTEngine::Einstellungen::HoleBool(gcnew System::String(key),
-                                              defaultValue ? true : false) ? TRUE : FALSE;
+    return ECTEngine::Einstellungen::HoleBool(
+        gcnew System::String(key), defaultValue ? true : false) ? TRUE : FALSE;
 }
 
 void ECT_SpeichereEinstellungInt(LPCSTR key, int value)
@@ -241,28 +216,54 @@ void ECT_SpeichereEinstellungBool(LPCSTR key, BOOL value)
 }
 
 // -----------------------------------------------------------------------------
-// Listen-Zugriffe
+// EinnahmenKonten
 // -----------------------------------------------------------------------------
+
+int ECT_AnzahlEinnahmenKonten()
+{
+    return ECTEngine::Einstellungen::EinnahmenKonten->Count;
+}
 
 LPCSTR ECT_HoleEinnahmenKonto(int index)
 {
     auto list = ECTEngine::Einstellungen::EinnahmenKonten;
-    if (index < 0 || index >= list->Count)
-    {
-        char* b = NaechsterBuffer(); b[0] = 0; return b;
-    }
+    if (index < 0 || index >= list->Count) { char* b = NaechsterBuffer(); b[0] = 0; return b; }
     return ManagedStringZuBuffer(list[index]);
+}
+
+void ECT_SpeichereEinnahmenKonto(int index, LPCSTR name)
+{
+    if (!name || index < 0 || index > 99) return;
+    char keyBuf[8]; sprintf_s(keyBuf, "e%02d", index);
+    SpeichereKV(keyBuf, name);
+}
+
+// -----------------------------------------------------------------------------
+// AusgabenKonten
+// -----------------------------------------------------------------------------
+
+int ECT_AnzahlAusgabenKonten()
+{
+    return ECTEngine::Einstellungen::AusgabenKonten->Count;
 }
 
 LPCSTR ECT_HoleAusgabenKonto(int index)
 {
     auto list = ECTEngine::Einstellungen::AusgabenKonten;
-    if (index < 0 || index >= list->Count)
-    {
-        char* b = NaechsterBuffer(); b[0] = 0; return b;
-    }
+    if (index < 0 || index >= list->Count) { char* b = NaechsterBuffer(); b[0] = 0; return b; }
     return ManagedStringZuBuffer(list[index]);
 }
+
+void ECT_SpeichereAusgabenKonto(int index, LPCSTR name)
+{
+    if (!name || index < 0 || index > 99) return;
+    char keyBuf[8]; sprintf_s(keyBuf, "a%02d", index);
+    SpeichereKV(keyBuf, name);
+}
+
+// -----------------------------------------------------------------------------
+// Presets (Buchungsposten)
+// -----------------------------------------------------------------------------
 
 BOOL ECT_HolePreset(int index, ECT_Preset* outPreset)
 {
@@ -273,22 +274,113 @@ BOOL ECT_HolePreset(int index, ECT_Preset* outPreset)
     ECTEngine::Preset^ p = list[index];
     if (p == nullptr) return FALSE;
     msclr::interop::marshal_context ctx;
-    if (p->Text  != nullptr)
-        strncpy_s(outPreset->text,  ctx.marshal_as<const char*>(p->Text),  _TRUNCATE);
-    if (p->Konto != nullptr)
-        strncpy_s(outPreset->konto, ctx.marshal_as<const char*>(p->Konto), _TRUNCATE);
+    if (p->Text  != nullptr) strncpy_s(outPreset->text,  ctx.marshal_as<const char*>(p->Text),  _TRUNCATE);
+    if (p->Konto != nullptr) strncpy_s(outPreset->konto, ctx.marshal_as<const char*>(p->Konto), _TRUNCATE);
     outPreset->ausgabe = p->Ausgabe ? TRUE : FALSE;
     outPreset->mwst    = p->Mwst;
     outPreset->afaj    = p->AfaJ;
     return TRUE;
 }
 
-int ECT_AnzahlEinnahmenKonten()
+void ECT_SpeicherePreset(int index, const ECT_Preset* p)
 {
-    return ECTEngine::Einstellungen::EinnahmenKonten->Count;
+    if (!p || index < 0 || index > 99) return;
+    char pfxBuf[4]; sprintf_s(pfxBuf, "%02d", index);
+    std::string pfx(pfxBuf);
+    SpeichereKV(pfx + "Text", p->text);
+    SpeichereKV(pfx + "Ausg", p->ausgabe ? "1" : "0");
+    SpeichereKVInt(pfx + "MWSt", p->mwst);
+    SpeichereKVInt(pfx + "AfAJ", p->afaj);
+    SpeichereKV(pfx + "Rech", p->konto);
 }
 
-int ECT_AnzahlAusgabenKonten()
+// -----------------------------------------------------------------------------
+// Betriebe
+// -----------------------------------------------------------------------------
+
+int ECT_AnzahlBetriebe()
 {
-    return ECTEngine::Einstellungen::AusgabenKonten->Count;
+    return ECTEngine::Einstellungen::Betriebe->Count;
+}
+
+BOOL ECT_HoleBetrieb(int index, ECT_Betrieb* outBetrieb)
+{
+    if (!outBetrieb) return FALSE;
+    ZeroMemory(outBetrieb, sizeof(*outBetrieb));
+    auto list = ECTEngine::Einstellungen::Betriebe;
+    if (index < 0 || index >= list->Count) return FALSE;
+    ECTEngine::Betrieb^ b = list[index];
+    if (b == nullptr) return FALSE;
+    msclr::interop::marshal_context ctx;
+    if (b->Name            != nullptr) strncpy_s(outBetrieb->name,             ctx.marshal_as<const char*>(b->Name),            _TRUNCATE);
+    if (b->Unternehmensart != nullptr) strncpy_s(outBetrieb->unternehmensart,  ctx.marshal_as<const char*>(b->Unternehmensart), _TRUNCATE);
+    outBetrieb->icon = b->Icon;
+    return TRUE;
+}
+
+void ECT_SpeichereBetrieb(int index, const ECT_Betrieb* b)
+{
+    if (!b || index < 0 || index > 99) return;
+    char pfxBuf[4]; sprintf_s(pfxBuf, "%02d", index);
+    std::string pfx("Betrieb"); pfx += pfxBuf;
+    SpeichereKV(pfx + "Name",            b->name);
+    SpeichereKV(pfx + "Unternehmensart", b->unternehmensart);
+    SpeichereKVInt(pfx + "Icon",         b->icon);
+}
+
+// -----------------------------------------------------------------------------
+// Bestandskonten
+// -----------------------------------------------------------------------------
+
+int ECT_AnzahlBestandskonten()
+{
+    return ECTEngine::Einstellungen::Bestandskonten->Count;
+}
+
+BOOL ECT_HoleBestandskonto(int index, ECT_BestandskontoInfo* outInfo)
+{
+    if (!outInfo) return FALSE;
+    ZeroMemory(outInfo, sizeof(*outInfo));
+    auto list = ECTEngine::Einstellungen::Bestandskonten;
+    if (index < 0 || index >= list->Count) return FALSE;
+    ECTEngine::Bestandskonto^ bk = list[index];
+    if (bk == nullptr) return FALSE;
+    msclr::interop::marshal_context ctx;
+    if (bk->Name != nullptr) strncpy_s(outInfo->name, ctx.marshal_as<const char*>(bk->Name), _TRUNCATE);
+    outInfo->icon = bk->Icon;
+    return TRUE;
+}
+
+void ECT_SpeichereBestandskonto(int index, const ECT_BestandskontoInfo* info)
+{
+    if (!info || index < 0 || index > 99) return;
+    char pfxBuf[4]; sprintf_s(pfxBuf, "%02d", index);
+    std::string pfx("Bestandskonto"); pfx += pfxBuf;
+    SpeichereKV(pfx + "Name", info->name);
+    SpeichereKVInt(pfx + "Icon", info->icon);
+}
+
+BOOL ECT_HoleBestandskontoSaldo(int index, int jahr, int* centOut)
+{
+    if (!centOut) return FALSE;
+    *centOut = 0;
+    auto list = ECTEngine::Einstellungen::Bestandskonten;
+    if (index < 0 || index >= list->Count) return FALSE;
+    ECTEngine::Bestandskonto^ bk = list[index];
+    if (bk == nullptr) return FALSE;
+    auto saldo = bk->Saldo;
+    if (!saldo->ContainsKey(jahr)) return FALSE;
+    System::Decimal d = saldo[jahr];
+    *centOut = (int)((double)d * 100.0);
+    return TRUE;
+}
+
+void ECT_SpeichereBestandskontoSaldo(int index, int jahr, int cent)
+{
+    if (index < 0 || index > 99) return;
+    char keyBuf[64]; sprintf_s(keyBuf, "Bestandskonto%02dSaldo%04d", index, jahr);
+    System::Decimal d = System::Decimal(cent) / System::Decimal(100);
+    auto ci = gcnew CultureInfo("de-DE");
+    System::String^ valStr = d.ToString("0.00", ci);
+    ECTEngine::Einstellungen::Speichere(gcnew System::String(keyBuf), valStr);
 }
