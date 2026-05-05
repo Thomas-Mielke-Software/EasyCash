@@ -639,6 +639,7 @@ copy ..\EasyCash\Release\crashrpt_lang.ini .\Release
   </ItemGroup>
   <ItemGroup>
     <None Include=".gitignore" />
+    <None Include="CLAUDE.md" />
     <None Include="Formularabschnitt.htm">
       <DeploymentContent>true</DeploymentContent>
     </None>
