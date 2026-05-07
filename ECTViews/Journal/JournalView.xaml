@@ -70,7 +70,7 @@
                                           MinWidth="40"
                                           MaxWidth="{Binding DataContext.BelegMaxBreite,
                                               RelativeSource={RelativeSource AncestorType=UserControl}}"/>
-                        <ColumnDefinition Width="*" MinWidth="200"/>
+                        <ColumnDefinition Width="*" MinWidth="120"/>
                         <ColumnDefinition Width="{StaticResource ColW_Netto}"/>
                         <ColumnDefinition Width="{StaticResource ColW_USt}"/>
                         <ColumnDefinition Width="{StaticResource ColW_USt_Betrag}"/>
@@ -317,7 +317,7 @@
                  ScrollViewer.HorizontalScrollBarVisibility="Disabled"
                  ScrollViewer.VerticalScrollBarVisibility="Auto"
                  VirtualizingPanel.IsVirtualizing="True"
-                 VirtualizingPanel.VirtualizationMode="Recycling"
+                 VirtualizingPanel.VirtualizationMode="Standard"
                  VirtualizingPanel.ScrollUnit="Pixel"
                  FontSize="{Binding Schriftgroesse}"
                  KeyboardNavigation.DirectionalNavigation="Continue"
