@@ -39,6 +39,22 @@ static System::String^ ToManagedString(LPCSTR psz)
 // daher dieser Umweg ueber eine ref class.
 // ----------------------------------------------------------
 
+// Liefert den Index einer Buchung in der aktuellen Liste, mit Fallback
+// auf Uuid-Match. Notwendig, weil ECT_ShowBuchungBearbeitenDialog am
+// Anfang SyncNativeToManaged ruft und damit alle managed Buchung^-
+// Referenzen austauscht. Nach einem Cancel hat das Journal noch die
+// alten Referenzen, IndexOf liefert dann -1.
+static int FindeBuchungIdx(ECTEngine::BuchungsDocument^ eng, ECTEngine::Buchung^ b)
+{
+    if (eng == nullptr || b == nullptr) return -1;
+    int idx = eng->Buchungen->IndexOf(b);
+    if (idx >= 0) return idx;
+    for (int i = 0; i < eng->Buchungen->Count; i++)
+        if (eng->Buchungen[i]->Uuid == b->Uuid)
+            return i;
+    return -1;
+}
+
 ref class JournalEventHandler
 {
 public:
@@ -51,11 +67,16 @@ public:
         HWND hwnd = static_cast<HWND>(m_hwnd.ToPointer());
         if (!bridge || !b) return;
 
-        int idx = GetEngine(bridge)->Buchungen->IndexOf(b);
+        int idx = FindeBuchungIdx(GetEngine(bridge), b);
         if (idx >= 0)
         {
-            ECT_ShowBuchungBearbeitenDialog(bridge, idx, hwnd);
-            ECTViews::Journal::JournalEmbed::AktualisiereAlle(nullptr);
+            // Bei Cancel (Dialog gibt FALSE zurueck) wird kein Rebuild noetig --
+            // spart Sortierung. Die naechste Bearbeiten-Anfrage findet den
+            // Index dank Uuid-Fallback in FindeBuchungIdx auch ueber stale
+            // Buchung^-Referenzen, die durch das eingangs gerufene
+            // SyncNativeToManaged entstanden sind.
+            if (ECT_ShowBuchungBearbeitenDialog(bridge, idx, hwnd))
+                ECTViews::Journal::JournalEmbed::AktualisiereAlle(nullptr);
         }
     }
 
@@ -64,14 +85,17 @@ public:
         auto* bridge = static_cast<CEasyCashDocBridge*>(m_pBridge.ToPointer());
         if (!bridge || !b) return;
         auto eng = GetEngine(bridge);
+        int delIdx = FindeBuchungIdx(eng, b);
+        if (delIdx < 0) return;
+        auto realB = eng->Buchungen[delIdx];
 
         CString frage;
         frage.Format("Buchung '%s' wirklich loeschen?",
-            (LPCTSTR)CString(b->Beschreibung));
+            (LPCTSTR)CString(realB->Beschreibung));
         if (AfxMessageBox(frage, MB_YESNO | MB_DEFBUTTON2) != IDYES)
             return;
 
-        eng->Buchungen->Remove(b);
+        eng->Buchungen->RemoveAt(delIdx);
         bridge->SyncManagedToNative();
         bridge->SetModifiedFlag("Buchung ueber Journal geloescht");
         ECTViews::Journal::JournalEmbed::AktualisiereAlle(nullptr);
@@ -85,12 +109,26 @@ public:
 
         auto eng = GetEngine(bridge);
         auto klon = b->Clone();
+        klon->Uuid = System::Guid::NewGuid();   // neue Identitaet fuer den Klon
         eng->Buchungen->Add(klon);
         int idx = eng->Buchungen->IndexOf(klon);
         bridge->SyncManagedToNative();
 
-        ECT_ShowBuchungBearbeitenDialog(bridge, idx, hwnd);
-        ECTViews::Journal::JournalEmbed::AktualisiereAlle(nullptr);
+        if (ECT_ShowBuchungBearbeitenDialog(bridge, idx, hwnd))
+        {
+            ECTViews::Journal::JournalEmbed::AktualisiereAlle(nullptr);
+        }
+        else
+        {
+            // Cancel: den vorbereiteten Klon wieder zuruecknehmen, sonst
+            // bliebe ein leerer/identischer Eintrag im Dokument haengen.
+            // Klon-Referenz ist nach SyncNativeToManaged stale, deshalb
+            // ueber Uuid suchen.
+            int klonIdx = FindeBuchungIdx(eng, klon);
+            if (klonIdx >= 0)
+                eng->Buchungen->RemoveAt(klonIdx);
+            bridge->SyncManagedToNative();
+        }
     }
 
     void OnKopierenMitNeuerBelegnummer(ECTEngine::Buchung^ b)
@@ -101,6 +139,7 @@ public:
 
         auto eng = GetEngine(bridge);
         auto klon = b->Clone();
+        klon->Uuid = System::Guid::NewGuid();   // neue Identitaet fuer den Klon
         klon->Belegnummer = (klon->Art == ECTEngine::Buchungsart::Einnahme)
             ? eng->LaufendeBelegnrEinnahmen.ToString()
             : eng->LaufendeBelegnrAusgaben.ToString();
@@ -108,8 +147,18 @@ public:
         int idx = eng->Buchungen->IndexOf(klon);
         bridge->SyncManagedToNative();
 
-        ECT_ShowBuchungBearbeitenDialog(bridge, idx, hwnd);
-        ECTViews::Journal::JournalEmbed::AktualisiereAlle(nullptr);
+        if (ECT_ShowBuchungBearbeitenDialog(bridge, idx, hwnd))
+        {
+            ECTViews::Journal::JournalEmbed::AktualisiereAlle(nullptr);
+        }
+        else
+        {
+            // Cancel: den vorbereiteten Klon wieder zuruecknehmen.
+            int klonIdx = FindeBuchungIdx(eng, klon);
+            if (klonIdx >= 0)
+                eng->Buchungen->RemoveAt(klonIdx);
+            bridge->SyncManagedToNative();
+        }
     }
 };
 

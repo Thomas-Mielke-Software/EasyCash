@@ -95,6 +95,10 @@ BOOL ECT_ShowBuchungBearbeitenDialog(
         if (geaendert == nullptr)
             return FALSE;  // Abgebrochen
 
+        // Identitaet (Uuid) aus dem Original uebernehmen, damit Selektion
+        // im Journal trotz neuer Buchung^-Instanz wiedergefunden wird.
+        geaendert->Uuid = original->Uuid;
+
         // Buchung im Dokument ersetzen
         engine->Buchungen[nBuchungIdx] = geaendert;
         engine->Sort();

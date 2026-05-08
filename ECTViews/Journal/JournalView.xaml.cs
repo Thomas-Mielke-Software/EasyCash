@@ -97,6 +97,28 @@ namespace ECTViews.Journal
             return null;
         }
 
+        /// <summary>
+        /// Faengt Tasten ab, die wir selbst behandeln moechten (PageUp/Down,
+        /// Home/End, Up/Down). Der Default-Handler der ListBox scrollt bei
+        /// PageUp/Down nur den Viewport ohne die Selektion mitzunehmen, und
+        /// bei Up/Down hat er keine Klammerung an die erste/letzte
+        /// Buchungs-Zeile (er stoppt vorher in einem JournalSpacerRow oder
+        /// JournalSectionTitle). Wir leiten alles auf NavigiereZeile um.
+        /// </summary>
+        private void OnListBoxPreviewKeyDown(object sender, KeyEventArgs e)
+        {
+            switch (e.Key)
+            {
+                case Key.PageUp:
+                case Key.PageDown:
+                case Key.Home:
+                case Key.End:
+                    NavigiereZeile(e.Key);
+                    e.Handled = true;
+                    break;
+            }
+        }
+
         private void OnZeilenDoppelklick(object sender, MouseButtonEventArgs e)
         {
             if (DataContext is JournalViewModel vm
@@ -147,11 +169,89 @@ namespace ECTViews.Journal
                     }
                     break;
                 }
-                case Key.PageUp:   scroll?.PageUp();        break;
-                case Key.PageDown: scroll?.PageDown();       break;
-                case Key.Home:     scroll?.ScrollToTop();    break;
-                case Key.End:      scroll?.ScrollToBottom(); break;
+                case Key.PageUp:
+                case Key.PageDown:
+                {
+                    var buchungen = vm.Zeilen.OfType<JournalBuchungRow>().ToList();
+                    if (buchungen.Count == 0) return;
+                    int idx = vm.SelektierteZeile != null
+                        ? buchungen.IndexOf(vm.SelektierteZeile) : -1;
+                    if (idx < 0) idx = key == Key.PageUp ? buchungen.Count - 1 : 0;
+
+                    int pageSize = BerechnePageSizeBuchungen(buchungen);
+                    int neu = key == Key.PageUp
+                        ? Math.Max(0, idx - pageSize)
+                        : Math.Min(buchungen.Count - 1, idx + pageSize);
+
+                    if (buchungen[neu] != vm.SelektierteZeile)
+                    {
+                        vm.SelektierteZeile = buchungen[neu];
+                        ZentriereVertikal(buchungen[neu]);
+                    }
+                    break;
+                }
+                case Key.Home:
+                {
+                    var buchungen = vm.Zeilen.OfType<JournalBuchungRow>().ToList();
+                    if (buchungen.Count > 0)
+                    {
+                        vm.SelektierteZeile = buchungen[0];
+                        ZentriereVertikal(buchungen[0]);
+                    }
+                    else
+                    {
+                        scroll?.ScrollToTop();
+                    }
+                    break;
+                }
+                case Key.End:
+                {
+                    var buchungen = vm.Zeilen.OfType<JournalBuchungRow>().ToList();
+                    if (buchungen.Count > 0)
+                    {
+                        var letzte = buchungen[buchungen.Count - 1];
+                        vm.SelektierteZeile = letzte;
+                        ZentriereVertikal(letzte);
+                    }
+                    else
+                    {
+                        scroll?.ScrollToBottom();
+                    }
+                    break;
+                }
             }
+        }
+
+        /// <summary>
+        /// Schaetzt die Anzahl Buchungs-Zeilen, die in den sichtbaren
+        /// Listenbereich passen. Basis: durchschnittliche Hoehe der aktuell
+        /// realisierten Buchungs-Container (UI-Virtualisierung haelt nur die
+        /// sichtbaren plus etwas Puffer im Speicher).
+        /// </summary>
+        private int BerechnePageSizeBuchungen(
+            System.Collections.Generic.IList<JournalBuchungRow> buchungen)
+        {
+            var scroll = FindeScrollViewer(lstZeilen);
+            if (scroll == null || scroll.ViewportHeight <= 0 || buchungen.Count == 0)
+                return 10;
+
+            double summe = 0;
+            int count = 0;
+            foreach (var row in buchungen)
+            {
+                var c = lstZeilen.ItemContainerGenerator.ContainerFromItem(row)
+                        as ListBoxItem;
+                if (c != null && c.ActualHeight > 0)
+                {
+                    summe += c.ActualHeight;
+                    count++;
+                }
+            }
+            if (count == 0) return 10;
+
+            double avg = summe / count;
+            int n = (int)(scroll.ViewportHeight / avg);
+            return System.Math.Max(1, n);
         }
     }
 }

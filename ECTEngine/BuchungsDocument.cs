@@ -184,10 +184,14 @@ namespace ECTEngine
         // Reimplementiert: CEasyCashDoc::Sort()
         // ──────────────────────────────────────────────
 
-        /// <summary>Sortiert alle Buchungen nach Datum.</summary>
+        /// <summary>Sortiert alle Buchungen nach Datum, Uuid als Tiebreaker.</summary>
         public void Sort()
         {
-            Buchungen.Sort((a, b) => a.Datum.CompareTo(b.Datum));
+            Buchungen.Sort((a, b) =>
+            {
+                int c = a.Datum.CompareTo(b.Datum);
+                return c != 0 ? c : a.Uuid.CompareTo(b.Uuid);
+            });
         }
 
         // ──────────────────────────────────────────────

@@ -392,6 +392,7 @@ CBuchung& CBuchung::operator=(const CBuchung& buchungSrc)
 	AbschreibungGenauigkeit	= buchungSrc.AbschreibungGenauigkeit;
 	Bestandskonto			= buchungSrc.Bestandskonto;		
 	Betrieb					= buchungSrc.Betrieb;		
+	Uuid					= buchungSrc.Uuid;		// transient, kollidiert nur bei bewusstem operator=
 	return *this;
 }
 

@@ -53,6 +53,24 @@ ECTEngine::Buchung^ ECTBridge::NativeToManaged(
     b->Bestandskonto      = ToManaged(p->Bestandskonto);
     b->Betrieb            = ToManaged(p->Betrieb);
 
+    // Uuid: aus nativem Feld uebernehmen oder neu erzeugen + zurueckschreiben
+    if (p->Uuid.IsEmpty())
+    {
+        b->Uuid = System::Guid::NewGuid();
+        p->Uuid = ToNative(b->Uuid.ToString("D"));
+    }
+    else
+    {
+        System::Guid parsed;
+        if (System::Guid::TryParse(ToManaged(p->Uuid), parsed))
+            b->Uuid = parsed;
+        else
+        {
+            b->Uuid = System::Guid::NewGuid();
+            p->Uuid = ToNative(b->Uuid.ToString("D"));
+        }
+    }
+
     // Erweiterungen: Pipe-Format parsen
     b->Erweiterungen = ECTEngine::ErweiterungStore::AusPipeFormat(
         ToManaged(p->Erweiterung));
@@ -122,6 +140,7 @@ CBuchung* ECTBridge::ManagedToNative(ECTEngine::Buchung^ b)
     // Zuordnungen
     p->Bestandskonto            = ToNative(b->Bestandskonto);
     p->Betrieb                  = ToNative(b->Betrieb);
+    p->Uuid                     = ToNative(b->Uuid.ToString("D"));
 
     // Erweiterungen: zurück ins Pipe-Format
     p->Erweiterung              = ToNative(b->Erweiterungen->ZuPipeFormat());

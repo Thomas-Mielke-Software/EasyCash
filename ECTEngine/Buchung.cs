@@ -123,6 +123,22 @@ namespace ECTEngine
         public ErweiterungStore Erweiterungen { get; set; } = new ErweiterungStore();
 
         // ──────────────────────────────────────────────
+        // Identitaet
+        // ──────────────────────────────────────────────
+
+        /// <summary>
+        /// Stabile, prozesslebenslange Identitaet einer Buchung. Wird beim
+        /// Anlegen erzeugt, beim Sync ueber die Bridge in/aus dem nativen
+        /// CBuchung::Uuid-Feld kopiert und ist damit auch ueber
+        /// SyncNativeToManaged-Zyklen hinweg konstant. Die Uuid wird NICHT
+        /// in die Datei serialisiert; nach Datei-Reload bekommt die Buchung
+        /// eine neue Uuid. Verwendet fuer (a) Selektions-Erhalt nach
+        /// Buchung-Bearbeiten und (b) als sekundaeres Sortierkriterium,
+        /// damit Buchungen mit gleichem Datum eine stabile Reihenfolge haben.
+        /// </summary>
+        public Guid Uuid { get; set; } = Guid.NewGuid();
+
+        // ──────────────────────────────────────────────
         // Berechnete Properties
         // ──────────────────────────────────────────────
 
@@ -175,7 +191,10 @@ namespace ECTEngine
                 AfaGenauigkeit = AfaGenauigkeit,
                 Bestandskonto = Bestandskonto,
                 Betrieb = Betrieb,
-                Erweiterungen = Erweiterungen.Clone()
+                Erweiterungen = Erweiterungen.Clone(),
+                Uuid = Uuid   // Identitaet bleibt erhalten -- Clone()-Aufrufer,
+                              // die explizit eine neue Buchung wollen, muessen
+                              // anschliessend Uuid = Guid.NewGuid() setzen
             };
         }
     }

@@ -249,7 +249,10 @@ namespace ECTViews.Journal
         {
             if (filter != null) AktuellerFilter = filter;
 
-            var alteBuchung = SelektierteZeile?.Buchung;
+            // Vor dem Clear die Uuid der aktuellen Selektion festhalten -
+            // die Buchung^-Referenz darf sich beim naechsten SyncNativeToManaged
+            // aendern, die Uuid wird ueber das native Feld stabil gehalten.
+            var alteUuid = SelektierteZeile?.Buchung?.Uuid ?? Guid.Empty;
             Zeilen.Clear();
 
             // Saldo-Spalte nur im Bestandskonten-Modus sichtbar machen.
@@ -275,11 +278,14 @@ namespace ECTViews.Journal
                     break;
             }
 
-            // Selektion wiederherstellen
-            if (alteBuchung != null)
+            // Selektion wiederherstellen via Uuid-Match - ueberlebt jeden
+            // SyncNativeToManaged-Zyklus, weil die Bridge die Uuid native
+            // mitfuehrt.
+            if (alteUuid != Guid.Empty)
             {
                 SelektierteZeile = Zeilen.OfType<JournalBuchungRow>()
-                    .FirstOrDefault(r => ReferenceEquals(r.Buchung, alteBuchung));
+                    .FirstOrDefault(r => r.Buchung != null
+                                       && r.Buchung.Uuid == alteUuid);
             }
         }
 
@@ -541,7 +547,10 @@ namespace ECTViews.Journal
                     .Where(b => (b.Bestandskonto ?? "") == bk));
 
                 // Buchungen chronologisch sortieren
-                alleBuchungen = alleBuchungen.OrderBy(b => b.Datum).ToList();
+                alleBuchungen = alleBuchungen
+                    .OrderBy(b => b.Datum)
+                    .ThenBy(b => b.Uuid)   // stabile Reihenfolge bei Datums-Gleichstand
+                    .ToList();
 
                 // Wenn kein Anfangssaldo und keine Buchungen - Konto ueberspringen
                 if (anfangssaldoCent == 0 && alleBuchungen.Count == 0) continue;
@@ -683,7 +692,7 @@ namespace ECTViews.Journal
 
                 long bruttoSumme = 0, nettoSumme = 0, vstSumme = 0;
                 int idx = 0;
-                foreach (var b in grp.OrderBy(b => b.Datum))
+                foreach (var b in grp.OrderBy(b => b.Datum).ThenBy(b => b.Uuid))
                 {
                     Zeilen.Add(BaueBuchungZeile(b, true, idx++));
 

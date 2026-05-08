@@ -322,11 +322,12 @@
                  FontSize="{Binding Schriftgroesse}"
                  KeyboardNavigation.DirectionalNavigation="Continue"
                  ItemContainerStyleSelector="{x:Static journal:JournalRowStyleSelector.Instance}"
-                 MouseDoubleClick="OnZeilenDoppelklick">
+                 MouseDoubleClick="OnZeilenDoppelklick"
+                 PreviewKeyDown="OnListBoxPreviewKeyDown">
             <ListBox.ContextMenu>
                 <ContextMenu>
-                    <MenuItem Header="Aendern" Command="{Binding BearbeitenCommand}"/>
-                    <MenuItem Header="Loeschen" Command="{Binding LoeschenCommand}"/>
+                    <MenuItem Header="Ändern" Command="{Binding BearbeitenCommand}"/>
+                    <MenuItem Header="Löschen" Command="{Binding LoeschenCommand}"/>
                     <Separator/>
                     <MenuItem Header="Kopieren" Command="{Binding KopierenCommand}"/>
                     <MenuItem Header="Kopieren mit neuer Belegnummer"

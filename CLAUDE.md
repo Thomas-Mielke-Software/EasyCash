@@ -1,6 +1,7 @@
 # EasyCash&Tax — Migration MFC/C++ → C#/WPF
 
-Benutze  zum Speichern das Windows-1252 Encoding für alle legacy .cpp- und .h-Dateien.
+Benutze zum Speichern das Windows-1252 Encoding für alle legacy .cpp- und .h-Dateien.
+Ansonsten UTF-8 für die C#- und XAML-Dateien.
 
 ## Projekt-Kontext
 
