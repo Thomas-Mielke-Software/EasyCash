@@ -9,7 +9,7 @@
     <GenerateAssemblyInfo>true</GenerateAssemblyInfo>
     <Description>Geschäftslogik-Engine für EasyCash&amp;Tax – ersetzt ECTIFace.dll</Description>
     <Company>Thomas Mielke Software</Company>
-    <Copyright>Copyleft (GPLv3) 2024 Thomas Mielke</Copyright>
+    <Copyright>Copyleft (GPLv3) 2026 Thomas Mielke</Copyright>
 
     <!-- COM-Visible für Plugin-Kompatibilität (Phase 4) -->
     <ComVisible>false</ComVisible>

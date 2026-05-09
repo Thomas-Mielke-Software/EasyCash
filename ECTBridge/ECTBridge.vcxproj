@@ -27,6 +27,9 @@
     <CharacterSet>MultiByte</CharacterSet>
     <!-- CLR-Unterstützung auf Projektebene aktivieren -->
     <CLRSupport>true</CLRSupport>
+    <LocalDebuggerCommand>$(SolutionDir)Debug\EasyCT.exe</LocalDebuggerCommand>
+    <LocalDebuggerCommandArguments></LocalDebuggerCommandArguments>
+    <LocalDebuggerWorkingDirectory>$(SolutionDir)Debug</LocalDebuggerWorkingDirectory>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
@@ -36,6 +39,9 @@
     <CLRSupport>true</CLRSupport>
     <WholeProgramOptimization>false</WholeProgramOptimization>
     <!-- WICHTIG: LTCG/WPO ist mit /clr nicht kompatibel -->
+    <LocalDebuggerCommand>$(SolutionDir)Release\EasyCT.exe</LocalDebuggerCommand>
+    <LocalDebuggerCommandArguments></LocalDebuggerCommandArguments>
+    <LocalDebuggerWorkingDirectory>$(SolutionDir)Release</LocalDebuggerWorkingDirectory>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
@@ -96,7 +102,7 @@
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <WarningLevel>Level3</WarningLevel>
       <DisableSpecificWarnings>4996;4018;4793;%(DisableSpecificWarnings)</DisableSpecificWarnings>
-      <AdditionalUsingDirectories>$(SolutionDir)ECTEngine\bin\Release\net48;%(AdditionalUsingDirectories)</AdditionalUsingDirectories>
+      <AdditionalUsingDirectories>$(SolutionDir)ECTEngine\bin\Release\net48;;$(SolutionDir)ECTViews\bin\Release\net48;%(AdditionalUsingDirectories)</AdditionalUsingDirectories>
       <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
@@ -228,7 +234,11 @@
       <Command>
         if exist "$(SolutionDir)Release\" (
           copy /Y "$(TargetDir)ECTBridge.dll" "$(SolutionDir)Release\"
-          copy /Y "$(TargetDir)ECTEngine.dll" "$(SolutionDir)Release\"
+          copy /Y "$(SolutionDir)ECTEngine\bin\Release\net48\ECTEngine.dll" "$(SolutionDir)Release\"
+		  copy /Y "$(SolutionDir)ECTViews\bin\Release\net48\ECTViews.dll" "$(SolutionDir)Release\"
+          copy /Y "$(SolutionDir)ECTBridge\ECTBridge.ini" "$(TargetDir)"
+          copy /Y "$(SolutionDir)ECTBridge\ECTBridge.ini" "$(SolutionDir)Release\"
+          copy /Y "$(SolutionDir)ECTBridge\EasyCT.exe.config" "$(SolutionDir)Release\"
         )
       </Command>
       <Message>ECTBridge + ECTEngine DLLs ins EasyCash-Release-Verzeichnis kopieren</Message>

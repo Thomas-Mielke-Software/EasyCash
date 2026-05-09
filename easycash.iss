@@ -3,7 +3,7 @@
 
 [Setup]
 AppName=EasyCash&Tax
-AppVerName=EasyCash&Tax 3.6
+AppVerName=EasyCash&Tax 4.0 (Vorschau-Version)
 DiskSpanning=no
 AppPublisher=tm
 AppPublisherURL=http://www.easyct.de
@@ -12,9 +12,9 @@ AppUpdatesURL=http://www.easyct.de
 DefaultDirName={pf}\EasyCash&Tax
 UsePreviousAppDir=yes
 DefaultGroupName=EasyCash
-OutputBaseFilename=ECTSetup
+OutputBaseFilename=ECTSetup4
 OutputDir=.\EasyCash 
-MinVersion=6.1
+MinVersion=7.0
 LicenseFile=.\LIZENZ.txt      
 ;SignTool=winsdk10sha1   ; no longer dual sign the installer
 SignTool=winsdk10sha256
@@ -37,18 +37,19 @@ Name: ATFormular; Types: ATFormular; Description: österreichisches Formular
 [Tasks]
 Name: desktopicon; Description: Create a &desktop icon; GroupDescription: Additional icons:; MinVersion: 4,4
 
-[Files]
-;Source: "C:\Program Files (x86)\Microsoft Visual Studio 9.0\VC\redist\x86\Microsoft.VC90.CRT\msvcm90.dll"; DestDir: {app};
-;Source: "C:\Program Files (x86)\Microsoft Visual Studio 9.0\VC\redist\x86\Microsoft.VC90.CRT\msvcp90.dll"; DestDir: {app};
-;Source: "C:\Program Files (x86)\Microsoft Visual Studio 9.0\VC\redist\x86\Microsoft.VC90.CRT\msvcr90.dll"; DestDir: {app};
-;Source: "C:\Program Files (x86)\Microsoft Visual Studio 9.0\VC\redist\x86\Microsoft.VC90.ATL\atl90.dll"; DestDir: {app};
-;Source: "C:\Program Files (x86)\Microsoft Visual Studio 9.0\VC\redist\x86\Microsoft.VC90.MFC\mfc90.dll"; DestDir: {app};
-;Source: "C:\Program Files (x86)\Microsoft Visual Studio 9.0\VC\redist\x86\Microsoft.VC90.MFCLOC\MFC90DEU.dll"; DestDir: {app};
-;Source: "C:\Program Files (x86)\Microsoft Visual Studio 9.0\VC\redist\x86\Microsoft.VC90.OPENMP\vcomp90.dll"; DestDir: {app};      
-;vc9: Source: .\Systemdateien\VC_redist.x86.exe; DestDir: {tmp}; Flags: dontcopy;   
+[Files]   
+;___v4-Dateien___
+Source: "..\EasyCash\Systemdateien\ndp48-web.exe"; DestDir: {tmp}; Flags: deleteafterinstall; AfterInstall: InstallFramework; Check: FrameworkIsNotInstalled    
+;-> [Run] !!
+Source: .\Release\ECTBridge.dll; DestDir: {app}; Flags: ignoreversion
+Source: .\Release\ECTEngine.dll; DestDir: {app}; Flags: ignoreversion
+Source: .\Release\ECTViews.dll; DestDir: {app}; Flags: ignoreversion
+Source: .\Release\ECTBridge.ini; DestDir: {app}; Flags: ignoreversion
+Source: .\Release\ECTBridge.ini; DestDir: {app}; Flags: ignoreversion
+Source: .\Release\EasyCT.exe.config; DestDir: {app}; Flags: ignoreversion
+;__v3.x-Dateien___
 Source: ..\EasyCash\Systemdateien\VC_redist.x86.exe; DestDir: {tmp}; Flags: dontcopy;
 ;-> [Run] !!
-
 Source: .\Release\EasyCT.exe; DestDir: {app}; Flags: ignoreversion
 Source: .\Release\ECTIFace.dll; DestDir: {app}; Flags: ignoreversion  
 Source: .\Release\EasyCTXP.dll; DestDir: {app}; Flags: ignoreversion
@@ -322,5 +323,28 @@ begin
       // particular example it does nothing because the function exits anyway, so it is pointless here
       Exit;
     end;
+  end;
+end;
+
+function FrameworkIsNotInstalled: Boolean;      
+var
+  Release: Cardinal;
+begin
+  Result := not RegKeyExists(HKEY_LOCAL_MACHINE, 'SOFTWARE\Microsoft\NET Framework Setup\NDP\v4\Full');
+  if not Result then
+    if RegQueryDWordValue(HKLM, 'SOFTWARE\Microsoft\NET Framework Setup\NDP\v4\Full', 'Release', Release) then
+      if Release < 528040 then  // Version < 4.8      
+        Result := TRUE;
+end;
+
+procedure InstallFramework;
+var
+  ResultCode: Integer;
+begin
+  if not Exec(ExpandConstant('{tmp}\ndp48-web.exe'), '/norestart', '', SW_SHOW, ewWaitUntilTerminated, ResultCode) then
+  begin
+    { you can interact with the user that the installation failed }
+    MsgBox('.NET Framework 4 Installation scheiterte mit Code ' + IntToStr(ResultCode) + '.',
+      mbError, MB_OK);
   end;
 end;
