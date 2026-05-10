@@ -60,7 +60,7 @@ BOOL ECT_ShowBuchungDialog(void* pDocBridge, BOOL bAusgaben, HWND hWndOwner)
     catch (Exception^ ex)
     {
         CString msg;
-        msg.Format("Fehler im Buchungsdialog: %S", ex->Message);
+        msg = "Fehler im Buchungsdialog: "; msg += CString(ex->Message);
         AfxMessageBox(msg, MB_ICONERROR);
         return FALSE;
     }
@@ -114,7 +114,7 @@ BOOL ECT_ShowBuchungBearbeitenDialog(
     catch (Exception^ ex)
     {
         CString msg;
-        msg.Format("Fehler bei Buchungsbearbeitung: %S", ex->Message);
+        msg = "Fehler bei Buchungsbearbeitung: "; msg += CString(ex->Message);
         AfxMessageBox(msg, MB_ICONERROR);
         return FALSE;
     }
@@ -181,7 +181,7 @@ BOOL ECT_ShowBuchungBearbeitenDialogFuerPointer(
     catch (Exception^ ex)
     {
         CString msg;
-        msg.Format("Fehler in ECT_ShowBuchungBearbeitenDialogFuerPointer: %S", ex->Message);
+        msg = "Fehler in ECT_ShowBuchungBearbeitenDialogFuerPointer: "; msg += CString(ex->Message);
         AfxMessageBox(msg, MB_ICONERROR);
         return FALSE;
     }
@@ -245,7 +245,7 @@ BOOL ECT_ShowBuchungKopierenDialog(
     catch (Exception^ ex)
     {
         CString msg;
-        msg.Format("Fehler in ECT_ShowBuchungKopierenDialog: %S", ex->Message);
+        msg = "Fehler in ECT_ShowBuchungKopierenDialog: "; msg += CString(ex->Message);
         AfxMessageBox(msg, MB_ICONERROR);
         return FALSE;
     }
@@ -291,7 +291,7 @@ BOOL ECT_LoescheBuchungPerPointer(
     catch (Exception^ ex)
     {
         CString msg;
-        msg.Format("Fehler in ECT_LoescheBuchungPerPointer: %S", ex->Message);
+        msg = "Fehler in ECT_LoescheBuchungPerPointer: "; msg += CString(ex->Message);
         AfxMessageBox(msg, MB_ICONERROR);
         return FALSE;
     }
@@ -350,7 +350,7 @@ void ECT_SetzeBetriebeUndBestandskonten(
     catch (Exception^ ex)
     {
         CString msg;
-        msg.Format("Fehler in ECT_SetzeBetriebeUndBestandskonten: %S", ex->Message);
+        msg = "Fehler in ECT_SetzeBetriebeUndBestandskonten: "; msg += CString(ex->Message);
         AfxMessageBox(msg, MB_ICONERROR);
     }
 }
@@ -520,7 +520,7 @@ void ECT_AktualisiereJournal(
     catch (Exception^ ex)
     {
         CString msg;
-        msg.Format("Fehler in ECT_AktualisiereJournal: %S", ex->Message);
+        msg = "Fehler in ECT_AktualisiereJournal: "; msg += CString(ex->Message);
         AfxMessageBox(msg, MB_ICONERROR);
     }
 }
