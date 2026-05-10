@@ -99,13 +99,16 @@ namespace ECTViews
             if (Application.Current == null)
             {
                 // Minimale WPF-Application erzeugen.
-                // ShutdownMode=OnExplicitShutdown verhindert, dass
-                // WPF die App beendet wenn ein Fenster geschlossen wird.
-                var app = new Application
-                {
-                    ShutdownMode = ShutdownMode.OnExplicitShutdown
-                };
+                new Application();
             }
+
+            // ShutdownMode IMMER auf OnExplicitShutdown ziehen, auch wenn
+            // jemand anderes (z.B. JournalEmbed.EnsureWpfApplication) die
+            // Application bereits mit dem Default OnLastWindowClose erzeugt
+            // hat. Sonst beendet WPF die App, sobald der erste Dialog
+            // geschlossen wird, und der naechste ShowDialog crasht mit
+            // "Das Anwendungsobjekt wird beendet".
+            Application.Current.ShutdownMode = ShutdownMode.OnExplicitShutdown;
 
             _wpfInitialized = true;
         }

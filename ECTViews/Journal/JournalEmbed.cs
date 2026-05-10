@@ -299,6 +299,12 @@ namespace ECTViews.Journal
                 // setzt Application.Current automatisch.
                 new System.Windows.Application();
             }
+            // OnExplicitShutdown verhindert, dass WPF die Application
+            // beendet, sobald der erste Dialog geschlossen wird. Wir
+            // setzen das hier sicherheitshalber immer (auch wenn die
+            // Application bereits durch ViewHost initialisiert wurde).
+            System.Windows.Application.Current.ShutdownMode =
+                System.Windows.ShutdownMode.OnExplicitShutdown;
             _wpfInitialized = true;
         }
     }
