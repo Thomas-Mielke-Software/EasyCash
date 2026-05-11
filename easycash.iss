@@ -3,7 +3,7 @@
 
 [Setup]
 AppName=EasyCash&Tax
-AppVerName=EasyCash&Tax 4.0.2 (Vorschau-Version)
+AppVerName=EasyCash&Tax 4.16.0 (alpha)
 DiskSpanning=no
 AppPublisher=tm
 AppPublisherURL=http://www.easyct.de
@@ -13,7 +13,7 @@ DefaultDirName={pf}\EasyCash&Tax
 UsePreviousAppDir=yes
 DefaultGroupName=EasyCash
 OutputBaseFilename=ECTSetup4
-OutputDir=.\EasyCash 
+OutputDir=.\Setup 
 MinVersion=7.0
 LicenseFile=.\LIZENZ.txt      
 ;SignTool=winsdk10sha1   ; no longer dual sign the installer
