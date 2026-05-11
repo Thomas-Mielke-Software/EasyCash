@@ -135,35 +135,84 @@ Update-File1252 -Path $issPath `
     -Required
 
 # --- 6. TestReg.txt / VollReg.txt aktualisieren (Win-1252, nur Major.Minor) -----
-Write-Host "Registrierungs-Dateien:"
-foreach ($f in $regFiles) {
-    Update-File1252 -Path $f `
-        -Pattern 'Die aktuelle Version ist \d+\.\d+\.' `
-        -Replacement "Die aktuelle Version ist $newMajorMinor."
+#Write-Host "Registrierungs-Dateien:"
+#foreach ($f in $regFiles) {
+#    Update-File1252 -Path $f `
+#        -Pattern 'Die aktuelle Version ist \d+\.\d+\.' `
+#        -Replacement "Die aktuelle Version ist $newMajorMinor."
+#}
+# XXXXXX nach 4er Preview-Phase wieder aktivieren !!! XXXXXX
+
+# --- 7. EasyCash.rc aktualisieren (Win-1252, Major,Minor,Patch,GitCommitCount) --
+Write-Host "EasyCash.rc:"
+$rcPath = Join-Path $repoRoot 'EasyCash.rc'
+$gitCount = (& git -C $repoRoot rev-list --count HEAD 2>$null)
+if ($LASTEXITCODE -ne 0 -or -not $gitCount) {
+    Write-Host "  WARN: git rev-list fehlgeschlagen, Revision=0" -ForegroundColor Yellow
+    $gitCount = '0'
 }
+$gitCount = $gitCount.Trim()
+Write-Host "  Revision (Git-Commit-Count): $gitCount"
+$rcComma   = "$newMajor,$newMinor,$newPatch,$gitCount"
+$rcDotted  = "$newMajor.$newMinor.$newPatch.$gitCount"
+Update-File1252 -Path $rcPath `
+    -Pattern '(?m)^(\s*FILEVERSION\s+)\d+,\d+,\d+,\d+' `
+    -Replacement "`${1}$rcComma" `
+    -Required
+Update-File1252 -Path $rcPath `
+    -Pattern '(?m)^(\s*PRODUCTVERSION\s+)\d+,\d+,\d+,\d+' `
+    -Replacement "`${1}$rcComma" `
+    -Required
+Update-File1252 -Path $rcPath `
+    -Pattern '(VALUE\s+"FileVersion",\s*")\d+\.\d+\.\d+\.\d+(")' `
+    -Replacement "`${1}$rcDotted`${2}" `
+    -Required
+Update-File1252 -Path $rcPath `
+    -Pattern '(VALUE\s+"ProductVersion",\s*")\d+\.\d+\.\d+\.\d+(")' `
+    -Replacement "`${1}$rcDotted`${2}" `
+    -Required
 
 Write-Host ""
 if ($DryRun) {
-    Write-Host "DryRun: keine Dateien geschrieben." -ForegroundColor Yellow
+    Write-Host "DryRun: keine Dateien geschrieben, kein Build, kein ISCC." -ForegroundColor Yellow
+    return
 } else {
     Write-Host "Fertig." -ForegroundColor Green
 }
 
-# Inno-Setup kompilieren
+# --- 8. EasyCash-Hauptprojekt bauen (Release/Win32) -----------------------------
+Write-Host ""
+Write-Host "Baue EasyCash (Release/Win32)..." -ForegroundColor Cyan
+$vswhere = "${env:ProgramFiles(x86)}\Microsoft Visual Studio\Installer\vswhere.exe"
+if (-not (Test-Path $vswhere)) {
+    throw "vswhere.exe nicht gefunden: $vswhere"
+}
+$msbuild = & $vswhere -latest -requires Microsoft.Component.MSBuild -find 'MSBuild\**\Bin\MSBuild.exe' |
+    Select-Object -First 1
+if (-not $msbuild -or -not (Test-Path $msbuild)) {
+    throw "MSBuild.exe nicht über vswhere gefunden."
+}
+$slnPath = Join-Path $repoRoot 'easycashVS2022.sln'
+& $msbuild $slnPath /t:EasyCash /p:Configuration=Release /p:Platform=Win32 /m /nologo /v:minimal
+if ($LASTEXITCODE -ne 0) {
+    throw "Build fehlgeschlagen (ExitCode $LASTEXITCODE)."
+}
+
+# --- 9. Inno-Setup kompilieren --------------------------------------------------
 & "C:\Program Files (x86)\Inno Setup 6\ISCC.exe" "easycash.iss"
 
-# Filezilla öffnen
+# --- 10. Filezilla öffnen -------------------------------------------------------
 $CurrentDir = Get-Location
 $RelativePath = "Setup"
 $AbsolutePath = Join-Path -Path $CurrentDir -ChildPath $RelativePath
 & "C:\Program Files\FileZilla FTP Client\filezilla" "--local=$AbsolutePath"
 
-# danach im Setup-Verzeichnis mit Versionsnummer archivieren
+# --- 11. im Setup-Verzeichnis mit Versionsnummer archivieren --------------------
 $FileName = "ECTSetup"
 $FileNamePreview = "ECTSetup4"
 $Extension = ".exe"
 $OldName = "$FileNamePreview$Extension"
-# ^ Version 4 nur in der Preview-Phase benutzen
+# XXXXXX ^ Version 4 nur in der Preview-Phase benutzen !!! XXXXXX
 $NewName = "$FileName$newVersion$Extension"
 Write-Host "Umbenennen von $OldName in $NewName"
-Rename-Item -Path ".\Setup\$OldName" -NewName $NewName
+Copy-Item -Path ".\Setup\$OldName" -Destination ".\Setup\$NewName"

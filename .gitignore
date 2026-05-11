@@ -59,6 +59,9 @@ tmp_rkward_preview*.Rmd
 # Formular Screenshots
 *screenshot.png
 
+# Claude
+.claude/worktrees
+
 # projektspezifische Messi-Sammlung
 Crash-Reports/
 Beispieldaten/
@@ -144,6 +147,7 @@ UST/*/*.zip
 UST/D-2021/USt-d-2021-AnlageUN.png
 UpgradeLog*.htm
 x64/
+fzdefaults.xml
 
 # temporäre Verzeichnisse
 Temp/
