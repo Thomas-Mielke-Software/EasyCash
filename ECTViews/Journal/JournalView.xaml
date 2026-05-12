@@ -277,6 +277,121 @@
             <Rectangle Height="{Binding Height}" Fill="Transparent"/>
         </DataTemplate>
 
+        <!-- [Anlagenverzeichnis-Templates]
+             Eigener Spaltensatz: Icon|Icon|Beschreibung|Ansch.Datum|
+             Ansch.kosten|Buchw.Beginn|AfA|Abgaenge|Buchw.Ende|AfA-Nr.
+             Spaltenbreiten: Icons fest, Datum fest, Beschreibung star,
+             alle Geldspalten ColW_Brutto, AfA-Nr ColW_AfA. -->
+        <DataTemplate DataType="{x:Type journal:JournalAnlagenHeaderRow}">
+            <Border Background="{StaticResource ColHeaderBg}"
+                    BorderThickness="0,0,0,1"
+                    BorderBrush="{StaticResource ColBorder}"
+                    Padding="0,4,0,4">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="{StaticResource ColW_Icon}"/>
+                        <ColumnDefinition Width="*" MinWidth="120"/>
+                        <ColumnDefinition Width="{StaticResource ColW_Datum}"/>
+                        <ColumnDefinition Width="{StaticResource ColW_Brutto}"/>
+                        <ColumnDefinition Width="{StaticResource ColW_Brutto}"/>
+                        <ColumnDefinition Width="{StaticResource ColW_Brutto}"/>
+                        <ColumnDefinition Width="{StaticResource ColW_Brutto}"/>
+                        <ColumnDefinition Width="{StaticResource ColW_Brutto}"/>
+                        <ColumnDefinition Width="{StaticResource ColW_AfA}"/>
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Grid.Column="1" Text="Beschreibung" FontWeight="SemiBold" Margin="4,0"/>
+                    <TextBlock Grid.Column="2" Text="Ansch.Datum"  FontWeight="SemiBold" Margin="4,0"/>
+                    <TextBlock Grid.Column="3" Text="Ansch.kosten" FontWeight="SemiBold" TextAlignment="Right" Margin="4,0"/>
+                    <TextBlock Grid.Column="4" Text="Buchw.Beginn" FontWeight="SemiBold" TextAlignment="Right" Margin="4,0"/>
+                    <TextBlock Grid.Column="5" Text="AfA"          FontWeight="SemiBold" TextAlignment="Right" Margin="4,0"/>
+                    <TextBlock Grid.Column="6" Text="Abgaenge"     FontWeight="SemiBold" TextAlignment="Right" Margin="4,0"/>
+                    <TextBlock Grid.Column="7" Text="Buchw.Ende"   FontWeight="SemiBold" TextAlignment="Right" Margin="4,0"/>
+                    <TextBlock Grid.Column="8" Text="AfA-Nr"       FontWeight="SemiBold" TextAlignment="Right" Margin="4,0"/>
+                </Grid>
+            </Border>
+        </DataTemplate>
+
+        <DataTemplate DataType="{x:Type journal:JournalAnlagenRow}">
+            <Grid Margin="0,2">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="{StaticResource ColW_Icon}"/>
+                    <ColumnDefinition Width="*" MinWidth="120"/>
+                    <ColumnDefinition Width="{StaticResource ColW_Datum}"/>
+                    <ColumnDefinition Width="{StaticResource ColW_Brutto}"/>
+                    <ColumnDefinition Width="{StaticResource ColW_Brutto}"/>
+                    <ColumnDefinition Width="{StaticResource ColW_Brutto}"/>
+                    <ColumnDefinition Width="{StaticResource ColW_Brutto}"/>
+                    <ColumnDefinition Width="{StaticResource ColW_Brutto}"/>
+                    <ColumnDefinition Width="{StaticResource ColW_AfA}"/>
+                </Grid.ColumnDefinitions>
+
+                <Image Grid.Column="0" Source="{Binding BetriebIcon}"
+                       Width="20" Height="20" Stretch="Uniform"
+                       VerticalAlignment="Top" HorizontalAlignment="Center"
+                       Margin="0,2,0,0"/>
+
+                <TextBlock Grid.Column="1" Text="{Binding BeschreibungText}"
+                           Margin="4,0" VerticalAlignment="Top"
+                           TextWrapping="Wrap"/>
+                <TextBlock Grid.Column="2" Text="{Binding AnschDatumText}"
+                           Margin="4,0" VerticalAlignment="Top"/>
+                <TextBlock Grid.Column="3" Text="{Binding AnschKostenText}"
+                           TextAlignment="Right" Margin="4,0"
+                           VerticalAlignment="Top" FontFamily="Consolas"/>
+                <TextBlock Grid.Column="4" Text="{Binding BuchwBeginnText}"
+                           TextAlignment="Right" Margin="4,0"
+                           VerticalAlignment="Top" FontFamily="Consolas"/>
+                <TextBlock Grid.Column="5" Text="{Binding AfaJahresbetragText}"
+                           TextAlignment="Right" Margin="4,0"
+                           VerticalAlignment="Top" FontFamily="Consolas"/>
+                <TextBlock Grid.Column="6" Text="{Binding AbgangText}"
+                           TextAlignment="Right" Margin="4,0"
+                           VerticalAlignment="Top" FontFamily="Consolas"/>
+                <TextBlock Grid.Column="7" Text="{Binding BuchwEndeText}"
+                           TextAlignment="Right" Margin="4,0"
+                           VerticalAlignment="Top" FontWeight="SemiBold"
+                           FontFamily="Consolas"/>
+                <TextBlock Grid.Column="8" Text="{Binding AfaNrText}"
+                           TextAlignment="Right" Margin="4,0"
+                           VerticalAlignment="Top"/>
+            </Grid>
+        </DataTemplate>
+
+        <DataTemplate DataType="{x:Type journal:JournalAnlagenFooterRow}">
+            <Border BorderThickness="0,1,0,1"
+                    BorderBrush="{StaticResource ColBorder}"
+                    Padding="0,4,0,4">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="{StaticResource ColW_Icon}"/>
+                        <ColumnDefinition Width="*" MinWidth="120"/>
+                        <ColumnDefinition Width="{StaticResource ColW_Datum}"/>
+                        <ColumnDefinition Width="{StaticResource ColW_Brutto}"/>
+                        <ColumnDefinition Width="{StaticResource ColW_Brutto}"/>
+                        <ColumnDefinition Width="{StaticResource ColW_Brutto}"/>
+                        <ColumnDefinition Width="{StaticResource ColW_Brutto}"/>
+                        <ColumnDefinition Width="{StaticResource ColW_Brutto}"/>
+                        <ColumnDefinition Width="{StaticResource ColW_AfA}"/>
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Grid.Column="3" Text="{Binding AnschKostenSummeText}"
+                               TextAlignment="Right" Margin="4,0"
+                               FontWeight="Bold" FontFamily="Consolas"/>
+                    <TextBlock Grid.Column="5" Text="{Binding AfaSummeText}"
+                               TextAlignment="Right" Margin="4,0"
+                               FontWeight="Bold" FontFamily="Consolas"/>
+                    <TextBlock Grid.Column="6" Text="{Binding AbgangSummeText}"
+                               TextAlignment="Right" Margin="4,0"
+                               FontWeight="Bold" FontFamily="Consolas"/>
+                    <TextBlock Grid.Column="7" Text="{Binding BuchwEndeSummeText}"
+                               TextAlignment="Right" Margin="4,0"
+                               FontWeight="Bold" FontFamily="Consolas"/>
+                    <TextBlock Grid.Column="8" Text="{Binding Waehrung}"
+                               TextAlignment="Right" Margin="4,0,20,0"
+                               FontWeight="Bold"/>
+                </Grid>
+            </Border>
+        </DataTemplate>
+
         <Style x:Key="JournalRowStyle" TargetType="ListBoxItem">
             <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
             <Setter Property="Padding" Value="0"/>

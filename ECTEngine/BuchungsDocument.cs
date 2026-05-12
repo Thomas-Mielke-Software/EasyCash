@@ -195,6 +195,81 @@ namespace ECTEngine
         }
 
         // ──────────────────────────────────────────────
+        // AfA-Abgang (Anlagengegenstand ausscheiden)
+        // ──────────────────────────────────────────────
+
+        /// <summary>
+        /// Schreibt eine Anlage aus dem Betriebsvermoegen aus. Die laufende
+        /// AfA-Buchung wird zu einer einfachen Ausgaben-Buchung ueber den
+        /// aktuellen Restwert umgewandelt; die Original-Werte werden im
+        /// Erweiterungs-Store unter "EasyCash" archiviert, damit das
+        /// Anlagenverzeichnis sie in der Abgaenge-Sektion noch zeigen kann.
+        ///
+        /// 1:1-Reimplementierung von CEasyCashView::AfAAbgang() (easycashview.cpp:7008).
+        /// </summary>
+        /// <param name="b">Die AfA-Buchung. Muss AfaJahre &gt; 1 haben.</param>
+        /// <param name="restwertKonto">
+        /// Name des Konto, auf das die Restwert-Ausgabe gebucht wird (z.B.
+        /// das einer EUER-Feld-1135-Verknuepfung). Wird vom Aufrufer (Bridge)
+        /// aus den Einstellungen ermittelt - die Engine selber kennt das
+        /// Land-Setting und die Feld-Zuordnung nicht.
+        /// </param>
+        /// <returns>True wenn ausgefuehrt; false wenn b ungeeignet ist.</returns>
+        public bool AfaAbgang(Buchung b, string restwertKonto)
+        {
+            if (b == null || b.AfaJahre <= 1)
+                return false;
+
+            // Originaldaten archivieren (genau wie SetErweiterungKey im
+            // Native-Original; Datum und Betraege im Klartext, damit man
+            // die Buchung notfalls von Hand wiederherstellen koennte).
+            var anschDatum = new DateTime(
+                b.Datum.Year - b.AfaNr + 1,
+                b.Datum.Month,
+                b.Datum.Day);
+
+            b.Erweiterungen.Setze("EasyCash", "UrspruenglichesAnschaffungsdatum",
+                anschDatum.ToString("d.M.yyyy"));
+            b.Erweiterungen.Setze("EasyCash", "UrspruenglichesKonto",
+                b.Konto ?? "");
+            b.Erweiterungen.Setze("EasyCash", "UrspruenglicherBetrag",
+                FormatCent(b.BruttoBetrag.InCent));
+            b.Erweiterungen.Setze("EasyCash", "UrspruenglicherNettobetrag",
+                FormatCent(b.BruttoBetrag.NettoInCent));
+            b.Erweiterungen.Setze("EasyCash", "UrspruenglicheAbschreibungNr",
+                b.AfaNr.ToString());
+            b.Erweiterungen.Setze("EasyCash", "UrspruenglicheAbschreibungJahre",
+                b.AfaJahre.ToString());
+            b.Erweiterungen.Setze("EasyCash", "UrspruenglicherRestwert",
+                FormatCent(b.AfaRestwertCent));
+            b.Erweiterungen.Setze("EasyCash", "UrspruenglichesBestandskonto",
+                b.Bestandskonto ?? "");
+
+            // Buchung in eine einfache Ausgabe ueber den Restwert umwandeln
+            b.Datum = new DateTime(Jahr, 1, 1);
+            b.BruttoBetrag = Betrag.AusCent(b.AfaRestwertCent, 0); // ohne MWSt
+            b.AfaRestwertCent = 0;
+            b.AfaNr = 1;
+            b.AfaJahre = 1;
+            b.Konto = restwertKonto ?? "Restbuchwert abgegangener Anlagegueter";
+            b.Bestandskonto = "kalkulatorische Restbuchwerte (bitte ignorieren)";
+
+            InkrementBuchungszaehler();
+            return true;
+        }
+
+        private static string FormatCent(long cent)
+        {
+            // Deutsches Waehrungsformat wie das Original-int_to_currency,
+            // ohne Tausendertrenner, mit Komma als Dezimaltrennzeichen.
+            long abs = cent < 0 ? -cent : cent;
+            long whole = abs / 100;
+            long fract = abs % 100;
+            string sign = cent < 0 ? "-" : "";
+            return $"{sign}{whole},{fract:D2}";
+        }
+
+        // ──────────────────────────────────────────────
         // Buchungszähler
         // ──────────────────────────────────────────────
 

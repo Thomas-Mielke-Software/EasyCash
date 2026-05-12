@@ -14,11 +14,19 @@
 #include "JournalExports.h"
 #include "ViewExports.h"            // ECT_ShowBuchungBearbeitenDialog
 #include "EasyCashDocBridge.h"      // CEasyCashDocBridge + GetEngine(bridge)
+#include "Marshalling.h"            // ECTBridge::ToNative / ToManaged
 
 #using "ECTEngine.dll"
 #using "ECTViews.dll"
 #using <System.dll>
 #using <WindowsBase.dll>
+
+// Aus ECTBridge/ectifacemisc.cpp (frueher ECTIFace): liefert den
+// Kontonamen, der mit dem angegebenen EUER- bzw. UVA-Formularfeld
+// verknuepft ist, oder NULL, wenn keine Verknuepfung existiert. Wird
+// von OnAfaAbgang benoetigt, um das Restwert-Konto zu finden.
+extern "C" AFX_EXT_CLASS char* HoleKontoFuerFeld(
+    char ea, LPCSTR eurech_feld, LPCSTR uva_feld);
 
 using namespace System;
 
@@ -160,6 +168,69 @@ public:
             bridge->SyncManagedToNative();
         }
     }
+
+    void OnAfaAbgang(ECTEngine::Buchung^ b)
+    {
+        auto* bridge = static_cast<CEasyCashDocBridge*>(m_pBridge.ToPointer());
+        if (!bridge || !b) return;
+        if (b->AfaJahre <= 1) return;  // nur Anlagen mit laufender AfA
+
+        auto eng = GetEngine(bridge);
+
+        // Stale-Referenz absichern: nach SyncNativeToManaged-Zyklen kann
+        // sich die managed Buchung^-Instanz geaendert haben. Wir suchen die
+        // aktuelle Instanz per Uuid.
+        int idx = FindeBuchungIdx(eng, b);
+        if (idx < 0) return;
+        ECTEngine::Buchung^ aktuelle = eng->Buchungen[idx];
+
+        CString frage;
+        frage.Format("Anlagengegenstand '%s' aus dem Betriebsvermoegen ausscheiden lassen?\n\n"
+                     "Die AfA-Buchung wird dabei in eine einfache Ausgaben-Buchung"
+                     " ueber den Restwert umgewandelt.",
+                     (LPCTSTR)CString(aktuelle->Beschreibung));
+        if (AfxMessageBox(frage, MB_YESNO | MB_ICONQUESTION) != IDYES)
+            return;
+
+        // Restbuchwert-Konto aus den Einstellungen ermitteln. Logik 1:1 aus
+        // dem nativen AfAAbgang (easycashview.cpp:7015-7028).
+        int land = ECTEngine::Einstellungen::HoleInt("land", 0);
+        LPCSTR feldNr = (land == 1) ? "9210" : "1135";
+        char* pKonto = HoleKontoFuerFeld('A', feldNr, NULL);
+        CString csKonto;
+        if (pKonto)
+        {
+            csKonto = pKonto;
+        }
+        else
+        {
+            csKonto = "Restbuchwert abgegangener Anlagegueter";
+            CString hinweis;
+            hinweis.Format(
+                "Es wurde kein Konto gefunden, das mit dem Formularfeld %s verknuepft ist. "
+                "Deshalb wurde in der Buchung provisorisch das Konto '%s' eingetragen. "
+                "Wenn Sie Formulare benutzen, sollten Sie dieses Ausgabenkonto in den "
+                "Einstellungen -> E/Ueber-Konten anlegen und dem %s-Formularfeld %s zuweisen.",
+                (LPCTSTR)CString(feldNr), (LPCTSTR)csKonto,
+                (land == 1) ? "E1a" : "EUR",
+                (LPCTSTR)CString(feldNr));
+            AfxMessageBox(hinweis, MB_ICONINFORMATION);
+        }
+
+        // Engine-Methode macht die eigentliche Mutation
+        if (!eng->AfaAbgang(aktuelle,
+            gcnew System::String((LPCTSTR)csKonto)))
+            return;
+
+        eng->Sort();
+        bridge->SyncManagedToNative();
+        bridge->SetModifiedFlag(
+            (CString)"Anlagengut '" +
+            ECTBridge::ToNative(aktuelle->Erweiterungen->Hole(
+                "EasyCash", "UrspruenglichesKonto", "")) +
+            "' aus dem Betriebsvermoegen entnommen");
+        ECTViews::Journal::JournalEmbed::AktualisiereAlle(nullptr);
+    }
 };
 
 // ----------------------------------------------------------
@@ -210,6 +281,8 @@ HWND ECT_JournalEinbetten(
                 handler, &JournalEventHandler::OnKopieren);
             vm->BuchungKopierenMitNeuerBelegnummer += gcnew System::Action<ECTEngine::Buchung^>(
                 handler, &JournalEventHandler::OnKopierenMitNeuerBelegnummer);
+            vm->BuchungAfaAbgang += gcnew System::Action<ECTEngine::Buchung^>(
+                handler, &JournalEventHandler::OnAfaAbgang);
         }
 
         return (HWND)hKind.ToPointer();

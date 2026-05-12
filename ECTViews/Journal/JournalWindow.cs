@@ -57,13 +57,7 @@ namespace ECTViews.Journal
         public static JournalViewModel ZeigeJournal(
             BuchungsDocument doc, IntPtr ownerHwnd = default)
         {
-            var vm = new JournalViewModel(doc,
-                ViewHost.BetriebeNamen,
-                ViewHost.BetriebeIcons,
-                ViewHost.BestandskontenNamen,
-                ViewHost.BestandskontenIcons,
-                ViewHost.SpriteBetriebe,
-                ViewHost.SpriteBestandskonten);
+            var vm = new JournalViewModel(doc);
             vm.Aktualisiere();
 
             var window = new JournalWindow(vm);

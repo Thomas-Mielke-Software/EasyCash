@@ -1,4 +1,4 @@
-// JournalViewModel.cs - Hauptlogik des Buchungsjournals
+﻿// JournalViewModel.cs - Hauptlogik des Buchungsjournals
 //
 // Reimplementiert DrawToDC_Datum() und DrawToDC_Konten() aus
 // easycashview.cpp als ViewModel, das eine ObservableCollection
@@ -30,13 +30,12 @@ namespace ECTViews.Journal
         /// <summary>Internal access to the underlying document for related ViewModels (e.g. Navigation).</summary>
         public BuchungsDocument Doc => _doc;
 
-        // Icon-Daten
-        private readonly IList<string> _betriebeNamen;
-        private readonly IList<int>    _betriebeIcons;
-        private readonly IList<string> _bestandskontenNamen;
-        private readonly IList<int>    _bestandskontenIcons;
-        private readonly BitmapSource _spriteBetriebe;
-        private readonly BitmapSource _spriteBestandskonten;
+        // Icon-Daten kommen NICHT mehr aus gecachten Snapshots, sondern werden
+        // bei jedem Aktualisiere() direkt aus den statischen ViewHost-Listen
+        // gelesen. Sonst entstaende der Bug "Icons fehlen, bis man einmal den
+        // Modus umschaltet": Wenn das ViewModel konstruiert wird, bevor
+        // ECT_SetzeBetriebeUndBestandskonten das ViewHost befuellt hat, blieben
+        // die Snapshot-Felder fuer immer leer.
 
         // Cache fuer ausgeschnittene Icons
         private readonly Dictionary<string, BitmapSource> _iconCache =
@@ -229,22 +228,9 @@ namespace ECTViews.Journal
         public event Action<Buchung> BuchungKopierenMitNeuerBelegnummer;
         public event Action<Buchung> BuchungAfaAbgang;
 
-        public JournalViewModel(
-            BuchungsDocument doc,
-            IList<string> betriebeNamen = null,
-            IList<int>    betriebeIcons = null,
-            IList<string> bestandskontenNamen = null,
-            IList<int>    bestandskontenIcons = null,
-            BitmapSource spriteBetriebe = null,
-            BitmapSource spriteBestandskonten = null)
+        public JournalViewModel(BuchungsDocument doc)
         {
             _doc = doc ?? throw new ArgumentNullException(nameof(doc));
-            _betriebeNamen = betriebeNamen ?? new List<string>();
-            _betriebeIcons = betriebeIcons ?? new List<int>();
-            _bestandskontenNamen = bestandskontenNamen ?? new List<string>();
-            _bestandskontenIcons = bestandskontenIcons ?? new List<int>();
-            _spriteBetriebe = spriteBetriebe;
-            _spriteBestandskonten = spriteBestandskonten;
 
             BearbeitenCommand = new RelayCommand(
                 () => BuchungBearbeiten?.Invoke(SelektierteZeile?.Buchung),
@@ -260,7 +246,10 @@ namespace ECTViews.Journal
                 () => SelektierteZeile != null);
             AfaAbgangCommand = new RelayCommand(
                 () => BuchungAfaAbgang?.Invoke(SelektierteZeile?.Buchung),
-                () => SelektierteZeile != null);
+                // Nur fuer noch laufende Anlagen anbieten -- Abgang-Buchungen
+                // (AfaJahre==1) koennen nicht nochmal ausgeschieden werden.
+                () => SelektierteZeile?.Buchung != null
+                   && SelektierteZeile.Buchung.AfaJahre > 1);
         }
 
         /// <summary>
@@ -676,13 +665,23 @@ namespace ECTViews.Journal
         // Im Original-MFC zeigt es Buchungen mit AfaJahre>1 an.
         private void BaueAnzeigeAnlagenverzeichnis()
         {
-            var f = AktuellerFilter;
-
-            // Nur Ausgaben mit AfA (Jahre > 1)
+            // 1) Laufende Anlagen (AfaJahre > 1), pro Konto eigene Sub-Sektion
             var anlageBuchungen = FilterBuchungen(_doc.Ausgaben, false)
                 .Where(b => b.AfaJahre > 1)
                 .ToList();
-            if (anlageBuchungen.Count == 0) return;
+
+            // 2) Abgaenge des aktuellen Buchungsjahres (siehe AfAAbgang in
+            //    easycashview.cpp:7008): AfaJahre==1 + Erweiterung
+            //    "UrspruenglichesAnschaffungsdatum" gesetzt + Datum im
+            //    aktuellen Jahr.
+            var abgangsBuchungen = FilterBuchungen(_doc.Ausgaben, false)
+                .Where(b => b.AfaJahre == 1
+                         && b.Datum.Year == _doc.Jahr
+                         && b.Erweiterungen != null
+                         && b.Erweiterungen.Hat("EasyCash", "UrspruenglichesAnschaffungsdatum"))
+                .ToList();
+
+            if (anlageBuchungen.Count == 0 && abgangsBuchungen.Count == 0) return;
 
             Zeilen.Add(new JournalSectionTitle
             {
@@ -691,7 +690,7 @@ namespace ECTViews.Journal
                 IsEinnahme = false
             });
 
-            // Gruppiere nach Konto
+            // ── Laufende Anlagen ────────────────────────────────────────────
             var byKonto = anlageBuchungen
                 .GroupBy(b => b.Konto ?? "")
                 .OrderBy(g => g.Key);
@@ -706,33 +705,145 @@ namespace ECTViews.Journal
                     IsMain = false,
                     IsEinnahme = false
                 });
+                Zeilen.Add(new JournalAnlagenHeaderRow());
 
-                Zeilen.Add(new JournalHeaderRow
-                {
-                    IsAusgabe = true,
-                    ZeigeBelegnummer = f.ZeigeBelegnummernspalte,
-                    ZeigeSteuer = f.ZeigeSteuerspalte,
-                    ZeigeAfaNr = true
-                });
-
-                long bruttoSumme = 0, nettoSumme = 0, vstSumme = 0;
+                long sumAnsch = 0, sumAfa = 0, sumEnde = 0;
                 int idx = 0;
                 foreach (var b in grp.OrderBy(b => b.Datum).ThenBy(b => b.Uuid))
                 {
-                    Zeilen.Add(BaueBuchungZeile(b, true, idx++));
+                    long ansch  = b.BruttoBetrag.InCent;
+                    long beginn = b.AfaRestwertCent;
+                    long afa    = AfaCalculator.GetBuchungsjahrNetto(
+                                     b, _doc.GlobaleAfaGenauigkeit);
+                    long ende   = beginn - afa;
+                    if (ende < 0) ende = 0;
 
-                    // Anschaffungsbrutto in der Summe (nicht AfA-Jahresanteil)
-                    long bruttoCent = b.BruttoBetrag.InCent;
-                    long nettoCent = b.BruttoBetrag.NettoInCent;
-                    long vstCent = bruttoCent - nettoCent;
-                    bruttoSumme += bruttoCent;
-                    nettoSumme += nettoCent;
-                    vstSumme += vstCent;
+                    Zeilen.Add(BaueAnlagenZeile(b, idx++,
+                        anschCent: ansch,
+                        beginnCent: beginn,
+                        afaCent: afa,
+                        abgangCent: 0,
+                        endeCent: ende));
+
+                    sumAnsch += ansch;
+                    sumAfa   += afa;
+                    sumEnde  += ende;
                 }
-
-                Zeilen.Add(BaueFooter(true, nettoSumme, vstSumme, bruttoSumme));
+                Zeilen.Add(BaueAnlagenFooter(sumAnsch, sumAfa, 0, sumEnde));
                 Zeilen.Add(new JournalSpacerRow());
             }
+
+            // ── Abgaenge des aktuellen Jahres ───────────────────────────────
+            if (abgangsBuchungen.Count > 0)
+            {
+                Zeilen.Add(new JournalSectionTitle
+                {
+                    Text = "[Abgaenge " + _doc.Jahr + "]",
+                    IsMain = false,
+                    IsEinnahme = false
+                });
+                Zeilen.Add(new JournalAnlagenHeaderRow());
+
+                long sumAnsch = 0, sumAbgang = 0;
+                int idx = 0;
+                foreach (var b in abgangsBuchungen.OrderBy(b => b.Datum).ThenBy(b => b.Uuid))
+                {
+                    // Werte aus den Original-Erweiterungs-Keys ablesen
+                    string anschStr = b.Erweiterungen.Hole(
+                        "EasyCash", "UrspruenglicherBetrag", "");
+                    string beginnStr = b.Erweiterungen.Hole(
+                        "EasyCash", "UrspruenglicherRestwert", "");
+                    string afaNrStr = b.Erweiterungen.Hole(
+                        "EasyCash", "UrspruenglicheAbschreibungNr", "");
+                    string afaJahreStr = b.Erweiterungen.Hole(
+                        "EasyCash", "UrspruenglicheAbschreibungJahre", "");
+                    string anschDatumStr = b.Erweiterungen.Hole(
+                        "EasyCash", "UrspruenglichesAnschaffungsdatum", "");
+
+                    long anschCent  = ParseCurrencyToCent(anschStr);
+                    long abgangCent = b.BruttoBetrag.InCent;
+
+                    Zeilen.Add(new JournalAnlagenRow
+                    {
+                        Buchung      = b,
+                        IstAusgabe   = true,
+                        ZebraIndex   = idx++,
+                        BeschreibungText = b.Beschreibung ?? "",
+                        AnschDatumText   = anschDatumStr,
+                        AnschKostenText  = anschStr,
+                        BuchwBeginnText  = beginnStr,
+                        AfaJahresbetragText = "",
+                        AbgangText       = FormatBetrag(abgangCent),
+                        BuchwEndeText    = FormatBetrag(0),
+                        AfaNrText        = string.IsNullOrEmpty(afaNrStr)
+                                            ? ""
+                                            : afaNrStr + "/" + afaJahreStr,
+                        BetriebIcon = HoleIcon(IconArt.Betrieb, b.Betrieb),
+                        BestandskontoIcon = HoleIcon(IconArt.Bestandskonto, b.Erweiterungen.Hole("EasyCash",
+                                "UrspruenglichesBestandskonto", b.Bestandskonto ?? ""))
+                    });
+
+                    sumAnsch  += anschCent;
+                    sumAbgang += abgangCent;
+                }
+                Zeilen.Add(BaueAnlagenFooter(sumAnsch, 0, sumAbgang, 0));
+                Zeilen.Add(new JournalSpacerRow());
+            }
+        }
+
+        /// <summary>
+        /// Baut eine Anlagen-Zeile mit vorberechneten Cent-Betraegen.
+        /// </summary>
+        private JournalAnlagenRow BaueAnlagenZeile(
+            Buchung b, int zebraIdx,
+            long anschCent, long beginnCent, long afaCent,
+            long abgangCent, long endeCent)
+        {
+            return new JournalAnlagenRow
+            {
+                Buchung = b,
+                IstAusgabe = true,
+                ZebraIndex = zebraIdx,
+                BeschreibungText = b.Beschreibung ?? "",
+                AnschDatumText = b.Datum.ToString("dd.MM.yyyy", DeDE),
+                AnschKostenText = FormatBetrag(anschCent),
+                BuchwBeginnText = FormatBetrag(beginnCent),
+                AfaJahresbetragText = FormatBetrag(afaCent),
+                AbgangText = abgangCent != 0 ? FormatBetrag(abgangCent) : "",
+                BuchwEndeText = FormatBetrag(endeCent),
+                AfaNrText = b.AfaJahre > 1 ? $"{b.AfaNr}/{b.AfaJahre}" : "",
+                BetriebIcon = HoleIcon(IconArt.Betrieb, b.Betrieb),
+                BestandskontoIcon = HoleIcon(IconArt.Bestandskonto, b.Bestandskonto)
+            };
+        }
+
+        private JournalAnlagenFooterRow BaueAnlagenFooter(
+            long anschSumme, long afaSumme, long abgangSumme, long endeSumme)
+        {
+            return new JournalAnlagenFooterRow
+            {
+                AnschKostenSummeText = FormatBetrag(anschSumme),
+                AfaSummeText         = FormatBetrag(afaSumme),
+                AbgangSummeText      = FormatBetrag(abgangSumme),
+                BuchwEndeSummeText   = FormatBetrag(endeSumme),
+                Waehrung             = _doc.Waehrung ?? "EUR"
+            };
+        }
+
+        /// <summary>
+        /// Parst eine deutsche Waehrungs-Zeichenkette ("1234,56" oder
+        /// "-1234,56") nach Cent. Toleriert auch Punkte als
+        /// Tausendertrenner ("1.234,56"). Liefert 0 bei Parse-Fehler.
+        /// </summary>
+        private static long ParseCurrencyToCent(string s)
+        {
+            if (string.IsNullOrWhiteSpace(s)) return 0;
+            s = s.Trim().Replace(".", "");  // Tausendertrenner weg
+            if (decimal.TryParse(s,
+                System.Globalization.NumberStyles.Number,
+                DeDE, out var d))
+                return (long)Math.Round(d * 100m);
+            return 0;
         }
 
         // Hilfsmethode: Bestandskonten sammeln, die in Buchungen vorkommen
@@ -768,7 +879,7 @@ namespace ECTViews.Journal
         // ermittelt.
         private IList<string> HoleKonfigurierteBestandskonten()
         {
-            return _bestandskontenNamen ?? (IList<string>)new List<string>();
+            return ViewHost.BestandskontenNamen ?? (IList<string>)new List<string>();
         }
 
         private long HoleAnfangssaldoCent(string bestandskonto)
@@ -1018,10 +1129,8 @@ namespace ECTViews.Journal
                 BruttoText = FormatBetrag(anzeigeBruttoCent),
                 AfaNrText = (istAusgabe && b.AfaJahre > 1)
                     ? $"{b.AfaNr}/{b.AfaJahre}" : "",
-                BetriebIcon = HoleIcon(_betriebeNamen, _betriebeIcons,
-                    _spriteBetriebe, b.Betrieb),
-                BestandskontoIcon = HoleIcon(_bestandskontenNamen, _bestandskontenIcons,
-                    _spriteBestandskonten, b.Bestandskonto)
+                BetriebIcon = HoleIcon(IconArt.Betrieb, b.Betrieb),
+                BestandskontoIcon = HoleIcon(IconArt.Bestandskonto, b.Bestandskonto)
             };
         }
 
@@ -1049,17 +1158,45 @@ namespace ECTViews.Journal
             return prozent.ToString("0.##", DeDE) + "%";
         }
 
-        private BitmapSource HoleIcon(IList<string> namen, IList<int> indizes,
-            BitmapSource sprite, string name)
+        /// <summary>
+        /// Liefert das Betrieb- oder Bestandskonto-Icon zum angegebenen Namen.
+        /// Liest Sprite und Mapping bei jedem Aufruf frisch aus ViewHost - das
+        /// ist wichtig, damit Icons auch direkt nach dem ersten Anzeigen
+        /// erscheinen (siehe Kommentar oben bei den Feldern).
+        /// </summary>
+        private enum IconArt { Betrieb, Bestandskonto }
+
+        private BitmapSource HoleIcon(IconArt art, string name)
         {
-            if (sprite == null || string.IsNullOrEmpty(name)) return null;
+            if (string.IsNullOrEmpty(name)) return null;
+
+            BitmapSource    sprite;
+            IList<string>   namen;
+            IList<int>      indizes;
+            string          keyPrefix;
+            if (art == IconArt.Betrieb)
+            {
+                sprite    = ViewHost.SpriteBetriebe;
+                namen     = ViewHost.BetriebeNamen;
+                indizes   = ViewHost.BetriebeIcons;
+                keyPrefix = "B";
+            }
+            else
+            {
+                sprite    = ViewHost.SpriteBestandskonten;
+                namen     = ViewHost.BestandskontenNamen;
+                indizes   = ViewHost.BestandskontenIcons;
+                keyPrefix = "K";
+            }
+            if (sprite == null || namen == null || indizes == null) return null;
+
             int pos = -1;
             for (int i = 0; i < namen.Count; i++)
                 if (namen[i] == name) { pos = i; break; }
             if (pos < 0 || pos >= indizes.Count) return null;
             int idx = indizes[pos];
 
-            string cacheKey = $"{(sprite == _spriteBetriebe ? "B" : "K")}:{idx}";
+            string cacheKey = $"{keyPrefix}:{idx}";
             if (_iconCache.TryGetValue(cacheKey, out var cached))
                 return cached;
 

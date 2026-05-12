@@ -76,14 +76,9 @@ namespace ECTViews.Journal
 
             EnsureWpfApplication();
 
-            // ViewModel mit Listen+Sprites aus dem ViewHost-Cache befuellen
-            var vm = new JournalViewModel(doc,
-                ViewHost.BetriebeNamen,
-                ViewHost.BetriebeIcons,
-                ViewHost.BestandskontenNamen,
-                ViewHost.BestandskontenIcons,
-                ViewHost.SpriteBetriebe,
-                ViewHost.SpriteBestandskonten);
+            // Das ViewModel zieht Icons/Sprites bei jeder Aktualisiere direkt
+            // aus ViewHost, deshalb keinen Snapshot mehr uebergeben.
+            var vm = new JournalViewModel(doc);
             vm.Aktualisiere(initialFilter);
 
             var view = new JournalView { DataContext = vm };

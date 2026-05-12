@@ -344,6 +344,13 @@ void ECT_SetzeBetriebeUndBestandskonten(
         ECTViews::ViewHost::BestandskontenSalden =
             MachIntListe(pBestandskontenSalden, nBestandskontenCount);
 
+        // Bereits eingebettete Journals neu rendern lassen, damit Betriebs-
+        // und Bestandskonto-Icons sofort erscheinen. Ohne diesen Push waeren
+        // die Icons erst nach dem ersten manuellen Modus-Wechsel sichtbar,
+        // weil das Journal beim Programmstart oft VOR dieser Funktion
+        // eingebettet wird.
+        ECTViews::Journal::JournalEmbed::AktualisiereAlle(nullptr);
+
         TRACE("ECT_SetzeBetriebeUndBestandskonten: %d Betriebe, %d Bestandskonten\n",
               nBetriebeCount, nBestandskontenCount);
     }

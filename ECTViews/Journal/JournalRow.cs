@@ -111,4 +111,46 @@ namespace ECTViews.Journal
     {
         public double Height { get; set; } = 8;
     }
+
+    // ─────────────────────────────────────────────────────────────────────
+    // Anlagenverzeichnis-spezifische Zeilentypen
+    //
+    // Eigene Header/Row/Footer-Typen, weil der Spaltensatz dort komplett
+    // anders aussieht als in den Buchungs-Modi (Datum/Konten/Bestandskonten).
+    // Die WPF-DataTemplate-Auswahl per DataType verwendet diese Typen als
+    // Diskriminator.
+    // ─────────────────────────────────────────────────────────────────────
+
+    /// <summary>Spaltenkopf fuer den Anlagenverzeichnis-Modus.</summary>
+    public class JournalAnlagenHeaderRow : JournalRow
+    {
+    }
+
+    /// <summary>
+    /// Eine Zeile im Anlagenverzeichnis. Erbt von JournalBuchungRow,
+    /// damit die existierende Selektion/Edit/Loesch/Kopier-Mechanik
+    /// (RowStyleSelector erkennt JournalBuchungRow) ohne Anpassung
+    /// weiterfunktioniert. Der Anlagenverzeichnis-Modus rendert die
+    /// Zeile aber mit anderen Spalten -- siehe DataTemplate in
+    /// JournalView.xaml.
+    /// </summary>
+    public class JournalAnlagenRow : JournalBuchungRow
+    {
+        public string AnschDatumText { get; set; }
+        public string AnschKostenText { get; set; }
+        public string BuchwBeginnText { get; set; }
+        public string AfaJahresbetragText { get; set; }
+        public string AbgangText { get; set; }
+        public string BuchwEndeText { get; set; }
+    }
+
+    /// <summary>Summenzeile fuer den Anlagenverzeichnis-Modus.</summary>
+    public class JournalAnlagenFooterRow : JournalRow
+    {
+        public string AnschKostenSummeText { get; set; }
+        public string AfaSummeText { get; set; }
+        public string AbgangSummeText { get; set; }
+        public string BuchwEndeSummeText { get; set; }
+        public string Waehrung { get; set; }
+    }
 }
