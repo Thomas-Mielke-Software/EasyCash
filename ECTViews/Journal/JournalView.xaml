@@ -1,10 +1,9 @@
-<UserControl x:Class="ECTViews.Journal.JournalView"
+﻿<UserControl x:Class="ECTViews.Journal.JournalView"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:journal="clr-namespace:ECTViews.Journal"
              FontFamily="Segoe UI"
              Background="White"
-             Grid.IsSharedSizeScope="True"
              SizeChanged="OnControlSizeChanged">
 
     <UserControl.Resources>
@@ -19,12 +18,14 @@
         <SolidColorBrush x:Key="ColBorder"    Color="#888888"/>
 
         <!-- Spaltenbreiten als Resources fuer die fixen Spalten.
-             Die Belegspalte wird ueber SharedSizeGroup="BelegSpalte"
-             dynamisch synchronisiert: Width="Auto" zieht sich an die
-             breiteste Belegnummer zusammen, MaxWidth begrenzt sie auf
-             1/4 der ListBox-Breite (gebunden an
-             ViewModel.BelegMaxBreite, das vom Code-Behind bei
-             SizeChanged aktualisiert wird). -->
+             Die Belegspalte hat eine globale, fuer das ganze Journal
+             konstante Breite (ViewModel.BelegSpaltenBreite), berechnet
+             einmal pro Aktualisiere aus dem 95-Perzentil aller
+             Belegnummer-Laengen. Laengere Belegnummern werden im
+             TextBlock per TextTrimming="CharacterEllipsis" abgekuerzt.
+             Frueher war das ein Auto+SharedSizeGroup-Layout, das beim
+             Scrollen in Bereiche mit anderen Belegnummer-Laengen
+             ruckartig die Spaltenbreite veraendert hat. -->
         <GridLength x:Key="ColW_Icon">28</GridLength>
         <GridLength x:Key="ColW_Datum">90</GridLength>
         <GridLength x:Key="ColW_Netto">100</GridLength>
@@ -66,10 +67,11 @@
                         <ColumnDefinition Width="{StaticResource ColW_Icon}"/>
                         <ColumnDefinition Width="{StaticResource ColW_Icon}"/>
                         <ColumnDefinition Width="{StaticResource ColW_Datum}"/>
-                        <ColumnDefinition Width="Auto" SharedSizeGroup="BelegSpalte"
-                                          MinWidth="40"
-                                          MaxWidth="{Binding DataContext.BelegMaxBreite,
-                                              RelativeSource={RelativeSource AncestorType=UserControl}}"/>
+                        <ColumnDefinition Width="Auto"
+                                      MinWidth="{Binding DataContext.BelegSpaltenBreite,
+                                          RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                      MaxWidth="{Binding DataContext.BelegSpaltenBreite,
+                                          RelativeSource={RelativeSource AncestorType=UserControl}}"/>
                         <ColumnDefinition Width="*" MinWidth="120"/>
                         <ColumnDefinition Width="{StaticResource ColW_Netto}"/>
                         <ColumnDefinition Width="{StaticResource ColW_USt}"/>
@@ -145,9 +147,10 @@
                     <ColumnDefinition Width="{StaticResource ColW_Icon}"/>
                     <ColumnDefinition Width="{StaticResource ColW_Icon}"/>
                     <ColumnDefinition Width="{StaticResource ColW_Datum}"/>
-                    <ColumnDefinition Width="Auto" SharedSizeGroup="BelegSpalte"
-                                      MinWidth="40"
-                                      MaxWidth="{Binding DataContext.BelegMaxBreite,
+                    <ColumnDefinition Width="Auto"
+                                      MinWidth="{Binding DataContext.BelegSpaltenBreite,
+                                          RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                      MaxWidth="{Binding DataContext.BelegSpaltenBreite,
                                           RelativeSource={RelativeSource AncestorType=UserControl}}"/>
                     <ColumnDefinition Width="*" MinWidth="120"/>
                     <ColumnDefinition Width="{StaticResource ColW_Netto}"/>
@@ -222,10 +225,11 @@
                         <ColumnDefinition Width="{StaticResource ColW_Icon}"/>
                         <ColumnDefinition Width="{StaticResource ColW_Icon}"/>
                         <ColumnDefinition Width="{StaticResource ColW_Datum}"/>
-                        <ColumnDefinition Width="Auto" SharedSizeGroup="BelegSpalte"
-                                          MinWidth="40"
-                                          MaxWidth="{Binding DataContext.BelegMaxBreite,
-                                              RelativeSource={RelativeSource AncestorType=UserControl}}"/>
+                        <ColumnDefinition Width="Auto"
+                                      MinWidth="{Binding DataContext.BelegSpaltenBreite,
+                                          RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                      MaxWidth="{Binding DataContext.BelegSpaltenBreite,
+                                          RelativeSource={RelativeSource AncestorType=UserControl}}"/>
                         <ColumnDefinition Width="*" MinWidth="120"/>
                         <ColumnDefinition Width="{StaticResource ColW_Netto}"/>
                         <ColumnDefinition Width="{StaticResource ColW_USt}"/>

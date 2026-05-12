@@ -639,6 +639,7 @@ copy ..\EasyCash\Release\crashrpt_lang.ini .\Release
   </ItemGroup>
   <ItemGroup>
     <None Include=".gitignore" />
+    <None Include="bump-version.ps1" />
     <None Include="CLAUDE.md" />
     <None Include="Directory.Build.props" />
     <None Include="Formularabschnitt.htm">

@@ -75,7 +75,14 @@ namespace ECTViews.Journal
         public double BelegMaxBreite
         {
             get => _belegMaxBreite;
-            set => SetProperty(ref _belegMaxBreite, value);
+            set
+            {
+                if (SetProperty(ref _belegMaxBreite, value))
+                {
+                    // Belegspalte ggf. an neue Obergrenze anpassen
+                    BelegSpaltenBreite = BerechneBelegSpaltenBreite();
+                }
+            }
         }
 
         // Breite der Saldo-Spalte. 0 in den meisten Modi (Spalte ist
@@ -87,6 +94,20 @@ namespace ECTViews.Journal
         {
             get => _saldoSpaltenBreite;
             set => SetProperty(ref _saldoSpaltenBreite, value);
+        }
+
+        // Konstante Breite der Beleg-Spalte fuer das gesamte Journal --
+        // nicht pro Konten-/Bestandskonto-Abschnitt neu berechnet. Wird in
+        // Aktualisiere() einmalig aus dem 95-Perzentil aller Belegnummer-
+        // Laengen ermittelt; laengere Belegnummern werden im TextBlock per
+        // TextTrimming="CharacterEllipsis" abgekuerzt. Vorher war die
+        // Spalte ein Auto + SharedSizeGroup, was beim Scrollen in einen
+        // Bereich mit neuen Belegnummer-Laengen zu Layout-Sprüngen führte.
+        private double _belegSpaltenBreite = 60;
+        public double BelegSpaltenBreite
+        {
+            get => _belegSpaltenBreite;
+            set => SetProperty(ref _belegSpaltenBreite, value);
         }
 
         // Selektion
@@ -261,6 +282,10 @@ namespace ECTViews.Journal
             SaldoSpaltenBreite =
                 AktuellerFilter.AnzeigeModus == JournalAnzeigeModus.Bestandskonten
                 ? 110.0 : 0.0;
+
+            // Beleg-Spaltenbreite einmal global berechnen (bleibt waehrend
+            // des Scrollens konstant).
+            BelegSpaltenBreite = BerechneBelegSpaltenBreite();
 
             switch (AktuellerFilter.AnzeigeModus)
             {
@@ -760,6 +785,34 @@ namespace ECTViews.Journal
                 }
             }
             return 0;
+        }
+
+        // Berechnet die globale Belegspalten-Breite einmal pro Aktualisiere:
+        // das 95-Perzentil aller Belegnummer-Laengen (inkl. leerer Belege)
+        // mal einer groben Zeichenbreite, geklammert auf [Mindestbreite fuer
+        // 6 Ziffern, BelegMaxBreite (1/4 der ListBox-Breite)]. Laengere
+        // Belegnummern werden im TextBlock via TextTrimming="..." abgekuerzt.
+        private double BerechneBelegSpaltenBreite()
+        {
+            // grobe Heuristik fuer Segoe UI: ~0.6 x Schriftgroesse pro Zeichen
+            double zeichenBreite = Schriftgroesse * 0.6;
+            const double rand = 8.0;  // 4 px links + 4 px rechts (TextBlock Margin)
+            double minBreite = 6 * zeichenBreite + rand;
+
+            if (_doc?.Buchungen == null || _doc.Buchungen.Count == 0)
+                return minBreite;
+
+            var laengen = _doc.Buchungen
+                .Select(b => (b.Belegnummer ?? "").Length)
+                .OrderBy(n => n)
+                .ToList();
+
+            int p95Idx = (int)Math.Ceiling(laengen.Count * 0.95) - 1;
+            if (p95Idx < 0) p95Idx = 0;
+            if (p95Idx >= laengen.Count) p95Idx = laengen.Count - 1;
+            double berechnet = laengen[p95Idx] * zeichenBreite + rand;
+
+            return Math.Max(minBreite, Math.Min(BelegMaxBreite, berechnet));
         }
 
         // Wie FilterBuchungen, aber ohne Bestandskonto-Filter (der wird
