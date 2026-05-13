@@ -180,7 +180,10 @@ if ($DryRun) {
     Write-Host "Fertig." -ForegroundColor Green
 }
 
-# --- 8. EasyCash-Hauptprojekt bauen (Release/Win32) -----------------------------
+# --- 8. Git-Commit mit neuer Version  -------------------------------------------
+& git -C $repoRoot commit -a -m "$newVersion Release" 2>$null
+
+# --- 9. EasyCash-Hauptprojekt bauen (Release/Win32) -----------------------------
 Write-Host ""
 Write-Host "Baue EasyCash (Release/Win32)..." -ForegroundColor Cyan
 $vswhere = "${env:ProgramFiles(x86)}\Microsoft Visual Studio\Installer\vswhere.exe"
@@ -198,16 +201,16 @@ if ($LASTEXITCODE -ne 0) {
     throw "Build fehlgeschlagen (ExitCode $LASTEXITCODE)."
 }
 
-# --- 9. Inno-Setup kompilieren --------------------------------------------------
+# --- 10. Inno-Setup kompilieren -------------------------------------------------
 & "C:\Program Files (x86)\Inno Setup 6\ISCC.exe" "easycash.iss"
 
-# --- 10. Filezilla öffnen -------------------------------------------------------
+# --- 11. Filezilla öffnen -------------------------------------------------------
 $CurrentDir = Get-Location
 $RelativePath = "Setup"
 $AbsolutePath = Join-Path -Path $CurrentDir -ChildPath $RelativePath
 & "C:\Program Files\FileZilla FTP Client\filezilla" "--local=$AbsolutePath"
 
-# --- 11. im Setup-Verzeichnis mit Versionsnummer archivieren --------------------
+# --- 12. im Setup-Verzeichnis mit Versionsnummer archivieren --------------------
 $FileName = "ECTSetup"
 $FileNamePreview = "ECTSetup4"
 $Extension = ".exe"

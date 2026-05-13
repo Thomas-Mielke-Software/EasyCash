@@ -931,17 +931,27 @@ BOOL CAboutDlg::OnInitDialog()
 	char buf[100];
 
 	CDialog::OnInitDialog();
-	
-	if (strlen(version_string_exakt) > 2 && version_string_exakt[strlen(version_string_exakt)-2] == '.' && version_string_exakt[strlen(version_string_exakt)-1] == '1')
-		sprintf(buf, "EasyCash&Tax %s", version_string);
+
+	int nTokenPos = 0;
+	CString verStr = version_string_exakt;
+	CStringArray verStrParts;
+	CString verStrPart;
+	do  // major.minor.patch.build-number (letzeres aus git commit count)
+	{
+		verStrPart = verStr.Tokenize(_T("."), nTokenPos);
+		verStrParts.Add(verStrPart);
+	} while (!verStrPart.IsEmpty());
+
+	if (verStrParts[2] == "0")
+		sprintf(buf, "EasyCash&Tax %s build %s", version_string, (LPCTSTR)verStrParts[3]);	// patch weglassen bei "0"
 	else
-		sprintf(buf, "EasyCash&Tax %s", version_string_exakt);
+		sprintf(buf, "EasyCash&Tax %s.%s.%s build %s", (LPCTSTR)verStrParts[0], (LPCTSTR)verStrParts[1], (LPCTSTR)verStrParts[2], (LPCTSTR)verStrParts[3]);
 	SetDlgItemText(IDC_VERSION, buf);
 	strcpy(s, "Registriert für ");
 	strcat(s, reg_name);
 	SetDlgItemText(IDC_REG_STRING, s);
 	
-	return TRUE;  
+	return TRUE;
 } 
 
 
