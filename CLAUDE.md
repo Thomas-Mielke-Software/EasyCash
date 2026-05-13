@@ -18,7 +18,9 @@ Schritt zu einer hybriden C#/.NET-Architektur überführen, wobei das
 alte MFC-Programm weiterhin baubar und lauffähig bleibt
 (`USE_ECTENGINE`-Switch).
 
-Lokales Arbeitsverzeichnis: `C:\Users\mielk\Work\EasyCash`
+Lokales Arbeitsverzeichnis: `C:\Users\mielk\Work\EasyCash-ectengine-mit-opus46`
+Mach die änderungen immer (auch) direkt im arbeitsverzeichnis.
+Git-Branch, auf dem gearbeitet wird: `ectengine-mit-opus46` (Fork von `master`).
 
 ## Build-Umgebung
 
@@ -42,6 +44,8 @@ EasyCTX.ocx (ActiveX, MFC)            — alter Plugin-Container
     ↓ linkt
 ECTBridge.lib                         — ja, dieselbe lib
 ```
+
+Das ECTIFace-Subprojekt ist deprecated und soll in diesem Branch nicht angerührt, sondern durch ECTBridge ersetzt werden. 
 
 ### Interop-Mechanik
 

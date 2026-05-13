@@ -22,6 +22,7 @@
 #include "EasyCTX.h"
 #include "EinstellungCtl.h"
 #include "EinstellungPpg.h"
+#include "..\ECTBridge\EinstellungenExports.h"
 
 
 #ifdef _DEBUG
@@ -217,52 +218,18 @@ void CEinstellungCtrl::AboutBox()
 
 BSTR CEinstellungCtrl::HoleEinstellung(LPCTSTR ID) 
 {
-	CString strResult;
-
-	char EasyCashIniFilenameBuffer[1000];
-	GetIniFileName(EasyCashIniFilenameBuffer, sizeof(EasyCashIniFilenameBuffer));
-
-	if (*ID == '[')	// implizite ini-Sektion der Form "[sektion]key" ?
-	{
-		const char *cp;
-		cp = strchr(ID, ']');
-		if (cp)
-		{
-			char sektion[10000];
-			strncpy(sektion, ID+1, cp-ID-1);
-			sektion[cp-ID-1] = '\0';
-
-			++cp;	// nun auf dem key
-
-			GetPrivateProfileString(sektion, cp, "", strResult.GetBuffer(MAX_LAENGE_FUER_INI_EINTRAG), MAX_LAENGE_FUER_INI_EINTRAG, EasyCashIniFilenameBuffer);
-		}
-	}
-	else
-		GetPrivateProfileString(IniSektion(ID), !strcmp(IniSektion(ID), "Finanzamt") || !strcmp(IniSektion(ID), "EinnahmenRechnungsposten") || !strcmp(IniSektion(ID), "AusgabenRechnungsposten")? ID+1 : ID, "", strResult.GetBuffer(MAX_LAENGE_FUER_INI_EINTRAG), MAX_LAENGE_FUER_INI_EINTRAG, EasyCashIniFilenameBuffer);
-
-	strResult.ReleaseBuffer();
+	// Bedient sich am globalen Einstellungs-Cache (ECTEngine::Einstellungen)
+	// statt selber GetPrivateProfileString aufzurufen. Dadurch sehen Plugins
+	// sofort die im laufenden Programm aenderbaren Werte (z.B. nach OK im
+	// Einstellungs-Dialog), und Schreibvorgaenge gehen synchron durch
+	// denselben Pfad.
+	CString strResult = ECT_HoleEinstellung(ID);
 	return strResult.AllocSysString();
 }
 
 void CEinstellungCtrl::SpeichereEinstellung(LPCTSTR ID, LPCTSTR Wert) 
 {
-	char EasyCashIniFilenameBuffer[1000];
-	GetIniFileName(EasyCashIniFilenameBuffer, sizeof(EasyCashIniFilenameBuffer));
-
-	if (*ID == '[')	// implizite ini-Sektion der Form "[sektion]key" ?
-	{
-		const char *cp;
-		if (cp = strchr(ID, ']'))
-		{
-			char sektion[10000];
-			strncpy(sektion, ID+1, cp-ID-1);
-			sektion[cp-ID-1] = '\0';
-
-			++cp;	// nun auf dem key
-
-			WritePrivateProfileString(sektion, cp, Wert, EasyCashIniFilenameBuffer);
-		}
-	}
-	else
-		WritePrivateProfileString(IniSektion(ID), !strcmp(IniSektion(ID), "Finanzamt") || !strcmp(IniSektion(ID), "EinnahmenRechnungsposten") || !strcmp(IniSektion(ID), "AusgabenRechnungsposten") ? ID+1 : ID, Wert, EasyCashIniFilenameBuffer);
+	// Schreibt ueber die Bridge: aktualisiert Cache + ini synchron und
+	// feuert das WertGeaendert-Event fuer andere Bestandteile.
+	ECT_SpeichereEinstellung(ID, Wert ? Wert : "");
 }
