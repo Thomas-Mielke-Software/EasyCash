@@ -1,13 +1,13 @@
-// JournalView.xaml.cs - Code-Behind
+﻿// JournalView.xaml.cs - Code-Behind
 //
 // Aufgaben:
 //   1. Doppelklick-Routing -> BearbeitenCommand
 //   2. SizeChanged-Handler: aktualisiert ViewModel.BelegMaxBreite auf
 //      1/4 der ListBox-Breite, sodass die adaptive Belegspalte den
-//      4. Teil der Gesamtbreite niemals ueberschreitet.
+//      4. Teil der Gesamtbreite niemals überschreitet.
 //   3. ScrollIntoViewRequest-Event vom ViewModel: scrollt die
 //      angeforderte Zeile in den sichtbaren Bereich (wird vom
-//      Navigations-Klick ausgeloest).
+//      Navigations-Klick ausgelöst).
 
 using System;
 using System.Linq;
@@ -42,7 +42,7 @@ namespace ECTViews.Journal
         {
             if (row == null) return;
             // Asynchron, damit das Layout fertig aufgebaut ist (sonst
-            // funktioniert ContainerFromItem nicht zuverlaessig).
+            // funktioniert ContainerFromItem nicht zuverlässig).
             Dispatcher.BeginInvoke(new System.Action(() =>
             {
                 ZentriereVertikal(row);
@@ -50,9 +50,9 @@ namespace ECTViews.Journal
         }
 
         /// <summary>
-        /// Scrollt die ListBox so, dass die uebergebene Zeile vertikal
-        /// in der Mitte des sichtbaren Bereichs steht. Falls noetig,
-        /// wird ScrollIntoView vorab aufgerufen, um den Container ueberhaupt
+        /// Scrollt die ListBox so, dass die übergebene Zeile vertikal
+        /// in der Mitte des sichtbaren Bereichs steht. Falls nötig,
+        /// wird ScrollIntoView vorab aufgerufen, um den Container überhaupt
         /// erst zu materialisieren (UI-Virtualisierung).
         /// </summary>
         private void ZentriereVertikal(JournalRow row)
@@ -98,7 +98,7 @@ namespace ECTViews.Journal
         }
 
         /// <summary>
-        /// Faengt Tasten ab, die wir selbst behandeln moechten (PageUp/Down,
+        /// Fängt Tasten ab, die wir selbst behandeln moechten (PageUp/Down,
         /// Home/End, Up/Down). Der Default-Handler der ListBox scrollt bei
         /// PageUp/Down nur den Viewport ohne die Selektion mitzunehmen, und
         /// bei Up/Down hat er keine Klammerung an die erste/letzte
@@ -142,7 +142,7 @@ namespace ECTViews.Journal
         }
 
         /// <summary>
-        /// Scrollt das Journal per Tastendruck — wird aus NavigationView und
+        /// Scrollt das Journal per Tastendruck -- wird aus NavigationView und
         /// CMainFrame::PreTranslateMessage (via ECT_JournalSendKey) aufgerufen.
         /// </summary>
         public void NavigiereZeile(Key key)
@@ -223,9 +223,9 @@ namespace ECTViews.Journal
         }
 
         /// <summary>
-        /// Schaetzt die Anzahl Buchungs-Zeilen, die in den sichtbaren
+        /// Schätzt die Anzahl Buchungs-Zeilen, die in den sichtbaren
         /// Listenbereich passen. Basis: durchschnittliche Hoehe der aktuell
-        /// realisierten Buchungs-Container (UI-Virtualisierung haelt nur die
+        /// realisierten Buchungs-Container (UI-Virtualisierung hält nur die
         /// sichtbaren plus etwas Puffer im Speicher).
         /// </summary>
         private int BerechnePageSizeBuchungen(

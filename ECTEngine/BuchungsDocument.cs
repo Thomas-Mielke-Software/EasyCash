@@ -1,7 +1,7 @@
-// BuchungsDocument.cs — Zentrales Buchungsdokument
+﻿// BuchungsDocument.cs -- Zentrales Buchungsdokument
 //
 // Ersetzt die Geschäftslogik aus: CEasyCashDoc : CDocument (EasyCashDoc.h/cpp)
-// NICHT von CDocument abgeleitet — die MFC-Vererbung bleibt in der Bridge.
+// NICHT von CDocument abgeleitet -- die MFC-Vererbung bleibt in der Bridge.
 //
 // Die beiden separaten Linked Lists (CBuchung *Einnahmen, *Ausgaben) werden
 // zu einer einzigen List<Buchung> zusammengeführt. Die Unterscheidung erfolgt
@@ -17,31 +17,31 @@ using System.Linq;
 namespace ECTEngine
 {
     /// <summary>
-    /// Zentrales Buchungsdokument — enthält alle Buchungen, Dauerbuchungen
+    /// Zentrales Buchungsdokument -- enthält alle Buchungen, Dauerbuchungen
     /// und die zugehörige Geschäftslogik.
     ///
     /// CEasyCashDoc-Feldmapping:
     ///
-    ///   C++ Member                              → C# Property
-    ///   CBuchung *Einnahmen, *Ausgaben           → Buchungen (List, Art-Property)
-    ///   CDauerbuchung *Dauerbuchungen             → Dauerbuchungen (List)
-    ///   int Buchungszaehler                       → Buchungszaehler
-    ///   int nLaufende..FuerEinnahmen/Ausgaben     → LaufendeBelegnr...
-    ///   int nLaufende..FuerBank/Kasse             → LaufendeBelegnr...
-    ///   int nJahr                                 → Jahr
-    ///   CString csWaehrung                        → Waehrung
-    ///   CString csUrspruenglicheWaehrung          → UrspruenglicheWaehrung
-    ///   int AbschreibungGenauigkeit               → GlobaleAfaGenauigkeit
-    ///   CString Erweiterung                       → Erweiterungen
-    ///   int Version                               → DokumentVersion
-    ///   int nNachfrageIntervall                    → BackupNachfrageIntervallTage
-    ///   CTime ctNachfrageTermin                   → BackupNachfrageTermin
+    ///   C++ Member                              --> C# Property
+    ///   CBuchung *Einnahmen, *Ausgaben           --> Buchungen (List, Art-Property)
+    ///   CDauerbuchung *Dauerbuchungen             --> Dauerbuchungen (List)
+    ///   int Buchungszaehler                       --> Buchungszaehler
+    ///   int nLaufende..FuerEinnahmen/Ausgaben     --> LaufendeBelegnr...
+    ///   int nLaufende..FuerBank/Kasse             --> LaufendeBelegnr...
+    ///   int nJahr                                 --> Jahr
+    ///   CString csWaehrung                        --> Waehrung
+    ///   CString csUrspruenglicheWaehrung          --> UrspruenglicheWaehrung
+    ///   int AbschreibungGenauigkeit               --> GlobaleAfaGenauigkeit
+    ///   CString Erweiterung                       --> Erweiterungen
+    ///   int Version                               --> DokumentVersion
+    ///   int nNachfrageIntervall                    --> BackupNachfrageIntervallTage
+    ///   CTime ctNachfrageTermin                   --> BackupNachfrageTermin
     /// </summary>
     public class BuchungsDocument
     {
-        // ──────────────────────────────────────────────
+        // ----------------------------------------------
         // Buchungslisten (ersetzen die Linked Lists)
-        // ──────────────────────────────────────────────
+        // ----------------------------------------------
 
         /// <summary>
         /// Alle Buchungen (Einnahmen und Ausgaben in einer Liste).
@@ -52,9 +52,9 @@ namespace ECTEngine
         /// <summary>Alle Dauerbuchungen.</summary>
         public List<Dauerbuchung> Dauerbuchungen { get; } = new List<Dauerbuchung>();
 
-        // ──────────────────────────────────────────────
+        // ----------------------------------------------
         // Zähler und Belegnummern
-        // ──────────────────────────────────────────────
+        // ----------------------------------------------
 
         /// <summary>Gesamtzähler aller jemals erstellten Buchungen.</summary>
         public int Buchungszaehler { get; set; }
@@ -64,9 +64,9 @@ namespace ECTEngine
         public int LaufendeBelegnrBank { get; set; } = 1;     // seit Doc-Version 8
         public int LaufendeBelegnrKasse { get; set; } = 1;    // seit Doc-Version 8
 
-        // ──────────────────────────────────────────────
+        // ----------------------------------------------
         // Dokumentmetadaten
-        // ──────────────────────────────────────────────
+        // ----------------------------------------------
 
         /// <summary>Buchungsjahr (int nJahr). Seit Version 4.</summary>
         public int Jahr { get; set; }
@@ -83,10 +83,10 @@ namespace ECTEngine
         /// <summary>Dokumentformat-Version (aktuell 13).</summary>
         public int DokumentVersion { get; set; } = 13;
 
-        // ──────────────────────────────────────────────
+        // ----------------------------------------------
         // Konten (aus INI-Datei, nicht aus .eca)
         // Die Bridge befüllt diese aus der easyct.ini
-        // ──────────────────────────────────────────────
+        // ----------------------------------------------
 
         /// <summary>
         /// Einnahmen-Kontennamen (max. 100, aus m_csEinnahmenKonten).
@@ -97,9 +97,9 @@ namespace ECTEngine
         /// <summary>Ausgaben-Kontennamen.</summary>
         public string[] AusgabenKonten { get; set; } = new string[100];
 
-        // ──────────────────────────────────────────────
+        // ----------------------------------------------
         // Erweiterungen (Dokument-Ebene)
-        // ──────────────────────────────────────────────
+        // ----------------------------------------------
 
         /// <summary>
         /// Plugin-Erweiterungsdaten auf Dokumentebene.
@@ -107,9 +107,9 @@ namespace ECTEngine
         /// </summary>
         public ErweiterungStore Erweiterungen { get; set; } = new ErweiterungStore();
 
-        // ──────────────────────────────────────────────
+        // ----------------------------------------------
         // Backup-Einstellungen (seit Version 13)
-        // ──────────────────────────────────────────────
+        // ----------------------------------------------
 
         /// <summary>Backup-Nachfrage-Intervall in Tagen.</summary>
         public int BackupNachfrageIntervallTage { get; set; } = 7;
@@ -117,9 +117,9 @@ namespace ECTEngine
         /// <summary>Nächster Backup-Nachfrage-Termin.</summary>
         public DateTime BackupNachfrageTermin { get; set; }
 
-        // ──────────────────────────────────────────────
+        // ----------------------------------------------
         // Komfort-Zugriffe
-        // ──────────────────────────────────────────────
+        // ----------------------------------------------
 
         /// <summary>Alle Einnahmen-Buchungen.</summary>
         public IEnumerable<Buchung> Einnahmen =>
@@ -129,10 +129,10 @@ namespace ECTEngine
         public IEnumerable<Buchung> Ausgaben =>
             Buchungen.Where(b => b.Art == Buchungsart.Ausgabe);
 
-        // ──────────────────────────────────────────────
+        // ----------------------------------------------
         // Summenberechnung
         // Reimplementiert: CEasyCashDoc::EinnahmenSumme/AusgabenSumme
-        // ──────────────────────────────────────────────
+        // ----------------------------------------------
 
         /// <summary>
         /// Brutto-Summe der Einnahmen in Cent.
@@ -179,10 +179,10 @@ namespace ECTEngine
                 return (int)query.Sum(b => b.BruttoBetrag.NettoInCent);
         }
 
-        // ──────────────────────────────────────────────
+        // ----------------------------------------------
         // Sortierung
         // Reimplementiert: CEasyCashDoc::Sort()
-        // ──────────────────────────────────────────────
+        // ----------------------------------------------
 
         /// <summary>Sortiert alle Buchungen nach Datum, Uuid als Tiebreaker.</summary>
         public void Sort()
@@ -194,16 +194,16 @@ namespace ECTEngine
             });
         }
 
-        // ──────────────────────────────────────────────
+        // ----------------------------------------------
         // AfA-Abgang (Anlagengegenstand ausscheiden)
-        // ──────────────────────────────────────────────
+        // ----------------------------------------------
 
         /// <summary>
-        /// Schreibt eine Anlage aus dem Betriebsvermoegen aus. Die laufende
-        /// AfA-Buchung wird zu einer einfachen Ausgaben-Buchung ueber den
+        /// Schreibt eine Anlage aus dem Betriebsvermögen aus. Die laufende
+        /// AfA-Buchung wird zu einer einfachen Ausgaben-Buchung über den
         /// aktuellen Restwert umgewandelt; die Original-Werte werden im
         /// Erweiterungs-Store unter "EasyCash" archiviert, damit das
-        /// Anlagenverzeichnis sie in der Abgaenge-Sektion noch zeigen kann.
+        /// Anlagenverzeichnis sie in der Abgänge-Sektion noch zeigen kann.
         ///
         /// 1:1-Reimplementierung von CEasyCashView::AfAAbgang() (easycashview.cpp:7008).
         /// </summary>
@@ -214,7 +214,7 @@ namespace ECTEngine
         /// aus den Einstellungen ermittelt - die Engine selber kennt das
         /// Land-Setting und die Feld-Zuordnung nicht.
         /// </param>
-        /// <returns>True wenn ausgefuehrt; false wenn b ungeeignet ist.</returns>
+        /// <returns>True wenn ausgeführt; false wenn b ungeeignet ist.</returns>
         public bool AfaAbgang(Buchung b, string restwertKonto)
         {
             if (b == null || b.AfaJahre <= 1)
@@ -222,7 +222,7 @@ namespace ECTEngine
 
             // Originaldaten archivieren (genau wie SetErweiterungKey im
             // Native-Original; Datum und Betraege im Klartext, damit man
-            // die Buchung notfalls von Hand wiederherstellen koennte).
+            // die Buchung notfalls von Hand wiederherstellen könnte).
             var anschDatum = new DateTime(
                 b.Datum.Year - b.AfaNr + 1,
                 b.Datum.Month,
@@ -245,13 +245,13 @@ namespace ECTEngine
             b.Erweiterungen.Setze("EasyCash", "UrspruenglichesBestandskonto",
                 b.Bestandskonto ?? "");
 
-            // Buchung in eine einfache Ausgabe ueber den Restwert umwandeln
+            // Buchung in eine einfache Ausgabe über den Restwert umwandeln
             b.Datum = new DateTime(Jahr, 1, 1);
             b.BruttoBetrag = Betrag.AusCent(b.AfaRestwertCent, 0); // ohne MWSt
             b.AfaRestwertCent = 0;
             b.AfaNr = 1;
             b.AfaJahre = 1;
-            b.Konto = restwertKonto ?? "Restbuchwert abgegangener Anlagegueter";
+            b.Konto = restwertKonto ?? "Restbuchwert abgegangener Anlagegüter";
             b.Bestandskonto = "kalkulatorische Restbuchwerte (bitte ignorieren)";
 
             InkrementBuchungszaehler();
@@ -269,9 +269,9 @@ namespace ECTEngine
             return $"{sign}{whole},{fract:D2}";
         }
 
-        // ──────────────────────────────────────────────
+        // ----------------------------------------------
         // Buchungszähler
-        // ──────────────────────────────────────────────
+        // ----------------------------------------------
 
         /// <summary>
         /// Inkrementiert den Buchungszähler und gibt den neuen Wert zurück.
@@ -288,9 +288,9 @@ namespace ECTEngine
                 return (LaufendeBelegnrAusgaben++).ToString();
         }
 
-        // ──────────────────────────────────────────────
+        // ----------------------------------------------
         // Dauerbuchungen ausführen
-        // ──────────────────────────────────────────────
+        // ----------------------------------------------
 
         /// <summary>
         /// Führt alle fälligen Dauerbuchungen bis zum Stichtag aus.
@@ -345,10 +345,10 @@ namespace ECTEngine
             return warnungen;
         }
 
-        // ──────────────────────────────────────────────
+        // ----------------------------------------------
         // Jahreswechsel
         // Reimplementiert: CEasyCashDoc::Jahreswechsel()
-        // ──────────────────────────────────────────────
+        // ----------------------------------------------
 
         /// <summary>
         /// Erstellt ein neues Dokument für das Folgejahr.
@@ -431,9 +431,9 @@ namespace ECTEngine
             return neuesDoc;
         }
 
-        // ──────────────────────────────────────────────
+        // ----------------------------------------------
         // Hilfsmethoden
-        // ──────────────────────────────────────────────
+        // ----------------------------------------------
 
         /// <summary>
         /// Prüft ob eine Buchung zu den Einnahmen gehört.

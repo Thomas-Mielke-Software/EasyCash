@@ -1,4 +1,4 @@
-// JournalRow.cs - Datenmodell fuer die einzelnen Zeilentypen im Journal.
+﻿// JournalRow.cs - Datenmodell für die einzelnen Zeilentypen im Journal.
 //
 // Das Journal besteht aus einer flachen Liste von Zeilen unterschiedlichen
 // Typs (Sektions-Titel, Header, Buchungszeile, Footer, Spacer). Per
@@ -12,27 +12,27 @@ using ECTEngine;
 
 namespace ECTViews.Journal
 {
-    /// <summary>Basisklasse fuer alle Zeilentypen.</summary>
+    /// <summary>Basisklasse für alle Zeilentypen.</summary>
     public abstract class JournalRow
     {
     }
 
     /// <summary>
-    /// Sektions-Ueberschrift wie "EINNAHMEN fuer 2024" oder
+    /// Sektions-Ueberschrift wie "EINNAHMEN für 2024" oder
     /// "[Software-Entwicklung]". Wird in farbiger Schrift,
-    /// groesser und fett gerendert.
+    /// größer und fett gerendert.
     /// </summary>
     public class JournalSectionTitle : JournalRow
     {
         public string Text { get; set; }
-        /// <summary>Hauptueberschrift (gross) vs. Unterueberschrift (mittel).</summary>
+        /// <summary>Hauptüberschrift (groß) vs. Unterüberschrift (mittel).</summary>
         public bool IsMain { get; set; }
-        /// <summary>true fuer Einnahmen-Faerbung, false fuer Ausgaben-Faerbung, null fuer neutral.</summary>
+        /// <summary>true für Einnahmen-Färbung, false für Ausgaben-Färbung, null für neutral.</summary>
         public bool? IsEinnahme { get; set; }
     }
 
     /// <summary>
-    /// Header-Zeile mit den Spaltenueberschriften (Datum, Beleg,
+    /// Header-Zeile mit den Spaltenüberschriften (Datum, Beleg,
     /// Beschreibung, Netto, USt-Prozent, USt-Betrag, Brutto, AfA-Nr).
     /// </summary>
     public class JournalHeaderRow : JournalRow
@@ -41,14 +41,14 @@ namespace ECTViews.Journal
         public bool ZeigeBelegnummer { get; set; }
         public bool ZeigeSteuer { get; set; }
         public bool ZeigeAfaNr { get; set; }
-        /// <summary>True im Bestandskonten-Modus -> Spaltenueberschrift "Saldo".</summary>
+        /// <summary>True im Bestandskonten-Modus -> Spaltenüberschrift "Saldo".</summary>
         public bool ZeigeSaldo { get; set; }
     }
 
     /// <summary>
-    /// Buchungszeile - der haeufigste Zeilentyp. Enthaelt die formatierten
+    /// Buchungszeile - der häufigste Zeilentyp. Enthaelt die formatierten
     /// Spaltenwerte, eine Referenz auf die zugrundeliegende Buchung
-    /// (fuer Selektion plus Bearbeiten), und den Zebra-Index.
+    /// (für Selektion plus Bearbeiten), und den Zebra-Index.
     /// </summary>
     public class JournalBuchungRow : JournalRow
     {
@@ -58,7 +58,7 @@ namespace ECTViews.Journal
         /// <summary>True = Ausgabe, False = Einnahme.</summary>
         public bool IstAusgabe { get; set; }
 
-        /// <summary>Index fuer Zebra-Streifen-Hintergrund.</summary>
+        /// <summary>Index für Zebra-Streifen-Hintergrund.</summary>
         public int ZebraIndex { get; set; }
 
         // Vorberechnete Anzeigewerte (formatiert):
@@ -71,7 +71,7 @@ namespace ECTViews.Journal
         public string BruttoText { get; set; }
         public string AfaNrText { get; set; }
         /// <summary>
-        /// Laufender Saldo - nur im Bestandskonten-Modus gefuellt,
+        /// Laufender Saldo - nur im Bestandskonten-Modus gefüllt,
         /// in den anderen Modi leer.
         /// </summary>
         public string SaldoText { get; set; }
@@ -99,7 +99,7 @@ namespace ECTViews.Journal
         public string NettoSummeText { get; set; }
         public string SteuerSummeText { get; set; }
         public string BruttoSummeText { get; set; }
-        /// <summary>Endsaldo - nur im Bestandskonten-Modus gefuellt.</summary>
+        /// <summary>Endsaldo - nur im Bestandskonten-Modus gefüllt.</summary>
         public string SaldoSummeText { get; set; }
         public string Waehrung { get; set; }
     }
@@ -112,16 +112,16 @@ namespace ECTViews.Journal
         public double Height { get; set; } = 8;
     }
 
-    // ─────────────────────────────────────────────────────────────────────
+    // ---------------------------------------------------------------------
     // Anlagenverzeichnis-spezifische Zeilentypen
     //
     // Eigene Header/Row/Footer-Typen, weil der Spaltensatz dort komplett
     // anders aussieht als in den Buchungs-Modi (Datum/Konten/Bestandskonten).
     // Die WPF-DataTemplate-Auswahl per DataType verwendet diese Typen als
     // Diskriminator.
-    // ─────────────────────────────────────────────────────────────────────
+    // ---------------------------------------------------------------------
 
-    /// <summary>Spaltenkopf fuer den Anlagenverzeichnis-Modus.</summary>
+    /// <summary>Spaltenkopf für den Anlagenverzeichnis-Modus.</summary>
     public class JournalAnlagenHeaderRow : JournalRow
     {
     }
@@ -144,7 +144,7 @@ namespace ECTViews.Journal
         public string BuchwEndeText { get; set; }
     }
 
-    /// <summary>Summenzeile fuer den Anlagenverzeichnis-Modus.</summary>
+    /// <summary>Summenzeile für den Anlagenverzeichnis-Modus.</summary>
     public class JournalAnlagenFooterRow : JournalRow
     {
         public string AnschKostenSummeText { get; set; }

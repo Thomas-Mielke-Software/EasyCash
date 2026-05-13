@@ -1,7 +1,7 @@
-// JournalEmbed.cs - WPF-Embedding in einen nativen MFC-Parent (HWND).
+﻿// JournalEmbed.cs - WPF-Embedding in einen nativen MFC-Parent (HWND).
 //
 // Statt eines schwebenden Top-Level-Window legen wir einen HwndSource an,
-// dessen Parent ein vom Aufrufer uebergebenes HWND (z.B. der ChildFrame
+// dessen Parent ein vom Aufrufer übergebenes HWND (z.B. der ChildFrame
 // oder ein Splitter) ist. Der HwndSource exponiert sein eigenes HWND
 // als Handle, das der Aufrufer mit SetWindowPos positionieren kann -
 // genau wie das ActiveX-Plugin-Fenster in easycashview.cpp.
@@ -14,7 +14,7 @@
 //                +-- JournalView (UserControl, RootVisual)
 //
 // Der Aufrufer kontrolliert Position und Groesse via SetWindowPos auf
-// das von ECT_JournalEinbetten zurueckgegebene HWND. Beim Schliessen
+// das von ECT_JournalEinbetten zurückgegebene HWND. Beim Schliessen
 // (oder Wechsel auf eine andere View-Modus) ruft der Aufrufer
 // ECT_JournalAbloesen auf, das den HwndSource freigibt.
 
@@ -30,16 +30,16 @@ namespace ECTViews.Journal
     {
         // Ein Eintrag pro eingebettetes Journal-Fenster. Wir halten alle
         // aktiven Hosts in einer Liste, sodass AktualisiereAlle() bei
-        // Buchungsaenderungen alle Instanzen frisch zeichnen kann.
+        // Buchungsänderungen alle Instanzen frisch zeichnen kann.
         private class Eintrag
         {
             public HwndSource Source;
             public JournalView View;
             public JournalViewModel ViewModel;
-            public IntPtr HwndKind;     // HWND des HwndSource (= an MFC zurueckgegeben)
+            public IntPtr HwndKind;     // HWND des HwndSource (= an MFC zurückgegeben)
             public IntPtr HwndParent;   // HWND des MFC-Parent
 
-            // Navigation, wenn sie zu diesem Journal gehoert
+            // Navigation, wenn sie zu diesem Journal gehört
             public HwndSource NavSource;
             public NavigationView NavView;
             public NavigationViewModel NavViewModel;
@@ -50,12 +50,12 @@ namespace ECTViews.Journal
 
         /// <summary>
         /// Erzeugt ein WPF-Journal als Kindfenster des angegebenen HWND.
-        /// Liefert das HWND des HwndSource zurueck, das der Aufrufer mit
+        /// Liefert das HWND des HwndSource zurück, das der Aufrufer mit
         /// SetWindowPos positionieren kann.
         ///
         /// Der ViewModel wird in _aktiveHosts gespeichert, sodass
         /// AktualisiereAlle()/AktualisiereFilter() die Anzeige refreshen
-        /// koennen, wenn sich Buchungen oder Filter aendern.
+        /// können, wenn sich Buchungen oder Filter ändern.
         /// </summary>
         /// <param name="parentHwnd">HWND des MFC-Parents (z.B. ChildFrame).</param>
         /// <param name="x">X-Position relativ zum Parent.</param>
@@ -63,7 +63,7 @@ namespace ECTViews.Journal
         /// <param name="width">Breite in Pixeln.</param>
         /// <param name="height">Hoehe in Pixeln.</param>
         /// <param name="doc">Das BuchungsDocument, das angezeigt werden soll.</param>
-        /// <param name="initialFilter">Startfilter (oder null fuer Defaults).</param>
+        /// <param name="initialFilter">Startfilter (oder null für Defaults).</param>
         /// <returns>HWND des erzeugten WPF-Fensters, IntPtr.Zero bei Fehler.</returns>
         public static IntPtr Einbetten(
             IntPtr parentHwnd,
@@ -77,7 +77,7 @@ namespace ECTViews.Journal
             EnsureWpfApplication();
 
             // Das ViewModel zieht Icons/Sprites bei jeder Aktualisiere direkt
-            // aus ViewHost, deshalb keinen Snapshot mehr uebergeben.
+            // aus ViewHost, deshalb keinen Snapshot mehr übergeben.
             var vm = new JournalViewModel(doc);
             vm.Aktualisiere(initialFilter);
 
@@ -85,7 +85,7 @@ namespace ECTViews.Journal
 
             // HwndSource-Parameter: WS_CHILD + WS_VISIBLE, damit das
             // Fenster Teil der Eltern-Hierarchie wird und Maus-/Tastatur-
-            // Eingaben korrekt empfaengt.
+            // Eingaben korrekt empfängt.
             var hwndParams = new HwndSourceParameters("ECT_Journal")
             {
                 ParentWindow = parentHwnd,
@@ -115,7 +115,7 @@ namespace ECTViews.Journal
         }
 
         /// <summary>
-        /// Ein eingebettetes Journal-Fenster wieder aufloesen. Wird
+        /// Ein eingebettetes Journal-Fenster wieder auflösen. Wird
         /// vom MFC-Code aufgerufen, wenn der View-Modus gewechselt wird
         /// oder das Dokument geschlossen wird.
         /// </summary>
@@ -151,7 +151,7 @@ namespace ECTViews.Journal
 
         /// <summary>
         /// Aktualisiert ALLE eingebetteten Journals - z.B. wenn eine
-        /// Buchung geaendert wurde. Aufrufer braucht das einzelne
+        /// Buchung geändert wurde. Aufrufer braucht das einzelne
         /// HWND nicht zu kennen. Die Navigation wird automatisch
         /// mit-aktualisiert.
         /// </summary>
@@ -166,7 +166,7 @@ namespace ECTViews.Journal
 
         /// <summary>
         /// Setzt nur die Schriftgroesse (Zoom) auf allen aktiven Journals,
-        /// ohne die Filter zu beruehren.
+        /// ohne die Filter zu berühren.
         /// </summary>
         public static void SetzeZoom(double schriftgroesse)
         {
@@ -178,14 +178,14 @@ namespace ECTViews.Journal
 
         /// <summary>
         /// Bettet einen NavigationView als zweites Kind-HWND ein und
-        /// verknuepft ihn mit dem Journal-Eintrag. Beim AktualisiereAlle()
+        /// verknüpft ihn mit dem Journal-Eintrag. Beim AktualisiereAlle()
         /// wird die Navigation automatisch mit-aktualisiert.
         ///
-        /// Findet das Journal anhand seines HWND und haengt sich daran an.
+        /// Findet das Journal anhand seines HWND und hängt sich daran an.
         /// </summary>
-        /// <param name="parentHwnd">HWND des MFC-Parents fuer die Nav-Pane.</param>
+        /// <param name="parentHwnd">HWND des MFC-Parents für die Nav-Pane.</param>
         /// <param name="hwndJournal">HWND des bereits eingebetteten Journals
-        /// (Rueckgabe von Einbetten).</param>
+        /// (Rückgabe von Einbetten).</param>
         public static IntPtr NavigationEinbetten(
             IntPtr parentHwnd, int x, int y, int width, int height,
             IntPtr hwndJournal)
@@ -245,7 +245,7 @@ namespace ECTViews.Journal
 
         /// <summary>
         /// Liefert das JournalViewModel, das zu einem eingebetteten
-        /// Journal-HWND gehoert. Wird vom Bridge-Code verwendet, um
+        /// Journal-HWND gehört. Wird vom Bridge-Code verwendet, um
         /// Eventhandler (BuchungBearbeiten etc.) an das ViewModel zu
         /// binden, nachdem ECT_JournalEinbetten aufgerufen wurde.
         /// </summary>
@@ -271,7 +271,7 @@ namespace ECTViews.Journal
 
         /// <summary>
         /// Liefert die Anzahl der aktuell aktiven Journal-Hosts.
-        /// (Fuer Logging/Debugging.)
+        /// (Für Logging/Debugging.)
         /// </summary>
         public static int AktiveAnzahl => _aktiveHosts.Count;
 
@@ -280,7 +280,7 @@ namespace ECTViews.Journal
         // ----------------------------------------------------------
         // WPF verlangt, dass eine System.Windows.Application-Instanz
         // existiert, bevor irgendwelche Visual-Trees aufgebaut werden.
-        // In einer hosted-WPF-in-MFC-Umgebung muessen wir die selbst
+        // In einer hosted-WPF-in-MFC-Umgebung müssen wir die selbst
         // anlegen, falls sie noch nicht existiert.
 
         private static bool _wpfInitialized;

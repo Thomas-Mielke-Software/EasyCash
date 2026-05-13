@@ -17,15 +17,15 @@
         <SolidColorBrush x:Key="ColHeaderBg"  Color="#FAFAFA"/>
         <SolidColorBrush x:Key="ColBorder"    Color="#888888"/>
 
-        <!-- Spaltenbreiten als Resources fuer die fixen Spalten.
-             Die Belegspalte hat eine globale, fuer das ganze Journal
+        <!-- Spaltenbreiten als Resources für die fixen Spalten.
+             Die Belegspalte hat eine globale, für das ganze Journal
              konstante Breite (ViewModel.BelegSpaltenBreite), berechnet
              einmal pro Aktualisiere aus dem 95-Perzentil aller
-             Belegnummer-Laengen. Laengere Belegnummern werden im
-             TextBlock per TextTrimming="CharacterEllipsis" abgekuerzt.
-             Frueher war das ein Auto+SharedSizeGroup-Layout, das beim
-             Scrollen in Bereiche mit anderen Belegnummer-Laengen
-             ruckartig die Spaltenbreite veraendert hat. -->
+             Belegnummer-Längen. Längere Belegnummern werden im
+             TextBlock per TextTrimming="CharacterEllipsis" abgekürzt.
+             Früher war das ein Auto+SharedSizeGroup-Layout, das beim
+             Scrollen in Bereiche mit anderen Belegnummer-Längen
+             ruckartig die Spaltenbreite verändert hat. -->
         <GridLength x:Key="ColW_Icon">28</GridLength>
         <GridLength x:Key="ColW_Datum">90</GridLength>
         <GridLength x:Key="ColW_Netto">100</GridLength>
@@ -204,7 +204,7 @@
                            VerticalAlignment="Top" FontWeight="SemiBold"
                            FontFamily="Consolas"/>
 
-                <!-- Laufender Saldo (nur im Bestandskonten-Modus gefuellt) -->
+                <!-- Laufender Saldo (nur im Bestandskonten-Modus gefüllt) -->
                 <TextBlock Grid.Column="9" Text="{Binding SaldoText}"
                            TextAlignment="Right" Margin="4,0"
                            VerticalAlignment="Top" FontWeight="SemiBold"
@@ -259,7 +259,7 @@
                     <TextBlock Grid.Column="8" Text="{Binding BruttoSummeText}"
                                TextAlignment="Right" Margin="4,0"
                                FontWeight="Bold" FontFamily="Consolas"/>
-                    <!-- Endsaldo (nur im Bestandskonten-Modus gefuellt) -->
+                    <!-- Endsaldo (nur im Bestandskonten-Modus gefüllt) -->
                     <TextBlock Grid.Column="9" Text="{Binding SaldoSummeText}"
                                TextAlignment="Right" Margin="4,0"
                                FontWeight="Bold" FontFamily="Consolas"/>
@@ -279,7 +279,7 @@
 
         <!-- [Anlagenverzeichnis-Templates]
              Eigener Spaltensatz: Icon|Icon|Beschreibung|Ansch.Datum|
-             Ansch.kosten|Buchw.Beginn|AfA|Abgaenge|Buchw.Ende|AfA-Nr.
+             Ansch.kosten|Buchw.Beginn|AfA|Abgänge|Buchw.Ende|AfA-Nr.
              Spaltenbreiten: Icons fest, Datum fest, Beschreibung star,
              alle Geldspalten ColW_Brutto, AfA-Nr ColW_AfA. -->
         <DataTemplate DataType="{x:Type journal:JournalAnlagenHeaderRow}">
@@ -304,7 +304,7 @@
                     <TextBlock Grid.Column="3" Text="Ansch.kosten" FontWeight="SemiBold" TextAlignment="Right" Margin="4,0"/>
                     <TextBlock Grid.Column="4" Text="Buchw.Beginn" FontWeight="SemiBold" TextAlignment="Right" Margin="4,0"/>
                     <TextBlock Grid.Column="5" Text="AfA"          FontWeight="SemiBold" TextAlignment="Right" Margin="4,0"/>
-                    <TextBlock Grid.Column="6" Text="Abgaenge"     FontWeight="SemiBold" TextAlignment="Right" Margin="4,0"/>
+                    <TextBlock Grid.Column="6" Text="Abgänge"      FontWeight="SemiBold" TextAlignment="Right" Margin="4,0"/>
                     <TextBlock Grid.Column="7" Text="Buchw.Ende"   FontWeight="SemiBold" TextAlignment="Right" Margin="4,0"/>
                     <TextBlock Grid.Column="8" Text="AfA-Nr"       FontWeight="SemiBold" TextAlignment="Right" Margin="4,0"/>
                 </Grid>

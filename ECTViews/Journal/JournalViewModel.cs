@@ -6,9 +6,9 @@
 //
 // Der Aufrufer:
 //   1) erzeugt das ViewModel mit Engine + Icon-Sprites + Listen
-//   2) ruft Aktualisiere(filter) bei Filteraenderungen auf
+//   2) ruft Aktualisiere(filter) bei Filteränderungen auf
 //   3) abonniert die Events (BuchungBearbeiten, BuchungLoeschen, etc.)
-//      fuer die User-Aktionen
+//      für die User-Aktionen
 
 using System;
 using System.Collections.Generic;
@@ -32,12 +32,12 @@ namespace ECTViews.Journal
 
         // Icon-Daten kommen NICHT mehr aus gecachten Snapshots, sondern werden
         // bei jedem Aktualisiere() direkt aus den statischen ViewHost-Listen
-        // gelesen. Sonst entstaende der Bug "Icons fehlen, bis man einmal den
+        // gelesen. Sonst entstände der Bug "Icons fehlen, bis man einmal den
         // Modus umschaltet": Wenn das ViewModel konstruiert wird, bevor
-        // ECT_SetzeBetriebeUndBestandskonten das ViewHost befuellt hat, blieben
-        // die Snapshot-Felder fuer immer leer.
+        // ECT_SetzeBetriebeUndBestandskonten das ViewHost befüllt hat, blieben
+        // die Snapshot-Felder für immer leer.
 
-        // Cache fuer ausgeschnittene Icons
+        // Cache für ausgeschnittene Icons
         private readonly Dictionary<string, BitmapSource> _iconCache =
             new Dictionary<string, BitmapSource>();
 
@@ -95,13 +95,13 @@ namespace ECTViews.Journal
             set => SetProperty(ref _saldoSpaltenBreite, value);
         }
 
-        // Konstante Breite der Beleg-Spalte fuer das gesamte Journal --
+        // Konstante Breite der Beleg-Spalte für das gesamte Journal --
         // nicht pro Konten-/Bestandskonto-Abschnitt neu berechnet. Wird in
         // Aktualisiere() einmalig aus dem 95-Perzentil aller Belegnummer-
-        // Laengen ermittelt; laengere Belegnummern werden im TextBlock per
-        // TextTrimming="CharacterEllipsis" abgekuerzt. Vorher war die
+        // Längen ermittelt; längere Belegnummern werden im TextBlock per
+        // TextTrimming="CharacterEllipsis" abgekürzt. Vorher war die
         // Spalte ein Auto + SharedSizeGroup, was beim Scrollen in einen
-        // Bereich mit neuen Belegnummer-Laengen zu Layout-Sprüngen führte.
+        // Bereich mit neuen Belegnummer-Längen zu Layout-Sprüngen führte.
         private double _belegSpaltenBreite = 60;
         public double BelegSpaltenBreite
         {
@@ -119,14 +119,14 @@ namespace ECTViews.Journal
 
         // Event, das der View abonniert. Liefert die Zeile, die in den
         // sichtbaren Bereich gescrollt werden soll. Wird von den
-        // ScrolleZu*-Methoden ausgeloest.
+        // ScrolleZu*-Methoden ausgelöst.
         public event Action<JournalRow> ScrollIntoViewRequest;
 
         /// <summary>
         /// Sucht die erste Buchungs-Zeile mit passendem Monat in der
-        /// gewuenschten Buchungsart und scrollt sie in den sichtbaren
+        /// gewünschten Buchungsart und scrollt sie in den sichtbaren
         /// Bereich. Wenn kein exakter Monatstreffer existiert, wird zur
-        /// zeitlich naechsten Buchung gescrollt (analog OnNMClick im
+        /// zeitlich nächsten Buchung gescrollt (analog OnNMClick im
         /// Original-CNavigation, Zeile 109 ff.).
         /// </summary>
         public void ScrolleZuMonat(int monat, bool istEinnahme)
@@ -165,7 +165,7 @@ namespace ECTViews.Journal
 
         /// <summary>
         /// Scrollt zur ersten Buchung mit passendem Konto in der
-        /// gewuenschten Buchungsart. Leerer kontoName = "unzugewiesen".
+        /// gewünschten Buchungsart. Leerer kontoName = "unzugewiesen".
         /// </summary>
         public void ScrolleZuKonto(string kontoName, bool istEinnahme)
         {
@@ -246,8 +246,8 @@ namespace ECTViews.Journal
                 () => SelektierteZeile != null);
             AfaAbgangCommand = new RelayCommand(
                 () => BuchungAfaAbgang?.Invoke(SelektierteZeile?.Buchung),
-                // Nur fuer noch laufende Anlagen anbieten -- Abgang-Buchungen
-                // (AfaJahre==1) koennen nicht nochmal ausgeschieden werden.
+                // Nur für noch laufende Anlagen anbieten -- Abgang-Buchungen
+                // (AfaJahre==1) können nicht nochmal ausgeschieden werden.
                 () => SelektierteZeile?.Buchung != null
                    && SelektierteZeile.Buchung.AfaJahre > 1);
         }
@@ -260,19 +260,19 @@ namespace ECTViews.Journal
             if (filter != null) AktuellerFilter = filter;
 
             // Vor dem Clear die Uuid der aktuellen Selektion festhalten -
-            // die Buchung^-Referenz darf sich beim naechsten SyncNativeToManaged
-            // aendern, die Uuid wird ueber das native Feld stabil gehalten.
+            // die Buchung^-Referenz darf sich beim nächsten SyncNativeToManaged
+            // ändern, die Uuid wird über das native Feld stabil gehalten.
             var alteUuid = SelektierteZeile?.Buchung?.Uuid ?? Guid.Empty;
             Zeilen.Clear();
 
             // Saldo-Spalte nur im Bestandskonten-Modus sichtbar machen.
             // In den anderen Modi auf 0 - die Spalte ist dann ein
-            // Null-Pixel-Strich und stoert das Layout nicht.
+            // Null-Pixel-Strich und stört das Layout nicht.
             SaldoSpaltenBreite =
                 AktuellerFilter.AnzeigeModus == JournalAnzeigeModus.Bestandskonten
                 ? 110.0 : 0.0;
 
-            // Beleg-Spaltenbreite einmal global berechnen (bleibt waehrend
+            // Beleg-Spaltenbreite einmal global berechnen (bleibt während
             // des Scrollens konstant).
             BelegSpaltenBreite = BerechneBelegSpaltenBreite();
 
@@ -292,9 +292,9 @@ namespace ECTViews.Journal
                     break;
             }
 
-            // Selektion wiederherstellen via Uuid-Match - ueberlebt jeden
+            // Selektion wiederherstellen via Uuid-Match - überlebt jeden
             // SyncNativeToManaged-Zyklus, weil die Bridge die Uuid native
-            // mitfuehrt.
+            // mitführt.
             if (alteUuid != Guid.Empty)
             {
                 SelektierteZeile = Zeilen.OfType<JournalBuchungRow>()
@@ -533,7 +533,7 @@ namespace ECTViews.Journal
         {
             var f = AktuellerFilter;
 
-            // Liste aller Bestandskonten, fuer die es Buchungen gibt
+            // Liste aller Bestandskonten, für die es Buchungen gibt
             var bestandskonten = SammleBestandskonten();
             if (bestandskonten.Count == 0) return;
 
@@ -550,10 +550,10 @@ namespace ECTViews.Journal
                 // Fallback 0, wenn die Engine den Saldo nicht kennt.
                 long anfangssaldoCent = HoleAnfangssaldoCent(bk);
 
-                // Buchungen fuer dieses Bestandskonto sammeln.
+                // Buchungen für dieses Bestandskonto sammeln.
                 // Filter dabei beachten (Monat, Betrieb, Konto), aber NICHT
                 // BestandskontoFilter - der wird hier durch das Konto selbst
-                // ueberschrieben.
+                // überschrieben.
                 var alleBuchungen = new List<Buchung>();
                 alleBuchungen.AddRange(FilterBuchungenOhneBestandskonto(_doc.Einnahmen, true)
                     .Where(b => (b.Bestandskonto ?? "") == bk));
@@ -566,7 +566,7 @@ namespace ECTViews.Journal
                     .ThenBy(b => b.Uuid)   // stabile Reihenfolge bei Datums-Gleichstand
                     .ToList();
 
-                // Wenn kein Anfangssaldo und keine Buchungen - Konto ueberspringen
+                // Wenn kein Anfangssaldo und keine Buchungen - Konto überspringen
                 if (anfangssaldoCent == 0 && alleBuchungen.Count == 0) continue;
 
                 // Filter: einzelnes Bestandskonto
@@ -598,9 +598,9 @@ namespace ECTViews.Journal
                 long saldoCent = anfangssaldoCent;
                 int idx = 0;
 
-                // Pseudozeile fuer Anfangssaldo - als JournalBuchungRow
+                // Pseudozeile für Anfangssaldo - als JournalBuchungRow
                 // ohne Buchung-Referenz (keine Bearbeiten-Aktion).
-                // Brutto bleibt leer, Saldo enthaelt den Anfangswert.
+                // Brutto bleibt leer, Saldo enthält den Anfangswert.
                 Zeilen.Add(new JournalBuchungRow
                 {
                     Buchung = null,
@@ -636,7 +636,7 @@ namespace ECTViews.Journal
                     zeile.NettoText = "";
                     zeile.MwstSatzText = "";
                     zeile.MwstBetragText = "";
-                    // AfA-Nr auch nicht zeigen (die Spalte bleibt fuer
+                    // AfA-Nr auch nicht zeigen (die Spalte bleibt für
                     // die Waehrung im Footer reserviert).
                     zeile.AfaNrText = "";
                     // Laufender Saldo
@@ -644,7 +644,7 @@ namespace ECTViews.Journal
                     Zeilen.Add(zeile);
                 }
 
-                // Footer: Endsaldo. Brutto-Summe leer, Saldo gefuellt.
+                // Footer: Endsaldo. Brutto-Summe leer, Saldo gefüllt.
                 Zeilen.Add(new JournalFooterRow
                 {
                     IsAusgabe = false,
@@ -661,7 +661,7 @@ namespace ECTViews.Journal
         }
 
         // Modus 4: Anlagenverzeichnis
-        // Pro AfA-Konto eine Tabelle mit den Anlageguetern + AfA-Status.
+        // Pro AfA-Konto eine Tabelle mit den Anlagegütern + AfA-Status.
         // Im Original-MFC zeigt es Buchungen mit AfaJahre>1 an.
         private void BaueAnzeigeAnlagenverzeichnis()
         {
@@ -670,7 +670,7 @@ namespace ECTViews.Journal
                 .Where(b => b.AfaJahre > 1)
                 .ToList();
 
-            // 2) Abgaenge des aktuellen Buchungsjahres (siehe AfAAbgang in
+            // 2) Abgänge des aktuellen Buchungsjahres (siehe AfAAbgang in
             //    easycashview.cpp:7008): AfaJahre==1 + Erweiterung
             //    "UrspruenglichesAnschaffungsdatum" gesetzt + Datum im
             //    aktuellen Jahr.
@@ -690,7 +690,7 @@ namespace ECTViews.Journal
                 IsEinnahme = false
             });
 
-            // ── Laufende Anlagen ────────────────────────────────────────────
+            // -- Laufende Anlagen --------------------------------------------
             var byKonto = anlageBuchungen
                 .GroupBy(b => b.Konto ?? "")
                 .OrderBy(g => g.Key);
@@ -700,7 +700,7 @@ namespace ECTViews.Journal
                 Zeilen.Add(new JournalSectionTitle
                 {
                     Text = string.IsNullOrEmpty(grp.Key)
-                        ? "[noch zu keinem Konto zugewiesene Anlagegueter]"
+                        ? "[noch zu keinem Konto zugewiesene Anlagegüter]"
                         : "[" + grp.Key + "]",
                     IsMain = false,
                     IsEinnahme = false
@@ -733,12 +733,12 @@ namespace ECTViews.Journal
                 Zeilen.Add(new JournalSpacerRow());
             }
 
-            // ── Abgaenge des aktuellen Jahres ───────────────────────────────
+            // -- Abgänge des aktuellen Jahres -------------------------------
             if (abgangsBuchungen.Count > 0)
             {
                 Zeilen.Add(new JournalSectionTitle
                 {
-                    Text = "[Abgaenge " + _doc.Jahr + "]",
+                    Text = "[Abgänge " + _doc.Jahr + "]",
                     IsMain = false,
                     IsEinnahme = false
                 });
@@ -862,7 +862,7 @@ namespace ECTViews.Journal
                 if (seen.Add(k)) ergebnis.Add(k);
             }
 
-            // Dann zusaetzliche aus Buchungen
+            // Dann zusätzliche aus Buchungen
             foreach (var b in _doc.Einnahmen.Concat(_doc.Ausgaben))
             {
                 var bk = b.Bestandskonto ?? "";
@@ -899,13 +899,13 @@ namespace ECTViews.Journal
         }
 
         // Berechnet die globale Belegspalten-Breite einmal pro Aktualisiere:
-        // das 95-Perzentil aller Belegnummer-Laengen (inkl. leerer Belege)
-        // mal einer groben Zeichenbreite, geklammert auf [Mindestbreite fuer
-        // 6 Ziffern, BelegMaxBreite (1/4 der ListBox-Breite)]. Laengere
-        // Belegnummern werden im TextBlock via TextTrimming="..." abgekuerzt.
+        // das 95-Perzentil aller Belegnummer-Längen (inkl. leerer Belege)
+        // mal einer groben Zeichenbreite, geklammert auf [Mindestbreite für
+        // 6 Ziffern, BelegMaxBreite (1/4 der ListBox-Breite)]. Längere
+        // Belegnummern werden im TextBlock via TextTrimming="..." abgekürzt.
         private double BerechneBelegSpaltenBreite()
         {
-            // grobe Heuristik fuer Segoe UI: ~0.6 x Schriftgroesse pro Zeichen
+            // grobe Heuristik für Segoe UI: ~0.6 x Schriftgroesse pro Zeichen
             double zeichenBreite = Schriftgroesse * 0.6;
             const double rand = 8.0;  // 4 px links + 4 px rechts (TextBlock Margin)
             double minBreite = 6 * zeichenBreite + rand;
@@ -1051,10 +1051,10 @@ namespace ECTViews.Journal
             if (f.MonatsFilter > 0)
             {
                 if (f.MonatsFilter > 12)
-                    return $"{typ} fuer {f.MonatsFilter - 12}. Quartal {jahr}";
-                return $"{typ} fuer Monat {f.MonatsFilter:D2}/{jahr}";
+                    return $"{typ} für {f.MonatsFilter - 12}. Quartal {jahr}";
+                return $"{typ} für Monat {f.MonatsFilter:D2}/{jahr}";
             }
-            return $"{typ} fuer {jahr}";
+            return $"{typ} für {jahr}";
         }
 
         private List<string> SammleKonten(IEnumerable<Buchung> buchungen,

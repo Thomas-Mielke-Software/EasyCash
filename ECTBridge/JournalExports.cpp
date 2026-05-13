@@ -2,11 +2,11 @@
 //
 // Diese Datei muss mit /clr kompiliert werden (gemischter Modus).
 // Sie ruft die managed Klasse ECTViews::Journal::JournalEmbed auf,
-// die wiederum HwndSource-basiertes WPF-Hosting im uebergebenen
+// die wiederum HwndSource-basiertes WPF-Hosting im übergebenen
 // Parent-HWND macht.
 //
 // Compile-Voraussetzungen:
-//   - /clr Switch fuer dieses File (NICHT pure native)
+//   - /clr Switch für dieses File (NICHT pure native)
 //   - ECTViews.dll und ECTEngine.dll als Referenzen
 //   - Kein PCH (PrecompiledHeader=NotUsing)
 
@@ -21,10 +21,10 @@
 #using <System.dll>
 #using <WindowsBase.dll>
 
-// Aus ECTBridge/ectifacemisc.cpp (frueher ECTIFace): liefert den
+// Aus ECTBridge/ectifacemisc.cpp (früher ECTIFace): liefert den
 // Kontonamen, der mit dem angegebenen EUER- bzw. UVA-Formularfeld
-// verknuepft ist, oder NULL, wenn keine Verknuepfung existiert. Wird
-// von OnAfaAbgang benoetigt, um das Restwert-Konto zu finden.
+// verknüpft ist, oder NULL, wenn keine Verknuepfung existiert. Wird
+// von OnAfaAbgang benötigt, um das Restwert-Konto zu finden.
 extern "C" AFX_EXT_CLASS char* HoleKontoFuerFeld(
     char ea, LPCSTR eurech_feld, LPCSTR uva_feld);
 
@@ -40,11 +40,11 @@ static System::String^ ToManagedString(LPCSTR psz)
 }
 
 // ----------------------------------------------------------
-// JournalEventHandler - haelt Native-Pointer als IntPtr-Felder
-// und liefert die Methoden, die als Delegate-Targets fuer die
-// ViewModel-Events dienen. C++/CLI-Lambdas koennen keine managed
+// JournalEventHandler - hält Native-Pointer als IntPtr-Felder
+// und liefert die Methoden, die als Delegate-Targets für die
+// ViewModel-Events dienen. C++/CLI-Lambdas können keine managed
 // Variablen capturen und Delegates brauchen managed Method-Pointers,
-// daher dieser Umweg ueber eine ref class.
+// daher dieser Umweg über eine ref class.
 // ----------------------------------------------------------
 
 // Liefert den Index einer Buchung in der aktuellen Liste, mit Fallback
@@ -78,9 +78,9 @@ public:
         int idx = FindeBuchungIdx(GetEngine(bridge), b);
         if (idx >= 0)
         {
-            // Bei Cancel (Dialog gibt FALSE zurueck) wird kein Rebuild noetig --
-            // spart Sortierung. Die naechste Bearbeiten-Anfrage findet den
-            // Index dank Uuid-Fallback in FindeBuchungIdx auch ueber stale
+            // Bei Cancel (Dialog gibt FALSE zurück) wird kein Rebuild nötig --
+            // spart Sortierung. Die nächste Bearbeiten-Anfrage findet den
+            // Index dank Uuid-Fallback in FindeBuchungIdx auch über stale
             // Buchung^-Referenzen, die durch das eingangs gerufene
             // SyncNativeToManaged entstanden sind.
             if (ECT_ShowBuchungBearbeitenDialog(bridge, idx, hwnd))
@@ -98,14 +98,14 @@ public:
         auto realB = eng->Buchungen[delIdx];
 
         CString frage;
-        frage.Format("Buchung '%s' wirklich loeschen?",
+        frage.Format("Buchung '%s' wirklich löschen?",
             (LPCTSTR)CString(realB->Beschreibung));
         if (AfxMessageBox(frage, MB_YESNO | MB_DEFBUTTON2) != IDYES)
             return;
 
         eng->Buchungen->RemoveAt(delIdx);
         bridge->SyncManagedToNative();
-        bridge->SetModifiedFlag("Buchung ueber Journal geloescht");
+        bridge->SetModifiedFlag("Buchung über Journal gelöscht");
         ECTViews::Journal::JournalEmbed::AktualisiereAlle(nullptr);
     }
 
@@ -117,7 +117,7 @@ public:
 
         auto eng = GetEngine(bridge);
         auto klon = b->Clone();
-        klon->Uuid = System::Guid::NewGuid();   // neue Identitaet fuer den Klon
+        klon->Uuid = System::Guid::NewGuid();   // neue Identitaet für den Klon
         eng->Buchungen->Add(klon);
         int idx = eng->Buchungen->IndexOf(klon);
         bridge->SyncManagedToNative();
@@ -128,10 +128,10 @@ public:
         }
         else
         {
-            // Cancel: den vorbereiteten Klon wieder zuruecknehmen, sonst
-            // bliebe ein leerer/identischer Eintrag im Dokument haengen.
+            // Cancel: den vorbereiteten Klon wieder zurücknehmen, sonst
+            // bliebe ein leerer/identischer Eintrag im Dokument hängen.
             // Klon-Referenz ist nach SyncNativeToManaged stale, deshalb
-            // ueber Uuid suchen.
+            // über Uuid suchen.
             int klonIdx = FindeBuchungIdx(eng, klon);
             if (klonIdx >= 0)
                 eng->Buchungen->RemoveAt(klonIdx);
@@ -147,7 +147,7 @@ public:
 
         auto eng = GetEngine(bridge);
         auto klon = b->Clone();
-        klon->Uuid = System::Guid::NewGuid();   // neue Identitaet fuer den Klon
+        klon->Uuid = System::Guid::NewGuid();   // neue Identitaet für den Klon
         klon->Belegnummer = (klon->Art == ECTEngine::Buchungsart::Einnahme)
             ? eng->LaufendeBelegnrEinnahmen.ToString()
             : eng->LaufendeBelegnrAusgaben.ToString();
@@ -161,7 +161,7 @@ public:
         }
         else
         {
-            // Cancel: den vorbereiteten Klon wieder zuruecknehmen.
+            // Cancel: den vorbereiteten Klon wieder zurücknehmen.
             int klonIdx = FindeBuchungIdx(eng, klon);
             if (klonIdx >= 0)
                 eng->Buchungen->RemoveAt(klonIdx);
@@ -178,16 +178,16 @@ public:
         auto eng = GetEngine(bridge);
 
         // Stale-Referenz absichern: nach SyncNativeToManaged-Zyklen kann
-        // sich die managed Buchung^-Instanz geaendert haben. Wir suchen die
+        // sich die managed Buchung^-Instanz geändert haben. Wir suchen die
         // aktuelle Instanz per Uuid.
         int idx = FindeBuchungIdx(eng, b);
         if (idx < 0) return;
         ECTEngine::Buchung^ aktuelle = eng->Buchungen[idx];
 
         CString frage;
-        frage.Format("Anlagengegenstand '%s' aus dem Betriebsvermoegen ausscheiden lassen?\n\n"
+        frage.Format("Anlagengegenstand '%s' aus dem Betriebsvermögen ausscheiden lassen?\n\n"
                      "Die AfA-Buchung wird dabei in eine einfache Ausgaben-Buchung"
-                     " ueber den Restwert umgewandelt.",
+                     " über den Restwert umgewandelt.",
                      (LPCTSTR)CString(aktuelle->Beschreibung));
         if (AfxMessageBox(frage, MB_YESNO | MB_ICONQUESTION) != IDYES)
             return;
@@ -204,13 +204,13 @@ public:
         }
         else
         {
-            csKonto = "Restbuchwert abgegangener Anlagegueter";
+            csKonto = "Restbuchwert abgegangener Anlagegüter";
             CString hinweis;
             hinweis.Format(
-                "Es wurde kein Konto gefunden, das mit dem Formularfeld %s verknuepft ist. "
+                "Es wurde kein Konto gefunden, das mit dem Formularfeld %s verknüpft ist. "
                 "Deshalb wurde in der Buchung provisorisch das Konto '%s' eingetragen. "
                 "Wenn Sie Formulare benutzen, sollten Sie dieses Ausgabenkonto in den "
-                "Einstellungen -> E/Ueber-Konten anlegen und dem %s-Formularfeld %s zuweisen.",
+                "Einstellungen -> E/Über-Konten anlegen und dem %s-Formularfeld %s zuweisen.",
                 (LPCTSTR)CString(feldNr), (LPCTSTR)csKonto,
                 (land == 1) ? "E1a" : "EUR",
                 (LPCTSTR)CString(feldNr));
@@ -228,7 +228,7 @@ public:
             (CString)"Anlagengut '" +
             ECTBridge::ToNative(aktuelle->Erweiterungen->Hole(
                 "EasyCash", "UrspruenglichesKonto", "")) +
-            "' aus dem Betriebsvermoegen entnommen");
+            "' aus dem Betriebsvermögen entnommen");
         ECTViews::Journal::JournalEmbed::AktualisiereAlle(nullptr);
     }
 };

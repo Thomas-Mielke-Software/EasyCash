@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
 
@@ -8,7 +8,7 @@ namespace ECTEngine
     public sealed class Betrieb
     {
         public string Name            { get; }
-        public string Unternehmensart { get; }  // kann Tabs enthalten, nicht aufloesen
+        public string Unternehmensart { get; }  // kann Tabs enthalten, nicht auflösen
         public int    Icon            { get; }
 
         public Betrieb(string name, string unternehmensart, int icon)
@@ -57,17 +57,17 @@ namespace ECTEngine
     }
 
     /// <summary>
-    /// Globaler Key-Value-Cache fuer die easyct.ini-Einstellungen des aktiven
+    /// Globaler Key-Value-Cache für die easyct.ini-Einstellungen des aktiven
     /// Mandanten. Loest das alte Pro-Dokument-Modell ab, in dem jede
     /// CEasyCashView ihre eigenen einstellungen1..5-Property-Pages hielt
-    /// (was bei mehreren offenen MDI-Dokumenten zu Inkonsistenzen fuehrte).
+    /// (was bei mehreren offenen MDI-Dokumenten zu Inkonsistenzen führte).
     ///
-    /// Schluesselformat (Plugin-API-kompatibel):
+    /// Schlüsselformat (Plugin-API-kompatibel):
     ///   - Kurzform: "fname"  -> Sektion "Finanzamt", Ini-Key "name"
     ///   - Explizit: "[Sektion]Key"
     ///
-    /// Variante X: Der Cache speichert den Schluessel genau so wie vom
-    /// Aufrufer uebergeben. Konvention: Kurzform (wie Plugin-Interface).
+    /// Variante X: Der Cache speichert den Schlüssel genau so wie vom
+    /// Aufrufer übergeben. Konvention: Kurzform (wie Plugin-Interface).
     /// </summary>
     public static class Einstellungen
     {
@@ -81,7 +81,7 @@ namespace ECTEngine
         private static IReadOnlyList<Bestandskonto> _bestandskonten  = new List<Bestandskonto>();
 
         /// <summary>
-        /// Wird beim Speichern eines Wertes ausgeloest. Die Bridge haengt
+        /// Wird beim Speichern eines Wertes ausgelöst. Die Bridge hängt
         /// sich darauf, um den Wert sofort in die ini-Datei zu schreiben.
         /// </summary>
         public static event Action<string, string> WertGeaendert;
@@ -111,7 +111,7 @@ namespace ECTEngine
         }
 
         /// <summary>
-        /// Liefert den Wert zum Schluessel, oder Leerstring bei Cache-Miss.
+        /// Liefert den Wert zum Schlüssel, oder Leerstring bei Cache-Miss.
         /// </summary>
         public static string Hole(string key)
         {
@@ -154,9 +154,9 @@ namespace ECTEngine
             Speichere(key, value ? "1" : "0");
         }
 
-        // ─────────────────────────────────────────────────────────────────────
-        // Listen-Properties (schreibgeschuetzt, nach LadeAusBridge aktuell)
-        // ─────────────────────────────────────────────────────────────────────
+        // ---------------------------------------------------------------------
+        // Listen-Properties (schreibgeschützt, nach LadeAusBridge aktuell)
+        // ---------------------------------------------------------------------
 
         /// <summary>Einnahmen-Konten aus [EinnahmenRechnungsposten] (Cache-Praefix "e").</summary>
         public static IReadOnlyList<string> EinnahmenKonten => _einnahmenKonten;
@@ -166,7 +166,7 @@ namespace ECTEngine
 
         /// <summary>
         /// Buchungsposten-Presets aus [Buchungsposten].
-        /// Immer alle 100; Luecken ergeben Preset-Objekte mit IstLeer==true.
+        /// Immer alle 100; Lücken ergeben Preset-Objekte mit IstLeer==true.
         /// </summary>
         public static IReadOnlyList<Preset> Presets => _presets;
 
@@ -179,10 +179,10 @@ namespace ECTEngine
         /// </summary>
         public static IReadOnlyList<Bestandskonto> Bestandskonten => _bestandskonten;
 
-        /// <summary>Diagnose: alle aktuell gecachten Schluessel.</summary>
+        /// <summary>Diagnose: alle aktuell gecachten Schlüssel.</summary>
         public static IEnumerable<string> AlleSchluessel => _cache.Keys;
 
-        // ─────────────────────────────────────────────────────────────────────
+        // ---------------------------------------------------------------------
 
         private static void BaueListenAuf()
         {
@@ -206,7 +206,7 @@ namespace ECTEngine
             }
             _ausgabenKonten = ak;
 
-            // Presets: immer alle 100, Luecken erlaubt
+            // Presets: immer alle 100, Lücken erlaubt
             var ps = new List<Preset>(100);
             for (int i = 0; i < 100; i++)
             {
@@ -234,7 +234,7 @@ namespace ECTEngine
             _betriebe = bt;
 
             // Bestandskonten: Bestandskonto00Name usw., stopp bei erstem leeren Namen;
-            // Saldo-Eintraege fuer jedes Jahr 1990-2049 pruefen
+            // Saldo-Eintraege für jedes Jahr 1990-2049 pruefen
             var bk = new List<Bestandskonto>();
             for (int i = 0; i < 100; i++)
             {

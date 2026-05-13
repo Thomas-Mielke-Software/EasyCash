@@ -1,4 +1,4 @@
-// BuchungConverter.cpp — Konvertierung native CBuchung ↔ managed Buchung
+// BuchungConverter.cpp -- Konvertierung native CBuchung <--> managed Buchung
 //
 // Diese Datei wird MIT /clr kompiliert (Projektstandard).
 // KEIN Precompiled Header (weil #using nicht mit nativem PCH geht).
@@ -18,9 +18,9 @@ using namespace System::Collections::Generic;
 using namespace ECTEngine;
 using namespace ECTBridge;
 
-// ══════════════════════════════════════════════════════════
-// Native → Managed
-// ══════════════════════════════════════════════════════════
+// ----------------------------------------------------------
+// Native --> Managed
+// ----------------------------------------------------------
 
 ECTEngine::Buchung^ ECTBridge::NativeToManaged(
     CBuchung* p, ECTEngine::Buchungsart art)
@@ -53,7 +53,7 @@ ECTEngine::Buchung^ ECTBridge::NativeToManaged(
     b->Bestandskonto      = ToManaged(p->Bestandskonto);
     b->Betrieb            = ToManaged(p->Betrieb);
 
-    // Uuid: aus nativem Feld uebernehmen oder neu erzeugen + zurueckschreiben
+    // Uuid: aus nativem Feld �bernehmen oder neu erzeugen + zur�ckschreiben
     if (p->Uuid.IsEmpty())
     {
         b->Uuid = System::Guid::NewGuid();
@@ -109,9 +109,9 @@ ECTEngine::Dauerbuchung^ ECTBridge::NativeToManaged(CDauerbuchung* p)
     return db;
 }
 
-// ══════════════════════════════════════════════════════════
-// Managed → Native
-// ══════════════════════════════════════════════════════════
+// ----------------------------------------------------------
+// Managed --> Native
+// ----------------------------------------------------------
 
 CBuchung* ECTBridge::ManagedToNative(ECTEngine::Buchung^ b)
 {
@@ -142,7 +142,7 @@ CBuchung* ECTBridge::ManagedToNative(ECTEngine::Buchung^ b)
     p->Betrieb                  = ToNative(b->Betrieb);
     p->Uuid                     = ToNative(b->Uuid.ToString("D"));
 
-    // Erweiterungen: zurück ins Pipe-Format
+    // Erweiterungen: zur�ck ins Pipe-Format
     p->Erweiterung              = ToNative(b->Erweiterungen->ZuPipeFormat());
 
     // next = NULL (wird vom Aufrufer verkettet)
@@ -185,9 +185,9 @@ CDauerbuchung* ECTBridge::ManagedToNative(ECTEngine::Dauerbuchung^ db)
     return p;
 }
 
-// ══════════════════════════════════════════════════════════
-// Bulk: Linked List → List<T>
-// ══════════════════════════════════════════════════════════
+// ----------------------------------------------------------
+// Bulk: Linked List --> List<T>
+// ----------------------------------------------------------
 
 void ECTBridge::LinkedListToManagedList(
     CBuchung* pHead,
@@ -210,9 +210,9 @@ void ECTBridge::LinkedListToManagedList(
     }
 }
 
-// ══════════════════════════════════════════════════════════
-// Bulk: List<T> → Linked List
-// ══════════════════════════════════════════════════════════
+// ----------------------------------------------------------
+// Bulk: List<T> --> Linked List
+// ----------------------------------------------------------
 
 CBuchung* ECTBridge::ManagedListToLinkedList(
     System::Collections::Generic::IEnumerable<ECTEngine::Buchung^>^ quelle)

@@ -1,7 +1,13 @@
 # EasyCash&Tax — Migration MFC/C++ → C#/WPF
 
 Benutze zum Speichern das Windows-1252 Encoding für alle legacy .cpp- und .h-Dateien.
-Ansonsten UTF-8 für die C#- und XAML-Dateien.
+Ansonsten UTF-8 für die C#- und XAML-Dateien. Benutze normale deutsche Umlaute und ß
+statt ASCII-Ersatz wie "oe" für ein "ö", außer für Funktions- und Variablennamen natürlich.
+Verzichte nach Möglichkeit auf exotische Sonderzeichen wie das Pfeil-Symbol "→" und 
+benutze eher aus ASCII-Zeichen zusammengesetzte Pendants wie "-->".
+Oder in Kommentaren, um Code optisch zu trennen, benutze einfach eine Zeile mit vielen 
+Bindestrichen oder Gleichheitszeichen, z.B.
+"// ----------------------------------------------------------"
 
 ## Projekt-Kontext
 

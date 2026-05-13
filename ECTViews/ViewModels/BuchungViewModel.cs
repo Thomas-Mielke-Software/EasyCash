@@ -1,4 +1,4 @@
-// BuchungViewModel.cs — ViewModel für den Buchungseingabedialog
+﻿// BuchungViewModel.cs -- ViewModel für den Buchungseingabedialog
 //
 // Bildet alle Felder des MFC-BuchenDlg (buchendlg.cpp) in einem
 // MVVM-konformen ViewModel ab, das direkt auf ECTEngine-Typen arbeitet.
@@ -20,27 +20,27 @@ namespace ECTViews.ViewModels
     /// ohne native MFC-Abhängigkeiten.
     ///
     /// Mapping zum Original-BuchenDlg:
-    ///   IDC_EINNAHMEN/IDC_AUSGABEN   → IstAusgabe
-    ///   IDC_DATUM_TAG/MONAT/JAHR     → DatumTag, DatumMonat, DatumJahr
-    ///   IDC_BETRAG                   → BetragText
-    ///   IDC_MWST                     → MwstText, MwstOptionen
-    ///   IDC_BESCHREIBUNG             → Beschreibung, BeschreibungsHistorie
-    ///   IDC_BELEGNUMMER              → Belegnummer
-    ///   IDC_EURECHNUNGSPOSTEN        → SelectedKonto, Konten
-    ///   IDC_ABSCHREIBUNGJAHRE        → AfaJahre
-    ///   IDC_ABSCHREIBUNGNUMMER       → AfaNr
-    ///   IDC_ABSCHREIBUNGSATZ         → AfaSatz
-    ///   IDC_ABSCHREIBUNGDEGRESSIV    → AfaDegressiv
-    ///   Bestandskonto ComboBox       → Bestandskonto
-    ///   Betrieb ComboBox             → Betrieb
+    ///   IDC_EINNAHMEN/IDC_AUSGABEN   --> IstAusgabe
+    ///   IDC_DATUM_TAG/MONAT/JAHR     --> DatumTag, DatumMonat, DatumJahr
+    ///   IDC_BETRAG                   --> BetragText
+    ///   IDC_MWST                     --> MwstText, MwstOptionen
+    ///   IDC_BESCHREIBUNG             --> Beschreibung, BeschreibungsHistorie
+    ///   IDC_BELEGNUMMER              --> Belegnummer
+    ///   IDC_EURECHNUNGSPOSTEN        --> SelectedKonto, Konten
+    ///   IDC_ABSCHREIBUNGJAHRE        --> AfaJahre
+    ///   IDC_ABSCHREIBUNGNUMMER       --> AfaNr
+    ///   IDC_ABSCHREIBUNGSATZ         --> AfaSatz
+    ///   IDC_ABSCHREIBUNGDEGRESSIV    --> AfaDegressiv
+    ///   Bestandskonto ComboBox       --> Bestandskonto
+    ///   Betrieb ComboBox             --> Betrieb
     /// </summary>
     public class BuchungViewModel : ViewModelBase
     {
         private static readonly CultureInfo DeDE = new CultureInfo("de-DE");
 
-        // ──────────────────────────────────────────────
+        // ----------------------------------------------
         // Zustand
-        // ──────────────────────────────────────────────
+        // ----------------------------------------------
 
         /// <summary>True = Bearbeitung einer bestehenden Buchung.</summary>
         private bool _istBearbeitung;
@@ -57,7 +57,7 @@ namespace ECTViews.ViewModels
         /// <summary>
         /// Beschriftung des OK-Buttons. Wechselt zwischen "Buchen" (neue
         /// Buchung) und "Speichern" (Bearbeitung). Über an IstBearbeitung
-        /// gebunden — dort feuert der Setter OnPropertyChanged für diese
+        /// gebunden -- dort feuert der Setter OnPropertyChanged für diese
         /// Property mit.
         /// </summary>
         public string OkButtonText => IstBearbeitung ? "Speichern" : "Buchen";
@@ -68,9 +68,9 @@ namespace ECTViews.ViewModels
         /// <summary>True wenn der Dialog mit OK bestätigt wurde.</summary>
         public bool Bestaetigt { get; private set; }
 
-        // ──────────────────────────────────────────────
+        // ----------------------------------------------
         // Buchungsart
-        // ──────────────────────────────────────────────
+        // ----------------------------------------------
 
         private bool _istAusgabe;
         public bool IstAusgabe
@@ -96,9 +96,9 @@ namespace ECTViews.ViewModels
         public string BuchungsartText =>
             _istAusgabe ? "Ausgabe" : "Einnahme";
 
-        // ──────────────────────────────────────────────
+        // ----------------------------------------------
         // Datum (drei Felder wie im Original)
-        // ──────────────────────────────────────────────
+        // ----------------------------------------------
 
         private int _datumTag;
         public int DatumTag
@@ -136,9 +136,9 @@ namespace ECTViews.ViewModels
             }
         }
 
-        // ──────────────────────────────────────────────
+        // ----------------------------------------------
         // Betrag
-        // ──────────────────────────────────────────────
+        // ----------------------------------------------
 
         private string _betragText = "0,00";
         public string BetragText
@@ -214,9 +214,9 @@ namespace ECTViews.ViewModels
             }
         }
 
-        // ──────────────────────────────────────────────
+        // ----------------------------------------------
         // Mehrwertsteuer
-        // ──────────────────────────────────────────────
+        // ----------------------------------------------
 
         public ObservableCollection<string> MwstOptionen { get; } =
             new ObservableCollection<string>
@@ -279,9 +279,9 @@ namespace ECTViews.ViewModels
             }
         }
 
-        // ──────────────────────────────────────────────
+        // ----------------------------------------------
         // Beschreibung
-        // ──────────────────────────────────────────────
+        // ----------------------------------------------
 
         private string _beschreibung = "";
         public string Beschreibung
@@ -297,9 +297,9 @@ namespace ECTViews.ViewModels
         public ObservableCollection<string> BeschreibungsHistorie { get; } =
             new ObservableCollection<string>();
 
-        // ──────────────────────────────────────────────
+        // ----------------------------------------------
         // Belegnummer
-        // ──────────────────────────────────────────────
+        // ----------------------------------------------
 
         private string _belegnummer = "";
         public string Belegnummer
@@ -308,9 +308,9 @@ namespace ECTViews.ViewModels
             set => SetProperty(ref _belegnummer, value ?? "");
         }
 
-        // ──────────────────────────────────────────────
+        // ----------------------------------------------
         // Konto (E/Ü-Rechnungsposten)
-        // ──────────────────────────────────────────────
+        // ----------------------------------------------
 
         public ObservableCollection<string> Konten { get; } =
             new ObservableCollection<string>();
@@ -322,9 +322,9 @@ namespace ECTViews.ViewModels
             set => SetProperty(ref _selectedKonto, value ?? "");
         }
 
-        // ──────────────────────────────────────────────
+        // ----------------------------------------------
         // Abschreibung (AfA)
-        // ──────────────────────────────────────────────
+        // ----------------------------------------------
 
         private bool _afaAktiviert;
         public bool AfaAktiviert
@@ -403,7 +403,7 @@ namespace ECTViews.ViewModels
         ///
         /// Das Restwert-Feld muss benutzer-editierbar sein, weil das Anlagegut
         /// anfangs degressiv abgeschrieben worden sein könnte. In dem Fall
-        /// kann die Software die Abschreibungshistorie nicht rekonstruieren —
+        /// kann die Software die Abschreibungshistorie nicht rekonstruieren --
         /// der korrekte Restwert ist nur dem Benutzer bekannt.
         /// </summary>
         public string AfaRestwertText
@@ -467,14 +467,14 @@ namespace ECTViews.ViewModels
             }
         }
 
-        // ──────────────────────────────────────────────
+        // ----------------------------------------------
         // Bestandskonto und Betrieb
         //
         // Listen mit Icon-Items (analog zu CListCtrl im MFC-Original).
         // Wenn die Listen leer bleiben, werden die zugehörigen UI-Elemente
         // ausgeblendet und der jeweilige String-Wert (Bestandskonto bzw.
         // SelectedBetrieb) bleibt unverändert beim Speichern.
-        // ──────────────────────────────────────────────
+        // ----------------------------------------------
 
         public ObservableCollection<IconListItem> Bestandskonten { get; } =
             new ObservableCollection<IconListItem>();
@@ -497,7 +497,7 @@ namespace ECTViews.ViewModels
         }
 
         /// <summary>
-        /// Initialer String-Wert (vor dem Befüllen der Liste) — nur relevant
+        /// Initialer String-Wert (vor dem Befüllen der Liste) -- nur relevant
         /// wenn die Liste leer bleibt. Beim Speichern wird in diesem Fall
         /// der ursprüngliche Wert beibehalten (oder Leerstring bei neuer Buchung).
         /// </summary>
@@ -536,22 +536,22 @@ namespace ECTViews.ViewModels
             private set => SetProperty(ref _betriebError, value);
         }
 
-        // ──────────────────────────────────────────────
+        // ----------------------------------------------
         // Commands
-        // ──────────────────────────────────────────────
+        // ----------------------------------------------
 
         public ICommand OkCommand { get; }
         public ICommand AbbrechenCommand { get; }
 
-        // ──────────────────────────────────────────────
+        // ----------------------------------------------
         // Referenz auf das Dokument (für Konten, Belegnummern, etc.)
-        // ──────────────────────────────────────────────
+        // ----------------------------------------------
 
         private readonly BuchungsDocument _doc;
 
-        // ══════════════════════════════════════════════
+        // ----------------------------------------------
         // Konstruktor
-        // ══════════════════════════════════════════════
+        // ----------------------------------------------
 
         /// <summary>
         /// Erstellt ein ViewModel für eine neue Buchung.
@@ -612,12 +612,12 @@ namespace ECTViews.ViewModels
             }
         }
 
-        // ══════════════════════════════════════════════
+        // ----------------------------------------------
         // AfA-Heuristik (live-getriggert in den Settern)
         // Reimplementiert die OnTimer(102)-Logik aus buchendlg.cpp.
         // Statt SetTimer/KillTimer-Verzögerung wird direkt bei jeder
         // Property-Änderung neu berechnet.
-        // ══════════════════════════════════════════════
+        // ----------------------------------------------
 
         /// <summary>
         /// Verhindert rekursive Berechnungen, wenn die Heuristik selbst
@@ -666,7 +666,7 @@ namespace ECTViews.ViewModels
         ///   - Bei AfaNr == 1: Restwert = Netto (ganzer Anschaffungspreis)
         ///   - Bei AfaNr > 1: für die schon abgelaufenen Jahre wird der
         ///     jeweilige Jahresanteil simuliert subtrahiert. Das Ergebnis
-        ///     ist eine Schätzung unter der Annahme linearer AfA — bei
+        ///     ist eine Schätzung unter der Annahme linearer AfA -- bei
         ///     degressiver AfA wird ein Hinweis angezeigt.
         ///   - Restwert wird bei 0 abgeschnitten (nie negativ).
         /// </summary>
@@ -686,7 +686,7 @@ namespace ECTViews.ViewModels
                 _restwertBerechnungLaeuft = true;
 
                 // Bei Aufrufen, die NICHT vom Degressiv-Setter kommen,
-                // wird der bestehende Hinweis verworfen — sonst bliebe
+                // wird der bestehende Hinweis verworfen -- sonst bliebe
                 // ein veralteter Degressiv-Hinweis stehen.
                 if (!bewahreVorhandenenHinweis)
                     AfaHinweis = "";
@@ -700,7 +700,7 @@ namespace ECTViews.ViewModels
 
                 if (jahre <= 1)
                 {
-                    // Keine echte AfA — Restwert = 0, kein Hinweis
+                    // Keine echte AfA -- Restwert = 0, kein Hinweis
                     AfaRestwertCent = 0;
                     AfaHinweis = "";
                     return;
@@ -740,7 +740,7 @@ namespace ECTViews.ViewModels
                 // Annahme nötig ist).
                 //
                 // Falls PruefeDegressivWechsel() bereits einen Hinweis
-                // gesetzt hat, wird der hier nicht überschrieben — beide
+                // gesetzt hat, wird der hier nicht überschrieben -- beide
                 // Hinweise werden kombiniert. So bleibt der Eingabefluss
                 // ungestört (anders als im Original mit MessageBoxen).
                 string restwertHinweis = "";
@@ -776,7 +776,7 @@ namespace ECTViews.ViewModels
         /// Konfigurationen anzuzeigen.
         ///
         /// Im Original wurden hier MessageBoxen mit OK/Abbrechen-Logik
-        /// genutzt. Hier wird das durch passive Hinweistexte ersetzt —
+        /// genutzt. Hier wird das durch passive Hinweistexte ersetzt --
         /// das stört den Eingabefluss nicht.
         /// </summary>
         private void PruefeDegressivWechsel()
@@ -789,7 +789,7 @@ namespace ECTViews.ViewModels
             // Sinnvoll nur bei nicht-abnutzbaren Anlagegütern (Grundstücke),
             // dort werden konventionell 99 Jahre Abschreibungsdauer eingetragen.
             // Diese Prüfung gilt unabhängig vom Abschreibungsjahr (nr) und
-            // unabhängig davon, ob die Buchung neu oder bearbeitet wird —
+            // unabhängig davon, ob die Buchung neu oder bearbeitet wird --
             // denn die Inkonsistenz ist immer dieselbe.
             if (AfaDegressiv && satz <= 0 && jahre < 99)
             {
@@ -802,27 +802,27 @@ namespace ECTViews.ViewModels
 
             // Hinweis 2: Wenn bei einer Folgejahres-Buchung (nr > 1, also
             // bestehende AfA-Reihe) der Modus auf linear gesetzt wird,
-            // ist das meist überflüssig — EC&T regelt das automatisch.
+            // ist das meist überflüssig -- EC&T regelt das automatisch.
             if (nr > 1 && IstBearbeitung && !AfaDegressiv)
             {
                 AfaHinweis = "Hinweis: EC&T stellt den Abschreibungsmodus " +
                     "in der Jahreswechsel-Funktion zum optimalen Zeitpunkt " +
-                    "automatisch von degressiv auf linear um — eine manuelle " +
+                    "automatisch von degressiv auf linear um -- eine manuelle " +
                     "Umstellung ist meist nicht nötig.";
                 return;
             }
             // Sonst: Hinweis bleibt leer (oder wird von BerechneRestwertHeuristisch gesetzt)
         }
 
-        // ══════════════════════════════════════════════
+        // ----------------------------------------------
         // Command-Implementierungen
-        // ══════════════════════════════════════════════
+        // ----------------------------------------------
 
         private bool CanOk() => true;  // Validierung passiert in OnOk, nicht vorher
 
         private void OnOk()
         {
-            // Validierung ab jetzt live — sonst würden Fehler nie verschwinden
+            // Validierung ab jetzt live -- sonst würden Fehler nie verschwinden
             _validierungAktiv = true;
 
             if (!ValidiereAlles())
@@ -855,7 +855,7 @@ namespace ECTViews.ViewModels
                     ? (SelectedBetrieb?.Name ?? "")
                     : _betriebFallback,
 
-                // AfA — AfaRestwertCent kommt aus dem ViewModel-Wert, der
+                // AfA -- AfaRestwertCent kommt aus dem ViewModel-Wert, der
                 // durch BerechneRestwertHeuristisch() live aktuell gehalten
                 // wird. Bei deaktivierter AfA wird er auf 0 gesetzt.
                 AfaJahre = AfaAktiviert && int.TryParse(AfaJahre, out var j) ? j : 1,
@@ -879,10 +879,10 @@ namespace ECTViews.ViewModels
         /// <summary>Event zum Schließen des Fensters (vom View abonniert).</summary>
         public event Action RequestClose;
 
-        // ══════════════════════════════════════════════
+        // ----------------------------------------------
         // Validierung
         // Reimplementiert die Prüfungen aus buchendlg.cpp Zeilen 335-482
-        // ══════════════════════════════════════════════
+        // ----------------------------------------------
 
         /// <summary>
         /// Wird nach dem ersten OK-Klick auf true gesetzt.
@@ -891,7 +891,7 @@ namespace ECTViews.ViewModels
         /// </summary>
         private bool _validierungAktiv;
 
-        // ── Fehler-Properties ──
+        // -- Fehler-Properties --
 
         private string _datumError = "";
         public string DatumError
@@ -928,7 +928,7 @@ namespace ECTViews.ViewModels
             private set => SetProperty(ref _afaError, value);
         }
 
-        // ── Validierungs-Methoden ──
+        // -- Validierungs-Methoden --
 
         /// <summary>
         /// Führt alle Validierungen durch und setzt die Error-Properties.
@@ -948,7 +948,7 @@ namespace ECTViews.ViewModels
         }
 
         /// <summary>
-        /// Prüft, dass ein Bestandskonto gewählt ist — aber nur wenn die
+        /// Prüft, dass ein Bestandskonto gewählt ist -- aber nur wenn die
         /// Liste überhaupt befüllt wurde. Bei leerer Liste keine Validierung.
         /// </summary>
         private bool ValidiereBestandskonto()
@@ -983,7 +983,7 @@ namespace ECTViews.ViewModels
             return true;
         }
 
-        /// <summary>Expandiert 2-stellige Jahreszahlen (25 → 2025, 98 → 1998).</summary>
+        /// <summary>Expandiert 2-stellige Jahreszahlen (25 --> 2025, 98 --> 1998).</summary>
         private static int ExpandiereJahr(int j)
         {
             if (j >= 0 && j <= 37) return j + 2000;
@@ -1060,7 +1060,7 @@ namespace ECTViews.ViewModels
                 return false;
             }
 
-            // Parse-Versuch wie in CBetrag::SetMWSt — culture-aware
+            // Parse-Versuch wie in CBetrag::SetMWSt -- culture-aware
             string s = MwstText.Trim();
             decimal wert;
             bool parsed = s.Contains(",")
@@ -1165,9 +1165,9 @@ namespace ECTViews.ViewModels
                 validator();
         }
 
-        // ══════════════════════════════════════════════
+        // ----------------------------------------------
         // Hilfsmethoden
-        // ══════════════════════════════════════════════
+        // ----------------------------------------------
 
         private void LadeKonten()
         {

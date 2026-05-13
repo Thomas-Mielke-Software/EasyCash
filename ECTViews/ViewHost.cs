@@ -1,4 +1,4 @@
-// ViewHost.cs — Statischer Einstiegspunkt zum Anzeigen von WPF-Dialogen
+﻿// ViewHost.cs -- Statischer Einstiegspunkt zum Anzeigen von WPF-Dialogen
 //
 // Wird von der C++/CLI-Bridge (ECTBridge) aufgerufen. Stellt sicher,
 // dass ein WPF Application-Objekt und ein Dispatcher existieren,
@@ -27,10 +27,10 @@ namespace ECTViews
     {
         private static bool _wpfInitialized;
 
-        // ──────────────────────────────────────────────
+        // ----------------------------------------------
         // Sprite-Bitmaps für Betrieb/Bestandskonto-Icons
         // Werden lazily aus den Embedded Resources geladen.
-        // ──────────────────────────────────────────────
+        // ----------------------------------------------
 
         private static System.Windows.Media.Imaging.BitmapSource _spriteBetriebe;
         private static System.Windows.Media.Imaging.BitmapSource _spriteBestandskonten;
@@ -69,7 +69,7 @@ namespace ECTViews
         }
 
         /// <summary>
-        /// Vom Aufrufer übergebene Listen — werden bei jedem Dialog-Aufruf
+        /// Vom Aufrufer übergebene Listen -- werden bei jedem Dialog-Aufruf
         /// in das ViewModel kopiert. Zentrale Stelle, damit der C++/CLI-
         /// Aufrufer diese nur einmal setzen muss.
         /// </summary>
@@ -89,7 +89,7 @@ namespace ECTViews
         /// <summary>
         /// Stellt sicher, dass ein WPF Application-Objekt existiert.
         /// Muss vor dem ersten WPF-Fenster aufgerufen werden.
-        /// In einer MFC-Hostanwendung gibt es kein WPF App.xaml —
+        /// In einer MFC-Hostanwendung gibt es kein WPF App.xaml --
         /// daher erzeugen wir die Application manuell.
         /// </summary>
         private static void EnsureWpfInitialized()
@@ -106,7 +106,7 @@ namespace ECTViews
             // jemand anderes (z.B. JournalEmbed.EnsureWpfApplication) die
             // Application bereits mit dem Default OnLastWindowClose erzeugt
             // hat. Sonst beendet WPF die App, sobald der erste Dialog
-            // geschlossen wird, und der naechste ShowDialog crasht mit
+            // geschlossen wird, und der nächste ShowDialog crasht mit
             // "Das Anwendungsobjekt wird beendet".
             Application.Current.ShutdownMode = ShutdownMode.OnExplicitShutdown;
 
@@ -140,7 +140,7 @@ namespace ECTViews
             BefuelleListen(vm);
             var view = new BuchungView(vm);
 
-            // Owner-Fenster setzen (MFC HWND → WPF WindowInteropHelper)
+            // Owner-Fenster setzen (MFC HWND --> WPF WindowInteropHelper)
             if (ownerHwnd != IntPtr.Zero)
             {
                 var helper = new WindowInteropHelper(view)

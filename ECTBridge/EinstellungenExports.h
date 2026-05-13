@@ -35,7 +35,7 @@ struct ECT_BestandskontoInfo
 {
     char name[512]; // Bestandskonto??Name
     int  icon;      // Bestandskonto??Icon
-    // Saldo wird jahresweise ueber ECT_HoleBestandskontoSaldo abgefragt
+    // Saldo wird jahresweise über ECT_HoleBestandskontoSaldo abgefragt
 };
 
 #ifdef __cplusplus
@@ -77,8 +77,8 @@ ECTBRIDGE_API void  ECT_SpeichereAusgabenKonto(int index, LPCSTR name);
 // Presets (Buchungsposten)
 // -----------------------------------------------------------------------------
 
-/// index: 0-basiert, immer 100 Eintraege im Cache (Luecken = IstLeer).
-/// Gibt FALSE nur bei ungueltigem index oder outPreset==NULL zurueck.
+/// index: 0-basiert, immer 100 Eintraege im Cache (Lücken = IstLeer).
+/// Gibt FALSE nur bei ungueltigem index oder outPreset==NULL zurück.
 ECTBRIDGE_API BOOL ECT_HolePreset(int index, ECT_Preset* outPreset);
 ECTBRIDGE_API void ECT_SpeicherePreset(int index, const ECT_Preset* preset);
 
@@ -98,8 +98,8 @@ ECTBRIDGE_API int  ECT_AnzahlBestandskonten();
 ECTBRIDGE_API BOOL ECT_HoleBestandskonto(int index, ECT_BestandskontoInfo* outInfo);
 ECTBRIDGE_API void ECT_SpeichereBestandskonto(int index, const ECT_BestandskontoInfo* info);
 
-/// Liefert den Anfangssaldo in Cent fuer ein bestimmtes Bestandskonto und Jahr.
-/// Gibt FALSE zurueck wenn kein Eintrag fuer dieses Jahr existiert.
+/// Liefert den Anfangssaldo in Cent für ein bestimmtes Bestandskonto und Jahr.
+/// Gibt FALSE zurück wenn kein Eintrag für dieses Jahr existiert.
 ECTBRIDGE_API BOOL ECT_HoleBestandskontoSaldo(int index, int jahr, int* centOut);
 ECTBRIDGE_API void ECT_SpeichereBestandskontoSaldo(int index, int jahr, int cent);
 

@@ -91,7 +91,7 @@ public:
 	int AbschreibungGenauigkeit;		// dazugekommen ab v1.37 oder CDoc Version 10
 	CString Bestandskonto;				// dazugekommen ab v1.49 oder CDoc Version 11
 	CString Betrieb;					// dazugekommen ab v1.49 oder CDoc Version 11
-	CString Uuid;						// GUID fuer stabile Selektion (transient, nicht serialisiert)
+	CString Uuid;						// GUID für stabile Selektion (transient, nicht serialisiert)
 
 private:
 	long BuchungsjahrNettoAbschreibungsgenauigkeitBeruecksichtigen(long jaehrliche_rate, int angewandte_Abschreibungsgenauigkeit);

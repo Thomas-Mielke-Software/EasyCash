@@ -1,4 +1,4 @@
-// JournalWindow.cs — Window-Wrapper für JournalView, plus statische
+﻿// JournalWindow.cs -- Window-Wrapper für JournalView, plus statische
 // Host-Methoden analog zu BuchungView, damit das Journal aus C++/CLI
 // einfach geöffnet werden kann.
 
@@ -30,7 +30,7 @@ namespace ECTViews.Journal
             Content = _view;
         }
 
-        /// <summary>Liefert das ViewModel — der Aufrufer kann Aktualisiere() aufrufen.</summary>
+        /// <summary>Liefert das ViewModel -- der Aufrufer kann Aktualisiere() aufrufen.</summary>
         public JournalViewModel ViewModel => _vm;
 
         /// <summary>Liefert die JournalView für direkten Zugriff auf die UI.</summary>

@@ -1,4 +1,4 @@
-// Buchung.cs — Einzelbuchung im Journal
+﻿// Buchung.cs -- Einzelbuchung im Journal
 //
 // Ersetzt: CBuchung : CBetrag : CObject (EasyCashDoc.h)
 // Die Linked-List-Verkettung (CBuchung *next) wird aufgelöst:
@@ -17,39 +17,39 @@ namespace ECTEngine
     ///
     /// Feld-für-Feld-Mapping zur C++-Klasse CBuchung:
     ///
-    ///   C++ (CBetrag)              → C# (Betrag-Struct)
-    ///   int Betrag (Cent)          → BruttoBetrag.InCent
-    ///   int MWSt (Promille)        → BruttoBetrag.MwstPromille
+    ///   C++ (CBetrag)              --> C# (Betrag-Struct)
+    ///   int Betrag (Cent)          --> BruttoBetrag.InCent
+    ///   int MWSt (Promille)        --> BruttoBetrag.MwstPromille
     ///
-    ///   C++ (CBuchung)             → C# Property
-    ///   CString Beschreibung       → Beschreibung
-    ///   CTime Datum                → Datum
-    ///   CString Konto              → Konto
-    ///   CString Belegnummer        → Belegnummer               (seit v7)
-    ///   int AbschreibungNr         → AfaNr
-    ///   int AbschreibungJahre      → AfaJahre
-    ///   int AbschreibungRestwert   → AfaRestwertCent           (seit v7)
-    ///   BOOL AbschreibungDegressiv → AfaDegressiv              (seit v7)
-    ///   int AbschreibungSatz       → AfaSatz                   (seit v7)
-    ///   int AbschreibungGenauigkeit→ AfaGenauigkeit            (seit v10)
-    ///   CString Bestandskonto      → Bestandskonto             (seit v11)
-    ///   CString Betrieb            → Betrieb                   (seit v11)
-    ///   CString Erweiterung        → Erweiterungen (parsed)    (seit v7)
-    ///   CBuchung *next             → [entfällt – List statt Linked List]
-    ///   [implizit via Liste]       → Art (Einnahme/Ausgabe)
+    ///   C++ (CBuchung)             --> C# Property
+    ///   CString Beschreibung       --> Beschreibung
+    ///   CTime Datum                --> Datum
+    ///   CString Konto              --> Konto
+    ///   CString Belegnummer        --> Belegnummer               (seit v7)
+    ///   int AbschreibungNr         --> AfaNr
+    ///   int AbschreibungJahre      --> AfaJahre
+    ///   int AbschreibungRestwert   --> AfaRestwertCent           (seit v7)
+    ///   BOOL AbschreibungDegressiv --> AfaDegressiv              (seit v7)
+    ///   int AbschreibungSatz       --> AfaSatz                   (seit v7)
+    ///   int AbschreibungGenauigkeit--> AfaGenauigkeit            (seit v10)
+    ///   CString Bestandskonto      --> Bestandskonto             (seit v11)
+    ///   CString Betrieb            --> Betrieb                   (seit v11)
+    ///   CString Erweiterung        --> Erweiterungen (parsed)    (seit v7)
+    ///   CBuchung *next             --> [entfällt - List statt Linked List]
+    ///   [implizit via Liste]       --> Art (Einnahme/Ausgabe)
     /// </summary>
     public class Buchung
     {
-        // ──────────────────────────────────────────────
+        // ----------------------------------------------
         // Betrag (aus CBetrag-Basisklasse)
-        // ──────────────────────────────────────────────
+        // ----------------------------------------------
 
         /// <summary>Bruttobetrag inkl. MWSt-Information.</summary>
         public Betrag BruttoBetrag { get; set; }
 
-        // ──────────────────────────────────────────────
+        // ----------------------------------------------
         // Buchungsart (war implizit durch Listenzugehörigkeit)
-        // ──────────────────────────────────────────────
+        // ----------------------------------------------
 
         /// <summary>
         /// Einnahme oder Ausgabe. Im Original war dies implizit durch die
@@ -57,9 +57,9 @@ namespace ECTEngine
         /// </summary>
         public Buchungsart Art { get; set; }
 
-        // ──────────────────────────────────────────────
+        // ----------------------------------------------
         // Kernfelder
-        // ──────────────────────────────────────────────
+        // ----------------------------------------------
 
         /// <summary>Buchungsdatum (CTime Datum).</summary>
         public DateTime Datum { get; set; }
@@ -73,9 +73,9 @@ namespace ECTEngine
         /// <summary>Belegnummer (CString Belegnummer). Seit Version 7.</summary>
         public string Belegnummer { get; set; } = "";
 
-        // ──────────────────────────────────────────────
+        // ----------------------------------------------
         // Abschreibung (AfA)
-        // ──────────────────────────────────────────────
+        // ----------------------------------------------
 
         /// <summary>Laufende AfA-Nummer (int AbschreibungNr). Default: 1.</summary>
         public int AfaNr { get; set; } = 1;
@@ -102,9 +102,9 @@ namespace ECTEngine
         /// </summary>
         public AfaGenauigkeit AfaGenauigkeit { get; set; } = AfaGenauigkeit.EntsprechendEinstellungen;
 
-        // ──────────────────────────────────────────────
+        // ----------------------------------------------
         // Zuordnungen (seit v11)
-        // ──────────────────────────────────────────────
+        // ----------------------------------------------
 
         /// <summary>Bestandskonto (CString Bestandskonto). Seit Version 11.</summary>
         public string Bestandskonto { get; set; } = "";
@@ -112,9 +112,9 @@ namespace ECTEngine
         /// <summary>Betriebszuordnung (CString Betrieb). Seit Version 11.</summary>
         public string Betrieb { get; set; } = "";
 
-        // ──────────────────────────────────────────────
+        // ----------------------------------------------
         // Erweiterungen (seit v7)
-        // ──────────────────────────────────────────────
+        // ----------------------------------------------
 
         /// <summary>
         /// Plugin-Erweiterungsdaten. Ersetzt CString Erweiterung (Pipe-Format).
@@ -122,25 +122,25 @@ namespace ECTEngine
         /// </summary>
         public ErweiterungStore Erweiterungen { get; set; } = new ErweiterungStore();
 
-        // ──────────────────────────────────────────────
+        // ----------------------------------------------
         // Identitaet
-        // ──────────────────────────────────────────────
+        // ----------------------------------------------
 
         /// <summary>
         /// Stabile, prozesslebenslange Identitaet einer Buchung. Wird beim
-        /// Anlegen erzeugt, beim Sync ueber die Bridge in/aus dem nativen
-        /// CBuchung::Uuid-Feld kopiert und ist damit auch ueber
+        /// Anlegen erzeugt, beim Sync über die Bridge in/aus dem nativen
+        /// CBuchung::Uuid-Feld kopiert und ist damit auch über
         /// SyncNativeToManaged-Zyklen hinweg konstant. Die Uuid wird NICHT
         /// in die Datei serialisiert; nach Datei-Reload bekommt die Buchung
-        /// eine neue Uuid. Verwendet fuer (a) Selektions-Erhalt nach
-        /// Buchung-Bearbeiten und (b) als sekundaeres Sortierkriterium,
+        /// eine neue Uuid. Verwendet für (a) Selektions-Erhalt nach
+        /// Buchung-Bearbeiten und (b) als sekundäres Sortierkriterium,
         /// damit Buchungen mit gleichem Datum eine stabile Reihenfolge haben.
         /// </summary>
         public Guid Uuid { get; set; } = Guid.NewGuid();
 
-        // ──────────────────────────────────────────────
+        // ----------------------------------------------
         // Berechnete Properties
-        // ──────────────────────────────────────────────
+        // ----------------------------------------------
 
         /// <summary>Nettobetrag (delegiert an Betrag.NettoWert).</summary>
         public decimal NettoWert => BruttoBetrag.NettoWert;
@@ -165,9 +165,9 @@ namespace ECTEngine
         /// <summary>Restwert als decimal (Convenience).</summary>
         public decimal AfaRestwert => AfaRestwertCent / 100m;
 
-        // ──────────────────────────────────────────────
+        // ----------------------------------------------
         // Kopie
-        // ──────────────────────────────────────────────
+        // ----------------------------------------------
 
         /// <summary>
         /// Erstellt eine tiefe Kopie der Buchung.
@@ -193,7 +193,7 @@ namespace ECTEngine
                 Betrieb = Betrieb,
                 Erweiterungen = Erweiterungen.Clone(),
                 Uuid = Uuid   // Identitaet bleibt erhalten -- Clone()-Aufrufer,
-                              // die explizit eine neue Buchung wollen, muessen
+                              // die explizit eine neue Buchung wollen, müssen
                               // anschliessend Uuid = Guid.NewGuid() setzen
             };
         }
