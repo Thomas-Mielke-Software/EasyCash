@@ -181,7 +181,9 @@ if ($DryRun) {
 }
 
 # --- 8. Git-Commit mit neuer Version  -------------------------------------------
-& git -C $repoRoot commit -a -m "$newVersion Release" 2>$null
+& git -C $repoRoot commit -a -m "v$newVersion Release" 2>$null
+& git tag -a "v$newVersion"
+& git push --tags
 
 # --- 9. EasyCash-Hauptprojekt bauen (Release/Win32) -----------------------------
 Write-Host ""
