@@ -685,7 +685,7 @@ void DauerbuchungenDlg::UpdateBeschreibungCombo(CString ea)
 			&& bAusgaben == m_pParent->einstellungen1->Buchungsposten[i].Ausgaben)
 		{
 			sprintf(buffer, "%02d %s",
-				i, m_pParent->einstellungen1->Buchungsposten[i].Beschreibung);
+				i, (LPCTSTR)m_pParent->einstellungen1->Buchungsposten[i].Beschreibung);
 			int n = ((CComboBox *)GetDlgItem(IDC_BESCHREIBUNG))->AddString(buffer);
 			((CComboBox *)GetDlgItem(IDC_BESCHREIBUNG))->SetItemData(n, i);
 		}

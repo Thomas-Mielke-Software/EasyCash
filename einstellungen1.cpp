@@ -128,11 +128,11 @@ BOOL CEinstellungen1::OnInitDialog()
 			
 			sprintf(buffer, "%02d\t%s\t%s\t%d\t%s -> %s",
 				i,
-				(Buchungsposten[i].Ausgaben ? "A" : "E"),
+				(LPCTSTR)(Buchungsposten[i].Ausgaben ? "A" : "E"),
 				mwstbuffer,
 				Buchungsposten[i].Abschreibungsjahre,
-				Buchungsposten[i].Beschreibung,
-				Buchungsposten[i].Rechnungsposten);
+				(LPCTSTR)Buchungsposten[i].Beschreibung,
+				(LPCTSTR)Buchungsposten[i].Rechnungsposten);
 		}
 		else
 		{
@@ -310,11 +310,11 @@ void CEinstellungen1::UpdateListe()
 			
 			sprintf(buffer, "%02d\t%s\t%s\t%d\t%s -> %s",
 				i,
-				(Buchungsposten[i].Ausgaben ? "A" : "E"),
+				(LPCTSTR)(Buchungsposten[i].Ausgaben ? "A" : "E"),
 				mwstbuffer,
 				Buchungsposten[i].Abschreibungsjahre,
-				Buchungsposten[i].Beschreibung,
-				Buchungsposten[i].Rechnungsposten);
+				(LPCTSTR)Buchungsposten[i].Beschreibung,
+				(LPCTSTR)Buchungsposten[i].Rechnungsposten);
 		}
 		else
 		{
