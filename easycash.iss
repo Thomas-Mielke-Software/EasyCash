@@ -52,7 +52,7 @@ Source: ..\EasyCash\Systemdateien\VC_redist.x86.exe; DestDir: {tmp}; Flags: dont
 Source: .\Release\EasyCT.exe; DestDir: {app}; Flags: ignoreversion
 Source: .\Release\ECTIFace.dll; DestDir: {app}; Flags: ignoreversion  
 Source: .\Release\EasyCTXP.dll; DestDir: {app}; Flags: ignoreversion
-Source: .\Release\EasyCTX.ocx; DestDir: {app}; Flags: regserver restartreplace  
+Source: .\Release\EasyCTX.ocx; DestDir: {app}; Flags: ignoreversion regserver restartreplace  
 Source: .\tipps.txt; DestDir: {app}; Flags: ignoreversion             
 Source: .\Release\ECTUpdater.exe; DestDir: {app}; Flags: ignoreversion
 Source: ..\CrashRpt\bin\CrashSender1403.exe; DestDir: {app}; Flags: ignoreversion  
