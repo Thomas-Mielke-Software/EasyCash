@@ -486,7 +486,7 @@ long CBuchung::GetBuchungsjahrNetto(int angewandte_Abschreibungsgenauigkeit)
 			return AbschreibungRestwert;		 // hier in jedem Fall den Restwert zurückgeben
 		else
 		{	// jetzt verbleibende_monate auf den Restwert herunterbrechen und die Jahresrate bestimmen
-			long jaehrliche_rate = RundenUndDurch10Dividieren(10 * AbschreibungRestwert * 12 / verbleibende_monate);
+			long jaehrliche_rate = RundenUndDurch10Dividieren((long)((INT64)10 * (INT64)AbschreibungRestwert * (INT64)12 / (INT64)verbleibende_monate));
 			if (jaehrliche_rate > AbschreibungRestwert)  // sollte nicht vorkommen, aber sicherheitshalber 
 				jaehrliche_rate = AbschreibungRestwert;  // nie mehr den Restwert abschreiben
 			return BuchungsjahrNettoAbschreibungsgenauigkeitBeruecksichtigen(jaehrliche_rate, angewandte_Abschreibungsgenauigkeit);
