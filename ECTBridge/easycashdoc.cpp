@@ -28,6 +28,7 @@
 #define EXPORT_ECT_DLL
 #endif
 #include "EasyCashDoc.h"
+#include "EasyCashDocBridge.h"  // fuer SyncNativeToManaged() in Jahreswechsel()
 //#include "BuchungsjahrWaehlen.h"
 //#include "Konvertierung.h"
 //#include "AfAGenauigkeit.h"
@@ -889,6 +890,13 @@ CEasyCashDoc* CEasyCashDoc::Jahreswechsel(int land = 0)
 				break;
 			}
 	}
+
+	// Der gesamte oben aufgebaute native Stand (Ausgaben-AfA-Kette, Dauerbuchungen,
+	// Erweiterung, Waehrung, Nachfragetermin ...) muss jetzt in die managed Engine
+	// kippen. Sonst ueberschreibt SyncManagedToNative() im naechsten Save die nativen
+	// Listen mit den (leeren) Engine-Listen und die Jahres-Folgedatei waere leer.
+	if (!bHeadlessMode)
+		static_cast<CEasyCashDocBridge*>(pNewDoc)->SyncNativeToManaged();
 
 	return pNewDoc;
 }
