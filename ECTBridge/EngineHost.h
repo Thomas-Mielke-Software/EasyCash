@@ -89,6 +89,30 @@ namespace ECTBridge
             return nullptr;
         }
 
+        /// <summary>
+        /// Schnappschuss der inversen Map (managed Buchung^ -> nativer CBuchung*),
+        /// damit SyncManagedToNative() existierende native CBuchung-Objekte
+        /// wiederverwenden kann, statt sie zu deleten+neu zu allokieren.
+        /// O(n) Aufbau, O(1) Lookup. Wird einmal pro Sync-Zyklus erzeugt
+        /// und danach nicht mehr gepflegt -- die "echte" Map ist weiterhin
+        /// m_pointerMap.
+        /// </summary>
+        System::Collections::Generic::Dictionary<
+            ECTEngine::Buchung^, System::IntPtr>^ BuildInverseMap()
+        {
+            auto inv = gcnew System::Collections::Generic::Dictionary<
+                ECTEngine::Buchung^, System::IntPtr>();
+            System::Collections::Generic::Dictionary<
+                System::IntPtr, ECTEngine::Buchung^>^ map = m_pointerMap;
+            for each (auto kvp in map)
+            {
+                // Mehrfach-Eintraege (sollte es nicht geben) ueberschreiben sich;
+                // letzter Eintrag gewinnt -- bei korrekter Map-Pflege irrelevant.
+                inv[kvp.Value] = kvp.Key;
+            }
+            return inv;
+        }
+
     private:
         gcroot<ECTEngine::BuchungsDocument^> m_engine;
         gcroot<System::Collections::Generic::Dictionary<

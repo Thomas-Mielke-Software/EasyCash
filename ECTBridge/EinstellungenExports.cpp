@@ -55,10 +55,21 @@ namespace
         char prefix = 0;
         if (SektionMitPrefix(sektion, prefix))
         {
+            // Kurzform: 'f' + Name -> "fname" (so wie Plugin-Interface)
             std::string s; s += prefix; s += iniKey;
             return s;
         }
-        return std::string(iniKey);
+        // Unbekannte Sektionen: Bracket-Form "[Sektion]Key" -- so wie
+        // Plugins (ECTImport, ...) sie ueber ECT_HoleEinstellung abfragen.
+        // Frueher gab es hier nur iniKey (ohne Sektion), das war kompatibel
+        // mit der alten OCX-Implementierung (vor commit dc70f89), die per
+        // GetPrivateProfileString direkt abfragte. Seit der Cache aktiv ist,
+        // muss der Speicher-Key zum Lookup-Key passen, sonst findet
+        // "ECT_HoleEinstellung('[CSVIMPORT.0]Name')" nichts und z.B. der
+        // CSV-Plugin-Dialog bleibt leer.
+        std::string s;
+        s += '['; s += sektion; s += ']'; s += iniKey;
+        return s;
     }
 
     ref class WertGeaendertHandler
@@ -82,7 +93,7 @@ namespace
 }
 
 // -----------------------------------------------------------------------------
-// Rotations-Buffer (8 Slots) für LPCSTR-Rückgaben
+// Rotations-Buffer (8 Slots) fÃ¼r LPCSTR-RÃ¼ckgaben
 // -----------------------------------------------------------------------------
 constexpr int HOLE_BUFFER_COUNT = 8;
 constexpr int HOLE_BUFFER_SIZE  = 10000;
@@ -171,7 +182,7 @@ void ECT_LadeEinstellungen()
     }
 
     ECTEngine::Einstellungen::LadeAusBridge(dict);
-    TRACE("ECT_LadeEinstellungen: %d Schlüssel aus %s\n", dict->Count, iniBuf);
+    TRACE("ECT_LadeEinstellungen: %d SchlÃ¼ssel aus %s\n", dict->Count, iniBuf);
 }
 
 // -----------------------------------------------------------------------------

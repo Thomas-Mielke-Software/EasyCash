@@ -50,6 +50,33 @@ namespace ECTBridge
     /// </summary>
     CDauerbuchung* ManagedToNative(ECTEngine::Dauerbuchung^ managed);
 
+    /// <summary>
+    /// Befüllt eine BESTEHENDE native CBuchung aus einer managed Buchung^.
+    /// Im Gegensatz zu ManagedToNative wird KEINE neue Instanz erzeugt und
+    /// der next-Pointer bleibt unangetastet (der Aufrufer verkettet).
+    ///
+    /// Wird in SyncManagedToNative() verwendet, um Plugin-Pointer
+    /// (CBuchung*) über Sync-Zyklen hinweg stabil zu halten: existierende
+    /// CBuchung-Objekte werden wiederverwendet statt deletet+neu allokiert.
+    /// </summary>
+    void FillNativeFromManaged(CBuchung* pNative, ECTEngine::Buchung^ managed);
+
+    /// <summary>
+    /// Umgekehrte Richtung: spiegelt eine native CBuchung in eine bestehende
+    /// managed Buchung^ -- ohne `Art`, `Uuid` und ohne neu zu allokieren.
+    /// Wird von ECT_SpiegleNativeBuchungInEngine() verwendet, um Plugin-/
+    /// OCX-Setter-Schreibzugriffe in die Engine durchzureichen, damit sie
+    /// nicht beim nächsten Save verloren gehen.
+    /// </summary>
+    void FillManagedFromNative(CBuchung* pNative, ECTEngine::Buchung^ managed);
+
+    /// <summary>
+    /// Selbiges für CDauerbuchung. Aktuell ungenutzt — Dauerbuchungen
+    /// werden im Sync vollständig neu aufgebaut, weil das Plugin-Interface
+    /// keine CDauerbuchung*-Pointer rausreicht.
+    /// </summary>
+    void FillNativeFromManaged(CDauerbuchung* pNative, ECTEngine::Dauerbuchung^ managed);
+
     // ──────────────────────────────────────────────
     // Linked List ↔ List<T> (Bulk-Konvertierung)
     // ──────────────────────────────────────────────

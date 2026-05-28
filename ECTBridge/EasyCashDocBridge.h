@@ -56,6 +56,14 @@ public:
     /// </summary>
     void SyncManagedToNative();
 
+    /// <summary>
+    /// Spiegelt die nativen Felder einer einzelnen CBuchung in die
+    /// zugehörige managed Buchung^ in DIESEM Bridge-Doc (über die
+    /// Pointer-Map). Liefert TRUE, wenn die Buchung in der Engine
+    /// dieses Docs gefunden und gespiegelt wurde.
+    /// </summary>
+    BOOL MirrorBuchungInEngine(CBuchung* pNative);
+
     // ──────────────────────────────────────────────
     // EngineHost — public, weil die freien /clr-Hilfsfunktionen
     // (siehe unten) darauf zugreifen müssen. Das ist sauberer als
@@ -64,6 +72,23 @@ public:
 public:
     ECTBridge::EngineHost* m_pEngineHost;
 };
+
+// ══════════════════════════════════════════════════════════
+// Globaler Mirror-Helper für die OCX-Setter (CBuchungCtrl)
+// ══════════════════════════════════════════════════════════
+//
+// Wird aus EasyCTX/BuchungCtl.cpp aufgerufen, hat aber keinen
+// direkten Doc-Pointer zur Hand -- nur den CBuchung*. Sucht im
+// MFC-Doc-Manager den Bridge-Doc, dessen EngineHost diesen
+// Pointer kennt, und delegiert an dessen MirrorBuchungInEngine().
+//
+// Tut nichts, wenn der Pointer nirgendwo registriert ist (z.B.
+// vor dem ersten Sync oder bei Test-Setups ohne MFC-App).
+//
+// extern "C", damit Name-Mangling den nativen Aufrufern keine
+// Steine in den Weg legt.
+
+extern "C" AFX_EXT_CLASS void ECT_SpiegleNativeBuchungInEngine(CBuchung* pNative);
 
 // ══════════════════════════════════════════════════════════
 // Freie Inline-Funktionen für /clr-Code

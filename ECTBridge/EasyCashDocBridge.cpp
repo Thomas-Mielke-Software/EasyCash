@@ -34,15 +34,48 @@ IMPLEMENT_DYNCREATE(CEasyCashDocBridge, CEasyCashDoc)
 // Konstruktor / Destruktor
 // ══════════════════════════════════════════════════════════
 
+// ══════════════════════════════════════════════════════════
+// Process-weite Bridge-Liste
+// ══════════════════════════════════════════════════════════
+//
+// Eine fixe-Größe-Array in einer anonymen Namespace innerhalb von
+// ECTBridge.dll. Da ECTBridge eine DLL ist (kein static lib), lebt
+// dieses Array in dem einen Datensegment, das alle Aufrufer-Module
+// (EasyCT.exe, EasyCTX.ocx, Plugins) gemeinsam sehen.
+//
+// Ersetzt das frühere m_pOwnerBridge-Feld auf CBuchung, das einen
+// CBuchung-Layout-Mismatch zwischen ECTBridge.dll (neu) und der
+// installierten EasyCTX.ocx (alt) erzeugt hatte.
+
+namespace {
+    const int MAX_BRIDGES = 64;
+    CEasyCashDocBridge* g_bridges[MAX_BRIDGES] = { NULL };
+
+    void RegisterBridge(CEasyCashDocBridge* p)
+    {
+        for (int i = 0; i < MAX_BRIDGES; i++)
+            if (g_bridges[i] == NULL) { g_bridges[i] = p; return; }
+        TRACE0("ECTBridge: Bridge-Slot voll -- MAX_BRIDGES erhoehen.\n");
+    }
+
+    void UnregisterBridge(CEasyCashDocBridge* p)
+    {
+        for (int i = 0; i < MAX_BRIDGES; i++)
+            if (g_bridges[i] == p) { g_bridges[i] = NULL; return; }
+    }
+}
+
 CEasyCashDocBridge::CEasyCashDocBridge()
     : CEasyCashDoc()
 {
     m_pEngineHost = new ECTBridge::EngineHost();
+    RegisterBridge(this);
     TRACE0("CEasyCashDocBridge: Engine-Host erstellt\n");
 }
 
 CEasyCashDocBridge::~CEasyCashDocBridge()
 {
+    UnregisterBridge(this);
     delete m_pEngineHost;
     m_pEngineHost = NULL;
     TRACE0("CEasyCashDocBridge: Engine-Host freigegeben\n");
@@ -61,7 +94,7 @@ void CEasyCashDocBridge::Serialize(CArchive& ar)
         // zurückfließen, bevor CEasyCashDoc::Serialize sie schreibt.
         SyncManagedToNative();
 
-        TRACE0("CEasyCashDocBridge::Serialize — speichere (nach Sync M→N)\n");
+        TRACE0("CEasyCashDocBridge::Serialize -- speichere (nach Sync M->N)\n");
     }
 
     // Das eigentliche Serialize — der gesamte native Code aus
@@ -165,40 +198,124 @@ void CEasyCashDocBridge::SyncManagedToNative()
 {
     auto engine = GetEngine(this);
 
-    // ── Alte Linked Lists freigeben + Map leeren ──
-    // CBuchung-Destruktor löscht rekursiv über next
-    if (Einnahmen) { delete Einnahmen; Einnahmen = NULL; }
-    if (Ausgaben)  { delete Ausgaben;  Ausgaben  = NULL; }
-    if (Dauerbuchungen) { delete Dauerbuchungen; Dauerbuchungen = NULL; }
+    // ══════════════════════════════════════════════════════════
+    // Pointer-stabiler Rebuild:
+    //
+    // FRÜHER: delete der gesamten Einnahmen/Ausgaben-Ketten und neue
+    // CBuchungs allozieren. Das hat Plugin-/OCX-Pointer (CBuchungCtrl
+    // m_ID = CBuchung*) invalidiert -- klassisches 0xDDDDDDDD beim
+    // nächsten Zugriff.
+    //
+    // JETZT: für jede managed Buchung^ in der Engine zuerst per
+    // inverser Pointer-Map prüfen, ob es schon eine native CBuchung
+    // für sie gibt. Wenn ja: dieselbe Instanz wiederverwenden und
+    // nur die Felder aktualisieren. Wenn nein: frisch allozieren.
+    // Am Ende werden nur die nicht-mehr-referenzierten alten
+    // Natives gedeletet.
+    //
+    // Folge: alle nativen CBuchung-Pointer, die ein Plugin gerade
+    // hält, bleiben über den Sync-Zyklus hinweg gültig (sofern die
+    // entsprechende managed Buchung^ noch existiert).
+    // ══════════════════════════════════════════════════════════
+
+    // 1) Inverse Map (managed Buchung^ -> native IntPtr) aus dem
+    //    aktuellen Stand der Pointer-Map snapshotten.
+    auto invMap = m_pEngineHost->BuildInverseMap();
+
+    // 2) Alle alten Native-Pointer einsammeln, BEVOR der Rebuild ihre
+    //    next-Felder ueberschreibt. Walken via p->next nach dem Rebuild
+    //    waere unzuverlaessig, weil reused-Buchungen jetzt in die NEUE
+    //    Kette zeigen statt in die alte.
+    auto oldNatives = gcnew System::Collections::Generic::List<System::IntPtr>();
+    for (CBuchung* p = Einnahmen; p != NULL; p = p->next)
+        oldNatives->Add(System::IntPtr((void*)p));
+    for (CBuchung* p = Ausgaben;  p != NULL; p = p->next)
+        oldNatives->Add(System::IntPtr((void*)p));
+
+    // Set der wiederverwendeten Natives (nicht zu deleten).
+    // Dictionary<,> ist in mscorlib -- HashSet<> waere in System.Core.dll,
+    // brauchten wir extra #using fuer. Bool-Wert wird nicht ausgewertet.
+    auto reused = gcnew System::Collections::Generic::Dictionary<
+        System::IntPtr, bool>();
+
+    // Pointer-Map jetzt leeren -- wird im Lauf neu befuellt.
     m_pEngineHost->ClearPointerMap();
 
-    // ── Einnahmen aufbauen + jeden Pointer in der Map registrieren ──
+    // ── Einnahmen aufbauen ──
     {
+        CBuchung* pHead = NULL;
         CBuchung* pTail = NULL;
         for each (ECTEngine::Buchung^ b in engine->Einnahmen)
         {
-            CBuchung* pNeu = ManagedToNative(b);
-            m_pEngineHost->RegisterPointer(pNeu, b);
+            // managed Buchung^ -> native CBuchung*
+            // (existierend wiederverwenden, sonst frisch erzeugen).
+            System::IntPtr existingPtr;
+            CBuchung* p;
+            if (invMap->TryGetValue(b, existingPtr))
+            {
+                p = (CBuchung*)existingPtr.ToPointer();
+                FillNativeFromManaged(p, b);
+                reused[existingPtr] = true;
+            }
+            else
+            {
+                p = ManagedToNative(b);   // setzt p->next = NULL
+            }
+            p->next = NULL;
+            m_pEngineHost->RegisterPointer(p, b);
 
-            if (Einnahmen == NULL) { Einnahmen = pNeu; pTail = pNeu; }
-            else                   { pTail->next = pNeu; pTail = pNeu; }
+            if (pHead == NULL) { pHead = p; pTail = p; }
+            else               { pTail->next = p; pTail = p; }
         }
+        Einnahmen = pHead;
     }
 
-    // ── Ausgaben aufbauen + Map registrieren ──
+    // ── Ausgaben aufbauen (identisches Muster) ──
     {
+        CBuchung* pHead = NULL;
         CBuchung* pTail = NULL;
         for each (ECTEngine::Buchung^ b in engine->Ausgaben)
         {
-            CBuchung* pNeu = ManagedToNative(b);
-            m_pEngineHost->RegisterPointer(pNeu, b);
+            System::IntPtr existingPtr;
+            CBuchung* p;
+            if (invMap->TryGetValue(b, existingPtr))
+            {
+                p = (CBuchung*)existingPtr.ToPointer();
+                FillNativeFromManaged(p, b);
+                reused[existingPtr] = true;
+            }
+            else
+            {
+                p = ManagedToNative(b);
+            }
+            p->next = NULL;
+            m_pEngineHost->RegisterPointer(p, b);
 
-            if (Ausgaben == NULL) { Ausgaben = pNeu; pTail = pNeu; }
-            else                  { pTail->next = pNeu; pTail = pNeu; }
+            if (pHead == NULL) { pHead = p; pTail = p; }
+            else               { pTail->next = p; pTail = p; }
+        }
+        Ausgaben = pHead;
+    }
+
+    // 4) Alle alten Natives, die nicht wiederverwendet wurden, einzeln
+    //    deleten. Iteration ueber die VORHER eingesammelte Liste, weil
+    //    die next-Pointer der reused-Buchungen jetzt in die NEUE Kette
+    //    zeigen. WICHTIG: next vor delete auf NULL setzen, damit der
+    //    ~CBuchung()-Destruktor nicht noch reused-Nachbarn mitloescht.
+    for each (System::IntPtr key in oldNatives)
+    {
+        if (!reused->ContainsKey(key))
+        {
+            CBuchung* p = (CBuchung*)key.ToPointer();
+            p->next = NULL;
+            delete p;
         }
     }
 
-    // ── Dauerbuchungen ohne Map (werden nicht über Pointer-API angesprochen) ──
+    // ── Dauerbuchungen weiterhin komplett neu aufbauen ──
+    // (Plugin-Interface reicht keine CDauerbuchung*-Pointer raus,
+    //  also kein Stabilitaets-Erfordernis -- siehe Konvention.)
+    if (Dauerbuchungen) { delete Dauerbuchungen; Dauerbuchungen = NULL; }
     Dauerbuchungen = ManagedListToLinkedList(engine->Dauerbuchungen);
 
     // ── Dokument-Felder zurückschreiben ──
@@ -227,3 +344,40 @@ void CEasyCashDocBridge::SyncManagedToNative()
 // nicht Member-Funktionen — wegen der dllexport/__clrcall-
 // Inkompatibilität bei Methoden, die managed Typen zurückgeben.
 // ══════════════════════════════════════════════════════════
+
+// ══════════════════════════════════════════════════════════
+// Mirror Native -> Managed (für OCX-Setter aus dem Plugin)
+// ══════════════════════════════════════════════════════════
+
+BOOL CEasyCashDocBridge::MirrorBuchungInEngine(CBuchung* pNative)
+{
+    if (!pNative || !m_pEngineHost) return FALSE;
+    ECTEngine::Buchung^ b = m_pEngineHost->Lookup(pNative);
+    if (b == nullptr) return FALSE;
+    FillManagedFromNative(pNative, b);
+    return TRUE;
+}
+
+extern "C" AFX_EXT_CLASS void ECT_SpiegleNativeBuchungInEngine(CBuchung* pNative)
+{
+    if (!pNative)
+    {
+        TRACE0("ECT_Spiegle: pNative == NULL -- skip\n");
+        return;
+    }
+    // Process-weite Bridge-Liste iterieren -- frueher Back-Pointer auf CBuchung,
+    // aber das hat das CBuchung-Layout veraendert und mit der installierten
+    // EasyCTX.ocx einen Heap-Overflow erzeugt. Stattdessen jetzt die kleine
+    // statische Liste hier in ECTBridge.dll.
+    for (int i = 0; i < MAX_BRIDGES; i++)
+    {
+        CEasyCashDocBridge* pBridge = g_bridges[i];
+        if (pBridge && pBridge->MirrorBuchungInEngine(pNative))
+        {
+            TRACE1("ECT_Spiegle: CBuchung* 0x%p gespiegelt\n", pNative);
+            return;
+        }
+    }
+    TRACE1("ECT_Spiegle: CBuchung* 0x%p in keiner Bridge gefunden -- skip\n",
+           pNative);
+}

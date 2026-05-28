@@ -218,6 +218,7 @@ void CEinstellungCtrl::AboutBox()
 
 BSTR CEinstellungCtrl::HoleEinstellung(LPCTSTR ID) 
 {
+	TRACE1("CEinstellungCtrl::HoleEinstellung('%s') aufgerufen\\n", ID);
 	// Bedient sich am globalen Einstellungs-Cache (ECTEngine::Einstellungen)
 	// statt selber GetPrivateProfileString aufzurufen. Dadurch sehen Plugins
 	// sofort die im laufenden Programm aenderbaren Werte (z.B. nach OK im

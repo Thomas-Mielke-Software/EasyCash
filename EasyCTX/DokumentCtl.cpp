@@ -22,6 +22,7 @@
 #include "EasyCTX.h"
 #include "DokumentCtl.h"
 #include "DokumentPpg.h"
+#include "..\ECTBridge\EasyCashDocBridge.h"  // fuer SyncNativeToManaged() auf dem Bridge-Doc
 
 
 #ifdef _DEBUG
@@ -338,9 +339,22 @@ long CDokumentCtrl::NeueEinnahmenbuchungEinfuegen()
 		(*p)->AbschreibungDegressiv = FALSE;
 		(*p)->AbschreibungSatz = 0;
 
+		// Pointer der frischen CBuchung lokal festhalten -- die Bridge-Synchronisierung weiter
+		// unten kann die Linked-List in eine andere Reihenfolge umhängen, dann zeigt *p
+		// nicht mehr zwingend auf unsere neue Buchung.
+		CBuchung* pNeu = *p;
+
+		// Die frisch allozierte CBuchung der Engine bekannt machen, BEVOR SetModifiedFlag()
+		// den Wiederherstellungs-Save auslöst. Sonst kennt die Engine die Buchung nicht,
+		// das pointer-stabile SyncManagedToNative() wirft sie beim Save als unbekannt
+		// weg und das Plugin hält anschließend einen 0xDDDDDDDD-Pointer in der Hand.
+		static_cast<CEasyCashDocBridge*>(pDoc)->SyncNativeToManaged();
+
 		pDoc->SetModifiedFlag("Neue Einnahmenbuchung wurde eingefügt");
 
-		return (long)(*p);
+		// pNeu ist nach dem Sync immer noch derselbe Pointer (Reuse via Inverse-Map),
+		// kann aber jetzt an anderer Position in der Kette sitzen.
+		return (long)pNeu;
 	}
 	else
 		return 0;
@@ -358,7 +372,7 @@ long CDokumentCtrl::NeueAusgabenbuchungEinfuegen()
 		while (*p)
 			p = &((*p)->next);
 
-		(*p) = *p = new CBuchung;	
+		*p = new CBuchung;	
 		(*p)->next = NULL;
 		(*p)->Datum = CTime::GetCurrentTime();
 		(*p)->Betrag = 0;
@@ -369,9 +383,16 @@ long CDokumentCtrl::NeueAusgabenbuchungEinfuegen()
 		(*p)->AbschreibungDegressiv = FALSE;
 		(*p)->AbschreibungSatz = 0;
 
+		// Siehe NeueEinnahmenbuchungEinfuegen oben -- Engine vor SetModifiedFlag informieren,
+		// damit pointer-stabiles SyncManagedToNative() die frische CBuchung wiederverwendet
+		// statt sie zu deleten. Pointer lokal festhalten, weil das Sync die Kette umsortieren
+		// kann (*p würde dann auf einen anderen Nachbarn zeigen).
+		CBuchung* pNeu = *p;
+		static_cast<CEasyCashDocBridge*>(pDoc)->SyncNativeToManaged();
+
 		pDoc->SetModifiedFlag("Neue Ausgabenbuchung wurde eingefügt");
 
-		return (long)(*p);
+		return (long)pNeu;
 	}
 	else
 		return 0;

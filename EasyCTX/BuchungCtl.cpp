@@ -19,6 +19,7 @@
 // Software Foundation, Inc., 51 Franklin St, 5th Floor, Boston, MA 02110, USA. 
 
 #include "stdafx.h"
+#include "..\ECTBridge\EasyCashDocBridge.h"  // fuer ECT_SpiegleNativeBuchungInEngine
 #include "EasyCTX.h"
 #include "BuchungCtl.h"
 #include "BuchungPpg.h"
@@ -262,6 +263,11 @@ void CBuchungCtrl::SetBetrag(CURRENCY newValue)
 		TRACE1("%d", ((CBuchung*)m_ID)->Betrag);
 	}
 
+	// Schreibzugriff in die managed Engine spiegeln (geht ueber die
+	// process-weite Bridge-Liste in ECTBridge.dll -- kein CBuchung-Layout-
+	// Risiko, weil die Liste in ECTBridge.dll lebt, nicht in CBuchung selbst).
+	ECT_SpiegleNativeBuchungInEngine((CBuchung*)m_ID);
+
 	SetModifiedFlag();
 }
 
@@ -284,6 +290,11 @@ void CBuchungCtrl::SetMWSt(double newValue)
 	{
 		((CBuchung*)m_ID)->MWSt = (int)((double)newValue * 1000.0);
 	}
+
+	// Schreibzugriff in die managed Engine spiegeln (geht ueber die
+	// process-weite Bridge-Liste in ECTBridge.dll -- kein CBuchung-Layout-
+	// Risiko, weil die Liste in ECTBridge.dll lebt, nicht in CBuchung selbst).
+	ECT_SpiegleNativeBuchungInEngine((CBuchung*)m_ID);
 
 	SetModifiedFlag();
 }
@@ -308,6 +319,11 @@ void CBuchungCtrl::SetAbschreibungNr(short nNewValue)
 		((CBuchung*)m_ID)->AbschreibungNr = (int)nNewValue;
 	}
 
+	// Schreibzugriff in die managed Engine spiegeln (geht ueber die
+	// process-weite Bridge-Liste in ECTBridge.dll -- kein CBuchung-Layout-
+	// Risiko, weil die Liste in ECTBridge.dll lebt, nicht in CBuchung selbst).
+	ECT_SpiegleNativeBuchungInEngine((CBuchung*)m_ID);
+
 	SetModifiedFlag();
 }
 
@@ -330,6 +346,11 @@ void CBuchungCtrl::SetAbschreibungJahre(short nNewValue)
 	{
 		((CBuchung*)m_ID)->AbschreibungJahre = (int)nNewValue;
 	}
+
+	// Schreibzugriff in die managed Engine spiegeln (geht ueber die
+	// process-weite Bridge-Liste in ECTBridge.dll -- kein CBuchung-Layout-
+	// Risiko, weil die Liste in ECTBridge.dll lebt, nicht in CBuchung selbst).
+	ECT_SpiegleNativeBuchungInEngine((CBuchung*)m_ID);
 
 	SetModifiedFlag();
 }
@@ -355,6 +376,11 @@ void CBuchungCtrl::SetBeschreibung(LPCTSTR lpszNewValue)
 	{
 		((CBuchung*)m_ID)->Beschreibung = lpszNewValue;
 	}
+
+	// Schreibzugriff in die managed Engine spiegeln (geht ueber die
+	// process-weite Bridge-Liste in ECTBridge.dll -- kein CBuchung-Layout-
+	// Risiko, weil die Liste in ECTBridge.dll lebt, nicht in CBuchung selbst).
+	ECT_SpiegleNativeBuchungInEngine((CBuchung*)m_ID);
 
 	SetModifiedFlag();
 }
@@ -389,6 +415,11 @@ void CBuchungCtrl::SetDatum(DATE newValue)
 		((CBuchung*)m_ID)->Datum = ctTemp;
 	}
 
+	// Schreibzugriff in die managed Engine spiegeln (geht ueber die
+	// process-weite Bridge-Liste in ECTBridge.dll -- kein CBuchung-Layout-
+	// Risiko, weil die Liste in ECTBridge.dll lebt, nicht in CBuchung selbst).
+	ECT_SpiegleNativeBuchungInEngine((CBuchung*)m_ID);
+
 	SetModifiedFlag();
 }
 
@@ -413,6 +444,11 @@ void CBuchungCtrl::SetKonto(LPCTSTR lpszNewValue)
 	{
 		((CBuchung*)m_ID)->Konto = lpszNewValue;
 	}
+
+	// Schreibzugriff in die managed Engine spiegeln (geht ueber die
+	// process-weite Bridge-Liste in ECTBridge.dll -- kein CBuchung-Layout-
+	// Risiko, weil die Liste in ECTBridge.dll lebt, nicht in CBuchung selbst).
+	ECT_SpiegleNativeBuchungInEngine((CBuchung*)m_ID);
 
 	SetModifiedFlag();
 }
@@ -439,6 +475,11 @@ void CBuchungCtrl::SetBelegnummer(LPCTSTR lpszNewValue)
 		((CBuchung*)m_ID)->Belegnummer = lpszNewValue;
 	}
 
+	// Schreibzugriff in die managed Engine spiegeln (geht ueber die
+	// process-weite Bridge-Liste in ECTBridge.dll -- kein CBuchung-Layout-
+	// Risiko, weil die Liste in ECTBridge.dll lebt, nicht in CBuchung selbst).
+	ECT_SpiegleNativeBuchungInEngine((CBuchung*)m_ID);
+
 	SetModifiedFlag();
 }
 
@@ -464,6 +505,11 @@ void CBuchungCtrl::SetAbschreibungRestwert(CURRENCY newValue)
 		((CBuchung*)m_ID)->AbschreibungRestwert = (int)newValue.int64 / 100;
 	}
 
+	// Schreibzugriff in die managed Engine spiegeln (geht ueber die
+	// process-weite Bridge-Liste in ECTBridge.dll -- kein CBuchung-Layout-
+	// Risiko, weil die Liste in ECTBridge.dll lebt, nicht in CBuchung selbst).
+	ECT_SpiegleNativeBuchungInEngine((CBuchung*)m_ID);
+
 	SetModifiedFlag();
 }
 
@@ -487,6 +533,11 @@ void CBuchungCtrl::SetAbschreibungDegressiv(BOOL bNewValue)
 		((CBuchung*)m_ID)->AbschreibungDegressiv = bNewValue;
 	}
 
+	// Schreibzugriff in die managed Engine spiegeln (geht ueber die
+	// process-weite Bridge-Liste in ECTBridge.dll -- kein CBuchung-Layout-
+	// Risiko, weil die Liste in ECTBridge.dll lebt, nicht in CBuchung selbst).
+	ECT_SpiegleNativeBuchungInEngine((CBuchung*)m_ID);
+
 	SetModifiedFlag();
 }
 
@@ -509,6 +560,11 @@ void CBuchungCtrl::SetAbschreibungSatz(double newValue)
 	{
 		((CBuchung*)m_ID)->AbschreibungSatz = (int)newValue;
 	}
+
+	// Schreibzugriff in die managed Engine spiegeln (geht ueber die
+	// process-weite Bridge-Liste in ECTBridge.dll -- kein CBuchung-Layout-
+	// Risiko, weil die Liste in ECTBridge.dll lebt, nicht in CBuchung selbst).
+	ECT_SpiegleNativeBuchungInEngine((CBuchung*)m_ID);
 
 	SetModifiedFlag();
 }
@@ -591,6 +647,11 @@ void CBuchungCtrl::SetAbschreibungGenauigkeit(long nNewValue)
 		((CBuchung*)m_ID)->AbschreibungGenauigkeit = (int)nNewValue;
 	}
 
+	// Schreibzugriff in die managed Engine spiegeln (geht ueber die
+	// process-weite Bridge-Liste in ECTBridge.dll -- kein CBuchung-Layout-
+	// Risiko, weil die Liste in ECTBridge.dll lebt, nicht in CBuchung selbst).
+	ECT_SpiegleNativeBuchungInEngine((CBuchung*)m_ID);
+
 	SetModifiedFlag();
 }
 
@@ -616,6 +677,11 @@ void CBuchungCtrl::SetBetrieb(LPCTSTR lpszNewValue)
 		((CBuchung*)m_ID)->Betrieb = lpszNewValue;
 	}
 
+	// Schreibzugriff in die managed Engine spiegeln (geht ueber die
+	// process-weite Bridge-Liste in ECTBridge.dll -- kein CBuchung-Layout-
+	// Risiko, weil die Liste in ECTBridge.dll lebt, nicht in CBuchung selbst).
+	ECT_SpiegleNativeBuchungInEngine((CBuchung*)m_ID);
+
 	SetModifiedFlag();
 }
 
@@ -640,6 +706,11 @@ void CBuchungCtrl::SetBestandskonto(LPCTSTR lpszNewValue)
 	{
 		((CBuchung*)m_ID)->Bestandskonto = lpszNewValue;
 	}
+
+	// Schreibzugriff in die managed Engine spiegeln (geht ueber die
+	// process-weite Bridge-Liste in ECTBridge.dll -- kein CBuchung-Layout-
+	// Risiko, weil die Liste in ECTBridge.dll lebt, nicht in CBuchung selbst).
+	ECT_SpiegleNativeBuchungInEngine((CBuchung*)m_ID);
 
 	SetModifiedFlag();
 }

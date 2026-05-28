@@ -113,11 +113,9 @@ ECTEngine::Dauerbuchung^ ECTBridge::NativeToManaged(CDauerbuchung* p)
 // Managed --> Native
 // ----------------------------------------------------------
 
-CBuchung* ECTBridge::ManagedToNative(ECTEngine::Buchung^ b)
+void ECTBridge::FillNativeFromManaged(CBuchung* p, ECTEngine::Buchung^ b)
 {
-    if (b == nullptr) return NULL;
-
-    CBuchung* p = new CBuchung();
+    // KEIN p->next anfassen -- Aufrufer-Verantwortung.
 
     // Betrag + MWSt
     p->Betrag                   = b->BruttoBetrag.InCent;
@@ -142,20 +140,23 @@ CBuchung* ECTBridge::ManagedToNative(ECTEngine::Buchung^ b)
     p->Betrieb                  = ToNative(b->Betrieb);
     p->Uuid                     = ToNative(b->Uuid.ToString("D"));
 
-    // Erweiterungen: zurück ins Pipe-Format
+    // Erweiterungen: zurueck ins Pipe-Format
     p->Erweiterung              = ToNative(b->Erweiterungen->ZuPipeFormat());
+}
 
-    // next = NULL (wird vom Aufrufer verkettet)
+CBuchung* ECTBridge::ManagedToNative(ECTEngine::Buchung^ b)
+{
+    if (b == nullptr) return NULL;
+
+    CBuchung* p = new CBuchung();
+    FillNativeFromManaged(p, b);
     p->next = NULL;
-
     return p;
 }
 
-CDauerbuchung* ECTBridge::ManagedToNative(ECTEngine::Dauerbuchung^ db)
+void ECTBridge::FillNativeFromManaged(CDauerbuchung* p, ECTEngine::Dauerbuchung^ db)
 {
-    if (db == nullptr) return NULL;
-
-    CDauerbuchung* p = new CDauerbuchung();
+    // KEIN p->next anfassen.
 
     // Betrag
     p->Betrag                   = db->BruttoBetrag.InCent;
@@ -178,13 +179,53 @@ CDauerbuchung* ECTBridge::ManagedToNative(ECTEngine::Dauerbuchung^ db)
 
     // Erweiterungen
     p->Erweiterung              = ToNative(db->Erweiterungen->ZuPipeFormat());
+}
 
-    // next = NULL
+CDauerbuchung* ECTBridge::ManagedToNative(ECTEngine::Dauerbuchung^ db)
+{
+    if (db == nullptr) return NULL;
+
+    CDauerbuchung* p = new CDauerbuchung();
+    FillNativeFromManaged(p, db);
     p->next = NULL;
-
     return p;
 }
 
+// ----------------------------------------------------------
+// Mirror Native -> Managed (Setter-Spiegelung aus dem OCX/Plugin)
+// ----------------------------------------------------------
+
+void ECTBridge::FillManagedFromNative(CBuchung* p, ECTEngine::Buchung^ b)
+{
+    if (!p || b == nullptr) return;
+
+    // Art und Uuid bleiben unangetastet -- Identitaet sitzt managed-seitig.
+
+    // Betrag + MWSt
+    b->BruttoBetrag       = ECTEngine::Betrag::AusCent(p->Betrag, p->MWSt);
+
+    // Kernfelder
+    b->Datum              = ToManagedDateTime(p->Datum);
+    b->Beschreibung       = ToManaged(p->Beschreibung);
+    b->Konto              = ToManaged(p->Konto);
+    b->Belegnummer        = ToManaged(p->Belegnummer);
+
+    // Abschreibung
+    b->AfaNr              = p->AbschreibungNr;
+    b->AfaJahre           = p->AbschreibungJahre;
+    b->AfaRestwertCent    = p->AbschreibungRestwert;
+    b->AfaDegressiv       = (p->AbschreibungDegressiv != 0);
+    b->AfaSatz            = p->AbschreibungSatz;
+    b->AfaGenauigkeit     = (ECTEngine::AfaGenauigkeit)p->AbschreibungGenauigkeit;
+
+    // Zuordnungen
+    b->Bestandskonto      = ToManaged(p->Bestandskonto);
+    b->Betrieb            = ToManaged(p->Betrieb);
+
+    // Erweiterungen
+    b->Erweiterungen = ECTEngine::ErweiterungStore::AusPipeFormat(
+        ToManaged(p->Erweiterung));
+}
 // ----------------------------------------------------------
 // Bulk: Linked List --> List<T>
 // ----------------------------------------------------------
