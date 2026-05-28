@@ -810,6 +810,12 @@ CEasyCashDoc* CEasyCashDoc::Jahreswechsel(int land = 0)
 	pNewDoc->csUrspruenglicheWaehrung = csUrspruenglicheWaehrung;
 	pNewDoc->Erweiterung = Erweiterung;
 
+	// Backup-Nachfrage-Felder vom Vorjahr übernehmen, sonst bleibt der
+	// Engine-State auf DateTime.MinValue stehen und ToNativeTime() würde
+	// beim Speichern eine ungültige CTime konstruieren (ATLASSERT atltime.h).
+	pNewDoc->nNachfrageIntervall = nNachfrageIntervall;
+	pNewDoc->ctNachfrageTermin   = ctNachfrageTermin;
+
 	// akt. Dokument selektiv duplizieren - Ausgaben
 	ppB = &(pNewDoc->Ausgaben);
 	pB = Ausgaben;

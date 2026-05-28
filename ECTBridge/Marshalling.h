@@ -56,6 +56,12 @@ namespace ECTBridge
     /// <summary>managed DateTime → CTime</summary>
     inline CTime ToNativeTime(System::DateTime dt)
     {
+        // CTime ist __time64_t-basiert und kann nichts vor 1970 darstellen
+        // (_mktime64 liefert -1 --> ATLASSERT in atltime.h).
+        // managed DateTime kann theoretisch 0001-01-01 sein (Default/MinValue),
+        // darum defensiv auf Plausibilitaetsbereich pruefen.
+        if (dt.Year < 1970 || dt.Year > 3000)
+            return CTime(2000, 1, 1, 0, 0, 0);
         return CTime(dt.Year, dt.Month, dt.Day,
                      dt.Hour, dt.Minute, dt.Second);
     }
