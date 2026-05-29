@@ -119,8 +119,9 @@ public:
         auto klon = b->Clone();
         klon->Uuid = System::Guid::NewGuid();   // neue Identitaet für den Klon
         eng->Buchungen->Add(klon);
-        int idx = eng->Buchungen->IndexOf(klon);
+        eng->Sort();
         bridge->SyncManagedToNative();
+        int idx = FindeBuchungIdx(eng, klon);
 
         if (ECT_ShowBuchungBearbeitenDialog(bridge, idx, hwnd))
         {
@@ -152,8 +153,9 @@ public:
             ? eng->LaufendeBelegnrEinnahmen.ToString()
             : eng->LaufendeBelegnrAusgaben.ToString();
         eng->Buchungen->Add(klon);
-        int idx = eng->Buchungen->IndexOf(klon);
+        eng->Sort();
         bridge->SyncManagedToNative();
+        int idx = FindeBuchungIdx(eng, klon);
 
         if (ECT_ShowBuchungBearbeitenDialog(bridge, idx, hwnd))
         {
