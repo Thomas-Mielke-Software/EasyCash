@@ -691,7 +691,7 @@ namespace ECTViews.Journal
             {
                 Text = "ANLAGENVERZEICHNIS",
                 IsMain = true,
-                IsEinnahme = false
+                IsEinnahme = null   // neutral: kein Farbtrigger, Standardfarbe schwarz
             });
 
             // -- Laufende Anlagen --------------------------------------------
@@ -707,7 +707,7 @@ namespace ECTViews.Journal
                         ? "[noch zu keinem Konto zugewiesene Anlagegüter]"
                         : "[" + grp.Key + "]",
                     IsMain = false,
-                    IsEinnahme = false
+                    IsEinnahme = null   // neutral: schwarz
                 });
                 Zeilen.Add(new JournalAnlagenHeaderRow());
 
@@ -744,7 +744,7 @@ namespace ECTViews.Journal
                 {
                     Text = "[Abgänge " + _doc.Jahr + "]",
                     IsMain = false,
-                    IsEinnahme = false
+                    IsEinnahme = null   // neutral: schwarz
                 });
                 Zeilen.Add(new JournalAnlagenHeaderRow());
 

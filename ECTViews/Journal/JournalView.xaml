@@ -10,8 +10,8 @@
 
         <BooleanToVisibilityConverter x:Key="BoolToVis"/>
 
-        <SolidColorBrush x:Key="ColEinnahme"  Color="#D03010"/>
-        <SolidColorBrush x:Key="ColAusgabe"   Color="#1030D0"/>
+        <SolidColorBrush x:Key="ColEinnahme"  Color="#1030D0"/>
+        <SolidColorBrush x:Key="ColAusgabe"   Color="#C62828"/>
         <SolidColorBrush x:Key="ColZebraOdd"  Color="#F5F5F5"/>
         <SolidColorBrush x:Key="ColSelection" Color="#FFF59D"/>
         <SolidColorBrush x:Key="ColHeaderBg"  Color="#FAFAFA"/>
