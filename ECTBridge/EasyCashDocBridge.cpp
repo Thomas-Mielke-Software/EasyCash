@@ -358,7 +358,7 @@ BOOL CEasyCashDocBridge::MirrorBuchungInEngine(CBuchung* pNative)
     return TRUE;
 }
 
-extern "C" AFX_EXT_CLASS void ECT_SpiegleNativeBuchungInEngine(CBuchung* pNative)
+extern "C" ECTBRIDGE_API void ECT_SpiegleNativeBuchungInEngine(CBuchung* pNative)
 {
     if (!pNative)
     {

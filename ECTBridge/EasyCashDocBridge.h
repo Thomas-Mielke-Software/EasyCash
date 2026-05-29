@@ -22,7 +22,21 @@
 #include "EasyCashDoc.h"
 #include "EngineHost.h"
 
-class AFX_EXT_CLASS CEasyCashDocBridge : public CEasyCashDoc
+// Export-Macro der Bridge. ECTBRIDGE_API (nicht AFX_EXT_CLASS) verwenden:
+// ECTBridge ist UseOfMfc=Dynamic OHNE _AFXEXT, weshalb AFX_EXT_CLASS hier
+// zu dllimport statt dllexport wuerde -- exportierte Klassen/Funktionen
+// kaemen dann nicht in der DLL an (LNK2001 bei den nativen Aufrufern).
+// ECTBRIDGE_API schaltet ueber ECTBRIDGE_EXPORTS korrekt: dllexport beim
+// Bauen der Bridge, dllimport bei EasyCash.exe / EasyCTX.ocx.
+#ifndef ECTBRIDGE_API
+#ifdef ECTBRIDGE_EXPORTS
+#define ECTBRIDGE_API __declspec(dllexport)
+#else
+#define ECTBRIDGE_API __declspec(dllimport)
+#endif
+#endif
+
+class ECTBRIDGE_API CEasyCashDocBridge : public CEasyCashDoc
 {
     DECLARE_DYNCREATE(CEasyCashDocBridge)
 
@@ -86,9 +100,10 @@ public:
 // vor dem ersten Sync oder bei Test-Setups ohne MFC-App).
 //
 // extern "C", damit Name-Mangling den nativen Aufrufern keine
-// Steine in den Weg legt.
+// Steine in den Weg legt. ECTBRIDGE_API (oben definiert) sorgt fuer
+// korrekten dllexport/dllimport-Wechsel.
 
-extern "C" AFX_EXT_CLASS void ECT_SpiegleNativeBuchungInEngine(CBuchung* pNative);
+extern "C" ECTBRIDGE_API void ECT_SpiegleNativeBuchungInEngine(CBuchung* pNative);
 
 // ══════════════════════════════════════════════════════════
 // Freie Inline-Funktionen für /clr-Code
