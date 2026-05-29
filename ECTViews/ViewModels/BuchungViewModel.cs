@@ -1171,6 +1171,10 @@ namespace ECTViews.ViewModels
 
         private void LadeKonten()
         {
+            // Altes Konto merken, um nach dem Neuladen den ähnlichsten
+            // Eintrag in der neuen Liste vorauswählen zu können.
+            string altesKonto = SelectedKonto;
+
             Konten.Clear();
             var kontenListe = IstAusgabe
                 ? Einstellungen.AusgabenKonten
@@ -1190,6 +1194,42 @@ namespace ECTViews.ViewModels
 
             foreach (var k in buchungskonten)
                 Konten.Add(k);
+
+            // Vorauswahl nach Buchungsart-Wechsel: exakter Treffer bevorzugt,
+            // sonst den Eintrag mit dem längsten gemeinsamen Präfix (von links).
+            // Bei gleichem Präfix alphabetisch, damit das Ergebnis deterministisch
+            // ist. Kein gemeinsamer Präfix (Länge 0) → Auswahl leer lassen.
+            if (string.IsNullOrEmpty(altesKonto) || Konten.Count == 0)
+            {
+                SelectedKonto = "";
+            }
+            else if (Konten.Contains(altesKonto))
+            {
+                SelectedKonto = altesKonto;
+            }
+            else
+            {
+                var bester = Konten
+                    .Select(k => new { Konto = k, Praefixlaenge = GemeinsamerPraefixLaenge(k, altesKonto) })
+                    .OrderByDescending(x => x.Praefixlaenge)
+                    .ThenBy(x => x.Konto)
+                    .First();
+
+                SelectedKonto = bester.Praefixlaenge >= 4 ? bester.Konto : "";
+            }
+        }
+
+        /// <summary>
+        /// Liefert die Länge des längsten gemeinsamen Präfixes zweier
+        /// Strings (Groß-/Kleinschreibung ignoriert).
+        /// </summary>
+        private static int GemeinsamerPraefixLaenge(string a, string b)
+        {
+            int len = Math.Min(a.Length, b.Length);
+            for (int i = 0; i < len; i++)
+                if (char.ToLowerInvariant(a[i]) != char.ToLowerInvariant(b[i]))
+                    return i;
+            return len;
         }
 
         /// <summary>
