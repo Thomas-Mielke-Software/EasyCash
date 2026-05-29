@@ -27,7 +27,12 @@ param(
 
     [string]$Suffix,
 
-    [switch]$DryRun
+    [switch]$DryRun,
+
+    # Ueberspringt 'git push' (Commit + Tag werden trotzdem lokal erzeugt).
+    # Nuetzlich, solange die GitHub-Auth (SSH-Key) noch nicht eingerichtet
+    # ist -- Build/ISCC/Upload laufen dann ohne Push-Versuch durch.
+    [switch]$NoPush
 )
 
 $ErrorActionPreference = 'Stop'
@@ -181,9 +186,58 @@ if ($DryRun) {
 }
 
 # --- 8. Git-Commit mit neuer Version  -------------------------------------------
-& git -C $repoRoot commit -a -m "v$newVersion Release" 2>$null
-& git tag -a "v$newVersion"
-& git push --tags
+Write-Host ""
+Write-Host "Git: Commit + Tag + Push..." -ForegroundColor Cyan
+$gitTag = "v$newVersion"
+
+# Git schreibt Fortschritt UND Fehler nach stderr. Bei
+# $ErrorActionPreference = 'Stop' wird die erste stderr-Zeile als
+# terminierender Fehler interpretiert und bricht den kompletten
+# Release-Lauf ab -- genau das passiert beim fehlschlagenden Push
+# (SSH-Key). Build + ISCC + Upload sollen aber NICHT von einem
+# Push-Fehler abhaengen. Darum im Git-Block die Fehlerbehandlung
+# lockern und die Exit-Codes selbst pruefen.
+$prevEAP = $ErrorActionPreference
+$ErrorActionPreference = 'Continue'
+try {
+    & git -C $repoRoot commit -a -m "$gitTag Release"
+    if ($LASTEXITCODE -ne 0) {
+        Write-Host "  WARN: git commit fehlgeschlagen / nichts zu committen (ExitCode $LASTEXITCODE)." -ForegroundColor Yellow
+    }
+
+    # Tag nur anlegen, wenn er noch nicht existiert (idempotent bei Re-Run
+    # nach einem fehlgeschlagenen Push). Annotierter Tag MIT -m, sonst
+    # oeffnet git einen Editor und blockiert.
+    & git -C $repoRoot rev-parse -q --verify "refs/tags/$gitTag" 2>$null | Out-Null
+    if ($LASTEXITCODE -eq 0) {
+        Write-Host "  Tag $gitTag existiert bereits -- wird nicht neu angelegt." -ForegroundColor Yellow
+    } else {
+        & git -C $repoRoot tag -a "$gitTag" -m "$gitTag Release"
+        if ($LASTEXITCODE -ne 0) {
+            Write-Host "  WARN: git tag fehlgeschlagen (ExitCode $LASTEXITCODE)." -ForegroundColor Yellow
+        }
+    }
+
+    # --follow-tags pusht den Branch-Commit UND die annotierten Tags in
+    # einem Rutsch. (Das alte 'git push --tags' hat NUR Tags gepusht,
+    # der Versions-Commit blieb lokal liegen.) Ein Push-Fehler ist hier
+    # nicht fatal -- Commit + Tag sind lokal sicher.
+    if ($NoPush) {
+        Write-Host "  Push uebersprungen (-NoPush). Spaeter manuell nachholen mit:" -ForegroundColor Yellow
+        Write-Host "            git push --follow-tags" -ForegroundColor Yellow
+    } else {
+        & git -C $repoRoot push --follow-tags
+        if ($LASTEXITCODE -ne 0) {
+            Write-Host "  WARN: git push fehlgeschlagen (ExitCode $LASTEXITCODE)." -ForegroundColor Yellow
+            Write-Host "        Wahrscheinlich SSH-Auth zu GitHub (git@github.com: Permission denied (publickey))." -ForegroundColor Yellow
+            Write-Host "        Commit + Tag sind lokal vorhanden. Spaeter manuell nachholen mit:" -ForegroundColor Yellow
+            Write-Host "            git push --follow-tags" -ForegroundColor Yellow
+        }
+    }
+}
+finally {
+    $ErrorActionPreference = $prevEAP
+}
 
 # --- 9. EasyCash-Hauptprojekt bauen (Release/Win32) -----------------------------
 Write-Host ""
