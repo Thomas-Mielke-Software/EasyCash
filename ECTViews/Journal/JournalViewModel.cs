@@ -294,12 +294,16 @@ namespace ECTViews.Journal
 
             // Selektion wiederherstellen via Uuid-Match - überlebt jeden
             // SyncNativeToManaged-Zyklus, weil die Bridge die Uuid native
-            // mitführt.
+            // mitführt. Anschliessend zum wiederhergestellten Eintrag
+            // zentrieren (ScrollIntoViewRequest), damit die Buchung nach
+            // einer Bearbeitung sichtbar bleibt.
             if (alteUuid != Guid.Empty)
             {
                 SelektierteZeile = Zeilen.OfType<JournalBuchungRow>()
                     .FirstOrDefault(r => r.Buchung != null
                                        && r.Buchung.Uuid == alteUuid);
+                if (SelektierteZeile != null)
+                    ScrollIntoViewRequest?.Invoke(SelektierteZeile);
             }
         }
 
