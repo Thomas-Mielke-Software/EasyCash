@@ -71,6 +71,94 @@
         <!-- Konverter: bool → Visibility (Collapsed bei false) -->
         <BooleanToVisibilityConverter x:Key="BoolToVis"/>
 
+        <!-- Stil für den primären Aktions-Button (Buchen / Speichern).
+             Eigener ControlTemplate, damit das WPF-Theme beim Hover nicht
+             den Hintergrund überschreibt.
+             Normal: #1976D2 (mittleres Blau)
+             Hover:  #1255B0 (kräftigeres Blau)
+             Pressed: #0D47A1 (dunkles Blau)
+             Disabled: gedämpftes Blaugrau -->
+        <Style x:Key="PrimaryButtonStyle" TargetType="Button">
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="bd"
+                                Background="#1E88E5"
+                                CornerRadius="2"
+                                SnapsToDevicePixels="True"
+                                RenderTransformOrigin="0.5,0.5">
+                            <Border.RenderTransform>
+                                <ScaleTransform ScaleX="1" ScaleY="1"/>
+                            </Border.RenderTransform>
+                            <ContentPresenter HorizontalAlignment="Center"
+                                              VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="bd" Property="Background" Value="#1976D2"/>
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter TargetName="bd" Property="RenderTransform">
+                                    <Setter.Value>
+                                        <ScaleTransform ScaleX="1.03" ScaleY="1.08"/>
+                                    </Setter.Value>
+                                </Setter>
+                            </Trigger>
+                            <Trigger Property="IsEnabled" Value="False">
+                                <Setter TargetName="bd" Property="Background" Value="#7FA8CC"/>
+                                <Setter Property="Foreground" Value="#D0D0D0"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- Stil für den sekundären Button (Abbrechen): grau, gleiches
+             ScaleTransform-Verhalten beim Drücken wie PrimaryButtonStyle. -->
+        <Style x:Key="SecondaryButtonStyle" TargetType="Button">
+            <Setter Property="Foreground" Value="#222"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="bd"
+                                Background="#DCDCDC"
+                                CornerRadius="2"
+                                SnapsToDevicePixels="True"
+                                RenderTransformOrigin="0.5,0.5">
+                            <Border.RenderTransform>
+                                <ScaleTransform ScaleX="1" ScaleY="1"/>
+                            </Border.RenderTransform>
+                            <ContentPresenter HorizontalAlignment="Center"
+                                              VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="bd" Property="Background" Value="#C0C0C0"/>
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter TargetName="bd" Property="RenderTransform">
+                                    <Setter.Value>
+                                        <ScaleTransform ScaleX="1.03" ScaleY="1.08"/>
+                                    </Setter.Value>
+                                </Setter>
+                            </Trigger>
+                            <Trigger Property="IsEnabled" Value="False">
+                                <Setter TargetName="bd" Property="Background" Value="#EFEFEF"/>
+                                <Setter Property="Foreground" Value="#AAAAAA"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
         <!-- DataTemplate für Icon-Listen-Items: Icon links, Name rechts.
              Stretch="Uniform" skaliert das gecroppte Icon proportional auf
              die Image-Größe — funktioniert egal ob die Quell-Sprites 16x16,
@@ -325,13 +413,14 @@
             <Button Content="{Binding OkButtonText}"
                     Command="{Binding OkCommand}"
                     Width="100" Height="32"
-                    IsDefault="True" FontWeight="SemiBold"
-                    Background="#1976D2" Foreground="White"
-                    BorderThickness="0" Margin="0,0,8,0"/>
+                    IsDefault="True"
+                    Style="{StaticResource PrimaryButtonStyle}"
+                    Margin="0,0,8,0"/>
             <Button Content="Abbrechen"
                     Command="{Binding AbbrechenCommand}"
                     Width="100" Height="32"
-                    IsCancel="True"/>
+                    IsCancel="True"
+                    Style="{StaticResource SecondaryButtonStyle}"/>
         </StackPanel>
     </Grid>
 </Window>
