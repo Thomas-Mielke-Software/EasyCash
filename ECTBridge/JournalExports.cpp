@@ -347,9 +347,8 @@ void ECT_JournalAktualisiere(
     try
     {
         auto filter = gcnew ECTViews::Journal::JournalFilter();
-        filter->AnzeigeModus = (nAnzeigeModus == 1)
-            ? ECTViews::Journal::JournalAnzeigeModus::Konten
-            : ECTViews::Journal::JournalAnzeigeModus::Datum;
+        filter->AnzeigeModus =
+            (ECTViews::Journal::JournalAnzeigeModus)nAnzeigeModus;
         filter->KontenFilter        = ToManagedString(pszKontenFilter);
         filter->MonatsFilter        = nMonatsFilter;
         filter->BetriebFilter       = ToManagedString(pszBetriebFilter);
