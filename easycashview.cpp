@@ -5930,6 +5930,7 @@ void CEasyCashView::DauerbuchungenAusfuehren(int jb, int mb)
 {
 	CDauerbuchung *dbp;
 	CEasyCashDoc* pDoc = GetDocument();
+	BOOL bDauerbuchungAusgefuehrt = FALSE;  // mind. eine Buchung erzeugt?
 
 	if (jb < 100 && jb > 37)
 	{
@@ -6187,7 +6188,12 @@ void CEasyCashView::DauerbuchungenAusfuehren(int jb, int mb)
 					
 					CString csMessage;
 					csMessage.Format("Dauerbuchungen wurden bis %d/%4d ausgeführt", mb, jb);
-					pDoc->SetModifiedFlag(csMessage);
+					// Recovery-Speichern (3. Param) hier unterdruecken -- siehe Erklaerung
+					// am Funktionsende. Sonst: OnWiederherstellungsdateiSave -> Serialize
+					// -> SyncManagedToNative baut die Dauerbuchungsliste neu auf und gibt
+					// den gerade iterierten Knoten dbp frei (Use-after-free, Absturz Z.6198).
+					pDoc->SetModifiedFlag(csMessage, TRUE, FALSE);
+					bDauerbuchungAusgefuehrt = TRUE;
 					pDoc->InkrementBuchungszaehler();
 					pDoc->Sort();
 					RedrawWindow();
@@ -6210,6 +6216,29 @@ void CEasyCashView::DauerbuchungenAusfuehren(int jb, int mb)
 			}
 		}
 	}
+#ifdef USE_ECTENGINE
+	// Die Schleife oben hat neue CBuchung direkt in die nativen Listen
+	// gehaengt (Modul EasyCash.exe), ohne die managed Engine zu syncen.
+	// Ohne dieses Nachziehen: (a) die neuen Buchungen erscheinen nicht im
+	// WPF-Journal und (b) der naechste SyncManagedToNative findet sie nicht
+	// in der Engine und loescht sie (modueluebergreifendes delete -> Heap-
+	// Korruption). SyncNativeToManaged adoptiert die Knoten in die Engine
+	// und die Pointer-Map, danach werden sie beim Speichern wiederverwendet
+	// statt freigegeben.
+	if (bDauerbuchungAusgefuehrt)
+	{
+		CEasyCashDocBridge* bridge = (CEasyCashDocBridge*)pDoc;
+		bridge->SyncNativeToManaged();
+		if (IstJournalWpfAktiv())
+			AktualisiereJournalFilter();
+	}
+#endif
+	// Recovery-Speichern jetzt einmal nachholen (in der Schleife mit dem 3.
+	// Parameter FALSE unterdrueckt). Erst hier gefahrlos: die Engine ist via
+	// SyncNativeToManaged konsistent und dbp wird nach der Schleife nicht
+	// mehr benutzt, der dabei ausgeloeste SyncManagedToNative ist also ok.
+	if (bDauerbuchungAusgefuehrt)
+		pDoc->SetModifiedFlag("Dauerbuchungen ausgefuehrt", TRUE, TRUE);
 }
 
 void CEasyCashView::GetUmsatzsteuervorauszahlung(int nZeitraum, CString& csValue)
