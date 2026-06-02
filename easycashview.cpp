@@ -1491,6 +1491,23 @@ void CEasyCashView::OnSize(UINT nType, int cx, int cy)
 {
 	TRACE3("CEasyCashView::OnSize(nType=%d, cx=%d, cy=%d)", nType, cx, cy);
 	CScrollView::OnSize(nType, cx, cy);
+
+#ifdef USE_ECTENGINE
+	if (IstJournalWpfAktiv())
+	{
+		// Bei aktivem WPF-Journal ist die native CScrollView nur ein
+		// versteckter Platzhalter. Ihre Scroll-Geometrie hier NICHT via
+		// SetupScroll()/SetScrollSizes() neu setzen: das Ein-/Ausblenden
+		// der Scrollbalken aendert die Client-Groesse und loest eine
+		// WM_SIZE-Rueckkopplung aus -> Endlosschleife OnSize -> SetupScroll
+		// -> GroessenAnpassungJournalWpf -> WPF-Relayout, die den UI-Thread
+		// blockiert (eingefroren) und bis OutOfMemory Speicher frisst.
+		// Nur die WPF-Fenster auf die neue Pane-Groesse nachfuehren.
+		GroessenAnpassungJournalWpf();
+		return;
+	}
+#endif
+
 	static int cx_old = -1;
 	
 	if (pPluginWnd)
@@ -1508,10 +1525,8 @@ void CEasyCashView::OnSize(UINT nType, int cx, int cy)
 	cx_old = cx;
 
 	SetupScroll();
-
-#ifdef USE_ECTENGINE
-	GroessenAnpassungJournalWpf();
-#endif
+	// Hinweis: Die WPF-Groessenanpassung passiert oben im
+	// IstJournalWpfAktiv()-Fruehausstieg. Hier (WPF inaktiv) nicht noetig.
 }
 
 // zoomfaktor in prozent
@@ -8454,6 +8469,10 @@ void CEasyCashView::VerstecktJournalWpf()
 		ECT_JournalAbloesen(m_hwndJournalWpf);
 		m_hwndJournalWpf = NULL;
 		ShowWindow(SW_SHOW);
+		// Scroll-Geometrie neu aufbauen: waehrend WPF aktiv war, hat OnSize
+		// SetupScroll() bewusst uebersprungen, die native Scroll-Range ist
+		// also evtl. veraltet (Fenster wurde zwischenzeitlich resized).
+		SetupScroll();
 		Invalidate();
 	}
 }

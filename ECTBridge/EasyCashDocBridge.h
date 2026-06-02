@@ -22,12 +22,10 @@
 #include "EasyCashDoc.h"
 #include "EngineHost.h"
 
-// Export-Macro der Bridge. ECTBRIDGE_API (nicht AFX_EXT_CLASS) verwenden:
-// ECTBridge ist UseOfMfc=Dynamic OHNE _AFXEXT, weshalb AFX_EXT_CLASS hier
-// zu dllimport statt dllexport wuerde -- exportierte Klassen/Funktionen
-// kaemen dann nicht in der DLL an (LNK2001 bei den nativen Aufrufern).
-// ECTBRIDGE_API schaltet ueber ECTBRIDGE_EXPORTS korrekt: dllexport beim
-// Bauen der Bridge, dllimport bei EasyCash.exe / EasyCTX.ocx.
+// Export-Macro fuer freie native C-Funktionen der Bridge (siehe
+// ECT_SpiegleNativeBuchungInEngine weiter unten). ECTBRIDGE_API schaltet
+// ueber ECTBRIDGE_EXPORTS korrekt: dllexport beim Bauen der Bridge,
+// dllimport bei EasyCash.exe / EasyCTX.ocx.
 #ifndef ECTBRIDGE_API
 #ifdef ECTBRIDGE_EXPORTS
 #define ECTBRIDGE_API __declspec(dllexport)
@@ -36,7 +34,16 @@
 #endif
 #endif
 
-class ECTBRIDGE_API CEasyCashDocBridge : public CEasyCashDoc
+// WICHTIG: Die Klasse bleibt bei AFX_EXT_CLASS und wird damit NICHT als
+// dllexport markiert. Das ist Absicht: __declspec(dllexport) auf einer
+// /clr-Mixed-Mode-Klasse erzeugt native Export-Thunks fuer ihre Member,
+// die die managed __clrcall-Konverter (FillNativeFromManaged usw.)
+// aufrufen -- das fuehrt zu LNK2034/LNK2020 (Metadaten inkonsistent mit
+// COFF-Symboltabelle). EasyCash.exe braucht die Klasse nicht via
+// dllimport, sondern instanziiert sie ueber DECLARE_DYNCREATE /
+// RUNTIME_CLASS (MFC-Dokumentvorlage). Nur die freie C-Funktion unten
+// wird tatsaechlich ueber die DLL-Grenze exportiert.
+class AFX_EXT_CLASS CEasyCashDocBridge : public CEasyCashDoc
 {
     DECLARE_DYNCREATE(CEasyCashDocBridge)
 
