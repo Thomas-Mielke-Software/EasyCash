@@ -206,11 +206,24 @@ namespace ECTEngine
             }
             _ausgabenKonten = ak;
 
+            // WICHTIG -- Cache-Schluesselformat:
+            // ECT_LadeEinstellungen legt Werte aus nicht-praefixierten ini-
+            // Sektionen (alles ausser Finanzamt/Einnahmen-/AusgabenRechnungs-
+            // posten) unter der Bracket-Form "[Sektion]IniKey" ab (siehe
+            // KuerzelFuerCache in EinstellungenExports.cpp). Presets, Betriebe
+            // und Bestandskonten liegen in solchen Sektionen ([Buchungsposten],
+            // [Betriebe], [Bestandskonten]) und MUESSEN deshalb mit dem
+            // Bracket-Praefix nachgeschlagen werden. Frueher speicherte der
+            // Cache fuer unbekannte Sektionen nur den nackten iniKey -- seit
+            // der Umstellung auf Bracket-Form (Fix fuer den CSV-Plugin-Lookup)
+            // lieferte der nackte Lookup hier leere Listen (u.a. fehlte der
+            // Bestandskonto-Anfangssaldo im Journal).
+
             // Presets: immer alle 100, Lücken erlaubt
             var ps = new List<Preset>(100);
             for (int i = 0; i < 100; i++)
             {
-                var pfx     = i.ToString("D2");
+                var pfx     = "[Buchungsposten]" + i.ToString("D2");
                 var text    = Hole(pfx + "Text");
                 var ausgabe = Hole(pfx + "Ausg") == "1";
                 var mwst    = HoleInt(pfx + "MWSt");
@@ -224,11 +237,11 @@ namespace ECTEngine
             var bt = new List<Betrieb>();
             for (int i = 0; i < 100; i++)
             {
-                var pfx  = i.ToString("D2");
-                var name = Hole("Betrieb" + pfx + "Name");
+                var pfx  = "[Betriebe]Betrieb" + i.ToString("D2");
+                var name = Hole(pfx + "Name");
                 if (string.IsNullOrEmpty(name)) break;
-                var ua   = Hole("Betrieb" + pfx + "Unternehmensart");
-                var icon = HoleInt("Betrieb" + pfx + "Icon");
+                var ua   = Hole(pfx + "Unternehmensart");
+                var icon = HoleInt(pfx + "Icon");
                 bt.Add(new Betrieb(name, ua, icon));
             }
             _betriebe = bt;
@@ -238,14 +251,14 @@ namespace ECTEngine
             var bk = new List<Bestandskonto>();
             for (int i = 0; i < 100; i++)
             {
-                var pfx  = i.ToString("D2");
-                var name = Hole("Bestandskonto" + pfx + "Name");
+                var pfx  = "[Bestandskonten]Bestandskonto" + i.ToString("D2");
+                var name = Hole(pfx + "Name");
                 if (string.IsNullOrEmpty(name)) break;
-                var icon  = HoleInt("Bestandskonto" + pfx + "Icon");
+                var icon  = HoleInt(pfx + "Icon");
                 var saldo = new Dictionary<int, decimal>();
                 for (int year = 1990; year <= 2049; year++)
                 {
-                    var saldoStr = Hole("Bestandskonto" + pfx + "Saldo" + year);
+                    var saldoStr = Hole(pfx + "Saldo" + year);
                     if (!string.IsNullOrEmpty(saldoStr))
                         saldo[year] = ParseSaldo(saldoStr);
                 }

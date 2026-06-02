@@ -889,7 +889,11 @@ namespace ECTViews.Journal
         private long HoleAnfangssaldoCent(string bestandskonto)
         {
             var bks  = Einstellungen.Bestandskonten;
-            int jahr = _doc.Jahr;
+            // Anfangssaldo des laufenden Jahres = gespeicherter Saldo des
+            // VORJAHRES (Uebertrag). Die ini speichert unter "Saldo<Y>" den
+            // Stand, der ins Jahr Y+1 uebernommen wird -- siehe natives
+            // UpdateBestandskonten (easycashview.cpp: ...Saldo%04d, nJahr-1).
+            int jahr = _doc.Jahr - 1;
             for (int i = 0; i < bks.Count; i++)
             {
                 if (bks[i].Name == bestandskonto)

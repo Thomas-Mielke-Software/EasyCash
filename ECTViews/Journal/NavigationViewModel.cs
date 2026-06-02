@@ -27,7 +27,7 @@ namespace ECTViews.Journal
     public class NavigationViewModel : ViewModelBase
     {
         private static readonly string[] cpMonat = {
-            "Januar", "Februar", "Maerz", "April", "Mai", "Juni",
+            "Januar", "Februar", "März", "April", "Mai", "Juni",
             "Juli", "August", "September", "Oktober", "November", "Dezember"
         };
 
