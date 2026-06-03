@@ -31,11 +31,38 @@ namespace ECTViews.Journal
         {
             // Vorherigen Subscriber lösen
             if (_vmSubscribed != null)
+            {
                 _vmSubscribed.ScrollIntoViewRequest -= OnScrollIntoViewRequest;
+                _vmSubscribed.MehrfachSelektionRequest -= OnMehrfachSelektion;
+            }
 
             _vmSubscribed = e.NewValue as JournalViewModel;
             if (_vmSubscribed != null)
+            {
                 _vmSubscribed.ScrollIntoViewRequest += OnScrollIntoViewRequest;
+                _vmSubscribed.MehrfachSelektionRequest += OnMehrfachSelektion;
+            }
+        }
+
+        /// <summary>
+        /// Selektiert mehrere Buchungszeilen auf einmal und scrollt zur letzten.
+        /// Verwendet die SelectedItems-API direkt (nicht bindbar), was bei
+        /// SelectionMode=Extended der robuste Weg für programmatische
+        /// Mehrfachauswahl ist.
+        /// </summary>
+        private void OnMehrfachSelektion(
+            System.Collections.Generic.IReadOnlyList<JournalBuchungRow> rows)
+        {
+            if (rows == null || rows.Count == 0) return;
+            // Asynchron, damit die Container nach einem evtl. vorausgegangenen
+            // Aktualisiere() schon aufgebaut sind.
+            Dispatcher.BeginInvoke(new System.Action(() =>
+            {
+                lstZeilen.SelectedItems.Clear();
+                foreach (var r in rows)
+                    lstZeilen.SelectedItems.Add(r);
+                ZentriereVertikal(rows[rows.Count - 1]);
+            }), System.Windows.Threading.DispatcherPriority.Background);
         }
 
         private void OnScrollIntoViewRequest(JournalRow row)
@@ -117,6 +144,16 @@ namespace ECTViews.Journal
                     e.Handled = true;
                     break;
             }
+        }
+
+        /// <summary>
+        /// Meldet die komplette Mehrfachauswahl an das ViewModel, das daraus
+        /// die Verfuegbarkeit der Kontextmenue-Befehle ableitet.
+        /// </summary>
+        private void OnSelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (DataContext is JournalViewModel vm)
+                vm.SetzeSelektion(lstZeilen.SelectedItems.OfType<JournalBuchungRow>());
         }
 
         private void OnZeilenDoppelklick(object sender, MouseButtonEventArgs e)

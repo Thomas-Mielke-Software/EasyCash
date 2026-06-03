@@ -401,6 +401,30 @@ namespace ECTBridge
             }
         }
 
+        void OnLoeschenMehrere(System::Collections::Generic::IList<ECTEngine::Buchung^>^ buchungen)
+        {
+            auto* bridge = static_cast<CEasyCashDocBridge*>(m_pBridge.ToPointer());
+            if (!bridge || buchungen == nullptr || buchungen->Count == 0) return;
+            auto eng = GetEngine(bridge);
+
+            // Encoding: \366 (Oktal = 0xF6 = cp1252 'oe-Umlaut') statt Literal,
+            // damit AfxMessageBox (MBCS) korrekt anzeigt, unabhaengig vom Dateiencoding.
+            CString frage;
+            if (buchungen->Count == 1)
+                frage.Format("Buchung '%s' wirklich l\366schen?",
+                    (LPCTSTR)ECTBridge::ToNative(buchungen[0]->Beschreibung));
+            else
+                frage.Format("%d Buchungen wirklich l\366schen?", buchungen->Count);
+            if (AfxMessageBox(frage, MB_YESNO | MB_DEFBUTTON2) != IDYES)
+                return;
+
+            for each (ECTEngine::Buchung^ b in buchungen)
+                eng->Buchungen->Remove(b);
+            bridge->SyncManagedToNative();
+            bridge->SetModifiedFlag("Buchungen ueber Journal geloescht");
+            ECTViews::Journal::JournalHost::AktualisiereOffenesJournal();
+        }
+
         void OnLoeschen(ECTEngine::Buchung^ b)
         {
             auto* bridge = static_cast<CEasyCashDocBridge*>(m_pBridge.ToPointer());
@@ -482,8 +506,9 @@ BOOL ECT_ZeigeJournal(void* pDocBridge, HWND hWndOwner)
 
         vm->BuchungBearbeiten += gcnew System::Action<ECTEngine::Buchung^>(
             handler, &ECTBridge::JournalEventHandler::OnBearbeiten);
-        vm->BuchungLoeschen += gcnew System::Action<ECTEngine::Buchung^>(
-            handler, &ECTBridge::JournalEventHandler::OnLoeschen);
+        vm->BuchungenLoeschen += gcnew System::Action<
+            System::Collections::Generic::IList<ECTEngine::Buchung^>^>(
+            handler, &ECTBridge::JournalEventHandler::OnLoeschenMehrere);
         vm->BuchungKopieren += gcnew System::Action<ECTEngine::Buchung^>(
             handler, &ECTBridge::JournalEventHandler::OnKopieren);
         vm->BuchungKopierenMitNeuerBelegnummer += gcnew System::Action<ECTEngine::Buchung^>(

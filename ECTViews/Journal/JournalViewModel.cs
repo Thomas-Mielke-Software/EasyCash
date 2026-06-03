@@ -122,6 +122,32 @@ namespace ECTViews.Journal
         // ScrolleZu*-Methoden ausgelöst.
         public event Action<JournalRow> ScrollIntoViewRequest;
 
+        // Event für Mehrfachauswahl: die View setzt damit ListBox.SelectedItems
+        // direkt (Code-Behind), weil SelectedItems nicht bindbar ist. Die
+        // letzte Zeile der Liste wird zusätzlich zentriert in den Blick gescrollt.
+        // Wird z.B. nach dem Ausführen von Dauerbuchungen ausgelöst.
+        public event Action<System.Collections.Generic.IReadOnlyList<JournalBuchungRow>> MehrfachSelektionRequest;
+
+        /// <summary>
+        /// Selektiert alle Buchungszeilen mit den angegebenen Uuids und scrollt
+        /// die zuletzt gefundene zentriert in den sichtbaren Bereich. Zeilen,
+        /// die zu keiner Uuid passen, bleiben unselektiert. Muss aufgerufen
+        /// werden, NACHDEM die Zeilenliste aufgebaut wurde (nach Aktualisiere).
+        /// </summary>
+        public void SelektiereBuchungen(IList<Guid> uuids)
+        {
+            if (uuids == null || uuids.Count == 0) return;
+            var set = new HashSet<Guid>(uuids);
+            var treffer = Zeilen.OfType<JournalBuchungRow>()
+                .Where(r => r.Buchung != null && set.Contains(r.Buchung.Uuid))
+                .ToList();
+            if (treffer.Count == 0) return;
+
+            // Primärselektion (für Kontextmenü/Tastatur) auf die letzte setzen.
+            SelektierteZeile = treffer[treffer.Count - 1];
+            MehrfachSelektionRequest?.Invoke(treffer);
+        }
+
         /// <summary>
         /// Sucht die erste Buchungs-Zeile mit passendem Monat in der
         /// gewünschten Buchungsart und scrollt sie in den sichtbaren
@@ -214,6 +240,34 @@ namespace ECTViews.Journal
             }
         }
 
+        // ----------------------------------------------
+        // Mehrfachauswahl
+        //
+        // Die View meldet bei jeder SelectionChanged die komplette
+        // ListBox-Selektion hierher (SelectedItems ist nicht bindbar).
+        // Die Command-CanExecute werten darauf aus: Aendern/Kopieren/
+        // Kopieren-mit-Beleg/AfA-Abgang nur bei GENAU EINER Selektion,
+        // Loeschen bei einer ODER mehreren (loescht dann alle).
+        // ----------------------------------------------
+        private readonly List<JournalBuchungRow> _selektierteZeilen =
+            new List<JournalBuchungRow>();
+
+        /// <summary>Anzahl aktuell selektierter Buchungszeilen.</summary>
+        public int AnzahlSelektiert => _selektierteZeilen.Count;
+
+        /// <summary>
+        /// Von der View bei SelectionChanged aufgerufen. Aktualisiert die
+        /// interne Mehrfachauswahl und stoesst eine Neubewertung der
+        /// Command-Verfuegbarkeit an.
+        /// </summary>
+        public void SetzeSelektion(IEnumerable<JournalBuchungRow> zeilen)
+        {
+            _selektierteZeilen.Clear();
+            if (zeilen != null)
+                _selektierteZeilen.AddRange(zeilen.Where(z => z != null && z.Buchung != null));
+            System.Windows.Input.CommandManager.InvalidateRequerySuggested();
+        }
+
         // Commands
         public ICommand BearbeitenCommand { get; }
         public ICommand LoeschenCommand { get; }
@@ -223,33 +277,45 @@ namespace ECTViews.Journal
 
         // Events
         public event Action<Buchung> BuchungBearbeiten;
-        public event Action<Buchung> BuchungLoeschen;
+        /// <summary>Loescht alle uebergebenen Buchungen (eine oder mehrere).</summary>
+        public event Action<System.Collections.Generic.IList<Buchung>> BuchungenLoeschen;
         public event Action<Buchung> BuchungKopieren;
         public event Action<Buchung> BuchungKopierenMitNeuerBelegnummer;
         public event Action<Buchung> BuchungAfaAbgang;
+
+        // Genau eine Buchung selektiert?
+        private bool GenauEine => _selektierteZeilen.Count == 1
+                                  && _selektierteZeilen[0].Buchung != null;
 
         public JournalViewModel(BuchungsDocument doc)
         {
             _doc = doc ?? throw new ArgumentNullException(nameof(doc));
 
             BearbeitenCommand = new RelayCommand(
-                () => BuchungBearbeiten?.Invoke(SelektierteZeile?.Buchung),
-                () => SelektierteZeile != null);
+                () => { if (GenauEine) BuchungBearbeiten?.Invoke(_selektierteZeilen[0].Buchung); },
+                () => GenauEine);
+            // Loeschen: eine ODER mehrere -- loescht alle Selektierten.
             LoeschenCommand = new RelayCommand(
-                () => BuchungLoeschen?.Invoke(SelektierteZeile?.Buchung),
-                () => SelektierteZeile != null);
+                () =>
+                {
+                    var liste = _selektierteZeilen
+                        .Where(z => z.Buchung != null)
+                        .Select(z => z.Buchung)
+                        .ToList();
+                    if (liste.Count > 0) BuchungenLoeschen?.Invoke(liste);
+                },
+                () => _selektierteZeilen.Count >= 1);
             KopierenCommand = new RelayCommand(
-                () => BuchungKopieren?.Invoke(SelektierteZeile?.Buchung),
-                () => SelektierteZeile != null);
+                () => { if (GenauEine) BuchungKopieren?.Invoke(_selektierteZeilen[0].Buchung); },
+                () => GenauEine);
             KopierenMitNeuerBelegnummerCommand = new RelayCommand(
-                () => BuchungKopierenMitNeuerBelegnummer?.Invoke(SelektierteZeile?.Buchung),
-                () => SelektierteZeile != null);
+                () => { if (GenauEine) BuchungKopierenMitNeuerBelegnummer?.Invoke(_selektierteZeilen[0].Buchung); },
+                () => GenauEine);
             AfaAbgangCommand = new RelayCommand(
-                () => BuchungAfaAbgang?.Invoke(SelektierteZeile?.Buchung),
-                // Nur für noch laufende Anlagen anbieten -- Abgang-Buchungen
+                () => { if (GenauEine) BuchungAfaAbgang?.Invoke(_selektierteZeilen[0].Buchung); },
+                // Nur bei genau einer noch laufenden Anlage -- Abgang-Buchungen
                 // (AfaJahre==1) können nicht nochmal ausgeschieden werden.
-                () => SelektierteZeile?.Buchung != null
-                   && SelektierteZeile.Buchung.AfaJahre > 1);
+                () => GenauEine && _selektierteZeilen[0].Buchung.AfaJahre > 1);
         }
 
         /// <summary>

@@ -165,6 +165,18 @@ namespace ECTViews.Journal
         }
 
         /// <summary>
+        /// Selektiert in allen aktiven Journals die Buchungen mit den
+        /// angegebenen Uuids und scrollt zur zuletzt gefundenen. Wird z.B.
+        /// nach dem Ausführen von Dauerbuchungen aufgerufen, um die neu
+        /// erzeugten Buchungen zu markieren.
+        /// </summary>
+        public static void SelektiereBuchungen(System.Collections.Generic.IList<Guid> uuids)
+        {
+            foreach (var e in _aktiveHosts)
+                e.ViewModel.SelektiereBuchungen(uuids);
+        }
+
+        /// <summary>
         /// Setzt nur die Schriftgroesse (Zoom) auf allen aktiven Journals,
         /// ohne die Filter zu berühren.
         /// </summary>

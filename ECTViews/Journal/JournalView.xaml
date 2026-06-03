@@ -430,7 +430,7 @@
         <ListBox x:Name="lstZeilen"
                  ItemsSource="{Binding Zeilen}"
                  SelectedItem="{Binding SelektierteZeile}"
-                 SelectionMode="Single"
+                 SelectionMode="Extended"
                  BorderThickness="0"
                  HorizontalContentAlignment="Stretch"
                  ScrollViewer.HorizontalScrollBarVisibility="Disabled"
@@ -442,7 +442,8 @@
                  KeyboardNavigation.DirectionalNavigation="Continue"
                  ItemContainerStyleSelector="{x:Static journal:JournalRowStyleSelector.Instance}"
                  MouseDoubleClick="OnZeilenDoppelklick"
-                 PreviewKeyDown="OnListBoxPreviewKeyDown">
+                 PreviewKeyDown="OnListBoxPreviewKeyDown"
+                 SelectionChanged="OnSelectionChanged">
             <ListBox.ContextMenu>
                 <ContextMenu>
                     <MenuItem Header="Ändern" Command="{Binding BearbeitenCommand}"/>

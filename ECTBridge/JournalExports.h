@@ -101,6 +101,17 @@ ECTBRIDGE_API void ECT_JournalAktualisiere(
 /// </summary>
 ECTBRIDGE_API void ECT_JournalSetzeZoom(double dSchriftgroesse);
 
+/// <summary>
+/// Selektiert in allen aktiven Journals die Buchungen, deren Uuid in der
+/// uebergebenen Liste steht, und scrollt zur zuletzt gefundenen Zeile
+/// (zentriert). Wird z.B. nach dem Ausfuehren von Dauerbuchungen genutzt,
+/// um die neu erzeugten Buchungen hervorzuheben.
+///
+/// pszUuids: mit ';' getrennte Uuid-Strings (Format "D"). Leere Eintraege
+///           werden ignoriert.
+/// </summary>
+ECTBRIDGE_API void ECT_JournalSelektiere(LPCSTR pszUuids);
+
 // ----------------------------------------------------------
 // Navigation-Pane (replaces CNavigation)
 // ----------------------------------------------------------

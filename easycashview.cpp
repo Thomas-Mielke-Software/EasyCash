@@ -5931,6 +5931,7 @@ void CEasyCashView::DauerbuchungenAusfuehren(int jb, int mb)
 	CDauerbuchung *dbp;
 	CEasyCashDoc* pDoc = GetDocument();
 	BOOL bDauerbuchungAusgefuehrt = FALSE;  // mind. eine Buchung erzeugt?
+	CPtrArray erzeugteBuchungen;            // neue CBuchung* fuer die Journal-Selektion
 
 	if (jb < 100 && jb > 37)
 	{
@@ -6011,6 +6012,7 @@ void CEasyCashView::DauerbuchungenAusfuehren(int jb, int mb)
 
 					*p = new CBuchung;
 					(*p)->next = NULL;
+					erzeugteBuchungen.Add(*p);   // fuer spaetere Journal-Selektion merken
 					
 					(*p)->Datum = dbp->AktualisiertBisDatum;					
 					CTimeSpan ts(dbp->Buchungstag-1, 0, 0, 0);
@@ -6230,7 +6232,23 @@ void CEasyCashView::DauerbuchungenAusfuehren(int jb, int mb)
 		CEasyCashDocBridge* bridge = (CEasyCashDocBridge*)pDoc;
 		bridge->SyncNativeToManaged();
 		if (IstJournalWpfAktiv())
+		{
 			AktualisiereJournalFilter();
+			// Neu erzeugte Buchungen im Journal markieren + zur letzten scrollen.
+			// Uuids stehen nach SyncNativeToManaged in den nativen CBuchung.
+			CString csUuids;
+			for (int iSel = 0; iSel < erzeugteBuchungen.GetSize(); iSel++)
+			{
+				CBuchung* pNeu = (CBuchung*)erzeugteBuchungen[iSel];
+				if (pNeu && !pNeu->Uuid.IsEmpty())
+				{
+					if (!csUuids.IsEmpty()) csUuids += ";";
+					csUuids += pNeu->Uuid;
+				}
+			}
+			if (!csUuids.IsEmpty())
+				ECT_JournalSelektiere(csUuids);
+		}
 	}
 #endif
 	// Recovery-Speichern jetzt einmal nachholen (in der Schleife mit dem 3.

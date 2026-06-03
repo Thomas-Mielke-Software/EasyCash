@@ -72,6 +72,25 @@ namespace
         return s;
     }
 
+    // Bringt einen beliebig geformten Aufrufer-Schluessel auf die KANONISCHE
+    // Cache-Form -- genau die Form, in der ECT_LadeEinstellungen die Werte
+    // ablegt (KuerzelFuerCache). Erst damit funktioniert ECT_HoleEinstellung
+    // mit allen ueblichen Schreibweisen:
+    //   - Kurzform     "fname"                    (Praefix-Sektion Finanzamt)
+    //   - nackter Key  "AbschreibungGenauigkeit"  (Sektion via IniSektion)
+    //   - explizit     "[Sektion]Key"
+    // Vorher machte Hole() nur einen ROHEN Lookup -> Einstellungen in nicht-
+    // praefixierten Sektionen (Allgemein, Druck, Persoenliche_Daten, ...) waren
+    // aus Plugins NUR mit expliziter Bracket-Form auffindbar.
+    std::string NormalisiereSchluessel(LPCSTR key)
+    {
+        if (!key || !*key) return std::string();
+        std::string sektion, iniKey;
+        if (!ZerlegeSchluessel(key, sektion, iniKey))
+            return std::string(key);
+        return KuerzelFuerCache(sektion.c_str(), iniKey.c_str());
+    }
+
     ref class WertGeaendertHandler
     {
     public:
@@ -192,38 +211,48 @@ void ECT_LadeEinstellungen()
 LPCSTR ECT_HoleEinstellung(LPCSTR key)
 {
     if (!key) { char* b = NaechsterBuffer(); b[0] = 0; return b; }
-    return ManagedStringZuBuffer(ECTEngine::Einstellungen::Hole(gcnew System::String(key)));
+    std::string norm = NormalisiereSchluessel(key);
+    return ManagedStringZuBuffer(ECTEngine::Einstellungen::Hole(
+        gcnew System::String(norm.c_str())));
 }
 
 void ECT_SpeichereEinstellung(LPCSTR key, LPCSTR value)
 {
     if (!key) return;
+    std::string norm = NormalisiereSchluessel(key);
     ECTEngine::Einstellungen::Speichere(
-        gcnew System::String(key),
+        gcnew System::String(norm.c_str()),
         gcnew System::String(value ? value : ""));
 }
 
 int ECT_HoleEinstellungInt(LPCSTR key, int defaultValue)
 {
-    return ECTEngine::Einstellungen::HoleInt(gcnew System::String(key), defaultValue);
+    if (!key) return defaultValue;
+    std::string norm = NormalisiereSchluessel(key);
+    return ECTEngine::Einstellungen::HoleInt(
+        gcnew System::String(norm.c_str()), defaultValue);
 }
 
 BOOL ECT_HoleEinstellungBool(LPCSTR key, BOOL defaultValue)
 {
+    if (!key) return defaultValue;
+    std::string norm = NormalisiereSchluessel(key);
     return ECTEngine::Einstellungen::HoleBool(
-        gcnew System::String(key), defaultValue ? true : false) ? TRUE : FALSE;
+        gcnew System::String(norm.c_str()), defaultValue ? true : false) ? TRUE : FALSE;
 }
 
 void ECT_SpeichereEinstellungInt(LPCSTR key, int value)
 {
     if (!key) return;
-    ECTEngine::Einstellungen::Speichere(gcnew System::String(key), value);
+    std::string norm = NormalisiereSchluessel(key);
+    ECTEngine::Einstellungen::Speichere(gcnew System::String(norm.c_str()), value);
 }
 
 void ECT_SpeichereEinstellungBool(LPCSTR key, BOOL value)
 {
     if (!key) return;
-    ECTEngine::Einstellungen::Speichere(gcnew System::String(key), value ? true : false);
+    std::string norm = NormalisiereSchluessel(key);
+    ECTEngine::Einstellungen::Speichere(gcnew System::String(norm.c_str()), value ? true : false);
 }
 
 // -----------------------------------------------------------------------------

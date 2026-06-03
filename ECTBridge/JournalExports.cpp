@@ -2,11 +2,11 @@
 //
 // Diese Datei muss mit /clr kompiliert werden (gemischter Modus).
 // Sie ruft die managed Klasse ECTViews::Journal::JournalEmbed auf,
-// die wiederum HwndSource-basiertes WPF-Hosting im Ã¼bergebenen
+// die wiederum HwndSource-basiertes WPF-Hosting im übergebenen
 // Parent-HWND macht.
 //
 // Compile-Voraussetzungen:
-//   - /clr Switch fÃ¼r dieses File (NICHT pure native)
+//   - /clr Switch für dieses File (NICHT pure native)
 //   - ECTViews.dll und ECTEngine.dll als Referenzen
 //   - Kein PCH (PrecompiledHeader=NotUsing)
 
@@ -21,10 +21,10 @@
 #using <System.dll>
 #using <WindowsBase.dll>
 
-// Aus ECTBridge/ectifacemisc.cpp (frÃ¼her ECTIFace): liefert den
+// Aus ECTBridge/ectifacemisc.cpp (früher ECTIFace): liefert den
 // Kontonamen, der mit dem angegebenen EUER- bzw. UVA-Formularfeld
-// verknÃ¼pft ist, oder NULL, wenn keine Verknuepfung existiert. Wird
-// von OnAfaAbgang benÃ¶tigt, um das Restwert-Konto zu finden.
+// verknüpft ist, oder NULL, wenn keine Verknuepfung existiert. Wird
+// von OnAfaAbgang benötigt, um das Restwert-Konto zu finden.
 extern "C" AFX_EXT_CLASS char* HoleKontoFuerFeld(
     char ea, LPCSTR eurech_feld, LPCSTR uva_feld);
 
@@ -40,11 +40,11 @@ static System::String^ ToManagedString(LPCSTR psz)
 }
 
 // ----------------------------------------------------------
-// JournalEventHandler - hÃ¤lt Native-Pointer als IntPtr-Felder
-// und liefert die Methoden, die als Delegate-Targets fÃ¼r die
-// ViewModel-Events dienen. C++/CLI-Lambdas kÃ¶nnen keine managed
+// JournalEventHandler - hält Native-Pointer als IntPtr-Felder
+// und liefert die Methoden, die als Delegate-Targets für die
+// ViewModel-Events dienen. C++/CLI-Lambdas können keine managed
 // Variablen capturen und Delegates brauchen managed Method-Pointers,
-// daher dieser Umweg Ã¼ber eine ref class.
+// daher dieser Umweg über eine ref class.
 // ----------------------------------------------------------
 
 // Liefert den Index einer Buchung in der aktuellen Liste, mit Fallback
@@ -78,9 +78,9 @@ public:
         int idx = FindeBuchungIdx(GetEngine(bridge), b);
         if (idx >= 0)
         {
-            // Bei Cancel (Dialog gibt FALSE zurÃ¼ck) wird kein Rebuild nÃ¶tig --
-            // spart Sortierung. Die nÃ¤chste Bearbeiten-Anfrage findet den
-            // Index dank Uuid-Fallback in FindeBuchungIdx auch Ã¼ber stale
+            // Bei Cancel (Dialog gibt FALSE zurück) wird kein Rebuild nötig --
+            // spart Sortierung. Die nächste Bearbeiten-Anfrage findet den
+            // Index dank Uuid-Fallback in FindeBuchungIdx auch über stale
             // Buchung^-Referenzen, die durch das eingangs gerufene
             // SyncNativeToManaged entstanden sind.
             if (ECT_ShowBuchungBearbeitenDialog(bridge, idx, hwnd))
@@ -88,24 +88,43 @@ public:
         }
     }
 
-    void OnLoeschen(ECTEngine::Buchung^ b)
+    // Loescht eine ODER mehrere Buchungen (Mehrfachauswahl im Journal).
+    // HINWEIS Encoding: Diese Datei ist cp1252-kodiert (wie ViewExports.cpp); AfxMessageBox ist
+    // MBCS (cp1252). Umlaute als UTF-8-Literal wuerden vermurkst ("loeschen").
+    // Darum den ASCII-unabhaengigen Oktal-Escape \366 (= 0xF6 = cp1252 'ö')
+    // verwenden -- erscheint korrekt, egal wie die Datei gespeichert ist.
+    void OnLoeschenMehrere(System::Collections::Generic::IList<ECTEngine::Buchung^>^ buchungen)
     {
         auto* bridge = static_cast<CEasyCashDocBridge*>(m_pBridge.ToPointer());
-        if (!bridge || !b) return;
+        if (!bridge || buchungen == nullptr || buchungen->Count == 0) return;
         auto eng = GetEngine(bridge);
-        int delIdx = FindeBuchungIdx(eng, b);
-        if (delIdx < 0) return;
-        auto realB = eng->Buchungen[delIdx];
 
         CString frage;
-        frage.Format("Buchung '%s' wirklich lÃ¶schen?",
-            (LPCTSTR)CString(realB->Beschreibung));
+        if (buchungen->Count == 1)
+        {
+            int idx = FindeBuchungIdx(eng, buchungen[0]);
+            CString desc = (idx >= 0)
+                ? CString(eng->Buchungen[idx]->Beschreibung)
+                : CString(buchungen[0]->Beschreibung);
+            frage.Format("Buchung '%s' wirklich l\366schen?", (LPCTSTR)desc);
+        }
+        else
+        {
+            frage.Format("%d Buchungen wirklich l\366schen?", buchungen->Count);
+        }
         if (AfxMessageBox(frage, MB_YESNO | MB_DEFBUTTON2) != IDYES)
             return;
 
-        eng->Buchungen->RemoveAt(delIdx);
+        // Alle selektierten Buchungen per Uuid finden und entfernen. Der
+        // Index wird pro Buchung neu ermittelt, weil RemoveAt die Liste
+        // umnummeriert.
+        for each (ECTEngine::Buchung^ b in buchungen)
+        {
+            int i = FindeBuchungIdx(eng, b);
+            if (i >= 0) eng->Buchungen->RemoveAt(i);
+        }
         bridge->SyncManagedToNative();
-        bridge->SetModifiedFlag("Buchung Ã¼ber Journal gelÃ¶scht");
+        bridge->SetModifiedFlag("Buchungen ueber Journal geloescht");
         ECTViews::Journal::JournalEmbed::AktualisiereAlle(nullptr);
     }
 
@@ -117,7 +136,7 @@ public:
 
         auto eng = GetEngine(bridge);
         auto klon = b->Clone();
-        klon->Uuid = System::Guid::NewGuid();   // neue Identitaet fÃ¼r den Klon
+        klon->Uuid = System::Guid::NewGuid();   // neue Identitaet für den Klon
         eng->Buchungen->Add(klon);
         eng->Sort();
         bridge->SyncManagedToNative();
@@ -129,10 +148,10 @@ public:
         }
         else
         {
-            // Cancel: den vorbereiteten Klon wieder zurÃ¼cknehmen, sonst
-            // bliebe ein leerer/identischer Eintrag im Dokument hÃ¤ngen.
+            // Cancel: den vorbereiteten Klon wieder zurücknehmen, sonst
+            // bliebe ein leerer/identischer Eintrag im Dokument hängen.
             // Klon-Referenz ist nach SyncNativeToManaged stale, deshalb
-            // Ã¼ber Uuid suchen.
+            // über Uuid suchen.
             int klonIdx = FindeBuchungIdx(eng, klon);
             if (klonIdx >= 0)
                 eng->Buchungen->RemoveAt(klonIdx);
@@ -148,7 +167,7 @@ public:
 
         auto eng = GetEngine(bridge);
         auto klon = b->Clone();
-        klon->Uuid = System::Guid::NewGuid();   // neue Identitaet fÃ¼r den Klon
+        klon->Uuid = System::Guid::NewGuid();   // neue Identitaet für den Klon
         klon->Belegnummer = (klon->Art == ECTEngine::Buchungsart::Einnahme)
             ? eng->LaufendeBelegnrEinnahmen.ToString()
             : eng->LaufendeBelegnrAusgaben.ToString();
@@ -163,7 +182,7 @@ public:
         }
         else
         {
-            // Cancel: den vorbereiteten Klon wieder zurÃ¼cknehmen.
+            // Cancel: den vorbereiteten Klon wieder zurücknehmen.
             int klonIdx = FindeBuchungIdx(eng, klon);
             if (klonIdx >= 0)
                 eng->Buchungen->RemoveAt(klonIdx);
@@ -180,16 +199,16 @@ public:
         auto eng = GetEngine(bridge);
 
         // Stale-Referenz absichern: nach SyncNativeToManaged-Zyklen kann
-        // sich die managed Buchung^-Instanz geÃ¤ndert haben. Wir suchen die
+        // sich die managed Buchung^-Instanz geändert haben. Wir suchen die
         // aktuelle Instanz per Uuid.
         int idx = FindeBuchungIdx(eng, b);
         if (idx < 0) return;
         ECTEngine::Buchung^ aktuelle = eng->Buchungen[idx];
 
         CString frage;
-        frage.Format("Anlagengegenstand '%s' aus dem BetriebsvermÃ¶gen ausscheiden lassen?\n\n"
+        frage.Format("Anlagengegenstand '%s' aus dem Betriebsvermögen ausscheiden lassen?\n\n"
                      "Die AfA-Buchung wird dabei in eine einfache Ausgaben-Buchung"
-                     " Ã¼ber den Restwert umgewandelt.",
+                     " über den Restwert umgewandelt.",
                      (LPCTSTR)CString(aktuelle->Beschreibung));
         if (AfxMessageBox(frage, MB_YESNO | MB_ICONQUESTION) != IDYES)
             return;
@@ -206,13 +225,13 @@ public:
         }
         else
         {
-            csKonto = "Restbuchwert abgegangener AnlagegÃ¼ter";
+            csKonto = "Restbuchwert abgegangener Anlagegüter";
             CString hinweis;
             hinweis.Format(
-                "Es wurde kein Konto gefunden, das mit dem Formularfeld %s verknÃ¼pft ist. "
+                "Es wurde kein Konto gefunden, das mit dem Formularfeld %s verknüpft ist. "
                 "Deshalb wurde in der Buchung provisorisch das Konto '%s' eingetragen. "
                 "Wenn Sie Formulare benutzen, sollten Sie dieses Ausgabenkonto in den "
-                "Einstellungen -> E/Ãœber-Konten anlegen und dem %s-Formularfeld %s zuweisen.",
+                "Einstellungen -> E/Über-Konten anlegen und dem %s-Formularfeld %s zuweisen.",
                 (LPCTSTR)CString(feldNr), (LPCTSTR)csKonto,
                 (land == 1) ? "E1a" : "EUR",
                 (LPCTSTR)CString(feldNr));
@@ -230,7 +249,7 @@ public:
             (CString)"Anlagengut '" +
             ECTBridge::ToNative(aktuelle->Erweiterungen->Hole(
                 "EasyCash", "UrspruenglichesKonto", "")) +
-            "' aus dem BetriebsvermÃ¶gen entnommen");
+            "' aus dem Betriebsvermögen entnommen");
         ECTViews::Journal::JournalEmbed::AktualisiereAlle(nullptr);
     }
 };
@@ -277,8 +296,9 @@ HWND ECT_JournalEinbetten(
 
             vm->BuchungBearbeiten += gcnew System::Action<ECTEngine::Buchung^>(
                 handler, &JournalEventHandler::OnBearbeiten);
-            vm->BuchungLoeschen += gcnew System::Action<ECTEngine::Buchung^>(
-                handler, &JournalEventHandler::OnLoeschen);
+            vm->BuchungenLoeschen += gcnew System::Action<
+                System::Collections::Generic::IList<ECTEngine::Buchung^>^>(
+                handler, &JournalEventHandler::OnLoeschenMehrere);
             vm->BuchungKopieren += gcnew System::Action<ECTEngine::Buchung^>(
                 handler, &JournalEventHandler::OnKopieren);
             vm->BuchungKopierenMitNeuerBelegnummer += gcnew System::Action<ECTEngine::Buchung^>(
@@ -378,6 +398,36 @@ void ECT_JournalSetzeZoom(double dSchriftgroesse)
     catch (Exception^ ex)
     {
         CString msg = L"Fehler in ECT_JournalSetzeZoom: ";
+        msg += CString(ex->Message);
+        AfxMessageBox(msg, MB_ICONERROR);
+    }
+}
+
+// ----------------------------------------------------------
+// ECT_JournalSelektiere - mehrere Buchungen per Uuid markieren
+// ----------------------------------------------------------
+void ECT_JournalSelektiere(LPCSTR pszUuids)
+{
+    try
+    {
+        if (!pszUuids || !*pszUuids) return;
+
+        auto uuids = gcnew System::Collections::Generic::List<System::Guid>();
+        System::String^ alle = gcnew System::String(pszUuids);
+        array<wchar_t>^ trenner = { L';' };
+        for each (System::String^ teil in alle->Split(
+            trenner, System::StringSplitOptions::RemoveEmptyEntries))
+        {
+            System::Guid g;
+            if (System::Guid::TryParse(teil->Trim(), g))
+                uuids->Add(g);
+        }
+        if (uuids->Count > 0)
+            ECTViews::Journal::JournalEmbed::SelektiereBuchungen(uuids);
+    }
+    catch (Exception^ ex)
+    {
+        CString msg = L"Fehler in ECT_JournalSelektiere: ";
         msg += CString(ex->Message);
         AfxMessageBox(msg, MB_ICONERROR);
     }
