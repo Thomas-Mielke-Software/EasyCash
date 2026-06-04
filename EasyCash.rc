@@ -2179,6 +2179,10 @@ END
 STRINGTABLE
 BEGIN
     ID_FILE_BACKUP          "Erstellt eine Datensicherung in einem Unterverzeichnis des Datenverzeichnisses.\nDatensicherung"
+    ID_FILE_BACKUP_SUBFOLDER 
+                            "Erstellt eine Datensicherung in einem Unterverzeichnis des Datenverzeichnisses.\nDatensicherung Unterverzeichnis"
+    ID_FILE_BACKUP_EXTERNAL 
+                            "Erstellt eine Datensicherung auf einem externen Laufwerk oder USB-Stick.\nDatensicherung externes Laufwerk"
     ID_FILE_REGISTRIERUNGSINFORMATIONEN_SICHERN 
                             "Sichert weniger essenzielle Programmeinstellungen wie Registriercode oder Pfad des Datenverzeichnisses.\n&Registrierungsinformationen sichern"
 END
