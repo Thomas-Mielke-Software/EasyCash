@@ -7490,6 +7490,28 @@ void CEasyCashView::OnMButtonUp(UINT nFlags, CPoint point)
 void CEasyCashView::OnActivateView(BOOL bActivate, CView* pActivateView, CView* pDeactiveView) 
 {
 	CScrollView::OnActivateView(bActivate, pActivateView, pDeactiveView);
+	// ----------------------------------------------------------
+	// Beim Aktivieren eines Dokuments dessen Pfad als "LetzteDatei"
+	// festhalten. Sonst verweist LetzteDatei nur auf die zuletzt
+	// geöffnete/gespeicherte Datei statt auf das beim Beenden
+	// tatsächlich aktive Dokument (siehe Issue #1): War eine zweite
+	// Datei geöffnet und wird sie wieder geschlossen, bliebe
+	// LetzteDatei sonst fälschlich auf der geschlossenen Datei stehen.
+	// ----------------------------------------------------------
+	if (bActivate)
+	{
+		CEasyCashDoc *pDoc = GetDocument();
+		if (pDoc)
+		{
+			CString csPathName = pDoc->GetPathName();
+			if (!csPathName.IsEmpty())
+			{
+				char IniFileName[500];
+				if (GetIniFileName(IniFileName, sizeof(IniFileName)))
+					WritePrivateProfileString("Allgemein", "LetzteDatei", (LPCTSTR)csPathName, IniFileName);
+			}
+		}
+	}
 /*
 	if (bActivate)
 	{
