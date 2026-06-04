@@ -347,6 +347,7 @@ namespace ECTViews.ViewModels
                         AfaHinweis = "";
                     }
                     ValidiereFeldFallsAktiv(ValidiereAfa);
+                    OnPropertyChanged(nameof(AbgangButtonSichtbar));
                 }
             }
         }
@@ -366,6 +367,7 @@ namespace ECTViews.ViewModels
                     PruefeDegressivWechsel();
                     BerechneRestwertHeuristisch(bewahreVorhandenenHinweis: true);
                     ValidiereFeldFallsAktiv(ValidiereAfa);
+                    OnPropertyChanged(nameof(AbgangButtonSichtbar));
                 }
             }
         }
@@ -381,6 +383,7 @@ namespace ECTViews.ViewModels
                     PruefeDegressivWechsel();
                     BerechneRestwertHeuristisch(bewahreVorhandenenHinweis: true);
                     ValidiereFeldFallsAktiv(ValidiereAfa);
+                    OnPropertyChanged(nameof(AbgangButtonSichtbar));
                 }
             }
         }
@@ -392,7 +395,10 @@ namespace ECTViews.ViewModels
             set
             {
                 if (SetProperty(ref _afaRestwertCent, value))
+                {
                     OnPropertyChanged(nameof(AfaRestwertText));
+                    OnPropertyChanged(nameof(AbgangButtonSichtbar));
+                }
             }
         }
 
@@ -421,6 +427,7 @@ namespace ECTViews.ViewModels
                     _afaRestwertCent = neuerCent;
                     OnPropertyChanged(nameof(AfaRestwertCent));
                     OnPropertyChanged(nameof(AfaRestwertText));
+                    OnPropertyChanged(nameof(AbgangButtonSichtbar));
                 }
             }
         }
@@ -464,6 +471,48 @@ namespace ECTViews.ViewModels
                     BerechneRestwertHeuristisch(bewahreVorhandenenHinweis: true);
                     ValidiereFeldFallsAktiv(ValidiereAfa);
                 }
+            }
+        }
+
+        // ----------------------------------------------
+        // AfA-Abgang ("Abgang buchen")
+        //
+        // Pendant zum gleichnamigen Button im MFC-BuchenDlg und zum
+        // Kontextmenue-Eintrag "AfA-Abgang buchen" im WPF-Journal. Die
+        // eigentliche Mutation passiert nativ in der Bridge (ECTBridge_-
+        // FuehreAfaAbgang); das ViewModel signalisiert nur den Wunsch und
+        // schliesst den Dialog. AbgangErlaubt wird vom ViewHost nur fuer
+        // die echten Bearbeiten-Pfade gesetzt (nicht beim Kopieren/Neu).
+        // ----------------------------------------------
+
+        private bool _abgangErlaubt;
+        public bool AbgangErlaubt
+        {
+            get => _abgangErlaubt;
+            set
+            {
+                if (SetProperty(ref _abgangErlaubt, value))
+                    OnPropertyChanged(nameof(AbgangButtonSichtbar));
+            }
+        }
+
+        /// <summary>True wenn der Benutzer "Abgang buchen" geklickt hat.</summary>
+        public bool AbgangGewuenscht { get; private set; }
+
+        /// <summary>
+        /// Sichtbarkeit des "Abgang buchen"-Buttons. Analog zur korrigierten
+        /// Logik in buchendlg.cpp::InitRestwert (m_ppb && n > 1 && Restwert):
+        /// nur bei Bearbeitung einer bestehenden, mehrjaehrigen AfA-Buchung in
+        /// einem Folgejahr (Nr > 1) mit vorhandenem Restwert.
+        /// </summary>
+        public bool AbgangButtonSichtbar
+        {
+            get
+            {
+                if (!AbgangErlaubt || !AfaAktiviert) return false;
+                int jahre = int.TryParse(_afaJahre, out var j) ? j : 0;
+                int nr    = int.TryParse(_afaNr,   out var n) ? n : 0;
+                return jahre > 1 && nr > 1 && AfaRestwertCent != 0;
             }
         }
 
@@ -542,6 +591,7 @@ namespace ECTViews.ViewModels
 
         public ICommand OkCommand { get; }
         public ICommand AbbrechenCommand { get; }
+        public ICommand AbgangBuchenCommand { get; }
 
         // ----------------------------------------------
         // Referenz auf das Dokument (für Konten, Belegnummern, etc.)
@@ -575,6 +625,7 @@ namespace ECTViews.ViewModels
 
             OkCommand = new RelayCommand(OnOk, CanOk);
             AbbrechenCommand = new RelayCommand(OnAbbrechen);
+            AbgangBuchenCommand = new RelayCommand(OnAbgangBuchen, () => AbgangButtonSichtbar);
 
             LadeKonten();
         }
@@ -872,6 +923,22 @@ namespace ECTViews.ViewModels
         private void OnAbbrechen()
         {
             Bestaetigt = false;
+            Ergebnis = null;
+            RequestClose?.Invoke();
+        }
+
+        /// <summary>
+        /// "Abgang buchen": signalisiert dem nativen Aufrufer (ViewExports),
+        /// dass fuer die bearbeitete Buchung ein AfA-Abgang durchgefuehrt
+        /// werden soll, und schliesst den Dialog. Bestaetigung und die
+        /// eigentliche Buchungs-Mutation passieren danach nativ (gleiche
+        /// Logik wie der Journal-Kontextmenue-Eintrag).
+        /// </summary>
+        private void OnAbgangBuchen()
+        {
+            if (!AbgangButtonSichtbar) return;
+            AbgangGewuenscht = true;
+            Bestaetigt = false;   // kein normales Speichern
             Ergebnis = null;
             RequestClose?.Invoke();
         }

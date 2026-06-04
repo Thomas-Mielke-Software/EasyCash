@@ -15,6 +15,7 @@
 #include "ViewExports.h"            // ECT_ShowBuchungBearbeitenDialog
 #include "EasyCashDocBridge.h"      // CEasyCashDocBridge + GetEngine(bridge)
 #include "Marshalling.h"            // ECTBridge::ToNative / ToManaged
+#include "AfaAbgangShared.h"     // ECTBridge_FuehreAfaAbgang (geteilt mit ViewExports)
 
 #using "ECTEngine.dll"
 #using "ECTViews.dll"
@@ -194,63 +195,12 @@ public:
     {
         auto* bridge = static_cast<CEasyCashDocBridge*>(m_pBridge.ToPointer());
         if (!bridge || !b) return;
-        if (b->AfaJahre <= 1) return;  // nur Anlagen mit laufender AfA
-
         auto eng = GetEngine(bridge);
-
-        // Stale-Referenz absichern: nach SyncNativeToManaged-Zyklen kann
-        // sich die managed Buchung^-Instanz geändert haben. Wir suchen die
-        // aktuelle Instanz per Uuid.
+        // Stale-Referenz absichern (Uuid-Fallback nach Sync-Zyklen),
+        // dann die gemeinsame Abgang-Logik aufrufen.
         int idx = FindeBuchungIdx(eng, b);
         if (idx < 0) return;
-        ECTEngine::Buchung^ aktuelle = eng->Buchungen[idx];
-
-        CString frage;
-        frage.Format("Anlagengegenstand '%s' aus dem Betriebsvermögen ausscheiden lassen?\n\n"
-                     "Die AfA-Buchung wird dabei in eine einfache Ausgaben-Buchung"
-                     " über den Restwert umgewandelt.",
-                     (LPCTSTR)CString(aktuelle->Beschreibung));
-        if (AfxMessageBox(frage, MB_YESNO | MB_ICONQUESTION) != IDYES)
-            return;
-
-        // Restbuchwert-Konto aus den Einstellungen ermitteln. Logik 1:1 aus
-        // dem nativen AfAAbgang (easycashview.cpp:7015-7028).
-        int land = ECTEngine::Einstellungen::HoleInt("land", 0);
-        LPCSTR feldNr = (land == 1) ? "9210" : "1135";
-        char* pKonto = HoleKontoFuerFeld('A', feldNr, NULL);
-        CString csKonto;
-        if (pKonto)
-        {
-            csKonto = pKonto;
-        }
-        else
-        {
-            csKonto = "Restbuchwert abgegangener Anlagegüter";
-            CString hinweis;
-            hinweis.Format(
-                "Es wurde kein Konto gefunden, das mit dem Formularfeld %s verknüpft ist. "
-                "Deshalb wurde in der Buchung provisorisch das Konto '%s' eingetragen. "
-                "Wenn Sie Formulare benutzen, sollten Sie dieses Ausgabenkonto in den "
-                "Einstellungen -> E/Über-Konten anlegen und dem %s-Formularfeld %s zuweisen.",
-                (LPCTSTR)CString(feldNr), (LPCTSTR)csKonto,
-                (land == 1) ? "E1a" : "EUR",
-                (LPCTSTR)CString(feldNr));
-            AfxMessageBox(hinweis, MB_ICONINFORMATION);
-        }
-
-        // Engine-Methode macht die eigentliche Mutation
-        if (!eng->AfaAbgang(aktuelle,
-            gcnew System::String((LPCTSTR)csKonto)))
-            return;
-
-        eng->Sort();
-        bridge->SyncManagedToNative();
-        bridge->SetModifiedFlag(
-            (CString)"Anlagengut '" +
-            ECTBridge::ToNative(aktuelle->Erweiterungen->Hole(
-                "EasyCash", "UrspruenglichesKonto", "")) +
-            "' aus dem Betriebsvermögen entnommen");
-        ECTViews::Journal::JournalEmbed::AktualisiereAlle(nullptr);
+        ECTBridge_FuehreAfaAbgang(bridge, eng->Buchungen[idx]);
     }
 };
 
@@ -501,4 +451,64 @@ extern "C" ECTBRIDGE_API void ECT_JournalSendKey(UINT nChar)
         AfxTrace("ECT_JournalSendKey: Exception - %S\r\n", 
             (LPCTSTR)CString(ex->Message));
     }
+}
+
+// ----------------------------------------------------------
+// Gemeinsame AfA-Abgang-Logik (Journal-Kontextmenue UND Dialog-Button).
+// Deklaration in AfaAbgangShared.h. 'aktuelle' muss die aktuelle managed
+// Instanz aus eng->Buchungen sein (nicht stale).
+// ----------------------------------------------------------
+bool ECTBridge_FuehreAfaAbgang(CEasyCashDocBridge* bridge, ECTEngine::Buchung^ aktuelle)
+{
+    if (!bridge || aktuelle == nullptr) return false;
+    if (aktuelle->AfaJahre <= 1) return false;  // nur Anlagen mit laufender AfA
+    auto eng = GetEngine(bridge);
+
+        CString frage;
+        frage.Format("Anlagengegenstand '%s' aus dem Betriebsvermögen ausscheiden lassen?\n\n"
+                     "Die AfA-Buchung wird dabei in eine einfache Ausgaben-Buchung"
+                     " über den Restwert umgewandelt.",
+                     (LPCTSTR)CString(aktuelle->Beschreibung));
+        if (AfxMessageBox(frage, MB_YESNO | MB_ICONQUESTION) != IDYES)
+            return false;
+
+        // Restbuchwert-Konto aus den Einstellungen ermitteln. Logik 1:1 aus
+        // dem nativen AfAAbgang (easycashview.cpp:7015-7028).
+        int land = ECTEngine::Einstellungen::HoleInt("land", 0);
+        LPCSTR feldNr = (land == 1) ? "9210" : "1135";
+        char* pKonto = HoleKontoFuerFeld('A', feldNr, NULL);
+        CString csKonto;
+        if (pKonto)
+        {
+            csKonto = pKonto;
+        }
+        else
+        {
+            csKonto = "Restbuchwert abgegangener Anlagegüter";
+            CString hinweis;
+            hinweis.Format(
+                "Es wurde kein Konto gefunden, das mit dem Formularfeld %s verknüpft ist. "
+                "Deshalb wurde in der Buchung provisorisch das Konto '%s' eingetragen. "
+                "Wenn Sie Formulare benutzen, sollten Sie dieses Ausgabenkonto in den "
+                "Einstellungen -> E/Über-Konten anlegen und dem %s-Formularfeld %s zuweisen.",
+                (LPCTSTR)CString(feldNr), (LPCTSTR)csKonto,
+                (land == 1) ? "E1a" : "EUR",
+                (LPCTSTR)CString(feldNr));
+            AfxMessageBox(hinweis, MB_ICONINFORMATION);
+        }
+
+        // Engine-Methode macht die eigentliche Mutation
+        if (!eng->AfaAbgang(aktuelle,
+            gcnew System::String((LPCTSTR)csKonto)))
+            return false;
+
+        eng->Sort();
+        bridge->SyncManagedToNative();
+        bridge->SetModifiedFlag(
+            (CString)"Anlagengut '" +
+            ECTBridge::ToNative(aktuelle->Erweiterungen->Hole(
+                "EasyCash", "UrspruenglichesKonto", "")) +
+            "' aus dem Betriebsvermögen entnommen");
+        ECTViews::Journal::JournalEmbed::AktualisiereAlle(nullptr);
+    return true;
 }

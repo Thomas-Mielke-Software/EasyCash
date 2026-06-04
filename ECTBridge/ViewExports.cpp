@@ -12,6 +12,7 @@
 #include "EasyCashDocBridge.h"
 #include "EngineHost.h"
 #include "Marshalling.h"
+#include "AfaAbgangShared.h"   // ECTBridge_FuehreAfaAbgang (geteilt mit JournalExports)
 
 #using "ECTEngine.dll"
 #using "ECTViews.dll"
@@ -88,10 +89,19 @@ BOOL ECT_ShowBuchungBearbeitenDialog(
 
         // WPF-Dialog anzeigen
         IntPtr hwnd = IntPtr((void*)hWndOwner);
-        ECTEngine::Buchung^ geaendert =
-            ECTViews::ViewHost::ZeigeBuchungBearbeitenDialog(
+        auto ergebnis =
+            ECTViews::ViewHost::ZeigeBuchungBearbeitenDialogMitAbgang(
                 engine, original, hwnd);
 
+        // "Abgang buchen": gleiche AfA-Abgang-Logik wie der Journal-
+        // Kontextmenue-Eintrag, ausgefuehrt auf der bearbeiteten Buchung.
+        if (ergebnis->AbgangGewuenscht)
+        {
+            ECTBridge_FuehreAfaAbgang(bridge, original);
+            return TRUE;
+        }
+
+        ECTEngine::Buchung^ geaendert = ergebnis->Buchung;
         if (geaendert == nullptr)
             return FALSE;  // Abgebrochen
 
@@ -156,10 +166,19 @@ BOOL ECT_ShowBuchungBearbeitenDialogFuerPointer(
 
         // WPF-Dialog mit der gefundenen Original-Buchung anzeigen
         IntPtr hwnd = IntPtr((void*)hWndOwner);
-        ECTEngine::Buchung^ geaendert =
-            ECTViews::ViewHost::ZeigeBuchungBearbeitenDialog(
+        auto ergebnis =
+            ECTViews::ViewHost::ZeigeBuchungBearbeitenDialogMitAbgang(
                 engine, original, hwnd);
 
+        // "Abgang buchen": gleiche AfA-Abgang-Logik wie der Journal-
+        // Kontextmenue-Eintrag, ausgefuehrt auf der bearbeiteten Buchung.
+        if (ergebnis->AbgangGewuenscht)
+        {
+            ECTBridge_FuehreAfaAbgang(bridge, original);
+            return TRUE;
+        }
+
+        ECTEngine::Buchung^ geaendert = ergebnis->Buchung;
         if (geaendert == nullptr)
             return FALSE;  // Abgebrochen
 

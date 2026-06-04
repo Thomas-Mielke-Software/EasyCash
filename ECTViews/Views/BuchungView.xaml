@@ -365,6 +365,7 @@
                         <ColumnDefinition Width="Auto"/>
                         <ColumnDefinition Width="60"/>
                         <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="90"/>
                         <ColumnDefinition Width="*"/>
                     </Grid.ColumnDefinitions>
                     <Grid.RowDefinitions>
@@ -389,6 +390,14 @@
                     <TextBox Grid.Row="0" Grid.Column="5"
                              Text="{Binding AfaRestwertText, UpdateSourceTrigger=LostFocus}"
                              TextAlignment="Right"/>
+
+                    <!-- [Abgang buchen]: nur bei bestehender, mehrjaehriger AfA mit Restwert -->
+                    <Button Grid.Row="0" Grid.Column="6"
+                            Content="Abgang buchen"
+                            Command="{Binding AbgangBuchenCommand}"
+                            Visibility="{Binding AbgangButtonSichtbar, Converter={StaticResource BoolToVis}}"
+                            HorizontalAlignment="Left" VerticalAlignment="Center"
+                            Margin="12,0,0,0" Padding="10,2"/>
 
                     <CheckBox Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2"
                               Content="Degressiv"

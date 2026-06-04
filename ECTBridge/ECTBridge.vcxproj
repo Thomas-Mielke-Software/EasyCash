@@ -186,6 +186,7 @@
     <ClInclude Include="BuchungConverter.h" />
     <ClInclude Include="Exports.h" />
     <ClInclude Include="ViewExports.h" />
+    <ClInclude Include="AfaAbgangShared.h" />
     <ClInclude Include="EinstellungenExports.h" />
     <ClInclude Include="XMLite.h" />
   </ItemGroup>

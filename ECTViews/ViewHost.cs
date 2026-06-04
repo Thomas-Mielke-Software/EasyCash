@@ -155,14 +155,39 @@ namespace ECTViews
         }
 
         /// <summary>
-        /// Zeigt den Dialog zur Bearbeitung einer bestehenden Buchung.
+        /// Zeigt den Dialog zur Bearbeitung einer bestehenden Buchung
+        /// (ohne "Abgang buchen"-Button -- z.B. beim Kopieren).
         /// </summary>
         public static Buchung ZeigeBuchungBearbeitenDialog(
             BuchungsDocument doc, Buchung buchung, IntPtr ownerHwnd = default)
         {
+            var vm = ZeigeBearbeitenInternal(doc, buchung, ownerHwnd, abgangErlaubt: false);
+            return vm.Bestaetigt ? vm.Ergebnis : null;
+        }
+
+        /// <summary>
+        /// Wie ZeigeBuchungBearbeitenDialog, aber mit aktivem
+        /// "Abgang buchen"-Button. Das Ergebnis sagt zusaetzlich, ob der
+        /// Benutzer den AfA-Abgang ausgeloest hat -- dann ist Buchung == null
+        /// und der native Aufrufer fuehrt den Abgang aus.
+        /// </summary>
+        public static BuchungBearbeitenErgebnis ZeigeBuchungBearbeitenDialogMitAbgang(
+            BuchungsDocument doc, Buchung buchung, IntPtr ownerHwnd = default)
+        {
+            var vm = ZeigeBearbeitenInternal(doc, buchung, ownerHwnd, abgangErlaubt: true);
+            return new BuchungBearbeitenErgebnis
+            {
+                Buchung = vm.Bestaetigt ? vm.Ergebnis : null,
+                AbgangGewuenscht = vm.AbgangGewuenscht
+            };
+        }
+
+        private static BuchungViewModel ZeigeBearbeitenInternal(
+            BuchungsDocument doc, Buchung buchung, IntPtr ownerHwnd, bool abgangErlaubt)
+        {
             EnsureWpfInitialized();
 
-            var vm = new BuchungViewModel(doc, buchung);
+            var vm = new BuchungViewModel(doc, buchung) { AbgangErlaubt = abgangErlaubt };
             BefuelleListen(vm);
             var view = new BuchungView(vm);
 
@@ -172,8 +197,19 @@ namespace ECTViews
             }
 
             view.ShowDialog();
-
-            return vm.Bestaetigt ? vm.Ergebnis : null;
+            return vm;
         }
+    }
+
+    /// <summary>
+    /// Ergebnis von ViewHost.ZeigeBuchungBearbeitenDialogMitAbgang.
+    /// </summary>
+    public sealed class BuchungBearbeitenErgebnis
+    {
+        /// <summary>Geaenderte Buchung, oder null (abgebrochen oder Abgang).</summary>
+        public Buchung Buchung { get; set; }
+
+        /// <summary>True wenn "Abgang buchen" geklickt wurde.</summary>
+        public bool AbgangGewuenscht { get; set; }
     }
 }
