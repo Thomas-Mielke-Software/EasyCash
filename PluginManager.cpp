@@ -43,6 +43,7 @@ CPluginManager::CPluginManager(CMainFrame* pParent)
 	//}}AFX_DATA_INIT
 
 	m_pParent = pParent;
+	m_bDownloadLaeuft = FALSE;
 	m_pbmp = NULL; 
 }
 
@@ -258,6 +259,9 @@ void CPluginManager::UpdateList()
 
 void CPluginManager::Statusmeldung(CString &text) 
 {
+	if (!::IsWindow(m_hWnd))	// Dialog kann durch Re-Entrancy bereits zerstoert sein
+		return;
+
 	UpdateData();
 	if (m_status.GetLength())
 	{
@@ -270,7 +274,8 @@ void CPluginManager::Statusmeldung(CString &text)
 	// ((CEdit*)GetDlgItem(IDC_STATUS))->SetSel(m_status.GetLength(), m_status.GetLength()); <-- hier kam es gelegentlich zu Abstürzen
 	// ((CEdit*)GetDlgItem(IDC_STATUS))->ReplaceSel((LPCSTR)text, TRUE); -- durch m_status += text; obsolet geworden
 	// Ersatzcode:
-	if (::IsWindow(GetDlgItem(IDC_STATUS)->m_hWnd))	// Update 3/2024: access violation v2.51.0.1-39e4f594-855f-44cc-a0eb-e435c6baee32
+	CWnd* pStatus = GetDlgItem(IDC_STATUS);
+	if (pStatus != NULL && ::IsWindow(pStatus->m_hWnd))	// Update 3/2024: access violation v2.51.0.1-39e4f594-855f-44cc-a0eb-e435c6baee32
 	{
 		int line = ((CEdit*)GetDlgItem(IDC_STATUS))->GetLineCount(); // <-- hier kam es immer noch zu Abstürzen, weil das CEdit angeblich kein Fenster war... siehe drei Zeilen zuvor
 		line -= 3;
@@ -387,6 +392,15 @@ void CPluginManager::OnBnClickedReparaturinstallation()
 
 void CPluginManager::Download(BOOL bForce)
 {
+	// Re-Entrancy-Schutz: AtlWaitWithMessageLoop (in CWebUpdate::DownloadAvailable) pumpt
+	// waehrend des Downloads Nachrichten und verteilt weitere Button-Klicks. Ohne diesen
+	// Guard ruft jeder Klick Download() erneut auf -> verschachtelte Downloads; schliesst
+	// ein innerer Pfad den Dialog per CDialog::OnOK, stuerzen die noch laufenden aeusseren
+	// Aufrufe in Statusmeldung ab (crashdump 6e1c, NULL-GetDlgItem -> AV auf 0x20).
+	if (m_bDownloadLaeuft)
+		return;
+	m_bDownloadLaeuft = TRUE;
+
 	/* alte Updater-Methode mit batch file -- damit auch unter Wine lauffähig: eigene exe statt cmd benutzen!
 	CTime now = CTime::GetCurrentTime();
 	CString csNow = now.Format("\\install%Y%m%d%H%M%S.bat");
@@ -466,6 +480,8 @@ void CPluginManager::Download(BOOL bForce)
 	}
 
 	batch.Close();
+
+	m_bDownloadLaeuft = FALSE;
 
 	if (nZuInstallierendeModule >= 1)
 	{
