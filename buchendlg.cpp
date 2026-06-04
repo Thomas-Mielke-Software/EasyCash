@@ -1116,7 +1116,12 @@ void BuchenDlg::InitRestwert()
 	}
 	GetDlgItemText(IDC_ABSCHREIBUNGRESTWERT, buf, sizeof(buf));
 	int nAbschreibungRestwert = atoi(buf);
-	if (m_ppb && nAbschreibungRestwert)
+	// "Abgang buchen" nur bei einer echten mehrjährigen AfA anbieten
+	// (n = Abschreibungsjahr > 1, dann ist auch das Restwert-Feld sichtbar).
+	// Bei einer normalen Ausgaben-Buchung wird das Restwert-Feld mit dem vollen
+	// Netto-Betrag vorbelegt; ohne die n>1-Prüfung erschien der Button dann
+	// fälschlich auch dort (Issue #32).
+	if (m_ppb && n > 1 && nAbschreibungRestwert)
 		GetDlgItem(IDC_ABGANG_BUCHEN)->ShowWindow(SW_SHOW);
 	else
 		GetDlgItem(IDC_ABGANG_BUCHEN)->ShowWindow(SW_HIDE);
