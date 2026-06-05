@@ -1445,8 +1445,12 @@ void CEasyCashView::SetupScroll()
 	CDC *pDC = GetDC();
 	CEasyCashDoc* pDoc = GetDocument();
 
+	if (pDC == NULL)		// GDI-DC erschoepft oder Fenster ungueltig -> kein Null-Deref-Crash
+		return;
+
 	TEXTMETRIC Metrics;
 	VERIFY(pDC->GetOutputTextMetrics(&Metrics));
+	ReleaseDC(pDC);		// DC freigeben - sonst GDI-Handle-Leak ueber lange Laufzeit
 
 	// A4 für vert. Größe setzen, ansonsten Fensterbreite nehmen...
 	charwidth = Metrics.tmAveCharWidth * m_zoomfaktor / 100;
