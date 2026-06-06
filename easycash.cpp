@@ -513,7 +513,41 @@ BOOL CEasyCashApp::InitInstance()
 	}
 
 	// Dispatch commands specified on the command line
-	if (!ProcessShellCommand(cmdInfo))
+	BOOL bShellOK = FALSE;
+	try
+	{
+		bShellOK = ProcessShellCommand(cmdInfo);
+	}
+	catch (CException* e)
+	{
+		// Pfad konnte nicht als Shell-Item aufgeloest werden (z.B. ANSI->UTF-8-
+		// Fehlkonvertierung von Umlauten bei aktivem Kompatibilitaets-Shim).
+		// Nicht abstuerzen, sondern Anwender verstaendlich informieren.
+		e->Delete();
+		CString csHinweis;
+		csHinweis  = "EasyCash & Tax konnte die gewählte Datei bzw. den Mandanten nicht öffnen:\n\n";
+		csHinweis += cmdInfo.m_strFileName + "\n\n";
+		if (GetACP() == CP_UTF8)
+		{
+			csHinweis += "Ursache: Für EasyCT.exe ist der Kompatibilitäts-Modus \"Modus mit reduzierten Farben (8-Bit-Farben)\" aktiv. ";
+			csHinweis += "In diesem Modus kann EasyCash & Tax keine Datei- oder Ordnernamen mit Umlauten oder Sonderzeichen (ä ö ü ß ...) verarbeiten.\n\n";
+			csHinweis += "So beheben Sie das Problem:\n\n";
+			csHinweis += "1) EasyCash & Tax schließen.\n";
+			csHinweis += "2) Im Windows-Explorer mit der rechten Maustaste auf EasyCT.exe klicken, \"Eigenschaften\" wählen und zum Reiter \"Kompatibilität\" wechseln.\n";
+			csHinweis += "3) Den Haken bei \"Modus mit reduzierten Farben\" entfernen und mit \"OK\" bestätigen.\n\n";
+			csHinweis += "Wird der reduzierte Farbmodus für eine scharfe Darstellung benötigt, verschieben Sie Ihre Mandanten-Daten stattdessen in einen Pfad OHNE Umlaute und Sonderzeichen.";
+		}
+		else
+		{
+			csHinweis += "Mögliche Ursachen:\n\n";
+			csHinweis += "- Der Pfad enthält Umlaute oder Sonderzeichen (ä ö ü ß ...) und für EasyCT.exe ist ein Kompatibilitäts-Modus (z. B. \"Modus mit reduzierten Farben\") aktiv.\n";
+			csHinweis += "- Die Datei wurde verschoben, umbenannt oder existiert nicht mehr.\n\n";
+			csHinweis += "Empfehlung: Prüfen Sie per Rechtsklick auf EasyCT.exe -> \"Eigenschaften\" -> \"Kompatibilität\", ob \"Modus mit reduzierten Farben\" aktiv ist, und entfernen Sie diesen Haken. Verwenden Sie für Ihre Daten möglichst einen Pfad ohne Umlaute.";
+		}
+		AfxMessageBox(csHinweis, MB_ICONEXCLAMATION | MB_OK);
+		cmdInfo.m_strFileName.Empty();
+	}
+	if (!bShellOK)
 	{
 		/*if (AfxMessageBox("Soll EasyCash mit einem leeren Dokument gestartet werden?",
 			MB_ICONQUESTION|MB_YESNO) == IDYES)
