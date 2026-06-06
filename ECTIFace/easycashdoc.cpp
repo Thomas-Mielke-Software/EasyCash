@@ -824,7 +824,17 @@ habe ich besser eigene Menüpunkte für gemacht...
 */
 	CheckWiederherstellungsdatei(lpszDatenverzeichnis);
 
-	if (!CDocument::OnOpenDocument(lpszDatenverzeichnis))
+	BOOL bGeoeffnet;
+	try
+	{
+		bGeoeffnet = CDocument::OnOpenDocument(lpszDatenverzeichnis);
+	}
+	catch (CException* e)
+	{
+		e->Delete();  // z.B. ungueltiger Zeitstempel in der Datei -> nicht abstuerzen
+		bGeoeffnet = FALSE;
+	}
+	if (!bGeoeffnet)
 	{
 		ZeigeStartoptionen();
 		return FALSE;
@@ -1593,9 +1603,16 @@ CTime CEasyCashDoc::GetFileModifiedTime(LPCTSTR path)
 	CFile cfile;
 	CFileStatus status;
 
-	cfile.Open(path, CFile::modeRead);
-	if (cfile.GetStatus(status))
-		ctReturn = status.m_mtime;
+	try
+	{
+		cfile.Open(path, CFile::modeRead);
+		if (cfile.GetStatus(status))
+			ctReturn = status.m_mtime;
+	}
+	catch (CException* e)
+	{
+		e->Delete();  // ungueltiger Zeitstempel o.ae. -> neutrales CTime zurueckgeben
+	}
 	return ctReturn;
 }
 
