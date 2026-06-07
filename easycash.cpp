@@ -81,6 +81,7 @@ char last_path[500];
 char reg[100];
 char reg_name[100];
 BOOL vollversion;
+volatile BOOL g_bShuttingDown = FALSE;	// TRUE ab Beginn des Schliessens (CMainFrame::DestroyWindow): Teardown-Abstuerze nicht melden
 
 /////////////////////////////////////////////////////////////////////////////
 // CEasyCashApp initialization
@@ -89,6 +90,25 @@ char version_string[50];
 char version_string_exakt[50];
 char app_name_und_version_string_exakt[100];
 
+
+#if defined(NDEBUG)
+// Crash-Callback: beim regulaeren Beenden (Teardown) keinen Absturzbericht anzeigen/senden.
+// Hintergrund: bekannter MFC-Bug in CMFCRibbonCaptionButton::OnLButtonUp, wenn ein verzoegerter
+// Maus-Event waehrend des Ribbon-Teardowns zugestellt wird (m_pRibbonBar == NULL).
+int CALLBACK ECTCrashCallback(CR_CRASH_CALLBACK_INFO* pInfo)
+{
+	if (pInfo->nStage == CR_CB_STAGE_PREPARE)
+	{
+		if (g_bShuttingDown ||
+			theApp.m_pMainWnd == NULL ||
+			!::IsWindow(theApp.m_pMainWnd->GetSafeHwnd()))
+		{
+			return CR_CB_CANCEL;	// kein UI, nichts senden, nichts speichern
+		}
+	}
+	return CR_CB_DODEFAULT;
+}
+#endif
 
 BOOL CEasyCashApp::InitInstance()
 {
@@ -178,6 +198,9 @@ BOOL CEasyCashApp::InitInstance()
 
 		// Take screenshot of the app window at the moment of crash
 		crAddScreenshot2(CR_AS_MAIN_WINDOW|CR_AS_USE_JPEG_FORMAT, 95);
+
+		// Beim Beenden ausgeloeste Teardown-Abstuerze nicht melden (siehe ECTCrashCallback)
+		crSetCrashCallback(ECTCrashCallback, NULL);
 	}
 #endif
 
