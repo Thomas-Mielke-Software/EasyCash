@@ -2092,6 +2092,7 @@ void BuchenDlg::OnAlt6()
 
 void BuchenDlg::OnBnClickedAbgangBuchen()
 {
+	if (!m_ppb) return;		// Abgang nicht bei neuen (oder kopierten) Buchungen erlauben
 	m_pParent->AfAAbgang(m_ppb);
 
 	CDialog::OnOK();
