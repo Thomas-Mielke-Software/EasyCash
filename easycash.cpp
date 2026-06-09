@@ -564,8 +564,9 @@ BOOL CEasyCashApp::InitInstance()
 		{
 			csHinweis += "Mögliche Ursachen:\n\n";
 			csHinweis += "- Der Pfad enthält Umlaute oder Sonderzeichen (ä ö ü ß ...) und für EasyCT.exe ist ein Kompatibilitäts-Modus (z. B. \"Modus mit reduzierten Farben\") aktiv.\n";
-			csHinweis += "- Die Datei wurde verschoben, umbenannt oder existiert nicht mehr.\n\n";
-			csHinweis += "Empfehlung: Prüfen Sie per Rechtsklick auf EasyCT.exe -> \"Eigenschaften\" -> \"Kompatibilität\", ob \"Modus mit reduzierten Farben\" aktiv ist, und entfernen Sie diesen Haken. Verwenden Sie für Ihre Daten möglichst einen Pfad ohne Umlaute.";
+			csHinweis += "- Die Datei wurde verschoben, umbenannt oder existiert nicht mehr.\n";
+			csHinweis += "- Die Anwendung läuft unter Wine oder CrossOver (Mac/Linux) und wurde über eine .eca-Dateiverknüpfung geöffnet (Abhilfe: EC&T Über das Programm-Icon öffnen und die gewünschte Datei über das Applikationsmenü und "Öffnen" auswählen).\n\n";
+			csHinweis += "Empfehlung: Prüfen Sie per Rechtsklick auf EasyCT.exe im Windows-Explorer -> \"Eigenschaften\" -> \"Kompatibilität\", ob \"Modus mit reduzierten Farben\" aktiv ist, und entfernen Sie diesen Haken. Verwenden Sie für Ihre Daten möglichst einen Pfad ohne Umlaute.";
 		}
 		AfxMessageBox(csHinweis, MB_ICONEXCLAMATION | MB_OK);
 		cmdInfo.m_strFileName.Empty();
