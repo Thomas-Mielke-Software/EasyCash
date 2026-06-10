@@ -868,32 +868,6 @@ habe ich besser eigene Menüpunkte für gemacht...
 	return TRUE;
 }
 
-void CEasyCashDoc::ZeigeStartoptionen()
-{
-	int nRet;
-	CStartoptionen dlg;
-	nRet = dlg.DoModal();
-
-	switch (nRet)
-	{
-	case 0:
-		PostMessage(AfxGetMainWnd()->m_hWnd, WM_COMMAND, ID_FILE_OPEN, 0L);
-		return;
-	case 1:
-		PostMessage(AfxGetMainWnd()->m_hWnd, WM_COMMAND, ID_FILE_WAEHLE_DATENVERZEICHNIS, 0L);
-		return;
-	case 2:
-		PostMessage(AfxGetMainWnd()->m_hWnd, WM_COMMAND, ID_FILE_NEW, 0L);
-		return;
-	case 3:
-	default:
-		// tu nichts
-		return;
-	case 4:
-		PostMessage(AfxGetMainWnd()->m_hWnd, WM_COMMAND, ID_APP_EXIT, 0L);
-		return;
-	}
-}
 
 CEasyCashDoc* CEasyCashDoc::Jahreswechsel(int land = 0)
 {

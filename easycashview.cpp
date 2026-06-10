@@ -7202,7 +7202,11 @@ void CEasyCashView::OnActivateView(BOOL bActivate, CView* pActivateView, CView* 
 		if (pDoc)
 		{
 			CString csPathName = pDoc->GetPathName();
-			if (!csPathName.IsEmpty())
+			// Nur existierende Dateien als LetzteDatei festhalten. Ein neu angelegtes,
+			// noch nicht gespeichertes Dokument hat zwar schon einen vollen Pfad
+			// (siehe OnNewDocument), aber noch keine Datei -- diesen Phantom-Pfad nicht
+			// schreiben. Beim ersten Speichern setzt OnFileSave/OnFileSaveAs den Wert korrekt.
+			if (!csPathName.IsEmpty() && GetFileAttributes(csPathName) != 0xFFFFFFFF)
 			{
 				char IniFileName[500];
 				if (GetIniFileName(IniFileName, sizeof(IniFileName)))

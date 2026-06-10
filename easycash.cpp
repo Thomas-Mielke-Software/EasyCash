@@ -537,37 +537,35 @@ BOOL CEasyCashApp::InitInstance()
 
 	// Dispatch commands specified on the command line
 	BOOL bShellOK = FALSE;
-	try
+
+	// Soll eine konkrete Datei geoeffnet werden, die nicht (mehr) existiert, diese gar nicht erst
+	// an MFC weiterreichen: das kann sonst u.a. unter Wine/CrossOver in der MRU-Logik von MFC
+	// (SHCreateItemFromParsingName) abstuerzen. Stattdessen dem Anwender die Startoptionen anbieten.
+	if (cmdInfo.m_nShellCommand == CCommandLineInfo::FileOpen &&
+		!cmdInfo.m_strFileName.IsEmpty() &&
+		GetFileAttributes(cmdInfo.m_strFileName) == 0xFFFFFFFF)
+	{
+		ZeigeStartoptionen();
+	}
+	else try
 	{
 		bShellOK = ProcessShellCommand(cmdInfo);
 	}
 	catch (CException* e)
 	{
-		// Pfad konnte nicht als Shell-Item aufgeloest werden (z.B. ANSI->UTF-8-
-		// Fehlkonvertierung von Umlauten bei aktivem Kompatibilitaets-Shim).
-		// Nicht abstuerzen, sondern Anwender verstaendlich informieren.
+		// Generischer Fallback fuer unerwartete Fehler beim Oeffnen aus der Kommandozeile.
+		// Die haeufigen Faelle sind bereits gezielt behandelt: MRU-/Shell-Item-Fehler im
+		// AddToRecentFileList-Override, fehlende Datei in der Existenzpruefung oben.
 		e->Delete();
 		CString csHinweis;
 		csHinweis  = "EasyCash & Tax konnte die gewählte Datei bzw. den Mandanten nicht öffnen:\n\n";
 		csHinweis += cmdInfo.m_strFileName + "\n\n";
-		if (GetACP() == CP_UTF8)
-		{
-			csHinweis += "Ursache: Für EasyCT.exe ist der Kompatibilitäts-Modus \"Modus mit reduzierten Farben (8-Bit-Farben)\" aktiv. ";
-			csHinweis += "In diesem Modus kann EasyCash & Tax keine Datei- oder Ordnernamen mit Umlauten oder Sonderzeichen (ä ö ü ß ...) verarbeiten.\n\n";
-			csHinweis += "So beheben Sie das Problem:\n\n";
-			csHinweis += "1) EasyCash & Tax schließen.\n";
-			csHinweis += "2) Im Windows-Explorer mit der rechten Maustaste auf EasyCT.exe klicken, \"Eigenschaften\" wählen und zum Reiter \"Kompatibilität\" wechseln.\n";
-			csHinweis += "3) Den Haken bei \"Modus mit reduzierten Farben\" entfernen und mit \"OK\" bestätigen.\n\n";
-			csHinweis += "Wird der reduzierte Farbmodus für eine scharfe Darstellung benötigt, verschieben Sie Ihre Mandanten-Daten stattdessen in einen Pfad OHNE Umlaute und Sonderzeichen.";
-		}
-		else
-		{
-			csHinweis += "Mögliche Ursachen:\n\n";
-			csHinweis += "- Der Pfad enthält Umlaute oder Sonderzeichen (ä ö ü ß ...) und für EasyCT.exe ist ein Kompatibilitäts-Modus (z. B. \"Modus mit reduzierten Farben\") aktiv.\n";
-			csHinweis += "- Die Datei wurde verschoben, umbenannt oder existiert nicht mehr.\n";
-			csHinweis += "- Die Anwendung läuft unter Wine oder CrossOver (Mac/Linux) und wurde über eine .eca-Dateiverknüpfung geöffnet (Abhilfe: EC&T Über das Programm-Icon öffnen und die gewünschte Datei über das Applikationsmenü und "Öffnen" auswählen).\n\n";
-			csHinweis += "Empfehlung: Prüfen Sie per Rechtsklick auf EasyCT.exe im Windows-Explorer -> \"Eigenschaften\" -> \"Kompatibilität\", ob \"Modus mit reduzierten Farben\" aktiv ist, und entfernen Sie diesen Haken. Verwenden Sie für Ihre Daten möglichst einen Pfad ohne Umlaute.";
-		}
+		csHinweis += "Mögliche Ursachen:\n\n";
+		csHinweis += "- Die Datei wurde verschoben, umbenannt oder gelöscht.\n";
+		csHinweis += "- Das Datenverzeichnis ist derzeit nicht erreichbar (z. B. Netzlaufwerk oder externer Datenträger).\n";
+		csHinweis += "- Die Datei ist beschädigt oder hat ein unerwartetes Format.\n";
+		csHinweis += "- Der Pfad enthält Umlaute oder Sonderzeichen und für EasyCT.exe ist ein Kompatibilitäts-Modus (z. B. \"Modus mit reduzierten Farben\") aktiv.\n\n";
+		csHinweis += "Sie können EasyCash & Tax normal weiter verwenden und die Datei über Menü -> Datei -> Öffnen erneut auswählen.";
 		AfxMessageBox(csHinweis, MB_ICONEXCLAMATION | MB_OK);
 		cmdInfo.m_strFileName.Empty();
 	}
@@ -1174,6 +1172,25 @@ BOOL CEasyCashApp::ReplaceRecentFileList(CStringArray& csaFileList)
 		}
 
 		return TRUE;
+	}
+
+	// Mandanten-Modus: Standard-MRU-Liste wird nicht verwendet, daher nichts ersetzt.
+	return FALSE;
+}
+
+// MFCs CRecentFileList::Add ruft fuer die Shell-/Sprunglisten-Integration
+// SHCreateItemFromParsingName auf. Schlaegt das fehl (Pfad nicht aufloesbar, > MAX_PATH,
+// oder unvollstaendige shell32-Implementierung unter Wine/CrossOver), wirft MFC eine
+// CInvalidArgException. Der MRU-Eintrag ist rein kosmetisch, daher abfangen statt abstuerzen.
+void CEasyCashApp::AddToRecentFileList(LPCTSTR lpszPathName)
+{
+	try
+	{
+		CWinAppEx::AddToRecentFileList(lpszPathName);
+	}
+	catch (CException* e)
+	{
+		e->Delete();
 	}
 }
 
