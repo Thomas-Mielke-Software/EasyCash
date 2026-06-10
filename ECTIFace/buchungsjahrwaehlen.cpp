@@ -58,7 +58,13 @@ BEGIN_MESSAGE_MAP(CBuchungsjahrWaehlen, CDialog)
 	//{{AFX_MSG_MAP(CBuchungsjahrWaehlen)
 		// NOTE: the ClassWizard will add message map macros here
 	//}}AFX_MSG_MAP
+	ON_STN_CLICKED(IDC_STATIC5, &CBuchungsjahrWaehlen::OnStnClickedStatic5)
 END_MESSAGE_MAP()
 
 /////////////////////////////////////////////////////////////////////////////
 // CBuchungsjahrWaehlen message handlers
+
+void CBuchungsjahrWaehlen::OnStnClickedStatic5()
+{
+	// TODO: Fügen Sie hier Ihren Handlercode für Benachrichtigungen des Steuerelements ein.
+}

@@ -1682,7 +1682,6 @@ void CMainFrame::OnFileWaehleDatenverzeichnis()
 	else
 	{
 		csDatenverzeichnis.ReleaseBuffer();
-		AfxMessageBox(csDatenverzeichnis);
 
 		if (csAltesDatenverzeichnis != csDatenverzeichnis)
 		{

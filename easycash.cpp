@@ -477,6 +477,8 @@ BOOL CEasyCashApp::InitInstance()
 			cmdInfo.m_strFileName = last_file;
 			cmdInfo.m_nShellCommand = CCommandLineInfo::FileOpen;
 		}
+		else
+			ZeigeStartoptionen();
 	}	
 	else
 	{
