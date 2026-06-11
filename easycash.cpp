@@ -478,7 +478,14 @@ BOOL CEasyCashApp::InitInstance()
 			cmdInfo.m_nShellCommand = CCommandLineInfo::FileOpen;
 		}
 		else
+		{
 			ZeigeStartoptionen();
+			// Die Auswahl trifft der Nutzer im Startoptionen-Dialog; dessen Ergebnis wird als
+			// Menuebefehl gepostet (ID_FILE_NEW/OPEN/...). Den Default-FileNew daher hier
+			// unterdruecken -- sonst legt ProcessShellCommand zusaetzlich ein neues Dokument an
+			// und der "Buchungsjahr waehlen"-Dialog erscheint doppelt.
+			cmdInfo.m_nShellCommand = CCommandLineInfo::FileNothing;
+		}
 	}	
 	else
 	{

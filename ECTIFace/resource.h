@@ -12,7 +12,7 @@
 #define IDC_KEINE2                      1002
 #define IDC_OEFFNEN2                    1002
 #define IDC_INTERN2                     1003
-#define IDC_LIST1                       1003
+#define IDC_LISTE_BUCHUNGSDATEIEN       1009
 #define IDC_EXTERN2                     1004
 #define IDC_DATENVERZEICHNIS            1004
 #define IDC_STATIC1                     1004
@@ -67,7 +67,7 @@
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        704
 #define _APS_NEXT_COMMAND_VALUE         32771
-#define _APS_NEXT_CONTROL_VALUE         1008
+#define _APS_NEXT_CONTROL_VALUE         1010
 #define _APS_NEXT_SYMED_VALUE           101
 #endif
 #endif

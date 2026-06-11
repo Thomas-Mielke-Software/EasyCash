@@ -20,6 +20,7 @@
 
 #include "stdafx.h"
 #include "EasyCTXP.h"
+#include <shlobj.h>		// fuer SHBrowseForFolder-Fallback
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -79,17 +80,48 @@ BOOL CEasyCTXPApp::InitInstance()
 	return TRUE;
 }
 
-// sFolder sollte MAX_FILE groß sein!
+// Klassischer Ordnerauswahl-Dialog (SHBrowseForFolder) als Fallback, falls IFileDialog
+// nicht verfuegbar ist (z.B. CLASS_E_CLASSNOTAVAILABLE).
+static BOOL SelectFolderFallback(LPSTR sFolder, LPCTSTR sTitle)
+{
+	BOOL bRet = FALSE;
+	BROWSEINFO bi;
+	ZeroMemory(&bi, sizeof(bi));
+	bi.hwndOwner = AfxGetMainWnd() ? AfxGetMainWnd()->GetSafeHwnd() : NULL;
+	bi.lpszTitle = sTitle;
+	bi.ulFlags = BIF_RETURNONLYFSDIRS | BIF_NEWDIALOGSTYLE;
+	LPITEMIDLIST pidl = SHBrowseForFolder(&bi);
+	if (pidl)
+	{
+		char szPath[MAX_PATH + 1];
+		if (SHGetPathFromIDList(pidl, szPath))
+		{
+			strcpy(sFolder, szPath);
+			bRet = TRUE;
+		}
+		CoTaskMemFree(pidl);
+	}
+	return bRet;
+}
+
+// sFolder sollte MAX_FILE gross sein!
 extern "C" BOOL SelectFolder(LPSTR sFolder, LPCTSTR sTitle)
 {
 	AFX_MANAGE_STATE(AfxGetStaticModuleState());
 
 	BOOL bRet = TRUE;
 
+	// IFileDialog (und der SHBrowseForFolder-Fallback) benoetigen ein voll initialisiertes
+	// OLE-Subsystem. Die Hauptanwendung initialisiert seit Commit 894a990 nur noch per
+	// CoInitializeEx (kein AfxOleInit/OleInitialize mehr); ohne OLE liefert die ClassFactory
+	// von CLSID_FileOpenDialog CLASS_E_CLASSNOTAVAILABLE. Daher hier lokal OleInitialize.
+	HRESULT hrOle = OleInitialize(NULL);
+
 	IFileDialog *pfd;
 	LPWSTR pwstrPath;
-	HRESULT hr;
-	if (SUCCEEDED(hr = CoCreateInstance(CLSID_FileOpenDialog, NULL, CLSCTX_INPROC_SERVER, IID_PPV_ARGS(&pfd))))
+	HRESULT hr = S_OK;
+	HRESULT hrCreate = CoCreateInstance(CLSID_FileOpenDialog, NULL, CLSCTX_INPROC_SERVER, IID_PPV_ARGS(&pfd));
+	if (SUCCEEDED(hrCreate))
 	{
 		DWORD dwOptions;
 		hr = pfd->GetOptions(&dwOptions);
@@ -147,10 +179,17 @@ extern "C" BOOL SelectFolder(LPSTR sFolder, LPCTSTR sTitle)
 			}
 		}
 		pfd->Release();
+		if (!SUCCEEDED(hr))
+			bRet = FALSE;		// z.B. Benutzer-Abbruch
+	}
+	else
+	{
+		// CLSID_FileOpenDialog nicht verfuegbar -> klassischen Ordnerauswahl-Dialog nutzen
+		bRet = SelectFolderFallback(sFolder, sTitle);
 	}
 
-	if(!SUCCEEDED(hr))
-		bRet = FALSE;		
-	
+	if (SUCCEEDED(hrOle))
+		OleUninitialize();
+
 	return bRet;
 }
