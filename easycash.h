@@ -37,6 +37,7 @@ public:
 	CStringArray m_MandantenverzeichnisMRUDateinamen;
 	BOOL OnOpenRecentFile(UINT nID);
 	BOOL ReplaceRecentFileList(CStringArray& csaFileList);
+	virtual void AddToRecentFileList(LPCTSTR lpszPathName);
 	BOOL Check4EasyCTX();
 	CEasyCashApp();
 

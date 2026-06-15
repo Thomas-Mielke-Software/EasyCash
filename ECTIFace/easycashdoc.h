@@ -202,7 +202,6 @@ public:
 	virtual void SetModifiedFlag(LPCTSTR lpszAktion, BOOL bModified = TRUE, BOOL bSaveToWiederherstellungsdatei = TRUE);
 	virtual void SetModifiedFlag(BOOL bModified = TRUE);
 	//}}AFX_VIRTUAL
-	void ZeigeStartoptionen();
 	CEasyCashDoc* Jahreswechsel(int land);
 
 // Implementation
@@ -293,6 +292,9 @@ extern "C" AFX_EXT_CLASS void SetIniFileName(char *buffer3);
 extern "C" AFX_EXT_CLASS BOOL GetIniFileName(char *buffer, int size);
 extern "C" AFX_EXT_CLASS void SetMandant(int n);
 extern "C" AFX_EXT_CLASS int GetMandant();
+
+// Zeigt beim Programmstart den Startoptionen-Dialog (klassenlos, da noch kein Dokument existiert)
+extern "C" AFX_EXT_CLASS void ZeigeStartoptionen();
 
 //--- ab hier Hilfsfunktionen für den Zugriff auf die Plugin-Erweiterungsdaten in der Dokument-Klasse ---
 // ACHTUNG: Das Zeichen '|' darf in Key- bzw. Erweiterungsnamen und in Werten nicht verwendet werden

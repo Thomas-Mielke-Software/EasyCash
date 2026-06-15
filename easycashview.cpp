@@ -1536,8 +1536,12 @@ void CEasyCashView::SetupScroll()
 	CDC *pDC = GetDC();
 	CEasyCashDoc* pDoc = GetDocument();
 
+	if (pDC == NULL)		// GDI-DC erschoepft oder Fenster ungueltig -> kein Null-Deref-Crash
+		return;
+
 	TEXTMETRIC Metrics;
 	VERIFY(pDC->GetOutputTextMetrics(&Metrics));
+	ReleaseDC(pDC);		// DC freigeben - sonst GDI-Handle-Leak ueber lange Laufzeit
 
 	// A4 für vert. Größe setzen, ansonsten Fensterbreite nehmen...
 	charwidth = Metrics.tmAveCharWidth * m_zoomfaktor / 100;
@@ -5591,6 +5595,16 @@ void CEasyCashView::OnPrepareDC(CDC* pDC, CPrintInfo* pInfo)
 
 BOOL CEasyCashView::OnPreparePrinting(CPrintInfo* pInfo)
 {
+	// Unter Wine/CrossOver: Drucken abfangen (PrintDlgA crasht ohne konfigurierten Drucker)
+	{
+		HKEY hKey;
+		if (RegOpenKeyEx(HKEY_LOCAL_MACHINE, _T("Software\\Wine"), 0, KEY_READ, &hKey) == ERROR_SUCCESS)
+		{
+			RegCloseKey(hKey);
+			AfxMessageBox(_T("EasyCash läuft unter Wine/CrossOver.\n\nDas Drucken steht in dieser Umgebung nicht zur Verfügung, da kein Drucker im Wine-Prefix konfiguriert ist.\n\nBitte richten Sie einen Drucker in Ihrem Wine-/CrossOver-Prefix ein."), MB_OK | MB_ICONINFORMATION);
+			return FALSE;
+		}
+	}
 	CEasyCashDoc* pDoc = GetDocument();
 
 	// neue Formulare:
@@ -7504,7 +7518,11 @@ void CEasyCashView::OnActivateView(BOOL bActivate, CView* pActivateView, CView* 
 		if (pDoc)
 		{
 			CString csPathName = pDoc->GetPathName();
-			if (!csPathName.IsEmpty())
+			// Nur existierende Dateien als LetzteDatei festhalten. Ein neu angelegtes,
+			// noch nicht gespeichertes Dokument hat zwar schon einen vollen Pfad
+			// (siehe OnNewDocument), aber noch keine Datei -- diesen Phantom-Pfad nicht
+			// schreiben. Beim ersten Speichern setzt OnFileSave/OnFileSaveAs den Wert korrekt.
+			if (!csPathName.IsEmpty() && GetFileAttributes(csPathName) != 0xFFFFFFFF)
 			{
 				char IniFileName[500];
 				if (GetIniFileName(IniFileName, sizeof(IniFileName)))

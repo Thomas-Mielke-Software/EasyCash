@@ -66,6 +66,7 @@ protected:
 	CBitmap *m_pbmp;
 	CStringArray m_csaCheckedAktuell;
 	CStringArray m_csaCheckedOriginal;
+	BOOL m_bDownloadLaeuft;	// Re-Entrancy-Schutz fuer Download() (AtlWaitWithMessageLoop pumpt Nachrichten)
 
 #ifdef USEXPTHEMES
 	CTheme m_themeManager;

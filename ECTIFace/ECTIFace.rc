@@ -61,19 +61,24 @@ END
 // Dialog
 //
 
-IDD_BUCHUNGSJAHR_WAEHLEN DIALOGEX 0, 0, 209, 160
+IDD_BUCHUNGSJAHR_WAEHLEN DIALOGEX 0, 0, 375, 263
 STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
 CAPTION "Buchungsjahr wählen"
 FONT 8, "MS Sans Serif", 0, 0, 0x0
 BEGIN
-    LTEXT           "Für welches Jahr sollen die Buchungen erfolgen?\r\n(Bitte das Jahr vierstellig angeben: z.B. 2022)",IDC_STATIC,7,101,163,19
-    EDITTEXT        IDC_JAHR,175,101,27,12,ES_AUTOHSCROLL
-    LTEXT           "Währungskürzel (z.B. EUR, SFR)",IDC_STATIC,9,122,158,8
-    EDITTEXT        IDC_WAEHRUNG,175,122,27,12,ES_AUTOHSCROLL
-    DEFPUSHBUTTON   "OK",IDOK,95,139,50,14
-    PUSHBUTTON      "Abbrechen",IDCANCEL,152,139,50,14
-    LTEXT           "Hinweis: Wenn bereits eine Jahres-Buchungsdatei (JahrXXXX.eca) für das vorausgehende Jahr existiert, ist es empfehlenswert 'Jahreswechsel' im Applikationsmenü (links oben) zu nutzen, weil dann AfAs und Dauerbuchungen ins neue Jahr übernommen werden.",IDC_STATIC,7,7,195,48
-    LTEXT           "Dazu muss zunächst die bestehende Buchungsdatei geöffnet werden. Wählen Sie dafür jetzt einfach Abbrechen und dann im Applikationsmenü die existierende Buchungsdatei in der Liste der zuletzt geöffneten Dateien oder gehen Sie über 'Öffnen'.",IDC_STATIC,7,55,195,42
+    LTEXT           "Für welches Jahr sollen die Buchungen erfolgen? (Bitte vierstellig, z.B. 2026)",IDC_STATIC3,15,186,257,10
+    EDITTEXT        IDC_JAHR,332,185,27,12,ES_AUTOHSCROLL
+    LTEXT           "Währungskürzel (z.B. EUR, SFR)",IDC_STATIC4,17,200,158,8
+    EDITTEXT        IDC_WAEHRUNG,332,200,27,12,ES_AUTOHSCROLL
+    PUSHBUTTON      "Öffnen",IDRETRY,310,91,50,14
+    PUSHBUTTON      "Abbrechen",IDCANCEL,310,242,50,14
+    LTEXT           "Hinweis: Wenn bereits eine Jahres-Buchungsdatei (JahrXXXX.eca) für das vorausgehende Jahr existiert (siehe oben), ist es empfehlenswert 'Jahreswechsel' im Applikationsmenü zu nutzen, weil dann AfAs und Dauerbuchungen ins neue Jahr übernommen werden.",IDC_STATIC1,15,130,353,27
+    LTEXT           "Alternativ zur Auswahl oben können Sie dazu Abbrechen wählen und manuell im Applikationsmenü (links oben im Applikationsfenster) eine existierende Buchungsdatei in der Liste der zuletzt geöffneten Dateien wählen oder über 'Öffnen' gehen.",IDC_STATIC2,15,156,353,25
+    GROUPBOX        "Option 1: Öffnen einer bestehenden Buchungsdatei in Datenverzeichnis ...",IDC_STATIC,7,7,360,104
+    LISTBOX         IDC_LISTE_BUCHUNGSDATEIEN,15,18,343,70,LBS_SORT | LBS_NOINTEGRALHEIGHT | WS_VSCROLL | WS_TABSTOP
+    PUSHBUTTON      "Neu anlegen",IDOK,310,217,50,14
+    GROUPBOX        "Option 2: Erstellen einer neuen Buchungsdatei in Datenverzeichnis",IDC_STATIC,7,117,361,120
+    LTEXT           "... um aus der Buchungsdatei des Vorjahrs eine für das neue Jahr zu erzeugen (empfohlen)",IDC_STATIC5,16,93,287,11
 END
 
 IDD_KONVERTIERUNG DIALOG 0, 0, 313, 213
@@ -180,9 +185,9 @@ BEGIN
     IDD_BUCHUNGSJAHR_WAEHLEN, DIALOG
     BEGIN
         LEFTMARGIN, 7
-        RIGHTMARGIN, 202
+        RIGHTMARGIN, 368
         TOPMARGIN, 7
-        BOTTOMMARGIN, 153
+        BOTTOMMARGIN, 256
     END
 
     IDD_KONVERTIERUNG, DIALOG
@@ -218,6 +223,17 @@ BEGIN
     END
 END
 #endif    // APSTUDIO_INVOKED
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// AFX_DIALOG_LAYOUT
+//
+
+IDD_BUCHUNGSJAHR_WAEHLEN AFX_DIALOG_LAYOUT
+BEGIN
+    0
+END
 
 #endif    // Deutsch (Deutschland) resources
 /////////////////////////////////////////////////////////////////////////////

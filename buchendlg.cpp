@@ -91,6 +91,7 @@ BuchenDlg::BuchenDlg(CEasyCashDoc *pDoc, BOOL ausgaben,
 	m_bNeueBelegnummer = bNeueBelegnummer;
 	m_UpdateBeschreibung = TRUE;
 	m_nGewaehlterSplit = -1;
+	m_bRestwertNeuberechnungAktiv = FALSE;	// wird erst in OnTimer(101) scharfgeschaltet
 
 	char inifile[1000], betriebe[2], bestandskonten[2];
 	GetIniFileName(inifile, sizeof(inifile));
@@ -1318,10 +1319,26 @@ void BuchenDlg::OnTimer(UINT nIDEvent)
 			SetWindowPos(NULL, x, y, 0, 0, SWP_NOACTIVATE|SWP_NOOWNERZORDER|SWP_NOSIZE|SWP_NOZORDER);
 #endif
 
+		InitRestwert();
+
 		KillTimer(nIDEvent);
+
+		// Dialog ist jetzt fertig initialisiert: einen evtl. durch das Befuellen der Felder
+		// in InitDlg() ausgeloesten Timer 102 verwerfen, damit der Restwert nicht schon beim
+		// Initialisieren neu berechnet wird. Erst ab jetzt loest eine echte Aenderung die
+		// Neuberechnung aus.
+		KillTimer(102);
+		m_bRestwertNeuberechnungAktiv = TRUE;
 	}
 	else if (nIDEvent == 102)	// alles was den Restwert beeinflusst triggert dessen Neuberechnung
 	{
+		if (!m_bRestwertNeuberechnungAktiv)	// waehrend der Dialog-Initialisierung nicht neu berechnen / keine Meldung
+		{
+			KillTimer(nIDEvent);
+			CDialog::OnTimer(nIDEvent);
+			return;
+		}
+
 		char buf[1000];
 
 		GetDlgItemText(IDC_ABSCHREIBUNGJAHRE, buf, sizeof(buf));
@@ -2076,6 +2093,7 @@ void BuchenDlg::OnAlt6()
 
 void BuchenDlg::OnBnClickedAbgangBuchen()
 {
+	if (!m_ppb) return;		// Abgang nicht bei neuen (oder kopierten) Buchungen erlauben
 	m_pParent->AfAAbgang(m_ppb);
 
 	CDialog::OnOK();

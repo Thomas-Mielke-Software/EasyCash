@@ -692,6 +692,27 @@ CEasyCashDoc::~CEasyCashDoc()
 	if (Dauerbuchungen) delete Dauerbuchungen;
 }
 
+// Sucht ein bereits geoeffnetes Buchungsdokument mit dem angegebenen Pfad (ausser pAusnahme).
+// Rueckgabe NULL, wenn keines offen ist.
+static CEasyCashDoc* FindeGeoeffnetesDokument(LPCTSTR lpszPfad, CDocument* pAusnahme)
+{
+	CWinApp* pApp = AfxGetApp();
+	POSITION posTmpl = pApp->GetFirstDocTemplatePosition();
+	while (posTmpl)
+	{
+		CDocTemplate* pTmpl = pApp->GetNextDocTemplate(posTmpl);
+		POSITION posDoc = pTmpl->GetFirstDocPosition();
+		while (posDoc)
+		{
+			CDocument* pDoc = pTmpl->GetNextDoc(posDoc);
+			if (pDoc != pAusnahme && !pDoc->GetPathName().IsEmpty() &&
+				pDoc->GetPathName().CompareNoCase(lpszPfad) == 0)
+				return (CEasyCashDoc*)pDoc;
+		}
+	}
+	return NULL;
+}
+
 BOOL CEasyCashDoc::OnNewDocument()
 {
 	if (!CDocument::OnNewDocument())
@@ -703,7 +724,65 @@ BOOL CEasyCashDoc::OnNewDocument()
 	CBuchungsjahrWaehlen dlg;
 	dlg.m_jahr = CTime::GetCurrentTime().GetYear();
 	dlg.m_waehrung = csWaehrung;
-	if (dlg.DoModal() != IDOK) return FALSE;
+
+	// Datenverzeichnis fuer die Liste bestehender Buchungsdateien ermitteln
+	char szDatenverzeichnis[500];
+	GetIniFileName(szDatenverzeichnis, sizeof(szDatenverzeichnis));
+	{
+		char* cpBackslash = strrchr(szDatenverzeichnis, '\\');
+		if (cpBackslash) *cpBackslash = '\0';
+	}
+	dlg.m_csDatenverzeichnis = szDatenverzeichnis;
+
+	int nDlgErgebnis = dlg.DoModal();
+	if (nDlgErgebnis == IDRETRY)
+	{
+		// Ist die gewaehlte Datei bereits geoeffnet? Dann nicht doppelt oeffnen, sondern dieses
+		// neue Dokument verwerfen und ggf. das vorhandene in den Vordergrund holen.
+		CEasyCashDoc* pBereitsOffen = FindeGeoeffnetesDokument(dlg.m_csAusgewaehlteDatei, this);
+		if (pBereitsOffen)
+		{
+			// Aktives Dokument ueber den aktiven MDI-Child ermitteln (GetActiveDocument() am
+			// Hauptframe liefert NULL). Der neue Child ist noch unsichtbar/inaktiv (MFC aktiviert
+			// ihn erst in InitialUpdateFrame), liefert hier also das zuvor aktive Dokument.
+			CDocument* pAktivesDok = NULL;
+			CMDIFrameWnd* pMDIFrame = (CMDIFrameWnd*)AfxGetMainWnd();
+			if (pMDIFrame)
+			{
+				CMDIChildWnd* pAktivChild = pMDIFrame->MDIGetActive();
+				if (pAktivChild)
+					pAktivesDok = pAktivChild->GetActiveDocument();
+			}
+			CString csMeldung = "Die angewählte Jahres-Buchungsdatei ist bereits in EC&T geöffnet";
+			if (pBereitsOffen != pAktivesDok)
+			{
+				csMeldung += "; ich habe das Dokument jetzt in den Vordergrund geholt. (Hinweis: Sie können mit Alt-Tabulatortaste zwischen mehreren geöffneten Dokumenten hin und herwechseln.)";
+				// Frame des bereits geoeffneten Dokuments aktivieren -> aktives MDI-Fenster
+				POSITION posView = pBereitsOffen->GetFirstViewPosition();
+				if (posView)
+				{
+					CView* pView = pBereitsOffen->GetNextView(posView);
+					if (pView && pView->GetParentFrame())
+						pView->GetParentFrame()->ActivateFrame();
+				}
+			}
+			else
+				csMeldung += ".";
+			AfxMessageBox(csMeldung, MB_OK | MB_ICONINFORMATION);
+			return FALSE;
+		}
+
+		// Nutzer hat in der Liste eine bestehende Buchungsdatei zum Oeffnen gewaehlt, statt eine
+		// neue anzulegen. Dieses frisch erzeugte Dokument stattdessen mit der gewaehlten Datei
+		// befuellen -- Pfad/Titel/MRU wie beim normalen Oeffnen setzen (MRU durch Override
+		// abgesichert). OnOpenDocument haengt zudem die Plugin-OpenDocument-Hooks ein.
+		if (!OnOpenDocument(dlg.m_csAusgewaehlteDatei))
+			return FALSE;
+		SetPathName(dlg.m_csAusgewaehlteDatei);
+		return TRUE;
+	}
+	if (nDlgErgebnis != IDOK)
+		return FALSE;
 	nJahr = dlg.m_jahr;
 	csWaehrung = dlg.m_waehrung;
 	SetModifiedFlag("Neue Buchungsdatei erzeugt", FALSE);
@@ -825,7 +904,17 @@ habe ich besser eigene Menüpunkte für gemacht...
 */
 	CheckWiederherstellungsdatei(lpszDatenverzeichnis);
 
-	if (!CDocument::OnOpenDocument(lpszDatenverzeichnis))
+	BOOL bGeoeffnet;
+	try
+	{
+		bGeoeffnet = CDocument::OnOpenDocument(lpszDatenverzeichnis);
+	}
+	catch (CException* e)
+	{
+		e->Delete();  // z.B. ungueltiger Zeitstempel in der Datei -> nicht abstuerzen
+		bGeoeffnet = FALSE;
+	}
+	if (!bGeoeffnet)
 	{
 		ZeigeStartoptionen();
 		return FALSE;
@@ -859,32 +948,6 @@ habe ich besser eigene Menüpunkte für gemacht...
 	return TRUE;
 }
 
-void CEasyCashDoc::ZeigeStartoptionen()
-{
-	int nRet;
-	CStartoptionen dlg;
-	nRet = dlg.DoModal();
-
-	switch (nRet)
-	{
-	case 0:
-		PostMessage(AfxGetMainWnd()->m_hWnd, WM_COMMAND, ID_FILE_OPEN, 0L);
-		return;
-	case 1:
-		PostMessage(AfxGetMainWnd()->m_hWnd, WM_COMMAND, ID_FILE_WAEHLE_DATENVERZEICHNIS, 0L);
-		return;
-	case 2:
-		PostMessage(AfxGetMainWnd()->m_hWnd, WM_COMMAND, ID_FILE_NEW, 0L);
-		return;
-	case 3:
-	default:
-		// tu nichts
-		return;
-	case 4:
-		PostMessage(AfxGetMainWnd()->m_hWnd, WM_COMMAND, ID_APP_EXIT, 0L);
-		return;
-	}
-}
 
 CEasyCashDoc* CEasyCashDoc::Jahreswechsel(int land = 0)
 {
@@ -1594,9 +1657,16 @@ CTime CEasyCashDoc::GetFileModifiedTime(LPCTSTR path)
 	CFile cfile;
 	CFileStatus status;
 
-	cfile.Open(path, CFile::modeRead);
-	if (cfile.GetStatus(status))
-		ctReturn = status.m_mtime;
+	try
+	{
+		cfile.Open(path, CFile::modeRead);
+		if (cfile.GetStatus(status))
+			ctReturn = status.m_mtime;
+	}
+	catch (CException* e)
+	{
+		e->Delete();  // ungueltiger Zeitstempel o.ae. -> neutrales CTime zurueckgeben
+	}
 	return ctReturn;
 }
 

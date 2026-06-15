@@ -1290,6 +1290,8 @@ BOOL CMainFrame::DestroyWindow()
 	theApp.WriteProfileInt("Fenster", "FrameWndSizeX", r.right - r.left);
 	theApp.WriteProfileInt("Fenster", "FrameWndSizeY", r.bottom - r.top);
 	
+	extern volatile BOOL g_bShuttingDown;
+	g_bShuttingDown = TRUE;	// ab hier zerstoert die Basisklasse das Ribbon; verzoegerte Maus-Events nicht als Absturz melden
 	return CMDIFrameWndEx::DestroyWindow();
 }
 
@@ -1682,7 +1684,6 @@ void CMainFrame::OnFileWaehleDatenverzeichnis()
 	else
 	{
 		csDatenverzeichnis.ReleaseBuffer();
-		AfxMessageBox(csDatenverzeichnis);
 
 		if (csAltesDatenverzeichnis != csDatenverzeichnis)
 		{

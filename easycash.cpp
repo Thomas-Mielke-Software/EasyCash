@@ -123,6 +123,7 @@ char last_path[500];
 char reg[100];
 char reg_name[100];
 BOOL vollversion;
+volatile BOOL g_bShuttingDown = FALSE;	// TRUE ab Beginn des Schliessens (CMainFrame::DestroyWindow): Teardown-Abstuerze nicht melden
 
 /////////////////////////////////////////////////////////////////////////////
 // CEasyCashApp initialization
@@ -131,6 +132,25 @@ char version_string[50];
 char version_string_exakt[50];
 char app_name_und_version_string_exakt[100];
 
+
+#if defined(NDEBUG)
+// Crash-Callback: beim regulaeren Beenden (Teardown) keinen Absturzbericht anzeigen/senden.
+// Hintergrund: bekannter MFC-Bug in CMFCRibbonCaptionButton::OnLButtonUp, wenn ein verzoegerter
+// Maus-Event waehrend des Ribbon-Teardowns zugestellt wird (m_pRibbonBar == NULL).
+int CALLBACK ECTCrashCallback(CR_CRASH_CALLBACK_INFO* pInfo)
+{
+	if (pInfo->nStage == CR_CB_STAGE_PREPARE)
+	{
+		if (g_bShuttingDown ||
+			theApp.m_pMainWnd == NULL ||
+			!::IsWindow(theApp.m_pMainWnd->GetSafeHwnd()))
+		{
+			return CR_CB_CANCEL;	// kein UI, nichts senden, nichts speichern
+		}
+	}
+	return CR_CB_DODEFAULT;
+}
+#endif
 
 BOOL CEasyCashApp::InitInstance()
 {
@@ -220,6 +240,9 @@ BOOL CEasyCashApp::InitInstance()
 
 		// Take screenshot of the app window at the moment of crash
 		crAddScreenshot2(CR_AS_MAIN_WINDOW|CR_AS_USE_JPEG_FORMAT, 95);
+
+		// Beim Beenden ausgeloeste Teardown-Abstuerze nicht melden (siehe ECTCrashCallback)
+		crSetCrashCallback(ECTCrashCallback, NULL);
 	}
 #endif
 
@@ -504,6 +527,15 @@ BOOL CEasyCashApp::InitInstance()
 			cmdInfo.m_strFileName = last_file;
 			cmdInfo.m_nShellCommand = CCommandLineInfo::FileOpen;
 		}
+		else
+		{
+			ZeigeStartoptionen();
+			// Die Auswahl trifft der Nutzer im Startoptionen-Dialog; dessen Ergebnis wird als
+			// Menuebefehl gepostet (ID_FILE_NEW/OPEN/...). Den Default-FileNew daher hier
+			// unterdruecken -- sonst legt ProcessShellCommand zusaetzlich ein neues Dokument an
+			// und der "Buchungsjahr waehlen"-Dialog erscheint doppelt.
+			cmdInfo.m_nShellCommand = CCommandLineInfo::FileNothing;
+		}
 	}	
 	else
 	{
@@ -569,7 +601,40 @@ BOOL CEasyCashApp::InitInstance()
 	clock_t start = clock();
 
 	// Dispatch commands specified on the command line
-	if (!ProcessShellCommand(cmdInfo))
+	BOOL bShellOK = FALSE;
+
+	// Soll eine konkrete Datei geoeffnet werden, die nicht (mehr) existiert, diese gar nicht erst
+	// an MFC weiterreichen: das kann sonst u.a. unter Wine/CrossOver in der MRU-Logik von MFC
+	// (SHCreateItemFromParsingName) abstuerzen. Stattdessen dem Anwender die Startoptionen anbieten.
+	if (cmdInfo.m_nShellCommand == CCommandLineInfo::FileOpen &&
+		!cmdInfo.m_strFileName.IsEmpty() &&
+		GetFileAttributes(cmdInfo.m_strFileName) == 0xFFFFFFFF)
+	{
+		ZeigeStartoptionen();
+	}
+	else try
+	{
+		bShellOK = ProcessShellCommand(cmdInfo);
+	}
+	catch (CException* e)
+	{
+		// Generischer Fallback fuer unerwartete Fehler beim Oeffnen aus der Kommandozeile.
+		// Die haeufigen Faelle sind bereits gezielt behandelt: MRU-/Shell-Item-Fehler im
+		// AddToRecentFileList-Override, fehlende Datei in der Existenzpruefung oben.
+		e->Delete();
+		CString csHinweis;
+		csHinweis  = "EasyCash & Tax konnte die gewählte Datei bzw. den Mandanten nicht öffnen:\n\n";
+		csHinweis += cmdInfo.m_strFileName + "\n\n";
+		csHinweis += "Mögliche Ursachen:\n\n";
+		csHinweis += "- Die Datei wurde verschoben, umbenannt oder gelöscht.\n";
+		csHinweis += "- Das Datenverzeichnis ist derzeit nicht erreichbar (z. B. Netzlaufwerk oder externer Datenträger).\n";
+		csHinweis += "- Die Datei ist beschädigt oder hat ein unerwartetes Format.\n";
+		csHinweis += "- Der Pfad enthält Umlaute oder Sonderzeichen und für EasyCT.exe ist ein Kompatibilitäts-Modus (z. B. \"Modus mit reduzierten Farben\") aktiv.\n\n";
+		csHinweis += "Sie können EasyCash & Tax normal weiter verwenden und die Datei über Menü -> Datei -> Öffnen erneut auswählen.";
+		AfxMessageBox(csHinweis, MB_ICONEXCLAMATION | MB_OK);
+		cmdInfo.m_strFileName.Empty();
+	}
+	if (!bShellOK)
 	{
 		/*if (AfxMessageBox("Soll EasyCash mit einem leeren Dokument gestartet werden?",
 			MB_ICONQUESTION|MB_YESNO) == IDYES)
@@ -1184,6 +1249,25 @@ BOOL CEasyCashApp::ReplaceRecentFileList(CStringArray& csaFileList)
 		}
 
 		return TRUE;
+	}
+
+	// Mandanten-Modus: Standard-MRU-Liste wird nicht verwendet, daher nichts ersetzt.
+	return FALSE;
+}
+
+// MFCs CRecentFileList::Add ruft fuer die Shell-/Sprunglisten-Integration
+// SHCreateItemFromParsingName auf. Schlaegt das fehl (Pfad nicht aufloesbar, > MAX_PATH,
+// oder unvollstaendige shell32-Implementierung unter Wine/CrossOver), wirft MFC eine
+// CInvalidArgException. Der MRU-Eintrag ist rein kosmetisch, daher abfangen statt abstuerzen.
+void CEasyCashApp::AddToRecentFileList(LPCTSTR lpszPathName)
+{
+	try
+	{
+		CWinAppEx::AddToRecentFileList(lpszPathName);
+	}
+	catch (CException* e)
+	{
+		e->Delete();
 	}
 }
 

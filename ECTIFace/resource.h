@@ -1,6 +1,6 @@
 //{{NO_DEPENDENCIES}}
-// Microsoft Visual C++ generated include file.
-// Used by ECTIFace.rc
+// Von Microsoft Visual C++ generierte Includedatei.
+// Verwendet durch ECTIFace.rc
 //
 #define IDD_DATENSICHERUNGSOPTIONEN     435
 #define IDD_STARTOPTIONEN               437
@@ -12,11 +12,17 @@
 #define IDC_KEINE2                      1002
 #define IDC_OEFFNEN2                    1002
 #define IDC_INTERN2                     1003
+#define IDC_LISTE_BUCHUNGSDATEIEN       1009
 #define IDC_EXTERN2                     1004
 #define IDC_DATENVERZEICHNIS            1004
+#define IDC_STATIC1                     1004
 #define IDC_DISK2                       1005
+#define IDC_STATIC2                     1005
 #define IDC_BUTTON5                     1006
 #define IDC_ZEIT2                       1006
+#define IDC_STATIC3                     1006
+#define IDC_STATIC4                     1007
+#define IDC_STATIC5                     1008
 #define IDC_OHNE2                       1018
 #define IDC_EXIT2                       1019
 #define IDC_JAHR                        1053
@@ -50,18 +56,18 @@
 #define IDC_ZEIT                        1161
 #define IDC_EXIT                        1161
 #define IDC_LEER2                       1171
+#define ID_FILE_WAEHLE_DATENVERZEICHNIS 32829
 #define ID_FILE_BACKUP                  32833
 #define ID_FILE_BACKUP_EXTERNAL         32883
 #define ID_FILE_BACKUP_SUBFOLDER        32884
-#define ID_FILE_WAEHLE_DATENVERZEICHNIS 32829
 
 // Next default values for new objects
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        703
+#define _APS_NEXT_RESOURCE_VALUE        704
 #define _APS_NEXT_COMMAND_VALUE         32771
-#define _APS_NEXT_CONTROL_VALUE         1003
+#define _APS_NEXT_CONTROL_VALUE         1010
 #define _APS_NEXT_SYMED_VALUE           101
 #endif
 #endif

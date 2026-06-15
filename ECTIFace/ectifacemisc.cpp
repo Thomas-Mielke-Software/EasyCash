@@ -21,6 +21,8 @@
 
 #include "stdafx.h"
 #include "ECTIFace.h"
+#include "resource.h"
+#include "Startoptionen.h"
 #include "EasyCashDoc.h"
 
 // Wandelt einen Betrag von String in int (= Pfennige/Cents) um
@@ -150,6 +152,35 @@ extern "C" AFX_EXT_CLASS void SetMandant(int n)
 extern "C" AFX_EXT_CLASS BOOL GetMandant()
 {	
 	return nMandant;
+}
+
+// Zeigt beim Programmstart den Startoptionen-Dialog an (neue Datei / andere Datei oeffnen /
+// Datenverzeichnis waehlen / beenden). Klassenlos, da beim Start noch kein Dokument existiert,
+// auf dem eine Member-Funktion aufgerufen werden koennte.
+extern "C" AFX_EXT_CLASS void ZeigeStartoptionen()
+{
+	CStartoptionen dlg;
+	int nRet = dlg.DoModal();
+
+	switch (nRet)
+	{
+	case 0:
+		PostMessage(AfxGetMainWnd()->m_hWnd, WM_COMMAND, ID_FILE_OPEN, 0L);
+		return;
+	case 1:
+		PostMessage(AfxGetMainWnd()->m_hWnd, WM_COMMAND, ID_FILE_WAEHLE_DATENVERZEICHNIS, 0L);
+		return;
+	case 2:
+		PostMessage(AfxGetMainWnd()->m_hWnd, WM_COMMAND, ID_FILE_NEW, 0L);
+		return;
+	case 3:
+	default:
+		// tu nichts
+		return;
+	case 4:
+		PostMessage(AfxGetMainWnd()->m_hWnd, WM_COMMAND, ID_APP_EXIT, 0L);
+		return;
+	}
 }
 
 //--- ab hier Hilfsfunktionen für den Zugriff auf die Plugin-Erweiterungsdaten in der Dokument-Klasse ---

@@ -39,6 +39,7 @@ CBuchungsjahrWaehlen::CBuchungsjahrWaehlen(CWnd* pParent /*=NULL*/)
 	m_jahr = 0;
 	m_waehrung = _T("");
 	//}}AFX_DATA_INIT
+	m_bBuchungsdateienVorhanden = FALSE;
 }
 
 
@@ -58,7 +59,73 @@ BEGIN_MESSAGE_MAP(CBuchungsjahrWaehlen, CDialog)
 	//{{AFX_MSG_MAP(CBuchungsjahrWaehlen)
 		// NOTE: the ClassWizard will add message map macros here
 	//}}AFX_MSG_MAP
+	ON_LBN_DBLCLK(IDC_LISTE_BUCHUNGSDATEIEN, &CBuchungsjahrWaehlen::OnDblclkListeBuchungsdateien)
+	ON_BN_CLICKED(IDRETRY, &CBuchungsjahrWaehlen::OnOeffnen)
 END_MESSAGE_MAP()
 
 /////////////////////////////////////////////////////////////////////////////
 // CBuchungsjahrWaehlen message handlers
+
+BOOL CBuchungsjahrWaehlen::OnInitDialog()
+{
+	CDialog::OnInitDialog();
+
+	CListBox* pListe = (CListBox*)GetDlgItem(IDC_LISTE_BUCHUNGSDATEIEN);
+
+	// Bestehende Jahres-Buchungsdateien (*.eca) im Datenverzeichnis auflisten
+	m_bBuchungsdateienVorhanden = FALSE;
+	if (!m_csDatenverzeichnis.IsEmpty())
+	{
+		CFileFind ff;
+		BOOL bGoOn = ff.FindFile(m_csDatenverzeichnis + "\\*.eca");
+		while (bGoOn)
+		{
+			bGoOn = ff.FindNextFile();
+			if (!ff.IsDirectory())
+			{
+				pListe->AddString(ff.GetFileName());
+				m_bBuchungsdateienVorhanden = TRUE;
+			}
+		}
+	}
+
+	if (m_bBuchungsdateienVorhanden)
+	{
+		// juengste Datei (durch LBS_SORT zuletzt) vorauswaehlen
+		pListe->SetCurSel(pListe->GetCount() - 1);
+	}
+	else
+	{
+		pListe->InsertString(0, "keine bestehenden Jahres-Buchungsdateien im Datenverzeichnis gefunden,");
+		pListe->InsertString(1, "bitte Option 2 wählen oder ggf. ein Datenverzeichnis mit JahrXXXX.eca-Dateien auswählen");
+		GetDlgItem(IDRETRY)->EnableWindow(FALSE);   // "Oeffnen" deaktivieren
+	}
+
+	return TRUE;  // TRUE = Standardfokus beibehalten
+}
+
+void CBuchungsjahrWaehlen::OnDblclkListeBuchungsdateien()
+{
+	UebernehmeAuswahlUndOeffne();
+}
+
+void CBuchungsjahrWaehlen::OnOeffnen()
+{
+	UebernehmeAuswahlUndOeffne();
+}
+
+void CBuchungsjahrWaehlen::UebernehmeAuswahlUndOeffne()
+{
+	if (!m_bBuchungsdateienVorhanden)
+		return;
+
+	CListBox* pListe = (CListBox*)GetDlgItem(IDC_LISTE_BUCHUNGSDATEIEN);
+	int nSel = pListe->GetCurSel();
+	if (nSel == LB_ERR)
+		return;   // nichts ausgewaehlt
+
+	CString csName;
+	pListe->GetText(nSel, csName);
+	m_csAusgewaehlteDatei = m_csDatenverzeichnis + "\\" + csName;
+	EndDialog(IDRETRY);
+}
