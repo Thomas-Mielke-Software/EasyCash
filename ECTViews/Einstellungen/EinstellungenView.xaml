@@ -1,0 +1,83 @@
+<UserControl x:Class="ECTViews.EinstellungenUi.EinstellungenView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:einst="clr-namespace:ECTViews.EinstellungenUi"
+             FontFamily="Segoe UI" FontSize="13"
+             Background="#F5F5F5">
+
+    <UserControl.Resources>
+        <!-- Gruppierte Sicht auf die flache Items-Liste -->
+        <CollectionViewSource x:Key="NavQuelle" Source="{Binding Items}">
+            <CollectionViewSource.GroupDescriptions>
+                <PropertyGroupDescription PropertyName="Gruppe"/>
+            </CollectionViewSource.GroupDescriptions>
+        </CollectionViewSource>
+
+        <!-- Navigations-Eintrag: Hover hellblau, Selektion kräftiger blau -->
+        <Style x:Key="NavItemStyle" TargetType="ListBoxItem">
+            <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+            <Setter Property="Padding" Value="14,5"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="ListBoxItem">
+                        <Border x:Name="Bd"
+                                Background="Transparent"
+                                Padding="{TemplateBinding Padding}">
+                            <ContentPresenter/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="Bd" Property="Background" Value="#E0EEF8"/>
+                            </Trigger>
+                            <Trigger Property="IsSelected" Value="True">
+                                <Setter TargetName="Bd" Property="Background" Value="#1E88E5"/>
+                                <Setter Property="Foreground" Value="White"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </UserControl.Resources>
+
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="230" MinWidth="160"/>
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+
+        <!-- Navigation links -->
+        <Border Grid.Column="0" Background="#FCFCFC" BorderBrush="#E0E0E0" BorderThickness="0,0,1,0">
+            <ListBox ItemsSource="{Binding Source={StaticResource NavQuelle}}"
+                     SelectedItem="{Binding AusgewaehltesItem, Mode=TwoWay}"
+                     ItemContainerStyle="{StaticResource NavItemStyle}"
+                     BorderThickness="0" Background="Transparent"
+                     ScrollViewer.HorizontalScrollBarVisibility="Disabled">
+                <ListBox.ItemTemplate>
+                    <DataTemplate DataType="{x:Type einst:EinstellungenNavItem}">
+                        <TextBlock Text="{Binding Titel}" TextTrimming="CharacterEllipsis"/>
+                    </DataTemplate>
+                </ListBox.ItemTemplate>
+                <ListBox.GroupStyle>
+                    <GroupStyle>
+                        <GroupStyle.HeaderTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding Name}"
+                                           FontWeight="Bold" Foreground="#444444"
+                                           Padding="6,10,6,3"/>
+                            </DataTemplate>
+                        </GroupStyle.HeaderTemplate>
+                    </GroupStyle>
+                </ListBox.GroupStyle>
+            </ListBox>
+        </Border>
+
+        <GridSplitter Grid.Column="1" Width="4" HorizontalAlignment="Center"
+                      VerticalAlignment="Stretch" Background="#EEEEEE"/>
+
+        <!-- Inhalt rechts -->
+        <ContentControl Grid.Column="2" Content="{Binding AktuelleSeite}"/>
+    </Grid>
+</UserControl>

@@ -43,14 +43,26 @@ namespace ECTEngine
         public int    Mwst    { get; }  // Festkomma x1000 (19000 = 19 %)
         public int    AfaJ    { get; }
         public string Konto   { get; }
+        /// <summary>Freitext-Notiz (Erinnerungen/Detailinfos zur Buchung).
+        /// Wird im Buchen-Dialog beim Auswählen des Presets kurz als
+        /// Balloon angezeigt.</summary>
+        public string Notiz   { get; }
+        /// <summary>Degressive AfA (statt linear).</summary>
+        public bool   Degressiv { get; }
+        /// <summary>Degressiver AfA-Satz in Prozent (nur relevant bei Degressiv).</summary>
+        public int    AfaSatz { get; }
 
-        public Preset(string text, bool ausgabe, int mwst, int afaj, string konto)
+        public Preset(string text, bool ausgabe, int mwst, int afaj, string konto,
+            string notiz = "", bool degressiv = false, int afaSatz = 0)
         {
-            Text    = text    ?? "";
-            Ausgabe = ausgabe;
-            Mwst    = mwst;
-            AfaJ    = afaj;
-            Konto   = konto   ?? "";
+            Text      = text    ?? "";
+            Ausgabe   = ausgabe;
+            Mwst      = mwst;
+            AfaJ      = afaj;
+            Konto     = konto   ?? "";
+            Notiz     = notiz   ?? "";
+            Degressiv = degressiv;
+            AfaSatz   = afaSatz;
         }
 
         public bool IstLeer => string.IsNullOrEmpty(Text) && string.IsNullOrEmpty(Konto);
@@ -74,6 +86,12 @@ namespace ECTEngine
         private static readonly Dictionary<string, string> _cache =
             new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
 
+        // Schützt _cache, damit Hintergrund-Persistenz (z.B. Konten-Reorder)
+        // und UI-Lesezugriffe sich nicht ins Gehege kommen. Nur die kurze
+        // Dictionary-Operation wird gesperrt -- NICHT der ini-Schreibvorgang
+        // (WertGeaendert), damit Disk-I/O die Lesezugriffe nicht blockiert.
+        private static readonly object _gate = new object();
+
         private static IReadOnlyList<string>       _einnahmenKonten = new List<string>();
         private static IReadOnlyList<string>       _ausgabenKonten  = new List<string>();
         private static IReadOnlyList<Preset>       _presets         = new List<Preset>();
@@ -92,17 +110,20 @@ namespace ECTEngine
         /// </summary>
         public static void LadeAusBridge(IDictionary<string, string> daten)
         {
-            _cache.Clear();
-            if (daten != null)
-                foreach (var kv in daten)
-                    _cache[kv.Key] = kv.Value ?? "";
+            lock (_gate)
+            {
+                _cache.Clear();
+                if (daten != null)
+                    foreach (var kv in daten)
+                        _cache[kv.Key] = kv.Value ?? "";
+            }
             BaueListenAuf();
         }
 
         /// <summary>Cache leeren (z.B. bei Mandantenwechsel vor neuem Laden).</summary>
         public static void Leere()
         {
-            _cache.Clear();
+            lock (_gate) { _cache.Clear(); }
             _einnahmenKonten = new List<string>();
             _ausgabenKonten  = new List<string>();
             _presets         = new List<Preset>();
@@ -116,7 +137,7 @@ namespace ECTEngine
         public static string Hole(string key)
         {
             if (string.IsNullOrEmpty(key)) return "";
-            return _cache.TryGetValue(key, out var v) ? v : "";
+            lock (_gate) { return _cache.TryGetValue(key, out var v) ? v : ""; }
         }
 
         /// <summary>
@@ -127,8 +148,36 @@ namespace ECTEngine
         {
             if (string.IsNullOrEmpty(key)) return;
             value = value ?? "";
-            _cache[key] = value;
+            lock (_gate) { _cache[key] = value; }
+            // WertGeaendert (ini-Schreibvorgang) bewusst AUSSERHALB des Locks,
+            // damit Disk-I/O keine UI-Lesezugriffe blockiert.
             WertGeaendert?.Invoke(key, value);
+        }
+
+        /// <summary>
+        /// Wird ausgelöst, um eine GANZE ini-Sektion auf einmal zu schreiben
+        /// (statt vieler Einzel-Keys). Die Bridge schreibt das per
+        /// WritePrivateProfileSection -- drastisch weniger Datei-I/O.
+        /// Args: (ini-Sektionsname, iniKey -> Wert).
+        /// </summary>
+        public static event Action<string, IReadOnlyDictionary<string, string>> SektionGeaendert;
+
+        /// <summary>Aktualisiert NUR den Cache (kein Event/keine ini). Für
+        /// gebündeltes Schreiben: erst alle Cache-Keys setzen, dann die
+        /// Sektion(en) per <see cref="SchreibeSektion"/> in die ini spülen.</summary>
+        public static void SetzeCacheNur(string key, string value)
+        {
+            if (string.IsNullOrEmpty(key)) return;
+            lock (_gate) { _cache[key] = value ?? ""; }
+        }
+
+        /// <summary>Schreibt eine komplette ini-Sektion (löst SektionGeaendert aus).
+        /// Aktualisiert NICHT den Cache -- das macht der Aufrufer per
+        /// <see cref="SetzeCacheNur"/>.</summary>
+        public static void SchreibeSektion(string iniSektion, IReadOnlyDictionary<string, string> eintraege)
+        {
+            if (string.IsNullOrEmpty(iniSektion) || eintraege == null) return;
+            SektionGeaendert?.Invoke(iniSektion, eintraege);
         }
 
         public static int HoleInt(string key, int defaultValue = 0)
@@ -184,6 +233,58 @@ namespace ECTEngine
 
         // ---------------------------------------------------------------------
 
+        /// <summary>
+        /// Schreibt ein Buchungsposten-Preset (Index 0-99) in den Cache/ini
+        /// und baut die Listen neu auf. Verwendet die Bracket-Cache-Form
+        /// "[Buchungsposten]NN..." -- exakt die Form, in der
+        /// <see cref="BaueListenAuf"/> liest, damit das Ergebnis sofort
+        /// (ohne ECT_LadeEinstellungen) sichtbar ist.
+        /// </summary>
+        public static void SpeicherePreset(int index, Preset p)
+        {
+            if (index < 0 || index > 99 || p == null) return;
+            var pfx = "[Buchungsposten]" + index.ToString("D2");
+            Speichere(pfx + "Text", p.Text);
+            Speichere(pfx + "Ausg", p.Ausgabe ? "1" : "0");
+            Speichere(pfx + "MWSt", p.Mwst);
+            Speichere(pfx + "AfAJ", p.AfaJ);
+            Speichere(pfx + "Rech", p.Konto);
+            Speichere(pfx + "Notiz", p.Notiz);
+            Speichere(pfx + "Degr", p.Degressiv ? "1" : "0");
+            Speichere(pfx + "AfASatz", p.AfaSatz);
+            BaueListenAuf();
+        }
+
+        /// <summary>Baut die abgeleiteten Listen (Presets, Konten, …) aus dem
+        /// aktuellen Cache neu auf. Nach direkten Speichere-Aufrufen nötig,
+        /// wenn die Listen-Properties sofort aktuell sein sollen.</summary>
+        public static void NeuAufbauen() => BaueListenAuf();
+
+        /// <summary>Baut NUR die Einnahmen-/Ausgaben-Kontenlisten neu auf
+        /// (günstig). Für das Konten-Umsortieren -- der teure Komplett-Rebuild
+        /// (Presets/Betriebe/Bestandskonten mit 60-Jahres-Schleife) ist dafür
+        /// unnötig.</summary>
+        public static void NeuAufbauenKonten()
+        {
+            var ek = new List<string>();
+            for (int i = 0; i < 100; i++)
+            {
+                var v = Hole("e" + i.ToString("D2", CultureInfo.InvariantCulture));
+                if (string.IsNullOrEmpty(v)) break;
+                ek.Add(v);
+            }
+            _einnahmenKonten = ek;
+
+            var ak = new List<string>();
+            for (int i = 0; i < 100; i++)
+            {
+                var v = Hole("a" + i.ToString("D2", CultureInfo.InvariantCulture));
+                if (string.IsNullOrEmpty(v)) break;
+                ak.Add(v);
+            }
+            _ausgabenKonten = ak;
+        }
+
         private static void BaueListenAuf()
         {
             // EinnahmenKonten: e00, e01, ... stopp bei erstem Leerstring
@@ -229,7 +330,10 @@ namespace ECTEngine
                 var mwst    = HoleInt(pfx + "MWSt");
                 var afaj    = HoleInt(pfx + "AfAJ");
                 var konto   = Hole(pfx + "Rech");
-                ps.Add(new Preset(text, ausgabe, mwst, afaj, konto));
+                var notiz   = Hole(pfx + "Notiz");
+                var degr    = Hole(pfx + "Degr") == "1";
+                var afaSatz = HoleInt(pfx + "AfASatz");
+                ps.Add(new Preset(text, ausgabe, mwst, afaj, konto, notiz, degr, afaSatz));
             }
             _presets = ps;
 

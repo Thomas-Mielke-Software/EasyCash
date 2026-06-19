@@ -22,6 +22,7 @@ struct ECT_Preset
     int  mwst;          // 00MWSt: Festkomma x1000 (19000 = 19 %)
     int  afaj;          // 00AfAJ
     char konto[512];    // 00Rech
+    char notiz[1024];   // 00Notiz: Freitext, im Buchen-Dialog als Balloon
 };
 
 struct ECT_Betrieb
@@ -102,6 +103,15 @@ ECTBRIDGE_API void ECT_SpeichereBestandskonto(int index, const ECT_Bestandskonto
 /// Gibt FALSE zurück wenn kein Eintrag für dieses Jahr existiert.
 ECTBRIDGE_API BOOL ECT_HoleBestandskontoSaldo(int index, int jahr, int* centOut);
 ECTBRIDGE_API void ECT_SpeichereBestandskontoSaldo(int index, int jahr, int cent);
+
+// -----------------------------------------------------------------------------
+// Statusleiste (managed Pendant zu CMainFrame::SetStatus)
+// -----------------------------------------------------------------------------
+
+// Der Host (EasyCash.exe) registriert eine native Funktion, die den Text an
+// CMainFrame::SetStatus weiterreicht -- die Bridge kennt CMainFrame nicht.
+typedef void (*ECT_StatusCallback)(const char* text);
+ECTBRIDGE_API void ECT_SetzeStatusCallback(ECT_StatusCallback cb);
 
 #ifdef __cplusplus
 }

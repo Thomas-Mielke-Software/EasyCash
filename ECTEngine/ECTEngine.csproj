@@ -14,4 +14,10 @@
     <!-- COM-Visible für Plugin-Kompatibilität (Phase 4) -->
     <ComVisible>false</ComVisible>
   </PropertyGroup>
+
+  <!-- Für das Parsen der Formular-Dateien (.ecf) in EUKonten.cs -->
+  <ItemGroup>
+    <Reference Include="System.Xml" />
+    <Reference Include="System.Xml.Linq" />
+  </ItemGroup>
 </Project>

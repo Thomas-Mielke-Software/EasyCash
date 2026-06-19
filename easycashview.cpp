@@ -62,6 +62,7 @@ static char THIS_FILE[] = __FILE__;
 #include "ECTBridge\Exports.h"
 #include "ECTBridge\ViewExports.h"
 #include "ECTBridge\JournalExports.h"
+#include "ECTBridge\EinstellungenViewExports.h"
 #include "ECTBridge\EasyCashDocBridge.h"
 #endif
 
@@ -168,6 +169,8 @@ CEasyCashView::CEasyCashView()
 #ifdef USE_ECTENGINE
 	m_hwndJournalWpf = NULL;
 	m_hwndNavigationWpf = NULL;
+	m_hwndEinstellungenWpf = NULL;
+	m_einstellungenUeberJournal = false;
 #endif
 	m_vt = 1;
 	m_vm = 1;
@@ -218,6 +221,11 @@ CEasyCashView::~CEasyCashView()
 		VerstecktJournalWpf();
 		m_hwndJournalWpf = NULL;
 		m_hwndNavigationWpf = NULL;
+	}
+	if (m_hwndEinstellungenWpf)
+	{
+		ECT_EinstellungenViewAbloesen(m_hwndEinstellungenWpf);
+		m_hwndEinstellungenWpf = NULL;
 	}
 #endif
 
@@ -1493,6 +1501,11 @@ void CEasyCashView::OnSize(UINT nType, int cx, int cy)
 	CScrollView::OnSize(nType, cx, cy);
 
 #ifdef USE_ECTENGINE
+	if (IstEinstellungenWpfAktiv())
+	{
+		GroessenAnpassungEinstellungenWpf();
+		return;
+	}
 	if (IstJournalWpfAktiv())
 	{
 		// Bei aktivem WPF-Journal ist die native CScrollView nur ein
@@ -5837,9 +5850,13 @@ void CEasyCashView::OnEditEinnahmeBuchen()
 /////////////dockable-experiment	((CMainFrame*)AfxGetMainWnd())->m_wndOutput.ShowPane(TRUE, TRUE, TRUE);
 
 #ifdef USE_ECTENGINE
-	// WPF-Experiment
-	ECT_ShowBuchungBearbeitenDialog(GetDocument(), 0, AfxGetMainWnd()->GetSafeHwnd());
-	//ECT_ShowBuchungDialog(GetDocument(), FALSE, AfxGetMainWnd()->GetSafeHwnd());
+	// Neue Einnahmen-Buchung erfassen (WPF-Dialog) und das Journal danach
+	// sofort aktualisieren, damit die neue Buchung ohne Ansichtswechsel erscheint.
+	if (ECT_ShowBuchungDialog(GetDocument(), FALSE, AfxGetMainWnd()->GetSafeHwnd()))
+	{
+		if (IstJournalWpfAktiv())
+			AktualisiereJournalFilter();
+	}
 #else
 	if (buchenDlg) 
 	{
@@ -5856,8 +5873,13 @@ void CEasyCashView::OnEditEinnahmeBuchen()
 void CEasyCashView::OnEditAusgabeBuchen() 
 {
 #ifdef USE_ECTENGINE
-	// WPF-Experiment
-	ECT_ShowBuchungBearbeitenDialog(GetDocument(), 1, AfxGetMainWnd()->GetSafeHwnd());
+	// Neue Ausgaben-Buchung erfassen (WPF-Dialog) und das Journal danach
+	// sofort aktualisieren, damit die neue Buchung ohne Ansichtswechsel erscheint.
+	if (ECT_ShowBuchungDialog(GetDocument(), TRUE, AfxGetMainWnd()->GetSafeHwnd()))
+	{
+		if (IstJournalWpfAktiv())
+			AktualisiereJournalFilter();
+	}
 #else
 	if (buchenDlg) 
 	{
@@ -8081,6 +8103,12 @@ BOOL CEasyCashView::Export(char *_Efilename, char *_Afilename, BOOL bExplorerOef
 
 void CEasyCashView::OnViewOptions() 
 {
+#ifdef USE_ECTENGINE
+	// Neue WPF-Einstellungen als eingebettetes Child-Fenster statt modalem
+	// CPropertySheet. Live-Save laeuft ueber den globalen Einstellungs-Cache.
+	ZeigeEinstellungenWpf();
+	return;
+#else
 	LoadProfile();  // einstellungen1-5 aus aktuellem Cache neu befuellen
 	einstellungen1->m_lfd_Buchungsnummer_Einnahmen = GetDocument()->nLaufendeBuchungsnummerFuerEinnahmen;
 	einstellungen1->m_lfd_Buchungsnummer_Ausgaben  = GetDocument()->nLaufendeBuchungsnummerFuerAusgaben;
@@ -8227,6 +8255,7 @@ void CEasyCashView::OnViewOptions()
 		else 
 			einstellungen1->m_sondervorauszahlung = "";
 	}
+#endif
 }
 
 void CEasyCashView::OnViewJournalDatum()
@@ -8587,6 +8616,93 @@ void CEasyCashView::GroessenAnpassungJournalWpf()
 			rc.left, rc.top, rc.Width(), rc.Height(),
 			SWP_NOZORDER | SWP_NOACTIVATE);
 	}
+}
+
+void CEasyCashView::ZeigeEinstellungenWpf()
+{
+	// Schon offen? Nur nach vorne holen.
+	if (m_hwndEinstellungenWpf)
+	{
+		::BringWindowToTop(m_hwndEinstellungenWpf);
+		return;
+	}
+
+	CWnd* pSplitter = GetParent();
+	if (!pSplitter) return;
+
+	// Einstellungen ueberlagern die GANZE Splitter-Flaeche (eigene
+	// interne Navigation). Merken, ob darunter ein WPF-Journal liegt.
+	m_einstellungenUeberJournal = (m_hwndJournalWpf != NULL);
+
+	CRect rcAll;
+	pSplitter->GetClientRect(&rcAll);
+
+	m_hwndEinstellungenWpf = ECT_EinstellungenEinbetten(
+		pSplitter->m_hWnd,
+		rcAll.left, rcAll.top, rcAll.Width(), rcAll.Height(),
+		GetDocument() != NULL);
+
+	if (!m_hwndEinstellungenWpf)
+	{
+		AfxMessageBox(_T("Konnte WPF-Einstellungsfenster nicht erzeugen."));
+		return;
+	}
+
+	::ShowWindow(m_hwndEinstellungenWpf, SW_SHOW);
+	::BringWindowToTop(m_hwndEinstellungenWpf);
+
+	// Darunterliegende Fenster verstecken.
+	if (m_einstellungenUeberJournal)
+	{
+		if (m_hwndJournalWpf)    ::ShowWindow(m_hwndJournalWpf, SW_HIDE);
+		if (m_hwndNavigationWpf) ::ShowWindow(m_hwndNavigationWpf, SW_HIDE);
+	}
+	else
+	{
+		ShowWindow(SW_HIDE);
+		if (m_pNavigationWnd) m_pNavigationWnd->ShowWindow(SW_HIDE);
+	}
+}
+
+void CEasyCashView::VerstecktEinstellungenWpf()
+{
+	if (!m_hwndEinstellungenWpf) return;
+
+	ECT_EinstellungenViewAbloesen(m_hwndEinstellungenWpf);
+	m_hwndEinstellungenWpf = NULL;
+
+	if (m_einstellungenUeberJournal && m_hwndJournalWpf)
+	{
+		// Journal wieder zeigen und auf aktuelle Groesse nachfuehren.
+		::ShowWindow(m_hwndJournalWpf, SW_SHOW);
+		::BringWindowToTop(m_hwndJournalWpf);
+		if (m_hwndNavigationWpf)
+		{
+			::ShowWindow(m_hwndNavigationWpf, SW_SHOW);
+			::BringWindowToTop(m_hwndNavigationWpf);
+		}
+		GroessenAnpassungJournalWpf();
+	}
+	else
+	{
+		ShowWindow(SW_SHOW);
+		if (m_pNavigationWnd) m_pNavigationWnd->ShowWindow(SW_SHOW);
+		SetupScroll();
+		Invalidate();
+	}
+	m_einstellungenUeberJournal = false;
+}
+
+void CEasyCashView::GroessenAnpassungEinstellungenWpf()
+{
+	CWnd* pSplitter = GetParent();
+	if (!pSplitter || !m_hwndEinstellungenWpf) return;
+
+	CRect rcAll;
+	pSplitter->GetClientRect(&rcAll);
+	::SetWindowPos(m_hwndEinstellungenWpf, NULL,
+		rcAll.left, rcAll.top, rcAll.Width(), rcAll.Height(),
+		SWP_NOZORDER | SWP_NOACTIVATE);
 }
 
 void CEasyCashView::AktualisiereJournalFilter()
@@ -9412,6 +9528,11 @@ void CEasyCashView::DestroyPlugin()
 	if (m_hwndJournalWpf || m_hwndNavigationWpf)
 	{
 		VerstecktJournalWpf();
+	}
+	// Falls WPF-Einstellungen aktiv sind, ebenfalls schliessen
+	if (m_hwndEinstellungenWpf)
+	{
+		VerstecktEinstellungenWpf();
 	}
 #endif
 

@@ -284,11 +284,52 @@
         <!-- ═══ Zeile 3: Beschreibung ═══ -->
         <GroupBox Grid.Row="3" Header="Beschreibung">
             <StackPanel>
-                <ComboBox Text="{Binding Beschreibung, UpdateSourceTrigger=PropertyChanged}"
-                          ItemsSource="{Binding BeschreibungsHistorie}"
-                          IsEditable="True"/>
+                <!-- Echtes TextBox (kein ComboBox): so stoert das Filtern der
+                     Vorschlagsliste das Editierfeld/den Cursor NICHT. -->
+                <TextBox x:Name="BeschreibungBox"
+                         Text="{Binding Beschreibung, UpdateSourceTrigger=PropertyChanged}"
+                         LostFocus="OnBeschreibungLostFocus"/>
+
+                <!-- Vorschlags-Liste (Auto-Complete) als Popup unter dem Feld.
+                     Filtert nach Nummer ODER Beschreibungstext. -->
+                <Popup PlacementTarget="{Binding ElementName=BeschreibungBox}"
+                       Placement="Bottom" StaysOpen="True"
+                       IsOpen="{Binding VorschlaegeOffen, Mode=TwoWay}"
+                       MinWidth="{Binding ActualWidth, ElementName=BeschreibungBox}">
+                    <Border Background="White" BorderBrush="#999999" BorderThickness="1">
+                        <ListBox ItemsSource="{Binding PresetVorschlaege}"
+                                 DisplayMemberPath="Anzeige"
+                                 SelectedItem="{Binding GewaehlterVorschlag, Mode=TwoWay}"
+                                 MaxHeight="220"
+                                 ScrollViewer.HorizontalScrollBarVisibility="Disabled"/>
+                    </Border>
+                </Popup>
+
                 <TextBlock Style="{StaticResource ErrorStyle}"
                            Text="{Binding BeschreibungError}"/>
+
+                <!-- Balloon: zeigt die Preset-Notiz fuer ein paar Sekunden,
+                     wenn ein Preset mit Notiz ausgewaehlt wurde. -->
+                <Popup x:Name="NotizBalloon"
+                       PlacementTarget="{Binding ElementName=BeschreibungBox}"
+                       Placement="Bottom" AllowsTransparency="True"
+                       StaysOpen="True" PopupAnimation="Fade"
+                       HorizontalOffset="8" VerticalOffset="2">
+                    <Border Background="#FFFDE7" BorderBrush="#E0C46C" BorderThickness="1"
+                            CornerRadius="3" Padding="10,7" MaxWidth="360"
+                            SnapsToDevicePixels="True">
+                        <Border.Effect>
+                            <DropShadowEffect Color="#888888" BlurRadius="8"
+                                              ShadowDepth="2" Opacity="0.5"/>
+                        </Border.Effect>
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="&#128161;" FontSize="14" Margin="0,0,8,0"
+                                       VerticalAlignment="Top"/>
+                            <TextBlock x:Name="NotizText" TextWrapping="Wrap"
+                                       Foreground="#5D4A00"/>
+                        </StackPanel>
+                    </Border>
+                </Popup>
             </StackPanel>
         </GroupBox>
 

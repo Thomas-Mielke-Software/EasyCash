@@ -298,6 +298,16 @@ void CMainFrame::AttachToolbarImages (UINT inNormalImageID,
 }
 
 
+#ifdef USE_ECTENGINE
+// Nativer Callback fuer ECT_SetzeStatusCallback: reicht managed Statusmeldungen
+// (z.B. aus der WPF-Einstellungsseite) an die MFC-Statusleiste weiter.
+static void ECT_StatusAnMainframe(const char* text)
+{
+	CWnd* w = AfxGetMainWnd();
+	if (w) ((CMainFrame*)w)->SetStatus(text ? text : "");
+}
+#endif
+
 int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
 {
 	if (CMDIFrameWndEx::OnCreate(lpCreateStruct) == -1)
@@ -400,6 +410,9 @@ int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
 	m_wndStatusBar.AddElement(new CMFCRibbonStatusBarPane(ID_STATUS, "Bereit", TRUE), "Status");
 	SetTimer(1, 1, NULL);
 	m_wndStatusBar.AddExtendedElement(new CMFCRibbonStatusBarPane(ID_SALDO, ""), "Saldo");
+#ifdef USE_ECTENGINE
+	ECT_SetzeStatusCallback(&ECT_StatusAnMainframe);
+#endif
 		
 	return 0;
 }

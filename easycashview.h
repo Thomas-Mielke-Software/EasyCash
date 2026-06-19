@@ -142,17 +142,26 @@ private:
 	// koexistieren koennen.
 	HWND m_hwndJournalWpf;
 	HWND m_hwndNavigationWpf;
+	// HWND der eingebetteten WPF-Einstellungen (NULL wenn nicht aktiv).
+	HWND m_hwndEinstellungenWpf;
+	// true, wenn die Einstellungen ueber einem aktiven WPF-Journal liegen
+	// (dann beim Schliessen das Journal wieder zeigen, nicht die native View).
+	bool m_einstellungenUeberJournal;
 
 	// Hilfsfunktionen
 	void ZeigeJournalWpf(int nAnzeigeModus);   // 0=Datum, 1=Konten, 2=BK, 3=AfA
 	void VerstecktJournalWpf();
 	void GroessenAnpassungJournalWpf();
+	void ZeigeEinstellungenWpf();
+	void VerstecktEinstellungenWpf();
+	void GroessenAnpassungEinstellungenWpf();
 	void AktualisiereJournalFilter();          // bei Filter-Aenderung
 
 	// True solange ein WPF-Journal aktiv ist - dann sollten alle
 	// alten DrawToDC-Pfade und Navigations-Updates uebersprungen
 	// werden, damit nichts ueber das WPF gemalt wird.
 	bool IstJournalWpfAktiv() const { return m_hwndJournalWpf != NULL; }
+	bool IstEinstellungenWpfAktiv() const { return m_hwndEinstellungenWpf != NULL; }
 #endif
 
 // Operations

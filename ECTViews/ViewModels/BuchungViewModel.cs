@@ -83,6 +83,7 @@ namespace ECTViews.ViewModels
                     OnPropertyChanged(nameof(IstEinnahme));
                     OnPropertyChanged(nameof(BuchungsartText));
                     LadeKonten();
+                    LadePresets();   // Vorschlagsliste auf neue Buchungsart filtern
                 }
             }
         }
@@ -290,12 +291,203 @@ namespace ECTViews.ViewModels
             set
             {
                 if (SetProperty(ref _beschreibung, value ?? ""))
+                {
                     ValidiereFeldFallsAktiv(ValidiereBeschreibung);
+                    if (!_presetLaden)
+                    {
+                        if (VerarbeitePresetEingabe(_beschreibung))
+                            VorschlaegeOffen = false;          // Preset geladen -> Liste zu
+                        else
+                            AktualisiereVorschlaege(_beschreibung);
+                    }
+                }
             }
         }
 
-        public ObservableCollection<string> BeschreibungsHistorie { get; } =
-            new ObservableCollection<string>();
+        /// <summary>Gefilterte Vorschlagsliste für das Beschreibungsfeld
+        /// (Anzeige "NN  Text"). Beim Tippen wird nach Nummer ODER
+        /// Beschreibungstext gefiltert.</summary>
+        public ObservableCollection<PresetVorschlag> PresetVorschlaege { get; } =
+            new ObservableCollection<PresetVorschlag>();
+
+        // Alle Presets der aktuellen Buchungsart (ungefiltert) -- Basis für
+        // die Filterung in AktualisiereVorschlaege.
+        private readonly List<PresetVorschlag> _allePresetVorschlaege =
+            new List<PresetVorschlag>();
+
+        private bool _vorschlaegeOffen;
+        /// <summary>Steuert das Aufklappen der Vorschlagsliste (Auto-Complete).</summary>
+        public bool VorschlaegeOffen
+        {
+            get => _vorschlaegeOffen;
+            set => SetProperty(ref _vorschlaegeOffen, value);
+        }
+
+        private PresetVorschlag _gewaehlterVorschlag;
+        /// <summary>Vom Anwender in der Vorschlags-Liste angeklickter Eintrag.
+        /// Beim Setzen wird das zugehörige Preset geladen und die Liste
+        /// geschlossen. Danach auf null zurückgesetzt, damit derselbe Eintrag
+        /// erneut wählbar ist.</summary>
+        public PresetVorschlag GewaehlterVorschlag
+        {
+            get => _gewaehlterVorschlag;
+            set
+            {
+                if (!SetProperty(ref _gewaehlterVorschlag, value) || value == null)
+                    return;
+                var presets = Einstellungen.Presets;
+                if (value.Nummer >= 0 && value.Nummer < presets.Count)
+                {
+                    var p = presets[value.Nummer];
+                    if (!p.IstLeer) LadePresetInFelder(p);
+                }
+                VorschlaegeOffen = false;
+                _gewaehlterVorschlag = null;
+                OnPropertyChanged();
+            }
+        }
+
+        /// <summary>
+        /// Wird ausgelöst, wenn ein Preset mit Notiz geladen wurde. Die View
+        /// zeigt den Notiztext dann ein paar Sekunden als Balloon.
+        /// </summary>
+        public event System.Action<string> PresetNotizAnzeigen;
+
+        // Verhindert Re-Entrancy, wenn das Laden eines Presets die
+        // Beschreibung selbst auf den reinen Preset-Text setzt.
+        private bool _presetLaden;
+
+        /// <summary>
+        /// Reagiert auf Eingaben im Beschreibungsfeld (wie im alten Buchen-
+        /// Dialog):
+        ///  - Zwei führende Ziffern (00-99): das Preset mit dieser Nummer wird
+        ///    geladen, sofern es zur aktuellen Buchungsart passt.
+        ///  - Exakter Treffer eines Preset-Texts (z.B. Auswahl aus der Liste):
+        ///    das Preset wird ebenfalls geladen.
+        /// "Laden" füllt Konto, MwSt und AfA-Jahre, setzt den reinen
+        /// Preset-Text als Beschreibung und zeigt ggf. die Notiz als Balloon.
+        /// </summary>
+        /// <returns>true, wenn ein Preset geladen wurde.</returns>
+        private bool VerarbeitePresetEingabe(string eingabe)
+        {
+            if (string.IsNullOrEmpty(eingabe)) return false;
+            var presets = Einstellungen.Presets;
+
+            // Fall 1: zwei führende Ziffern -> Preset-Nummer 00-99
+            // (greift auch bei Auswahl aus der Liste, deren Anzeige "NN  Text" ist)
+            if (eingabe.Length >= 2 && char.IsDigit(eingabe[0]) && char.IsDigit(eingabe[1]))
+            {
+                int idx = (eingabe[0] - '0') * 10 + (eingabe[1] - '0');
+                if (idx >= 0 && idx < presets.Count)
+                {
+                    var p = presets[idx];
+                    if (!p.IstLeer && p.Ausgabe == _istAusgabe)
+                    {
+                        LadePresetInFelder(p);
+                        return true;
+                    }
+                }
+            }
+
+            // Fall 2: exakter Treffer eines Preset-Texts der aktuellen Buchungsart
+            foreach (var p in presets)
+            {
+                if (p.IstLeer || p.Ausgabe != _istAusgabe) continue;
+                if (string.Equals(p.Text, eingabe, System.StringComparison.OrdinalIgnoreCase))
+                {
+                    LadePresetInFelder(p);
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        private void LadePresetInFelder(Preset p)
+        {
+            _presetLaden = true;
+            try
+            {
+                SelectedKonto = p.Konto;
+
+                if (p.Mwst > 0)
+                {
+                    MwstAktiviert = true;
+                    MwstText = (p.Mwst / 1000m).ToString(DeDE);
+                }
+                else
+                {
+                    MwstAktiviert = false;   // setzt MwstText automatisch auf "0"
+                }
+
+                if (p.AfaJ > 1)
+                {
+                    AfaJahre = p.AfaJ.ToString();
+                    AfaDegressiv = p.Degressiv;
+                    AfaSatz = p.AfaSatz.ToString(CultureInfo.InvariantCulture);
+                    AfaAktiviert = true;
+                }
+                else
+                {
+                    AfaAktiviert = false;
+                }
+            }
+            finally
+            {
+                _presetLaden = false;
+            }
+
+            // Beschreibung auf den reinen Preset-Text setzen -- VERZÖGERT:
+            // Ein synchrones Setzen während der laufenden ComboBox-Texteingabe
+            // (z.B. direkt nach Eingabe der 2. Ziffer) wird von WPF nicht in das
+            // Editierfeld zurückgeschrieben (TwoWay-Binding-Re-Entrancy). Daher
+            // per Dispatcher nach dem aktuellen Eingabe-Zyklus nachziehen.
+            var beschreibungNeu = p.Text;
+            System.Windows.Threading.Dispatcher.CurrentDispatcher.BeginInvoke(
+                new Action(() =>
+                {
+                    _presetLaden = true;
+                    try { Beschreibung = beschreibungNeu; }
+                    finally { _presetLaden = false; }
+                }),
+                System.Windows.Threading.DispatcherPriority.Background);
+
+            if (!string.IsNullOrWhiteSpace(p.Notiz))
+                PresetNotizAnzeigen?.Invoke(p.Notiz);
+        }
+
+        /// <summary>
+        /// Baut die sichtbare Vorschlagsliste aus <see cref="_allePresetVorschlaege"/>
+        /// neu auf, gefiltert nach dem aktuellen Eingabetext: beginnt dieser mit
+        /// einer Ziffer, wird nach der Preset-Nummer gefiltert, sonst nach dem
+        /// Beschreibungstext (enthält, Groß-/Kleinschreibung egal).
+        /// </summary>
+        private void AktualisiereVorschlaege(string filter, bool oeffnen = true)
+        {
+            var f = (filter ?? "").Trim();
+            PresetVorschlaege.Clear();
+            foreach (var v in _allePresetVorschlaege)
+                if (PasstAufFilter(v, f))
+                    PresetVorschlaege.Add(v);
+            VorschlaegeOffen = oeffnen && f.Length > 0 && PresetVorschlaege.Count > 0;
+        }
+
+        private static bool PasstAufFilter(PresetVorschlag v, string f)
+        {
+            if (f.Length == 0) return true;
+            if (char.IsDigit(f[0]))
+                return v.Nummer.ToString("00").StartsWith(f, System.StringComparison.Ordinal);
+            return v.Text.IndexOf(f, System.StringComparison.OrdinalIgnoreCase) >= 0;
+        }
+
+        /// <summary>Ein Eintrag der Beschreibungs-Vorschlagsliste: Preset-Nummer
+        /// (Index 0-99) + Beschreibungstext. Anzeige als "NN  Text" -- die
+        /// Nummer dient als Tipp-Kurzwahl.</summary>
+        public class PresetVorschlag
+        {
+            public int    Nummer { get; set; }
+            public string Text   { get; set; }
+            public string Anzeige => Nummer.ToString("00") + "  " + Text;
+        }
 
         // ----------------------------------------------
         // Belegnummer
@@ -628,6 +820,7 @@ namespace ECTViews.ViewModels
             AbgangBuchenCommand = new RelayCommand(OnAbgangBuchen, () => AbgangButtonSichtbar);
 
             LadeKonten();
+            LadePresets();
         }
 
         /// <summary>
@@ -1300,14 +1493,25 @@ namespace ECTViews.ViewModels
         }
 
         /// <summary>
-        /// Lädt Beschreibungs-Presets direkt aus dem globalen Einstellungs-Cache.
+        /// Baut die Beschreibungs-Vorschlagsliste (Auto-Complete) aus dem
+        /// globalen Einstellungs-Cache auf -- gefiltert nach der aktuellen
+        /// Buchungsart (Einnahmen/Ausgaben), wie im alten Buchen-Dialog.
+        /// Wird im Konstruktor und bei jedem Buchungsart-Wechsel gerufen.
         /// </summary>
         public void LadePresets()
         {
-            BeschreibungsHistorie.Clear();
-            foreach (var p in Einstellungen.Presets)
-                if (!p.IstLeer)
-                    BeschreibungsHistorie.Add(p.Text);
+            _allePresetVorschlaege.Clear();
+            var presets = Einstellungen.Presets;
+            for (int i = 0; i < presets.Count; i++)
+            {
+                var p = presets[i];
+                if (p.IstLeer || p.Ausgabe != _istAusgabe
+                    || string.IsNullOrEmpty(p.Text)) continue;
+                _allePresetVorschlaege.Add(
+                    new PresetVorschlag { Nummer = i, Text = p.Text });
+            }
+            // Sichtbare Liste (ungefiltert) aufbauen, ohne aufzuklappen.
+            AktualisiereVorschlaege(_beschreibung, oeffnen: false);
         }
 
         /// <summary>

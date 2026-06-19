@@ -171,6 +171,12 @@
     <ClCompile Include="EinstellungenExports.cpp">
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="EinstellungenViewExports.cpp">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="Startoptionen.cpp">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AfAGenauigkeit.h" />
@@ -188,6 +194,8 @@
     <ClInclude Include="ViewExports.h" />
     <ClInclude Include="AfaAbgangShared.h" />
     <ClInclude Include="EinstellungenExports.h" />
+    <ClInclude Include="EinstellungenViewExports.h" />
+    <ClInclude Include="Startoptionen.h" />
     <ClInclude Include="XMLite.h" />
   </ItemGroup>
   <!-- ═══════════════════════════════════════════════════════════════ -->

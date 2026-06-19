@@ -91,6 +91,33 @@ namespace
         return KuerzelFuerCache(sektion.c_str(), iniKey.c_str());
     }
 
+    // Schreibt eine GANZE ini-Sektion auf einmal (WritePrivateProfileSection).
+    ref class SektionGeaendertHandler
+    {
+    public:
+        static void OnSektionGeaendert(System::String^ sektion,
+            System::Collections::Generic::IReadOnlyDictionary<System::String^, System::String^>^ eintraege)
+        {
+            if (System::String::IsNullOrEmpty(sektion) || eintraege == nullptr) return;
+            char iniBuf[1024];
+            if (!GetIniFileName(iniBuf, sizeof(iniBuf))) return;
+            msclr::interop::marshal_context ctx;
+            std::string sektNative = ctx.marshal_as<const char*>(sektion);
+            std::string block;
+            for each (System::Collections::Generic::KeyValuePair<System::String^, System::String^> kv in eintraege)
+            {
+                const char* k = ctx.marshal_as<const char*>(kv.Key);
+                const char* v = kv.Value == nullptr ? "" : ctx.marshal_as<const char*>(kv.Value);
+                block.append(k);
+                block.push_back('=');
+                block.append(v);
+                block.push_back('\0');
+            }
+            block.push_back('\0');
+            ::WritePrivateProfileSectionA(sektNative.c_str(), block.data(), iniBuf);
+        }
+    };
+
     ref class WertGeaendertHandler
     {
     public:
@@ -112,7 +139,7 @@ namespace
 }
 
 // -----------------------------------------------------------------------------
-// Rotations-Buffer (8 Slots) fÃ¼r LPCSTR-RÃ¼ckgaben
+// Rotations-Buffer (8 Slots) für LPCSTR-Rückgaben
 // -----------------------------------------------------------------------------
 constexpr int HOLE_BUFFER_COUNT = 8;
 constexpr int HOLE_BUFFER_SIZE  = 10000;
@@ -197,11 +224,15 @@ void ECT_LadeEinstellungen()
         ECTEngine::Einstellungen::WertGeaendert +=
             gcnew Action<System::String^, System::String^>(
                 &WertGeaendertHandler::OnWertGeaendert);
+        ECTEngine::Einstellungen::SektionGeaendert +=
+            gcnew Action<System::String^,
+                System::Collections::Generic::IReadOnlyDictionary<System::String^, System::String^>^>(
+                &SektionGeaendertHandler::OnSektionGeaendert);
         s_handlerRegistriert = true;
     }
 
     ECTEngine::Einstellungen::LadeAusBridge(dict);
-    TRACE("ECT_LadeEinstellungen: %d SchlÃ¼ssel aus %s\n", dict->Count, iniBuf);
+    TRACE("ECT_LadeEinstellungen: %d Schlüssel aus %s\n", dict->Count, iniBuf);
 }
 
 // -----------------------------------------------------------------------------
@@ -316,6 +347,7 @@ BOOL ECT_HolePreset(int index, ECT_Preset* outPreset)
     msclr::interop::marshal_context ctx;
     if (p->Text  != nullptr) strncpy_s(outPreset->text,  ctx.marshal_as<const char*>(p->Text),  _TRUNCATE);
     if (p->Konto != nullptr) strncpy_s(outPreset->konto, ctx.marshal_as<const char*>(p->Konto), _TRUNCATE);
+    if (p->Notiz != nullptr) strncpy_s(outPreset->notiz, ctx.marshal_as<const char*>(p->Notiz), _TRUNCATE);
     outPreset->ausgabe = p->Ausgabe ? TRUE : FALSE;
     outPreset->mwst    = p->Mwst;
     outPreset->afaj    = p->AfaJ;
@@ -332,6 +364,7 @@ void ECT_SpeicherePreset(int index, const ECT_Preset* p)
     SpeichereKVInt(pfx + "MWSt", p->mwst);
     SpeichereKVInt(pfx + "AfAJ", p->afaj);
     SpeichereKV(pfx + "Rech", p->konto);
+    SpeichereKV(pfx + "Notiz", p->notiz);
 }
 
 // -----------------------------------------------------------------------------
@@ -423,4 +456,35 @@ void ECT_SpeichereBestandskontoSaldo(int index, int jahr, int cent)
     auto ci = gcnew CultureInfo("de-DE");
     System::String^ valStr = d.ToString("0.00", ci);
     ECTEngine::Einstellungen::Speichere(gcnew System::String(keyBuf), valStr);
+}
+
+// -----------------------------------------------------------------------------
+// Statusleiste: managed ECTEngine::Statusleiste::Gemeldet  ->  nativer Host-Callback
+// -----------------------------------------------------------------------------
+namespace
+{
+    static ECT_StatusCallback s_statusCallback = nullptr;
+    static bool               s_statusHandlerRegistriert = false;
+
+    ref class StatusHandler
+    {
+    public:
+        static void OnGemeldet(System::String^ text)
+        {
+            if (s_statusCallback == nullptr || System::String::IsNullOrEmpty(text)) return;
+            msclr::interop::marshal_context ctx;
+            s_statusCallback(ctx.marshal_as<const char*>(text));
+        }
+    };
+}
+
+void ECT_SetzeStatusCallback(ECT_StatusCallback cb)
+{
+    s_statusCallback = cb;
+    if (!s_statusHandlerRegistriert)
+    {
+        ECTEngine::Statusleiste::Gemeldet +=
+            gcnew System::Action<System::String^>(&StatusHandler::OnGemeldet);
+        s_statusHandlerRegistriert = true;
+    }
 }

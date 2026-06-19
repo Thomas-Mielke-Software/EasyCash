@@ -781,11 +781,6 @@ habe ich besser eigene Menüpunkte für gemacht...
 	return TRUE;
 }
 
-void CEasyCashDoc::ZeigeStartoptionen()
-{
-
-}
-
 CEasyCashDoc* CEasyCashDoc::Jahreswechsel(int land = 0)
 {
 	CDocTemplate* pTemplate = GetDocTemplate();
