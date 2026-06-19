@@ -258,7 +258,21 @@ if ($LASTEXITCODE -ne 0) {
 }
 
 # --- 10. Inno-Setup kompilieren -------------------------------------------------
-& "C:\Program Files (x86)\Inno Setup 6\ISCC.exe" "easycash.iss"
+# ISCC.exe suchen: User-Installation (winget) zuerst, dann System-Installationen.
+$ISCCKandidaten = @(
+    "$env:LOCALAPPDATA\Programs\Inno Setup 6\ISCC.exe",
+    "C:\Program Files (x86)\Inno Setup 6\ISCC.exe",
+    "C:\Program Files\Inno Setup 6\ISCC.exe"
+)
+$ISCC = $ISCCKandidaten | Where-Object { Test-Path $_ } | Select-Object -First 1
+if (-not $ISCC) {
+    $cmd = Get-Command ISCC.exe -ErrorAction SilentlyContinue
+    if ($cmd) { $ISCC = $cmd.Source }
+}
+if (-not $ISCC) {
+    throw "ISCC.exe (Inno Setup 6) nicht gefunden. Gesucht in: $($ISCCKandidaten -join ', ')"
+}
+& "$ISCC" "easycash.iss"
 
 # --- 11. Filezilla öffnen -------------------------------------------------------
 $CurrentDir = Get-Location
