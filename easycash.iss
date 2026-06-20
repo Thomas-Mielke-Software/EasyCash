@@ -3,7 +3,7 @@
 
 [Setup]
 AppName=EasyCash&Tax
-AppVerName=EasyCash&Tax 4.0.9 (preview)
+AppVerName=EasyCash&Tax 4.0.10 (preview)
 DiskSpanning=no
 AppPublisher=tm
 AppPublisherURL=http://www.easyct.de
