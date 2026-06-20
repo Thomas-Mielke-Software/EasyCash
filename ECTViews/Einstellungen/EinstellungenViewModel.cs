@@ -49,10 +49,9 @@ namespace ECTViews.EinstellungenUi
         /// ist -- nur dann erscheint die "Aktuelles Dokument"-Gruppe.</param>
         public EinstellungenViewModel(bool hatDokument)
         {
-            Items.Add(Seite(GRUPPE_GLOBAL, "Allgemein",   new AllgemeinPage()));
-            Items.Add(Seite(GRUPPE_GLOBAL, "Unternehmer", new UnternehmerPage()));
-            Items.Add(Seite(GRUPPE_GLOBAL, "Finanzamt",   new FinanzamtPage()));
-            Items.Add(Seite(GRUPPE_GLOBAL, "MwSt-Sätze",  new MwStPage()));
+            Items.Add(Seite(GRUPPE_GLOBAL, "Allgemein",     new AllgemeinPage()));
+            Items.Add(Seite(GRUPPE_GLOBAL, "Unternehmer*in", new UnternehmerPage()));
+            Items.Add(Seite(GRUPPE_GLOBAL, "Finanzamt",     new FinanzamtPage()));
             Items.Add(Seite(GRUPPE_GLOBAL, "Buchungs-Presets", new PresetsPage()));
             Items.Add(Seite(GRUPPE_GLOBAL, "E/Ü-Konten", new KontenPage()));
             // Währungen folgt in M3.
