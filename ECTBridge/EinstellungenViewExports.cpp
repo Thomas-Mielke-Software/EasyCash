@@ -7,6 +7,7 @@
 
 #include "stdafx.h"
 #include "EinstellungenViewExports.h"
+#include "EasyCashDocBridge.h"      // CEasyCashDocBridge + GetEngine(bridge)
 
 #using "ECTEngine.dll"
 #using "ECTViews.dll"
@@ -16,18 +17,59 @@
 using namespace System;
 
 // ----------------------------------------------------------
+// Handler, der die WPF-Aenderung eines Dokumentwerts (Buchungsjahr,
+// laufende Belegnummern) sofort als Modified-Flag am nativen Dokument
+// vermerkt. So fragt MFC beim Schliessen "Speichern?" -- unabhaengig
+// davon, ueber welchen Teardown-Pfad das View verlassen wird. Die Daten
+// selbst wandern beim Speichern ueber Serialize -> SyncManagedToNative.
+//
+// Eine /clr-Lambda kann keine managed Variablen capturen und nicht direkt
+// einem System::Action-Delegate zugewiesen werden; darum eine ref class
+// mit IntPtr-Feld und Member-Methode (vgl. JournalEventHandler).
+// ----------------------------------------------------------
+ref class EinstellungenDokumentHandler
+{
+public:
+    IntPtr m_pDocBridge;   // CEasyCashDocBridge* als IntPtr
+
+    void OnGeaendert()
+    {
+        if (m_pDocBridge == IntPtr::Zero) return;
+        CEasyCashDocBridge* bridge = (CEasyCashDocBridge*)m_pDocBridge.ToPointer();
+        bridge->SetModifiedFlag();
+    }
+};
+
+// ----------------------------------------------------------
 // ECT_EinstellungenEinbetten
 // ----------------------------------------------------------
 HWND ECT_EinstellungenEinbetten(
     HWND hwndParent,
     int x, int y, int width, int height,
-    BOOL hatDokument)
+    void* pDocBridge)
 {
     try
     {
+        // Falls ein Dokument offen ist: native Daten in die managed Engine
+        // spiegeln und die BuchungsDocument^-Instanz an die WPF-Seite geben.
+        // Die "Aktuelles Dokument"-Seite schreibt dann direkt in diese Engine.
+        ECTEngine::BuchungsDocument^ dokument = nullptr;
+        System::Action^ onGeaendert = nullptr;
+        if (pDocBridge)
+        {
+            CEasyCashDocBridge* bridge = (CEasyCashDocBridge*)pDocBridge;
+            bridge->SyncNativeToManaged();
+            dokument = GetEngine(bridge);
+
+            auto handler = gcnew EinstellungenDokumentHandler();
+            handler->m_pDocBridge = IntPtr(pDocBridge);
+            onGeaendert = gcnew System::Action(
+                handler, &EinstellungenDokumentHandler::OnGeaendert);
+        }
+
         IntPtr hParent(hwndParent);
         IntPtr hKind = ECTViews::EinstellungenUi::EinstellungenEmbed::Einbetten(
-            hParent, x, y, width, height, hatDokument ? true : false);
+            hParent, x, y, width, height, dokument, onGeaendert);
 
         if (hKind == IntPtr::Zero) return NULL;
         return (HWND)hKind.ToPointer();

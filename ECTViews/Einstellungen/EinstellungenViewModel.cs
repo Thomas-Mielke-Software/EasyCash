@@ -11,6 +11,7 @@
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Windows.Controls;
+using ECTEngine;
 using ECTViews.EinstellungenUi.Pages;
 using ECTViews.ViewModels;
 
@@ -45,9 +46,12 @@ namespace ECTViews.EinstellungenUi
             private set => SetProperty(ref _aktuelleSeite, value);
         }
 
-        /// <param name="hatDokument">true, wenn ein Buchungsdokument offen
-        /// ist -- nur dann erscheint die "Aktuelles Dokument"-Gruppe.</param>
-        public EinstellungenViewModel(bool hatDokument)
+        /// <param name="dokument">Das aktuell geöffnete Buchungsdokument oder
+        /// null. Nur wenn ein Dokument offen ist, erscheint die "Aktuelles
+        /// Dokument"-Gruppe (Buchungsjahr, laufende Belegnummern).</param>
+        /// <param name="onDokumentGeaendert">Callback, der bei jeder Änderung
+        /// eines Dokumentwerts gerufen wird (setzt nativ das Modified-Flag).</param>
+        public EinstellungenViewModel(BuchungsDocument dokument, System.Action onDokumentGeaendert = null)
         {
             Items.Add(Seite(GRUPPE_GLOBAL, "Allgemein",     new AllgemeinPage()));
             Items.Add(Seite(GRUPPE_GLOBAL, "Unternehmer*in", new UnternehmerPage()));
@@ -56,9 +60,10 @@ namespace ECTViews.EinstellungenUi
             Items.Add(Seite(GRUPPE_GLOBAL, "E/Ü-Konten", new KontenPage()));
             // Währungen folgt in M3.
 
-            if (hatDokument)
+            if (dokument != null)
             {
-                // Dokument-Seite folgt (liest/schreibt über CEasyCashDocBridge).
+                Items.Add(Seite(GRUPPE_DOKUMENT, "Buchungsjahr & Belegnummern",
+                    new DokumentPage(dokument, onDokumentGeaendert)));
             }
 
             // Erste Seite vorselektieren.

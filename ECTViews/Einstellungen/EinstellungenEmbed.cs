@@ -12,6 +12,7 @@
 using System;
 using System.Collections.Generic;
 using System.Windows.Interop;
+using ECTEngine;
 
 namespace ECTViews.EinstellungenUi
 {
@@ -33,17 +34,19 @@ namespace ECTViews.EinstellungenUi
         /// Liefert das HWND des HwndSource zurück (vom Aufrufer per
         /// SetWindowPos zu positionieren), oder IntPtr.Zero bei Fehler.
         /// </summary>
-        /// <param name="hatDokument">true, wenn ein Buchungsdokument offen ist
-        /// (steuert die "Aktuelles Dokument"-Gruppe in der Navigation).</param>
+        /// <param name="dokument">Das aktuell geöffnete Buchungsdokument oder
+        /// null (steuert die "Aktuelles Dokument"-Gruppe in der Navigation).</param>
+        /// <param name="onDokumentGeaendert">Callback, der bei jeder Änderung
+        /// eines Dokumentwerts gerufen wird (setzt nativ das Modified-Flag).</param>
         public static IntPtr Einbetten(
             IntPtr parentHwnd, int x, int y, int width, int height,
-            bool hatDokument)
+            BuchungsDocument dokument, Action onDokumentGeaendert)
         {
             if (parentHwnd == IntPtr.Zero) return IntPtr.Zero;
 
             EnsureWpfApplication();
 
-            var vm = new EinstellungenViewModel(hatDokument);
+            var vm = new EinstellungenViewModel(dokument, onDokumentGeaendert);
             var view = new EinstellungenView { DataContext = vm };
 
             var hwndParams = new HwndSourceParameters("ECT_Einstellungen")

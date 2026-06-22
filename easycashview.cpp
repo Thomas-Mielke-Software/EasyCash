@@ -8640,7 +8640,7 @@ void CEasyCashView::ZeigeEinstellungenWpf()
 	m_hwndEinstellungenWpf = ECT_EinstellungenEinbetten(
 		pSplitter->m_hWnd,
 		rcAll.left, rcAll.top, rcAll.Width(), rcAll.Height(),
-		GetDocument() != NULL);
+		GetDocument());
 
 	if (!m_hwndEinstellungenWpf)
 	{
@@ -8667,6 +8667,17 @@ void CEasyCashView::ZeigeEinstellungenWpf()
 void CEasyCashView::VerstecktEinstellungenWpf()
 {
 	if (!m_hwndEinstellungenWpf) return;
+
+	// Dokumentbezogene Werte (Buchungsjahr, laufende Belegnummern) wurden in
+	// der WPF-Seite direkt in die managed Engine geschrieben. Fuer sofortige
+	// Konsistenz der nativen Doc-Felder (z.B. nJahr in nativen Render-Pfaden)
+	// hier zurueckspiegeln. Das Modified-Flag wird bereits beim Aendern in der
+	// WPF-Seite gesetzt (EinstellungenDokumentHandler), damit MFC beim
+	// Schliessen "Speichern?" fragt -- auch ueber den Destruktor-Pfad.
+	if (GetDocument())
+	{
+		((CEasyCashDocBridge*)GetDocument())->SyncManagedToNative();
+	}
 
 	ECT_EinstellungenViewAbloesen(m_hwndEinstellungenWpf);
 	m_hwndEinstellungenWpf = NULL;

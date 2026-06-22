@@ -13,7 +13,7 @@
 //     m_hwndEinstellungenWpf = ECT_EinstellungenEinbetten(
 //         GetParent()->m_hWnd,
 //         rc.left, rc.top, rc.Width(), rc.Height(),
-//         GetDocument() != NULL);   // hatDokument
+//         GetDocument());   // CEasyCashDocBridge* oder NULL
 //     ShowWindow(SW_HIDE);
 //
 // Beim Verlassen des Modus: ECT_EinstellungenAlleAbloesen().
@@ -40,12 +40,14 @@ extern "C" {
 /// <param name="y">Y-Position relativ zum Parent.</param>
 /// <param name="width">Breite in Pixeln.</param>
 /// <param name="height">Hoehe in Pixeln.</param>
-/// <param name="hatDokument">TRUE, wenn ein Buchungsdokument offen ist
-/// (steuert die "Aktuelles Dokument"-Gruppe in der Navigation).</param>
+/// <param name="pDocBridge">Zeiger auf das aktuelle CEasyCashDocBridge
+/// (in der Praxis GetDocument()) oder NULL. Bei != NULL erscheint die
+/// "Aktuelles Dokument"-Gruppe (Buchungsjahr, laufende Belegnummern), die
+/// direkt in die managed Engine dieses Dokuments schreibt.</param>
 ECTBRIDGE_API HWND ECT_EinstellungenEinbetten(
     HWND hwndParent,
     int x, int y, int width, int height,
-    BOOL hatDokument);
+    void* pDocBridge);
 
 /// <summary>Loest ein einzelnes eingebettetes Einstellungs-Fenster ab.</summary>
 ECTBRIDGE_API void ECT_EinstellungenViewAbloesen(HWND hwndEinstellungen);
