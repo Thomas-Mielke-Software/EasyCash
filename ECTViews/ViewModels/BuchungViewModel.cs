@@ -231,6 +231,10 @@ namespace ECTViews.ViewModels
             get => _mwstText;
             set
             {
+                // Ist das MWSt-Feld global ausgeblendet, enthaelt es immer 0
+                // (kein Steueranteil) -- auch wenn z.B. ein Preset einen Satz
+                // setzen wollte.
+                if (!MwstFeldAktiviert) value = "0";
                 if (SetProperty(ref _mwstText, value))
                 {
                     OnPropertyChanged(nameof(NettoText));
@@ -263,21 +267,51 @@ namespace ECTViews.ViewModels
             }
         }
 
-        private bool _mwstAktiviert = true;
-        public bool MwstAktiviert
+        // ----------------------------------------------
+        // Globale Feld-Sichtbarkeit (aus den Einstellungen)
+        //
+        // "JahresfeldAktiviert" (Default 0) und "MwstFeldAktiviert" (Default 1)
+        // steuern, ob Buchungsjahr- bzw. MWSt-Feld im Buchen-Dialog ueberhaupt
+        // bearbeitbar sind. Sind sie aus, wird das jeweilige Feld disabled und
+        // per Tooltip auf die Einstellungen verwiesen. Das MWSt-Feld enthaelt
+        // dann in jedem Fall 0 (kein Steueranteil). Eine eigene MWSt-Checkbox
+        // im Buchen-Dialog gibt es nicht mehr -- das regelt die Einstellung.
+        // ----------------------------------------------
+
+        /// <summary>True wenn das Buchungsjahr-Feld bearbeitet werden darf
+        /// (Einstellung "Buchungsjahr-Feld anzeigen").</summary>
+        public bool BuchungsjahrFeldAktiviert { get; }
+
+        /// <summary>True wenn das MWSt-Feld benutzt werden darf
+        /// (Einstellung "MWSt.-Feld anzeigen").</summary>
+        public bool MwstFeldAktiviert { get; }
+
+        /// <summary>
+        /// Tooltip fuer das deaktivierte Buchungsjahr-Feld (null wenn aktiv,
+        /// dann wird kein Tooltip angezeigt).
+        /// </summary>
+        public string BuchungsjahrFeldHinweis =>
+            BuchungsjahrFeldAktiviert ? null
+            : "Das Buchungsjahr-Feld ist über die Einstellungen -> Allgemein ausgeblendet. "
+              + "Dort kann es bei Bedarf wieder eingeschaltet werden.";
+
+        /// <summary>
+        /// Tooltip fuer das deaktivierte MWSt-Feld (null wenn aktiv).
+        /// </summary>
+        public string MwstFeldHinweis =>
+            MwstFeldAktiviert ? null
+            : "Das MWSt.-Feld ist in den Einstellungen -> Allgemein ausgeblendet. "
+              + "Dort kann es bei Bedarf wieder eingeschaltet werden.";
+
+        /// <summary>
+        /// Erzwingt MWSt=0, wenn das MWSt-Feld global ausgeblendet ist.
+        /// Wird am Ende beider Konstruktoren aufgerufen, weil die Felder dort
+        /// direkt (unter Umgehung der Setter) gesetzt werden.
+        /// </summary>
+        private void WendeMwstFeldEinstellungAn()
         {
-            get => _mwstAktiviert;
-            set
-            {
-                if (SetProperty(ref _mwstAktiviert, value))
-                {
-                    if (!value) MwstText = "0";
-                    OnPropertyChanged(nameof(NettoText));
-                    OnPropertyChanged(nameof(MwstBetragText));
-                    BerechneRestwertHeuristisch();
-                    ValidiereFeldFallsAktiv(ValidiereMwst);
-                }
-            }
+            if (!MwstFeldAktiviert)
+                _mwstText = "0";
         }
 
         // ----------------------------------------------
@@ -409,15 +443,10 @@ namespace ECTViews.ViewModels
             {
                 SelectedKonto = p.Konto;
 
-                if (p.Mwst > 0)
-                {
-                    MwstAktiviert = true;
-                    MwstText = (p.Mwst / 1000m).ToString(DeDE);
-                }
-                else
-                {
-                    MwstAktiviert = false;   // setzt MwstText automatisch auf "0"
-                }
+                // MwstText-Setter erzwingt 0, falls das Feld global aus ist.
+                MwstText = p.Mwst > 0
+                    ? (p.Mwst / 1000m).ToString(DeDE)
+                    : "0";
 
                 if (p.AfaJ > 1)
                 {
@@ -802,6 +831,13 @@ namespace ECTViews.ViewModels
         {
             _doc = doc ?? throw new ArgumentNullException(nameof(doc));
             IstBearbeitung = false;
+
+            // Globale Feld-Einstellungen lesen (Sektion [Allgemein] der easyct.ini).
+            BuchungsjahrFeldAktiviert =
+                Einstellungen.HoleBool("[Allgemein]JahresfeldAktiviert", false);
+            MwstFeldAktiviert =
+                Einstellungen.HoleBool("[Allgemein]MwstFeldAktiviert", true);
+
             IstAusgabe = ausgaben;
 
             // Datum auf heute setzen
@@ -821,6 +857,9 @@ namespace ECTViews.ViewModels
 
             LadeKonten();
             LadePresets();
+
+            // MWSt erzwingen (0/aus), falls das Feld global ausgeblendet ist.
+            WendeMwstFeldEinstellungAn();
         }
 
         /// <summary>
@@ -837,7 +876,6 @@ namespace ECTViews.ViewModels
             _datumJahr = buchung.Datum.Year;
             _betragText = (buchung.BruttoBetrag.InCent / 100m).ToString("N2", DeDE);
             _mwstText = (buchung.BruttoBetrag.MwstPromille / 1000m).ToString(DeDE);
-            _mwstAktiviert = buchung.BruttoBetrag.MwstPromille > 0;
             _beschreibung = buchung.Beschreibung;
             _belegnummer = buchung.Belegnummer;
             _selectedKonto = buchung.Konto;
@@ -854,6 +892,11 @@ namespace ECTViews.ViewModels
                 _afaDegressiv = buchung.AfaDegressiv;
                 _afaSatz = buchung.AfaSatz.ToString();
             }
+
+            // MWSt-Werte aus der Buchung ggf. wieder auf 0/aus zwingen, wenn das
+            // Feld global ausgeblendet ist (der neue-Buchung-Konstruktor hat das
+            // schon getan, hier wurden die Felder aber neu aus der Buchung gesetzt).
+            WendeMwstFeldEinstellungAn();
         }
 
         // ----------------------------------------------
@@ -1308,7 +1351,9 @@ namespace ECTViews.ViewModels
 
         private bool ValidiereMwst()
         {
-            if (!MwstAktiviert)
+            // Ist das MWSt-Feld global ausgeblendet, enthaelt es zwangsweise 0
+            // -- keine Validierung noetig.
+            if (!MwstFeldAktiviert)
             {
                 MwstError = "";
                 return true;

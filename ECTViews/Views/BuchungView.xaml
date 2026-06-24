@@ -213,7 +213,10 @@
                     <TextBlock Text="." VerticalAlignment="Center" Margin="2,0"/>
                     <TextBlock Text="Jahr:" Style="{StaticResource LabelStyle}" Margin="8,0,8,0"/>
                     <TextBox Text="{Binding DatumJahr, UpdateSourceTrigger=PropertyChanged}"
-                             Width="60" MaxLength="4" TextAlignment="Center"/>
+                             Width="60" MaxLength="4" TextAlignment="Center"
+                             IsEnabled="{Binding BuchungsjahrFeldAktiviert}"
+                             ToolTip="{Binding BuchungsjahrFeldHinweis}"
+                             ToolTipService.ShowOnDisabled="True"/>
                 </StackPanel>
                 <TextBlock Style="{StaticResource ErrorStyle}"
                            Text="{Binding DatumError}"/>
@@ -247,14 +250,13 @@
                 <!-- MWSt -->
                 <TextBlock Grid.Row="0" Grid.Column="2"
                            Text="MWSt %:" Style="{StaticResource LabelStyle}" Margin="12,0,8,0"/>
-                <CheckBox Grid.Row="0" Grid.Column="3"
-                          IsChecked="{Binding MwstAktiviert}"
-                          VerticalAlignment="Center" Margin="0,0,4,0"/>
                 <ComboBox Grid.Row="0" Grid.Column="4"
                           Text="{Binding MwstText, UpdateSourceTrigger=PropertyChanged}"
                           ItemsSource="{Binding MwstOptionen}"
                           IsEditable="True"
-                          IsEnabled="{Binding MwstAktiviert}"
+                          IsEnabled="{Binding MwstFeldAktiviert}"
+                          ToolTip="{Binding MwstFeldHinweis}"
+                          ToolTipService.ShowOnDisabled="True"
                           HorizontalContentAlignment="Right"/>
 
                 <!-- Netto / USt Anzeige -->
