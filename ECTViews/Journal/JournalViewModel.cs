@@ -95,6 +95,42 @@ namespace ECTViews.Journal
             set => SetProperty(ref _saldoSpaltenBreite, value);
         }
 
+        // Breiten der drei Steuer-Spalten (Netto, USt-Satz, USt-Betrag).
+        // Wie bei der Saldo-Spalte an MinWidth+MaxWidth der ColumnDefinitions
+        // in den Header-/Buchung-/Footer-Templates gebunden. Werden in
+        // Aktualisiere() auf 0 gesetzt, wenn keine angezeigte Buchung einen
+        // USt-Betrag != 0 hat -- dann faellt der frei werdende Platz der
+        // (Star-)Beschreibungsspalte zu, statt verschenkt zu werden.
+        private const double SteuerNettoBreite = 100.0;
+        private const double SteuerSatzBreite  = 60.0;
+        private const double SteuerBetragBreite = 100.0;
+
+        private double _nettoSpaltenBreite = SteuerNettoBreite;
+        public double NettoSpaltenBreite
+        {
+            get => _nettoSpaltenBreite;
+            set => SetProperty(ref _nettoSpaltenBreite, value);
+        }
+
+        private double _ustSatzSpaltenBreite = SteuerSatzBreite;
+        public double UStSatzSpaltenBreite
+        {
+            get => _ustSatzSpaltenBreite;
+            set => SetProperty(ref _ustSatzSpaltenBreite, value);
+        }
+
+        private double _ustBetragSpaltenBreite = SteuerBetragBreite;
+        public double UStBetragSpaltenBreite
+        {
+            get => _ustBetragSpaltenBreite;
+            set => SetProperty(ref _ustBetragSpaltenBreite, value);
+        }
+
+        // Globale Entscheidung pro Aktualisiere(): werden die Steuer-Spalten
+        // ueberhaupt angezeigt? Steuert sowohl die Spaltenbreiten als auch die
+        // Text-Sichtbarkeit (ZeigeSteuer) der Header-/Footer-Zeilen.
+        private bool _zeigeSteuer = true;
+
         // Konstante Breite der Beleg-Spalte für das gesamte Journal --
         // nicht pro Konten-/Bestandskonto-Abschnitt neu berechnet. Wird in
         // Aktualisiere() einmalig aus dem 95-Perzentil aller Belegnummer-
@@ -338,6 +374,15 @@ namespace ECTViews.Journal
                 AktuellerFilter.AnzeigeModus == JournalAnzeigeModus.Bestandskonten
                 ? 110.0 : 0.0;
 
+            // Steuer-Spalten (Netto, USt-Satz, USt-Betrag) nur einblenden, wenn
+            // mindestens eine angezeigte Buchung tatsaechlich einen USt-Betrag
+            // hat (in den Modi Datum/Konten). Sonst die Spalten auf 0 Pixel
+            // kollabieren, damit die Beschreibungsspalte den Platz bekommt.
+            _zeigeSteuer = BerechneZeigeSteuer();
+            NettoSpaltenBreite     = _zeigeSteuer ? SteuerNettoBreite  : 0.0;
+            UStSatzSpaltenBreite   = _zeigeSteuer ? SteuerSatzBreite   : 0.0;
+            UStBetragSpaltenBreite = _zeigeSteuer ? SteuerBetragBreite : 0.0;
+
             // Beleg-Spaltenbreite einmal global berechnen (bleibt während
             // des Scrollens konstant).
             BelegSpaltenBreite = BerechneBelegSpaltenBreite();
@@ -398,7 +443,7 @@ namespace ECTViews.Journal
                     {
                         IsAusgabe = false,
                         ZeigeBelegnummer = f.ZeigeBelegnummernspalte,
-                        ZeigeSteuer = f.ZeigeSteuerspalte,
+                        ZeigeSteuer = _zeigeSteuer,
                         ZeigeAfaNr = false
                     });
 
@@ -444,7 +489,7 @@ namespace ECTViews.Journal
                     {
                         IsAusgabe = true,
                         ZeigeBelegnummer = f.ZeigeBelegnummernspalte,
-                        ZeigeSteuer = f.ZeigeSteuerspalte,
+                        ZeigeSteuer = _zeigeSteuer,
                         ZeigeAfaNr = true
                     });
 
@@ -515,7 +560,7 @@ namespace ECTViews.Journal
                     {
                         IsAusgabe = false,
                         ZeigeBelegnummer = f.ZeigeBelegnummernspalte,
-                        ZeigeSteuer = f.ZeigeSteuerspalte
+                        ZeigeSteuer = _zeigeSteuer
                     });
 
                     long brutto = 0, netto = 0, ust = 0;
@@ -564,7 +609,7 @@ namespace ECTViews.Journal
                     {
                         IsAusgabe = true,
                         ZeigeBelegnummer = f.ZeigeBelegnummernspalte,
-                        ZeigeSteuer = f.ZeigeSteuerspalte,
+                        ZeigeSteuer = _zeigeSteuer,
                         ZeigeAfaNr = true
                     });
 
@@ -1157,11 +1202,56 @@ namespace ECTViews.Journal
             return alle;
         }
 
+        /// <summary>
+        /// Berechnet den im Journal angezeigten USt-/VSt-Betrag (in Cent) einer
+        /// Buchung -- exakt nach derselben Logik wie <see cref="BaueBuchungZeile"/>.
+        /// Wird zusaetzlich von <see cref="BerechneZeigeSteuer"/> genutzt, um zu
+        /// entscheiden, ob die Steuer-Spalten ueberhaupt eingeblendet werden.
+        /// </summary>
+        private static long BerechneUstBetragCent(Buchung b, bool istAusgabe)
+        {
+            long bruttoCent = b.BruttoBetrag.InCent;
+            if (istAusgabe)
+            {
+                if (b.Konto == "VST-Beträge separat")
+                    return bruttoCent;
+                return (b.AfaNr == 1)
+                    ? bruttoCent - b.BruttoBetrag.NettoInCent
+                    : 0;
+            }
+            return bruttoCent - b.BruttoBetrag.NettoInCent;
+        }
+
+        /// <summary>
+        /// Entscheidet, ob die Steuer-Spalten (Netto, USt-Satz, USt-Betrag)
+        /// angezeigt werden. Nur in den Modi Datum/Konten und nur, wenn der
+        /// externe Schalter es erlaubt UND mindestens eine angezeigte Buchung
+        /// einen USt-Betrag != 0 hat. Bewusst NICHT an "MwstFeldAktiviert"
+        /// gekoppelt -- massgeblich sind die tatsaechlichen Buchungen.
+        /// </summary>
+        private bool BerechneZeigeSteuer()
+        {
+            var f = AktuellerFilter;
+            switch (f.AnzeigeModus)
+            {
+                case JournalAnzeigeModus.Datum:
+                case JournalAnzeigeModus.Konten:
+                    if (!f.ZeigeSteuerspalte) return false;
+                    return FilterBuchungen(_doc.Einnahmen, true)
+                               .Any(b => BerechneUstBetragCent(b, false) != 0)
+                        || FilterBuchungen(_doc.Ausgaben, false)
+                               .Any(b => BerechneUstBetragCent(b, true) != 0);
+                default:
+                    // Bestandskonten/Anlagenverzeichnis: keine Steuer-Spalten.
+                    return false;
+            }
+        }
+
         private JournalBuchungRow BaueBuchungZeile(Buchung b, bool istAusgabe, int zebraIdx)
         {
             long bruttoCent = b.BruttoBetrag.InCent;
             long nettoCent;
-            long mwstBetragCent;
+            long mwstBetragCent = BerechneUstBetragCent(b, istAusgabe);
             long anzeigeBruttoCent;
 
             if (istAusgabe)
@@ -1169,22 +1259,17 @@ namespace ECTViews.Journal
                 if (b.Konto == "VST-Beträge separat")
                 {
                     nettoCent = 0;
-                    mwstBetragCent = bruttoCent;
                     anzeigeBruttoCent = bruttoCent;
                 }
                 else
                 {
                     nettoCent = AfaCalculator.GetBuchungsjahrNetto(b);
-                    mwstBetragCent = (b.AfaNr == 1)
-                        ? bruttoCent - b.BruttoBetrag.NettoInCent
-                        : 0;
                     anzeigeBruttoCent = nettoCent + mwstBetragCent;
                 }
             }
             else
             {
                 nettoCent = b.BruttoBetrag.NettoInCent;
-                mwstBetragCent = bruttoCent - nettoCent;
                 anzeigeBruttoCent = bruttoCent;
             }
 
@@ -1214,7 +1299,7 @@ namespace ECTViews.Journal
             return new JournalFooterRow
             {
                 IsAusgabe = isAusgabe,
-                ZeigeSteuer = AktuellerFilter.ZeigeSteuerspalte,
+                ZeigeSteuer = _zeigeSteuer,
                 NettoSummeText = FormatBetrag(netto),
                 SteuerSummeText = FormatBetrag(steuer),
                 BruttoSummeText = FormatBetrag(brutto),

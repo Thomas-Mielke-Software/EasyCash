@@ -28,9 +28,6 @@
              ruckartig die Spaltenbreite verändert hat. -->
         <GridLength x:Key="ColW_Icon">28</GridLength>
         <GridLength x:Key="ColW_Datum">90</GridLength>
-        <GridLength x:Key="ColW_Netto">100</GridLength>
-        <GridLength x:Key="ColW_USt">60</GridLength>
-        <GridLength x:Key="ColW_USt_Betrag">100</GridLength>
         <GridLength x:Key="ColW_Brutto">110</GridLength>
         <GridLength x:Key="ColW_AfA">60</GridLength>
 
@@ -73,9 +70,21 @@
                                       MaxWidth="{Binding DataContext.BelegSpaltenBreite,
                                           RelativeSource={RelativeSource AncestorType=UserControl}}"/>
                         <ColumnDefinition Width="*" MinWidth="120"/>
-                        <ColumnDefinition Width="{StaticResource ColW_Netto}"/>
-                        <ColumnDefinition Width="{StaticResource ColW_USt}"/>
-                        <ColumnDefinition Width="{StaticResource ColW_USt_Betrag}"/>
+                        <ColumnDefinition Width="Auto"
+                                      MinWidth="{Binding DataContext.NettoSpaltenBreite,
+                                          RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                      MaxWidth="{Binding DataContext.NettoSpaltenBreite,
+                                          RelativeSource={RelativeSource AncestorType=UserControl}}"/>
+                        <ColumnDefinition Width="Auto"
+                                      MinWidth="{Binding DataContext.UStSatzSpaltenBreite,
+                                          RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                      MaxWidth="{Binding DataContext.UStSatzSpaltenBreite,
+                                          RelativeSource={RelativeSource AncestorType=UserControl}}"/>
+                        <ColumnDefinition Width="Auto"
+                                      MinWidth="{Binding DataContext.UStBetragSpaltenBreite,
+                                          RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                      MaxWidth="{Binding DataContext.UStBetragSpaltenBreite,
+                                          RelativeSource={RelativeSource AncestorType=UserControl}}"/>
                         <ColumnDefinition Width="{StaticResource ColW_Brutto}"/>
                         <ColumnDefinition Width="Auto"
                                           MinWidth="{Binding DataContext.SaldoSpaltenBreite,
@@ -153,9 +162,21 @@
                                       MaxWidth="{Binding DataContext.BelegSpaltenBreite,
                                           RelativeSource={RelativeSource AncestorType=UserControl}}"/>
                     <ColumnDefinition Width="*" MinWidth="120"/>
-                    <ColumnDefinition Width="{StaticResource ColW_Netto}"/>
-                    <ColumnDefinition Width="{StaticResource ColW_USt}"/>
-                    <ColumnDefinition Width="{StaticResource ColW_USt_Betrag}"/>
+                    <ColumnDefinition Width="Auto"
+                                      MinWidth="{Binding DataContext.NettoSpaltenBreite,
+                                          RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                      MaxWidth="{Binding DataContext.NettoSpaltenBreite,
+                                          RelativeSource={RelativeSource AncestorType=UserControl}}"/>
+                    <ColumnDefinition Width="Auto"
+                                      MinWidth="{Binding DataContext.UStSatzSpaltenBreite,
+                                          RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                      MaxWidth="{Binding DataContext.UStSatzSpaltenBreite,
+                                          RelativeSource={RelativeSource AncestorType=UserControl}}"/>
+                    <ColumnDefinition Width="Auto"
+                                      MinWidth="{Binding DataContext.UStBetragSpaltenBreite,
+                                          RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                      MaxWidth="{Binding DataContext.UStBetragSpaltenBreite,
+                                          RelativeSource={RelativeSource AncestorType=UserControl}}"/>
                     <ColumnDefinition Width="{StaticResource ColW_Brutto}"/>
                     <ColumnDefinition Width="Auto"
                                       MinWidth="{Binding DataContext.SaldoSpaltenBreite,
@@ -231,9 +252,21 @@
                                       MaxWidth="{Binding DataContext.BelegSpaltenBreite,
                                           RelativeSource={RelativeSource AncestorType=UserControl}}"/>
                         <ColumnDefinition Width="*" MinWidth="120"/>
-                        <ColumnDefinition Width="{StaticResource ColW_Netto}"/>
-                        <ColumnDefinition Width="{StaticResource ColW_USt}"/>
-                        <ColumnDefinition Width="{StaticResource ColW_USt_Betrag}"/>
+                        <ColumnDefinition Width="Auto"
+                                      MinWidth="{Binding DataContext.NettoSpaltenBreite,
+                                          RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                      MaxWidth="{Binding DataContext.NettoSpaltenBreite,
+                                          RelativeSource={RelativeSource AncestorType=UserControl}}"/>
+                        <ColumnDefinition Width="Auto"
+                                      MinWidth="{Binding DataContext.UStSatzSpaltenBreite,
+                                          RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                      MaxWidth="{Binding DataContext.UStSatzSpaltenBreite,
+                                          RelativeSource={RelativeSource AncestorType=UserControl}}"/>
+                        <ColumnDefinition Width="Auto"
+                                      MinWidth="{Binding DataContext.UStBetragSpaltenBreite,
+                                          RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                      MaxWidth="{Binding DataContext.UStBetragSpaltenBreite,
+                                          RelativeSource={RelativeSource AncestorType=UserControl}}"/>
                         <ColumnDefinition Width="{StaticResource ColW_Brutto}"/>
                         <ColumnDefinition Width="Auto"
                                           MinWidth="{Binding DataContext.SaldoSpaltenBreite,
