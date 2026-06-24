@@ -64,6 +64,7 @@ tmp_rkward_preview*.Rmd
 
 # projektspezifische Messi-Sammlung
 Crash-Reports/
+CrashReportsV4/
 Beispieldaten/
 Backup/
 Backup1/
@@ -178,3 +179,5 @@ ustv_austria1.jpg
 ustv_austria2.jpg
 uva.ini
 TempUpdate.txt
+*flatpak*.md
+TODO.md
