@@ -63,6 +63,10 @@ namespace ECTEngine
         public static int  MonatlicheVoranmeldung { get => GetInt(AG + "monatliche_voranmeldung", 1); set => SetInt(AG + "monatliche_voranmeldung", value); }
         public static bool TaeglichBuchen         { get => GetBool(AG + "taeglich_buchen");          set => SetBool(AG + "taeglich_buchen", value); }
         public static bool BuchungsdatumBelassen  { get => GetBool(AG + "BuchungsdatumBelassen");    set => SetBool(AG + "BuchungsdatumBelassen", value); }
+        // Weiterbuchen: Betrieb/Bestandskonto der letzten Buchung beibehalten
+        // (Default an).
+        public static bool BetriebBelassen        { get => GetBool(AG + "betrieb_belassen", true);        set => SetBool(AG + "betrieb_belassen", value); }
+        public static bool BestandskontoBelassen  { get => GetBool(AG + "bestandskonto_belassen", true);  set => SetBool(AG + "bestandskonto_belassen", value); }
         public static bool ErzeugeBelegnrEinnahmen { get => GetBool(AG + "ErzeugeLaufendeBuchungsnummernFuerEinnahmen"); set => SetBool(AG + "ErzeugeLaufendeBuchungsnummernFuerEinnahmen", value); }
         public static bool ErzeugeBelegnrAusgaben  { get => GetBool(AG + "ErzeugeLaufendeBuchungsnummernFuerAusgaben");  set => SetBool(AG + "ErzeugeLaufendeBuchungsnummernFuerAusgaben", value); }
         public static bool ErzeugeBelegnrBank      { get => GetBool(AG + "ErzeugeLaufendeBuchungsnummernFuerBank");      set => SetBool(AG + "ErzeugeLaufendeBuchungsnummernFuerBank", value); }

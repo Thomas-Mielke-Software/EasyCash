@@ -20,6 +20,39 @@
 using namespace System;
 
 // ----------------------------------------------------------
+// Handler fuer "Buchen & naechste": persistiert eine Buchung,
+// ohne den Dialog zu schliessen. Ueber eine ref class, weil
+// C++/CLI-Lambdas keine managed Delegates bedienen koennen
+// (siehe CLAUDE.md).
+// ----------------------------------------------------------
+namespace ECTBridge
+{
+    ref class BuchenWeiterHandler
+    {
+    public:
+        System::IntPtr m_pBridge;
+
+        void OnBuchenUndNaechste(ECTEngine::Buchung^ buchung)
+        {
+            auto* bridge = static_cast<CEasyCashDocBridge*>(m_pBridge.ToPointer());
+            if (!bridge || buchung == nullptr) return;
+
+            auto engine = GetEngine(bridge);
+            engine->Buchungen->Add(buchung);
+            engine->InkrementBuchungszaehler();
+            engine->Sort();
+
+            bridge->SyncManagedToNative();
+            bridge->SetModifiedFlag(
+                (CString)"Buchung '" + ECTBridge::ToNative(buchung->Beschreibung) + "' hinzugefügt");
+
+            // Offenes WPF-Journal sofort nachziehen.
+            ECTViews::Journal::JournalHost::AktualisiereOffenesJournal();
+        }
+    };
+}
+
+// ----------------------------------------------------------
 // ECT_ShowBuchungDialog
 // ----------------------------------------------------------
 
@@ -34,11 +67,18 @@ BOOL ECT_ShowBuchungDialog(void* pDocBridge, BOOL bAusgaben, HWND hWndOwner)
         // (falls seit dem letzten Sync native Ãnderungen passiert sind)
         bridge->SyncNativeToManaged();
 
-        // WPF-Dialog anzeigen
+        // WPF-Dialog anzeigen. Der "Buchen & naechste"-Callback
+        // persistiert Zwischenbuchungen, ohne den Dialog zu schliessen.
         IntPtr hwnd = IntPtr((void*)hWndOwner);
+
+        auto weiterHandler = gcnew ECTBridge::BuchenWeiterHandler();
+        weiterHandler->m_pBridge = IntPtr(pDocBridge);
+        auto weiterCb = gcnew System::Action<ECTEngine::Buchung^>(
+            weiterHandler, &ECTBridge::BuchenWeiterHandler::OnBuchenUndNaechste);
+
         ECTEngine::Buchung^ ergebnis =
             ECTViews::ViewHost::ZeigeBuchungDialog(
-                engine, bAusgaben != 0, hwnd);
+                engine, bAusgaben != 0, hwnd, weiterCb);
 
         if (ergebnis == nullptr)
             return FALSE;  // Abgebrochen

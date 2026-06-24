@@ -33,6 +33,36 @@ namespace ECTViews.Views
             DataContext = viewModel;
             viewModel.RequestClose += () => Close();
             viewModel.PresetNotizAnzeigen += ZeigeNotizBalloon;
+            viewModel.RequestFokus += OnRequestFokus;
+
+            // Auch beim erstmaligen Oeffnen die "Weiterbuchen-Verhalten"-
+            // Einstellung zum Cursor beachten (nur bei neuer Buchung, nicht
+            // beim Bearbeiten/Kopieren).
+            Loaded += OnInitialFokus;
+        }
+
+        /// <summary>Setzt beim Oeffnen des Dialogs den Anfangsfokus gemaess der
+        /// Einstellung "Tagesdatum einfügen und Cursor ins Betragsfeld": ins
+        /// Betrag- oder sonst ins Tag-Feld -- aber nur bei einer neuen Buchung.</summary>
+        private void OnInitialFokus(object sender, RoutedEventArgs e)
+        {
+            Loaded -= OnInitialFokus;   // nur einmal
+            if (DataContext is BuchungViewModel vm && vm.WeiterbuchenSichtbar)
+                OnRequestFokus(vm.CursorInsBetragsfeld);
+        }
+
+        /// <summary>Setzt nach "Weiterbuchen" den Fokus: auf das Betrag-Feld
+        /// (Einstellung "Tagesdatum einfügen und Cursor ins Betragsfeld") oder
+        /// sonst auf das Tag-Feld. Verzoegert, damit das Re-Init der Maske
+        /// abgeschlossen ist, bevor der Fokus gesetzt wird.</summary>
+        private void OnRequestFokus(bool aufBetrag)
+        {
+            Dispatcher.BeginInvoke(new Action(() =>
+            {
+                var box = aufBetrag ? BetragBox : TagBox;
+                box.Focus();
+                box.SelectAll();
+            }), DispatcherPriority.Background);
         }
 
         /// <summary>Schliesst die Vorschlagsliste, wenn das Beschreibungsfeld

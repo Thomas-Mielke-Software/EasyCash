@@ -20,9 +20,11 @@ namespace ECTViews.EinstellungenUi.Pages
         public bool BelegnrBank      { get => GlobaleEinstellungen.ErzeugeBelegnrBank;      set { GlobaleEinstellungen.ErzeugeBelegnrBank = value;      OnPropertyChanged(); } }
         public bool BelegnrKasse     { get => GlobaleEinstellungen.ErzeugeBelegnrKasse;     set { GlobaleEinstellungen.ErzeugeBelegnrKasse = value;     OnPropertyChanged(); } }
 
-        // Buchen-Verhalten
+        // Weiterbuchen-Verhalten
         public bool TaeglichBuchen        { get => GlobaleEinstellungen.TaeglichBuchen;        set { GlobaleEinstellungen.TaeglichBuchen = value;        OnPropertyChanged(); } }
         public bool BuchungsdatumBelassen { get => GlobaleEinstellungen.BuchungsdatumBelassen; set { GlobaleEinstellungen.BuchungsdatumBelassen = value; OnPropertyChanged(); } }
+        public bool BetriebBelassen       { get => GlobaleEinstellungen.BetriebBelassen;       set { GlobaleEinstellungen.BetriebBelassen = value;       OnPropertyChanged(); } }
+        public bool BestandskontoBelassen { get => GlobaleEinstellungen.BestandskontoBelassen; set { GlobaleEinstellungen.BestandskontoBelassen = value; OnPropertyChanged(); } }
 
         /// <summary>0 = ganzjährig, 1 = halbjährig, 2 = monatsgenau
         /// (GANZJAHRES_AFA / HALBJAHRES_AFA / MONATSGENAUE_AFA).</summary>

@@ -71,6 +71,9 @@
         <!-- Konverter: bool → Visibility (Collapsed bei false) -->
         <BooleanToVisibilityConverter x:Key="BoolToVis"/>
 
+        <!-- Konverter: 0 → leeres Feld (Tag/Monat ohne Vorbelegung) -->
+        <local:LeereZahlConverter x:Key="LeereZahl"/>
+
         <!-- Stil für den primären Aktions-Button (Buchen / Speichern).
              Eigener ControlTemplate, damit das WPF-Theme beim Hover nicht
              den Hintergrund überschreibt.
@@ -204,11 +207,12 @@
             <StackPanel>
                 <StackPanel Orientation="Horizontal">
                     <TextBlock Text="Tag:" Style="{StaticResource LabelStyle}"/>
-                    <TextBox Text="{Binding DatumTag, UpdateSourceTrigger=PropertyChanged}"
+                    <TextBox x:Name="TagBox"
+                             Text="{Binding DatumTag, UpdateSourceTrigger=PropertyChanged, Converter={StaticResource LeereZahl}}"
                              Width="40" MaxLength="2" TextAlignment="Center"/>
                     <TextBlock Text="." VerticalAlignment="Center" Margin="2,0"/>
                     <TextBlock Text="Monat:" Style="{StaticResource LabelStyle}" Margin="8,0,8,0"/>
-                    <TextBox Text="{Binding DatumMonat, UpdateSourceTrigger=PropertyChanged}"
+                    <TextBox Text="{Binding DatumMonat, UpdateSourceTrigger=PropertyChanged, Converter={StaticResource LeereZahl}}"
                              Width="40" MaxLength="2" TextAlignment="Center"/>
                     <TextBlock Text="." VerticalAlignment="Center" Margin="2,0"/>
                     <TextBlock Text="Jahr:" Style="{StaticResource LabelStyle}" Margin="8,0,8,0"/>
@@ -243,7 +247,7 @@
                 <!-- Bruttobetrag -->
                 <TextBlock Grid.Row="0" Grid.Column="0"
                            Text="Brutto (€):" Style="{StaticResource LabelStyle}"/>
-                <TextBox Grid.Row="0" Grid.Column="1"
+                <TextBox Grid.Row="0" Grid.Column="1" x:Name="BetragBox"
                          Text="{Binding BetragText, UpdateSourceTrigger=PropertyChanged}"
                          TextAlignment="Right" FontWeight="SemiBold" FontSize="15"/>
 
@@ -467,6 +471,12 @@
                     Width="100" Height="32"
                     IsDefault="True"
                     Style="{StaticResource PrimaryButtonStyle}"
+                    Margin="0,0,8,0"/>
+            <Button Content="Weiterbuchen"
+                    Command="{Binding WeiterbuchenCommand}"
+                    Width="110" Height="32"
+                    Style="{StaticResource PrimaryButtonStyle}"
+                    Visibility="{Binding WeiterbuchenSichtbar, Converter={StaticResource BoolToVis}}"
                     Margin="0,0,8,0"/>
             <Button Content="Abbrechen"
                     Command="{Binding AbbrechenCommand}"

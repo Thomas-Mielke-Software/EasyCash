@@ -132,11 +132,18 @@ namespace ECTViews
         /// Die neue/geänderte Buchung, oder null wenn abgebrochen.
         /// </returns>
         public static Buchung ZeigeBuchungDialog(
-            BuchungsDocument doc, bool ausgaben, IntPtr ownerHwnd = default)
+            BuchungsDocument doc, bool ausgaben, IntPtr ownerHwnd = default,
+            Action<Buchung> onWeiterbuchen = null)
         {
             EnsureWpfInitialized();
 
             var vm = new BuchungViewModel(doc, ausgaben);
+
+            // "Weiterbuchen": jeder Klick persistiert die Buchung ueber
+            // diesen Callback (nativer Aufrufer), der Dialog bleibt offen.
+            if (onWeiterbuchen != null)
+                vm.GebuchtUndWeiter += onWeiterbuchen;
+
             BefuelleListen(vm);
             var view = new BuchungView(vm);
 

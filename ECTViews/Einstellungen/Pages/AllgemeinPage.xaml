@@ -24,14 +24,16 @@
             <CheckBox Content="für Bank"      IsChecked="{Binding BelegnrBank}"/>
             <CheckBox Content="für Kasse"     IsChecked="{Binding BelegnrKasse}"/>
 
-            <TextBlock Text="Buchen-Verhalten" Style="{StaticResource Abschnitt}"/>
-            <CheckBox Content="Täglich buchen (Tagesdatum vorbelegen)" IsChecked="{Binding TaeglichBuchen}"/>
-            <CheckBox Content="Buchungsdatum nach dem Buchen belassen" IsChecked="{Binding BuchungsdatumBelassen}"/>
+            <TextBlock Text="Weiterbuchen-Verhalten" Style="{StaticResource Abschnitt}"/>
+            <CheckBox Content="Tagesdatum einfügen und Cursor ins Betragsfeld (empfohlen, wenn man täglich bucht)" IsChecked="{Binding TaeglichBuchen}"/>
+            <CheckBox Content="Buchungsdatum der letzten Buchung belassen" IsChecked="{Binding BuchungsdatumBelassen}"/>
+            <CheckBox Content="Betrieb der letzten Buchung belassen" IsChecked="{Binding BetriebBelassen}"/>
+            <CheckBox Content="Bestandskonto der letzten Buchung belassen" IsChecked="{Binding BestandskontoBelassen}"/>
 
             <TextBlock Text="Abschreibung" Style="{StaticResource Abschnitt}"/>
             <Grid>
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="150"/>
+                    <ColumnDefinition Width="Auto"/>
                     <ColumnDefinition Width="*"/>
                 </Grid.ColumnDefinitions>
                 <TextBlock Grid.Column="0" Text="Voreinst. AfA-Genauigkeit" Style="{StaticResource FeldLabel}"/>

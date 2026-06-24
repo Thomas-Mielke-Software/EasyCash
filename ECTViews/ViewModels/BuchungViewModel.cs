@@ -50,9 +50,19 @@ namespace ECTViews.ViewModels
             set
             {
                 if (SetProperty(ref _istBearbeitung, value))
-                    OnPropertyChanged(nameof(OkButtonText));  // abhängige Property benachrichtigen
+                {
+                    OnPropertyChanged(nameof(OkButtonText));          // abhängige Property benachrichtigen
+                    OnPropertyChanged(nameof(WeiterbuchenSichtbar));
+                }
             }
         }
+
+        /// <summary>
+        /// Sichtbarkeit des "Weiterbuchen"-Buttons: nur beim Anlegen einer
+        /// neuen Buchung sinnvoll. Beim Bearbeiten/Kopieren schliesst der
+        /// Dialog wie gehabt nach dem Speichern (kein Weiterbuchen).
+        /// </summary>
+        public bool WeiterbuchenSichtbar => !IstBearbeitung;
 
         /// <summary>
         /// Beschriftung des OK-Buttons. Wechselt zwischen "Buchen" (neue
@@ -104,10 +114,11 @@ namespace ECTViews.ViewModels
         private int _datumTag;
         public int DatumTag
         {
+            // 0 = leeres Feld (noch nicht eingegeben); sonst auf 1..31 begrenzt.
             get => _datumTag;
             set
             {
-                if (SetProperty(ref _datumTag, Math.Max(1, Math.Min(31, value))))
+                if (SetProperty(ref _datumTag, Math.Max(0, Math.Min(31, value))))
                     ValidiereFeldFallsAktiv(ValidiereDatum);
             }
         }
@@ -115,10 +126,11 @@ namespace ECTViews.ViewModels
         private int _datumMonat;
         public int DatumMonat
         {
+            // 0 = leeres Feld (noch nicht eingegeben); sonst auf 1..12 begrenzt.
             get => _datumMonat;
             set
             {
-                if (SetProperty(ref _datumMonat, Math.Max(1, Math.Min(12, value))))
+                if (SetProperty(ref _datumMonat, Math.Max(0, Math.Min(12, value))))
                 {
                     BerechneRestwertHeuristisch();
                     ValidiereFeldFallsAktiv(ValidiereDatum);
@@ -813,6 +825,22 @@ namespace ECTViews.ViewModels
         public ICommand OkCommand { get; }
         public ICommand AbbrechenCommand { get; }
         public ICommand AbgangBuchenCommand { get; }
+        public ICommand WeiterbuchenCommand { get; }
+
+        /// <summary>
+        /// Wird beim Klick auf "Weiterbuchen" ausgeloest, sobald die
+        /// Eingabe gueltig ist. Der native Aufrufer (ECTBridge) persistiert die
+        /// uebergebene Buchung (Einfuegen, Sortieren, Sync, Modified-Flag),
+        /// ohne dass der Dialog schliesst.
+        /// </summary>
+        public event Action<Buchung> GebuchtUndWeiter;
+
+        /// <summary>
+        /// Bittet die View, nach dem Weiterbuchen den Fokus zu setzen:
+        /// true = Betrag-Feld (Einstellung "Tagesdatum einfügen und Cursor ins
+        /// Betragsfeld"), false = Tag-Feld.
+        /// </summary>
+        public event Action<bool> RequestFokus;
 
         // ----------------------------------------------
         // Referenz auf das Dokument (für Konten, Belegnummern, etc.)
@@ -840,11 +868,10 @@ namespace ECTViews.ViewModels
 
             IstAusgabe = ausgaben;
 
-            // Datum auf heute setzen
-            var heute = DateTime.Today;
-            _datumTag = heute.Day;
-            _datumMonat = heute.Month;
-            _datumJahr = doc.Jahr > 0 ? doc.Jahr : heute.Year;
+            // Startdatum beim Oeffnen: Tagesdatum nur, wenn "Tagesdatum
+            // einfügen" an ist, sonst leere Tag/Monat-Felder mit vorbelegtem
+            // Buchungsjahr. "Datum belassen" greift erst beim Weiterbuchen.
+            SetzeFrischesDatum();
 
             // Belegnummer vorbelegen
             _belegnummer = ausgaben
@@ -854,6 +881,7 @@ namespace ECTViews.ViewModels
             OkCommand = new RelayCommand(OnOk, CanOk);
             AbbrechenCommand = new RelayCommand(OnAbbrechen);
             AbgangBuchenCommand = new RelayCommand(OnAbgangBuchen, () => AbgangButtonSichtbar);
+            WeiterbuchenCommand = new RelayCommand(OnWeiterbuchen);
 
             LadeKonten();
             LadePresets();
@@ -1115,6 +1143,45 @@ namespace ECTViews.ViewModels
             if (!ValidiereAlles())
                 return;  // Fenster bleibt offen, Fehler werden angezeigt
 
+            Ergebnis = BaueBuchungAusFeldern();
+
+            Bestaetigt = true;
+            RequestClose?.Invoke();
+        }
+
+        /// <summary>
+        /// "Weiterbuchen": validiert wie OnOk, persistiert die Buchung ueber
+        /// das <see cref="GebuchtUndWeiter"/>-Event (nativer Aufrufer), laesst
+        /// den Dialog aber offen und initialisiert die Maske fuer die naechste
+        /// Buchung neu -- unter Beachtung der "Weiterbuchen-Verhalten"-
+        /// Einstellungen (Buchungsdatum belassen / Cursor ins Betragsfeld).
+        /// </summary>
+        private void OnWeiterbuchen()
+        {
+            _validierungAktiv = true;
+
+            if (!ValidiereAlles())
+                return;  // Fenster bleibt offen, Fehler werden angezeigt
+
+            var buchung = BaueBuchungAusFeldern();
+
+            // Persistieren ueberlaesst der ViewModel dem nativen Aufrufer
+            // (Einfuegen in die Engine, Sync, Modified-Flag). Geschieht
+            // synchron, also ist die Buchung danach im Dokument.
+            GebuchtUndWeiter?.Invoke(buchung);
+
+            // Maske fuer die naechste Buchung vorbereiten und Fokus setzen.
+            InitFuerNaechsteBuchung();
+            RequestFokus?.Invoke(CursorInsBetragsfeld);
+        }
+
+        /// <summary>
+        /// Baut aus den aktuellen Feldwerten eine <see cref="Buchung"/>.
+        /// Erwartet, dass zuvor erfolgreich validiert wurde. Expandiert dabei
+        /// ein evtl. 2-stelliges Jahr und macht den expandierten Wert sichtbar.
+        /// </summary>
+        private Buchung BaueBuchungAusFeldern()
+        {
             // Datum zusammenbauen (mit evtl. expandiertem 2-stelligem Jahr)
             int jahr = ExpandiereJahr(DatumJahr);
             if (jahr != DatumJahr)
@@ -1122,7 +1189,7 @@ namespace ECTViews.ViewModels
 
             var datum = new DateTime(jahr, DatumMonat, DatumTag);
 
-            Ergebnis = new Buchung
+            return new Buchung
             {
                 Art = IstAusgabe ? Buchungsart.Ausgabe : Buchungsart.Einnahme,
                 BruttoBetrag = Betrag.AusCent(BetragInCent, MwstPromille),
@@ -1151,10 +1218,113 @@ namespace ECTViews.ViewModels
                 AfaDegressiv = AfaDegressiv,
                 AfaSatz = int.TryParse(AfaSatz, out var s) ? s : 0,
             };
-
-            Bestaetigt = true;
-            RequestClose?.Invoke();
         }
+
+        /// <summary>
+        /// Setzt die Maske nach einem "Weiterbuchen" fuer die naechste Buchung
+        /// zurueck. Port der "neu"-Logik aus buchendlg.cpp::InitDlg:
+        ///   - Buchungsart, Betrieb- und Bestandskonto-Auswahl bleiben erhalten.
+        ///   - Datum nur zuruecksetzen, wenn die Einstellung "Buchungsdatum der
+        ///     letzten Buchung belassen" NICHT gesetzt ist.
+        ///   - Betrag/MWSt/Beschreibung/AfA/Konto werden geleert bzw. auf die
+        ///     Voreinstellungen gesetzt.
+        ///   - Belegnummer wird wie bei einem frisch geoeffneten Dialog aus dem
+        ///     Dokument uebernommen.
+        /// </summary>
+        private void InitFuerNaechsteBuchung()
+        {
+            // Live-Validierung zuruecksetzen -- die frische Maske soll keine
+            // roten Fehler aus der eben gebuchten Eingabe zeigen.
+            _validierungAktiv = false;
+
+            // AfA zuruecksetzen (AfaAktiviert zuerst -> raeumt Hinweis ab).
+            AfaAktiviert = false;
+            AfaDegressiv = false;
+            AfaJahre = "1";
+            AfaNr = "1";
+            AfaSatz = "0";
+            AfaRestwertCent = 0;
+
+            // Betrag, MWSt, Beschreibung leeren/voreinstellen.
+            BetragText = "0,00";
+            MwstText = "19";          // Setter erzwingt 0, falls MWSt-Feld aus
+            Beschreibung = "";
+            VorschlaegeOffen = false;
+
+            // Konto-Auswahl aufheben.
+            SelectedKonto = "";
+
+            // Betrieb/Bestandskonto: nur dann erhalten, wenn die jeweilige
+            // Einstellung das Belassen erlaubt -- sonst Auswahl aufheben.
+            if (!GlobaleEinstellungen.BetriebBelassen)
+                SelectedBetrieb = null;
+            if (!GlobaleEinstellungen.BestandskontoBelassen)
+                SelectedBestandskonto = null;
+
+            // Datum: Ist "Buchungsdatum der letzten Buchung belassen" gesetzt,
+            // wird das Datum der gerade gebuchten Buchung recycelt -- die
+            // Felder bleiben einfach unangetastet. Das hat Vorrang vor dem
+            // "Tagesdatum einfügen". Andernfalls die Datumsfelder wie bei einer
+            // frisch geoeffneten Buchung vorbelegen (Tagesdatum oder leer).
+            if (!GlobaleEinstellungen.BuchungsdatumBelassen)
+                SetzeFrischesDatum();
+
+            // Belegnummer wie bei einem frisch geoeffneten Dialog vorbelegen.
+            Belegnummer = IstAusgabe
+                ? _doc.LaufendeBelegnrAusgaben.ToString()
+                : _doc.LaufendeBelegnrEinnahmen.ToString();
+
+            // Etwaige stehengebliebene Fehlertexte loeschen.
+            DatumError = ""; BetragError = ""; MwstError = "";
+            BeschreibungError = ""; AfaError = "";
+            BestandskontoError = ""; BetriebError = "";
+        }
+
+        /// <summary>
+        /// Belegt die Datumsfelder einer frischen Buchung vor -- beim
+        /// erstmaligen Oeffnen und nach "Weiterbuchen" (sofern dort das Datum
+        /// nicht recycelt wird).
+        ///
+        ///   - Ist "Tagesdatum einfügen und Cursor ins Betragsfeld" gesetzt,
+        ///     wird das heutige Datum vorgeneriert (bzw. der 31.12. des
+        ///     Dokumentjahres, falls das Dokument ein anderes als das laufende
+        ///     Jahr fuehrt -- wie buchendlg.cpp::InitDlg).
+        ///   - Sonst bleiben Tag und Monat leer (0); nur das Buchungsjahr wird
+        ///     aus dem Dokument vorbelegt.
+        ///
+        /// Die Einstellung "Buchungsdatum der letzten Buchung belassen" greift
+        /// hier NICHT: sie recycelt das Datum beim Druck auf "Weiterbuchen"
+        /// (siehe <see cref="InitFuerNaechsteBuchung"/>).
+        /// </summary>
+        private void SetzeFrischesDatum()
+        {
+            var heute = DateTime.Today;
+            int docJahr = _doc.Jahr > 0 ? _doc.Jahr : heute.Year;
+
+            if (GlobaleEinstellungen.TaeglichBuchen)
+            {
+                DateTime datum = (heute.Year == docJahr)
+                    ? heute
+                    : new DateTime(docJahr, 12, 31);
+                DatumTag = datum.Day;
+                DatumMonat = datum.Month;
+                DatumJahr = datum.Year;
+            }
+            else
+            {
+                DatumTag = 0;       // leeres Feld
+                DatumMonat = 0;     // leeres Feld
+                DatumJahr = docJahr;
+            }
+        }
+
+        /// <summary>
+        /// True, wenn nach dem Oeffnen des Dialogs und nach "Weiterbuchen" der
+        /// Cursor ins Betragsfeld springen soll -- Einstellung "Tagesdatum
+        /// einfügen und Cursor ins Betragsfeld". Sonst landet der Fokus im
+        /// Tag-Feld. Die View liest dies beim Laden und nach dem Weiterbuchen.
+        /// </summary>
+        public bool CursorInsBetragsfeld => GlobaleEinstellungen.TaeglichBuchen;
 
         private void OnAbbrechen()
         {
