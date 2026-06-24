@@ -2,6 +2,7 @@
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:pages="clr-namespace:ECTViews.EinstellungenUi.Pages"
+             xmlns:ctrl="clr-namespace:ECTViews.EinstellungenUi"
              FontFamily="Segoe UI" FontSize="13">
     <UserControl.Resources>
         <ResourceDictionary Source="/ECTViews;component/Einstellungen/EinstellungenResources.xaml"/>
@@ -46,28 +47,12 @@
             </Grid>
 
             <TextBlock Text="Schriften" Style="{StaticResource Abschnitt}"/>
-            <Grid>
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="150"/>
-                    <ColumnDefinition Width="*"/>
-                    <ColumnDefinition Width="Auto"/>
-                    <ColumnDefinition Width="Auto"/>
-                </Grid.ColumnDefinitions>
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="Auto"/>
-                    <RowDefinition Height="Auto"/>
-                </Grid.RowDefinitions>
-
-                <TextBlock Grid.Row="0" Grid.Column="0" Text="Bildschirm" Style="{StaticResource FeldLabel}"/>
-                <TextBox  Grid.Row="0" Grid.Column="1" Text="{Binding Bildschirmschrift}"/>
-                <TextBlock Grid.Row="0" Grid.Column="2" Text="Größe" Style="{StaticResource FeldLabel}" Margin="10,0,10,0"/>
-                <TextBox  Grid.Row="0" Grid.Column="3" Text="{Binding Bildschirmschriftgroesse}" Width="60"/>
-
-                <TextBlock Grid.Row="1" Grid.Column="0" Text="Drucker" Style="{StaticResource FeldLabel}"/>
-                <TextBox  Grid.Row="1" Grid.Column="1" Text="{Binding Druckerschrift}"/>
-                <TextBlock Grid.Row="1" Grid.Column="2" Text="Größe" Style="{StaticResource FeldLabel}" Margin="10,0,10,0"/>
-                <TextBox  Grid.Row="1" Grid.Column="3" Text="{Binding Druckerschriftgroesse}" Width="60"/>
-            </Grid>
+            <ctrl:FontPicker Beschriftung="Bildschirm"
+                             SchriftName="{Binding Bildschirmschrift, Mode=TwoWay}"
+                             SchriftGroesse="{Binding Bildschirmschriftgroesse, Mode=TwoWay}"/>
+            <ctrl:FontPicker Beschriftung="Drucker"
+                             SchriftName="{Binding Druckerschrift, Mode=TwoWay}"
+                             SchriftGroesse="{Binding Druckerschriftgroesse, Mode=TwoWay}"/>
             <TextBlock Style="{StaticResource Hinweis}"
                        Text="Größe 0 = automatische Schriftgröße."/>
         </StackPanel>
