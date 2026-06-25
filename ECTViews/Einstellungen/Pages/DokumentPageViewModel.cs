@@ -39,6 +39,7 @@ namespace ECTViews.EinstellungenUi.Pages
                 bool geaendert = _doc.Jahr != v;
                 _doc.Jahr = v;
                 OnPropertyChanged();   // immer, damit ein geklemmter Wert zurück in die UI fließt
+                OnPropertyChanged(nameof(Sondervorauszahlung));  // Sondervorauszahlung ist jahresabhängig
                 if (geaendert) { _onGeaendert?.Invoke(); }
             }
         }
@@ -65,6 +66,78 @@ namespace ECTViews.EinstellungenUi.Pages
         {
             get => _doc.LaufendeBelegnrKasse;
             set { if (_doc.LaufendeBelegnrKasse != value) { _doc.LaufendeBelegnrKasse = value; OnPropertyChanged(); _onGeaendert?.Invoke(); } }
+        }
+
+        // -----------------------------------------------------------------
+        // Sondervorauszahlung (Dauerfristverlängerung). Pro Buchungsjahr, im
+        // Erweiterungs-Store des Dokuments abgelegt (Sektion
+        // "Dauerfristverlängerung", Key "SondervorauszahlungJJJJ") -- exakt wie
+        // im alten CEasyCashView (SetErweiterungKey, easycashview.cpp:8266).
+        // -----------------------------------------------------------------
+        private const string DauerfristNs = "Dauerfristverlängerung";
+        private string SondervorauszahlungKey => "Sondervorauszahlung" + _doc.Jahr.ToString("D4");
+
+        /// <summary>Geleistete Sondervorauszahlung (ein Elftel der Summe aller
+        /// USt-Vorauszahlungen des Vorjahres) bei Dauerfristverlängerung für das
+        /// aktuelle Buchungsjahr. Geldbetrag im
+        /// deutschen Währungsformat (z.B. "1234,56"); leer = keine. Gültige
+        /// Eingaben werden auf zwei Nachkommastellen normalisiert (wie das alte
+        /// int_to_currency), ungültige bleiben für die Korrektur stehen.</summary>
+        public string Sondervorauszahlung
+        {
+            get => _doc.Erweiterungen.Hole(DauerfristNs, SondervorauszahlungKey);
+            set
+            {
+                string neu = (value ?? "").Trim();
+                // Gültigen Betrag aufs kanonische Format bringen; ungültige
+                // Eingabe unverändert lassen, damit der Fehlertext greift.
+                if (TryParseBetrag(neu, out decimal betrag) && betrag >= 0)
+                    neu = betrag.ToString("0.00", _deDe);
+
+                if (_doc.Erweiterungen.Hole(DauerfristNs, SondervorauszahlungKey) != neu)
+                {
+                    if (string.IsNullOrEmpty(neu))
+                        _doc.Erweiterungen.Entferne(DauerfristNs, SondervorauszahlungKey);
+                    else
+                        _doc.Erweiterungen.Setze(DauerfristNs, SondervorauszahlungKey, neu);
+                    _onGeaendert?.Invoke();
+                }
+                OnPropertyChanged();
+                OnPropertyChanged(nameof(SondervorauszahlungFehler));
+            }
+        }
+
+        /// <summary>Validierung (advisory, blockiert das Speichern nicht -- wie
+        /// die übrigen Einstellungs-Felder). Leer = kein Fehler.</summary>
+        public string SondervorauszahlungFehler => PruefeSondervorauszahlung(Sondervorauszahlung) ?? "";
+
+        private static string PruefeSondervorauszahlung(string wert)
+        {
+            if (string.IsNullOrEmpty(wert)) return null;   // leer = keine
+            if (!TryParseBetrag(wert, out decimal betrag))
+                return "Bitte einen gültigen Geldbetrag eingeben (z.B. 1234,56).";
+            if (betrag < 0)
+                return "Die Sondervorauszahlung kann nicht negativ sein.";
+            return null;
+        }
+
+        private static readonly System.Globalization.CultureInfo _deDe =
+            new System.Globalization.CultureInfo("de-DE");
+
+        /// <summary>Parst einen Geldbetrag im deutschen Format (Komma als
+        /// Dezimal-, Punkt als Tausendertrennzeichen). Fallback: Punkt als
+        /// Dezimaltrennzeichen, damit "1234.56" auch durchgeht.</summary>
+        private static bool TryParseBetrag(string s, out decimal betrag)
+        {
+            betrag = 0m;
+            if (string.IsNullOrWhiteSpace(s)) return false;
+            if (decimal.TryParse(s, System.Globalization.NumberStyles.Number, _deDe, out betrag))
+                return true;
+            if (decimal.TryParse(s.Replace(".", "").Replace(',', '.'),
+                System.Globalization.NumberStyles.Number,
+                System.Globalization.CultureInfo.InvariantCulture, out betrag))
+                return true;
+            return false;
         }
     }
 }

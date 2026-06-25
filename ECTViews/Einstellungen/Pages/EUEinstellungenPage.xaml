@@ -1,0 +1,56 @@
+<UserControl x:Class="ECTViews.EinstellungenUi.Pages.EUEinstellungenPage"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:pages="clr-namespace:ECTViews.EinstellungenUi.Pages"
+             FontFamily="Segoe UI" FontSize="13">
+    <UserControl.Resources>
+        <ResourceDictionary Source="/ECTViews;component/Einstellungen/EinstellungenResources.xaml"/>
+    </UserControl.Resources>
+    <UserControl.DataContext>
+        <pages:EUEinstellungenPageViewModel/>
+    </UserControl.DataContext>
+
+    <ScrollViewer VerticalScrollBarVisibility="Auto" Padding="24,20">
+        <StackPanel MaxWidth="560" HorizontalAlignment="Left">
+            <TextBlock Text="E/Ü-Einstellungen" Style="{StaticResource SeitenUeberschrift}"/>
+            <TextBlock Style="{StaticResource Hinweis}" Margin="0,0,0,8"
+                       Text="Einstellungen rund um die Einnahmen-/Überschussrechnung und deren Ausdruck. Die Verwaltung der Konten selbst und ihrer Formularfeld-Zuweisungen erfolgt auf der Seite 'E/Ü-Konten'."/>
+
+            <TextBlock Text="Umsatz- und Vorsteuer" Style="{StaticResource Abschnitt}"/>
+            <CheckBox Content="Umsatzsteuer und Vorsteuer gesondert ausweisen"
+                      IsChecked="{Binding UstVstGesondert}"/>
+
+            <TextBlock Text="Druck" Style="{StaticResource Abschnitt}"/>
+            <CheckBox Content="Nach jeder Kontengruppe einen Seitenumbruch einfügen"
+                      IsChecked="{Binding SeitenumbruchNachKonten}"/>
+
+            <!-- [Optische Trennung] -->
+            <Border BorderBrush="#DDDDDD" BorderThickness="0,1,0,0" Margin="0,18,0,0"/>
+
+            <TextBlock Text="Finanzamts-Verrechnungskonten" Style="{StaticResource Abschnitt}"/>
+            <TextBlock Style="{StaticResource Hinweis}" Margin="0,0,0,8"
+                       Text="Konten, auf denen Erstattungen vom bzw. Zahlungen an das Finanzamt gebucht werden. Wirkt sich auf die Anzeige des Netto-Saldos in der Statusleiste aus."/>
+
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="180"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+
+                <TextBlock Grid.Row="0" Grid.Column="0" Text="Erstattungen (Einnahme)" Style="{StaticResource FeldLabel}"/>
+                <ComboBox Grid.Row="0" Grid.Column="1" ItemsSource="{Binding EinnahmenKonten}"
+                          SelectedItem="{Binding FinanzamtsErstattungenKonto}"
+                          HorizontalAlignment="Left" Width="300"/>
+
+                <TextBlock Grid.Row="1" Grid.Column="0" Text="Zahlungen (Ausgabe)" Style="{StaticResource FeldLabel}"/>
+                <ComboBox Grid.Row="1" Grid.Column="1" ItemsSource="{Binding AusgabenKonten}"
+                          SelectedItem="{Binding FinanzamtsZahlungenKonto}"
+                          HorizontalAlignment="Left" Width="300"/>
+            </Grid>
+        </StackPanel>
+    </ScrollViewer>
+</UserControl>

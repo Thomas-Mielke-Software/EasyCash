@@ -80,6 +80,25 @@ namespace ECTEngine
         public static int  AbschreibungGenauigkeit { get => GetInt(AG + "AbschreibungGenauigkeit", 2); set => SetInt(AG + "AbschreibungGenauigkeit", value); }
 
         // ---------------------------------------------------------------------
+        // E/Ü-Einstellungen  ([Allgemein])  -- aus dem alten CEinstellungen4
+        // (Voranmeldungszeitraum siehe MonatlicheVoranmeldung weiter oben:
+        //  0 = Monat, 1 = Quartal, Default 1)
+        // ---------------------------------------------------------------------
+        /// <summary>Umsatz- und Vorsteuer in der EÜR/im Druck gesondert ausweisen.</summary>
+        public static bool UstVstGesondert        { get => GetBool(AG + "ustvst_gesondert");          set => SetBool(AG + "ustvst_gesondert", value); }
+
+        /// <summary>Beim Druck nach jeder Kontengruppe einen Seitenumbruch einfügen.</summary>
+        public static bool SeitenumbruchNachKonten { get => GetBool(AG + "nach_konten_seitenumbruch"); set => SetBool(AG + "nach_konten_seitenumbruch", value); }
+
+        /// <summary>Name des Einnahmenkontos, auf dem Finanzamts-Erstattungen
+        /// gebucht werden (für die automatische USt-Verrechnung).</summary>
+        public static string FinanzamtsErstattungenKonto { get => Get(AG + "Finanzamtserstattungen"); set => Set(AG + "Finanzamtserstattungen", value); }
+
+        /// <summary>Name des Ausgabenkontos, auf dem Finanzamts-Zahlungen
+        /// gebucht werden.</summary>
+        public static string FinanzamtsZahlungenKonto    { get => Get(AG + "Finanzamtszahlungen");    set => Set(AG + "Finanzamtszahlungen", value); }
+
+        // ---------------------------------------------------------------------
         // Druck  ([Druck])  -- Schriften
         // ---------------------------------------------------------------------
         private const string DR = "[Druck]";

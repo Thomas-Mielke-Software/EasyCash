@@ -93,6 +93,26 @@
                 <TextBlock Grid.Row="3" Grid.Column="0" Text="Satz 4" Style="{StaticResource FeldLabel}"/>
                 <TextBox  Grid.Row="3" Grid.Column="1" Text="{Binding Satz4}" MaxLength="12" HorizontalAlignment="Left" Width="120"/>
             </Grid>
+
+            <!-- [Optische Trennung zwischen Steuersätzen und Voranmeldungszeitraum] -->
+            <Border BorderBrush="#DDDDDD" BorderThickness="0,1,0,0" Margin="0,18,0,0"/>
+
+            <TextBlock Text="Umsatzsteuer-Voranmeldung" Style="{StaticResource Abschnitt}"/>
+            <TextBlock Style="{StaticResource Hinweis}" Margin="0,0,0,8"
+                       Text="Zeitraum, für den die Umsatzsteuer-Voranmeldung erstellt wird. Das Finanzamt gibt diesen Zeitraum vor (abhängig von der Höhe der Vorjahres-Umsatzsteuer)."/>
+
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="150"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+                <TextBlock Grid.Column="0" Text="Zeitraum" Style="{StaticResource FeldLabel}"/>
+                <ComboBox Grid.Column="1" SelectedIndex="{Binding Voranmeldungszeitraum}"
+                          HorizontalAlignment="Left" Width="220">
+                    <ComboBoxItem Content="Monat"/>
+                    <ComboBoxItem Content="Quartal"/>
+                </ComboBox>
+            </Grid>
         </StackPanel>
     </ScrollViewer>
 </UserControl>

@@ -42,6 +42,17 @@ namespace ECTViews.EinstellungenUi.Pages
         public string Satz3 { get => GlobaleEinstellungen.Vat3; set { GlobaleEinstellungen.Vat3 = Getrimmt(value); OnPropertyChanged(); } }
         public string Satz4 { get => GlobaleEinstellungen.Vat4; set { GlobaleEinstellungen.Vat4 = Getrimmt(value); OnPropertyChanged(); } }
 
+        // -----------------------------------------------------------------
+        // Voranmeldungszeitraum (Radio Monat=0 / Quartal=1 im alten
+        // CEinstellungen1). Bestimmt, ob die USt-Voranmeldung monatlich oder
+        // vierteljährlich erstellt wird. Default = Quartal.
+        // -----------------------------------------------------------------
+        public int Voranmeldungszeitraum
+        {
+            get => GlobaleEinstellungen.MonatlicheVoranmeldung;
+            set { GlobaleEinstellungen.MonatlicheVoranmeldung = value; OnPropertyChanged(); }
+        }
+
         /// <summary>Schneidet fuehrende/abschliessende Leerzeichen weg (kein
         /// hartes Kuerzen auf die Maximallaenge -- das erledigt MaxLength).</summary>
         private static string Getrimmt(string wert) => wert?.Trim();

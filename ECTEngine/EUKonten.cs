@@ -104,8 +104,9 @@ namespace ECTEngine
         public bool   IstEinnahme { get; }
         /// <summary>Aktueller Slot-Index (0-99); wird beim Umsortieren neu gesetzt.</summary>
         public int    Index       { get; set; }
-        /// <summary>Unterkategorie (parallele ini-Sektion) -- in der UI (noch)
-        /// nicht editierbar, muss aber beim Umsortieren mitgeführt werden.</summary>
+        /// <summary>Unterkategorie (parallele ini-Sektion). Steuert die
+        /// Einrückung/Strukturierung in der EÜR; in der KontenPage editierbar
+        /// und wird beim Umsortieren mitgeführt.</summary>
         public string Unterkategorie { get; set; }
         /// <summary>Formularname -> Feld-Id.</summary>
         public Dictionary<string, string> Feldzuweisungen { get; }
@@ -159,6 +160,24 @@ namespace ECTEngine
             Einstellungen.Speichere(
                 sektion + konto.Index.ToString("D2", CultureInfo.InvariantCulture),
                 store.ZuPipeFormat());
+        }
+
+        /// <summary>
+        /// Schreibt die Unterkategorie EINES Kontos zurück in Cache/ini
+        /// (Sektion [EinnahmenUnterkategorien]/[AusgabenUnterkategorien], Index =
+        /// Slot des Kontos). Bracket-Form -> Cache und ini bleiben konsistent.
+        /// Die Unterkategorie steuert die Einrückung/Strukturierung der Konten
+        /// in der Einnahmen-/Überschussrechnung.
+        /// </summary>
+        public static void SpeichereUnterkategorie(EUKonto konto)
+        {
+            if (konto == null) return;
+            string sektion = konto.IstEinnahme
+                ? "[EinnahmenUnterkategorien]"
+                : "[AusgabenUnterkategorien]";
+            Einstellungen.Speichere(
+                sektion + konto.Index.ToString("D2", CultureInfo.InvariantCulture),
+                konto.Unterkategorie ?? "");
         }
 
         /// <summary>

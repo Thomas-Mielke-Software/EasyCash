@@ -1,0 +1,148 @@
+<Window x:Class="ECTViews.Views.BuchungsjahrWaehlenView"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:local="clr-namespace:ECTViews.Views"
+        Title="Buchungsjahr wählen"
+        MinWidth="500"
+        Width="580"
+        SizeToContent="Height"
+        WindowStartupLocation="CenterOwner"
+        ResizeMode="CanResizeWithGrip"
+        ShowInTaskbar="False"
+        Background="#F5F5F5"
+        Loaded="OnWindowLoaded"
+        FontFamily="Segoe UI" FontSize="13">
+
+    <Window.Resources>
+        <!-- [Muss ganz oben stehen: wird von Triggern via StaticResource genutzt] -->
+        <BooleanToVisibilityConverter x:Key="BoolToVis"/>
+
+        <Style TargetType="TextBlock" x:Key="LabelStyle">
+            <Setter Property="VerticalAlignment" Value="Center"/>
+            <Setter Property="Margin" Value="0,0,8,0"/>
+            <Setter Property="Foreground" Value="#333"/>
+        </Style>
+
+        <!-- Hinweistexte: blau-grau, kursiv, klein. -->
+        <Style TargetType="TextBlock" x:Key="HintStyle">
+            <Setter Property="Foreground" Value="#0277BD"/>
+            <Setter Property="FontSize" Value="11"/>
+            <Setter Property="FontStyle" Value="Italic"/>
+            <Setter Property="Margin" Value="0,4,0,0"/>
+            <Setter Property="TextWrapping" Value="Wrap"/>
+        </Style>
+
+        <!-- Fehlertexte: rot, klein, verschwinden bei leerem Text. -->
+        <Style TargetType="TextBlock" x:Key="ErrorStyle">
+            <Setter Property="Foreground" Value="#D32F2F"/>
+            <Setter Property="FontSize" Value="11"/>
+            <Setter Property="FontStyle" Value="Italic"/>
+            <Setter Property="Margin" Value="0,4,0,0"/>
+            <Setter Property="TextWrapping" Value="Wrap"/>
+            <Setter Property="Visibility" Value="Visible"/>
+            <Style.Triggers>
+                <Trigger Property="Text" Value="">
+                    <Setter Property="Visibility" Value="Collapsed"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+
+        <Style TargetType="GroupBox">
+            <Setter Property="Padding" Value="10"/>
+            <Setter Property="Margin" Value="0,0,0,14"/>
+        </Style>
+
+        <Style TargetType="Button">
+            <Setter Property="Padding" Value="14,5"/>
+            <Setter Property="MinWidth" Value="110"/>
+        </Style>
+    </Window.Resources>
+
+    <Grid Margin="16">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <!-- [Option 1: Jahreswechsel aus bestehender Buchungsdatei] -->
+        <GroupBox Grid.Row="0"
+                  Header="Jahreswechsel aus bestehender Buchungsdatei (empfohlen)">
+            <StackPanel>
+                <TextBlock Style="{StaticResource HintStyle}" Margin="0,0,0,6"
+                           Text="Erzeugt aus der gewählten Vorjahres-Datei eine neue Jahres-Buchungsdatei und übernimmt dabei automatisch Abschreibungen (AfA) und Dauerbuchungen ins neue Jahr."/>
+
+                <Grid>
+                    <ListBox x:Name="DateienListe"
+                             Height="150"
+                             ItemsSource="{Binding Dateien}"
+                             SelectedItem="{Binding AusgewaehlteDatei}"
+                             MouseDoubleClick="OnDateiDoppelklick"
+                             ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+                             ScrollViewer.CanContentScroll="False"
+                             Visibility="{Binding BestandsdateienVorhanden, Converter={StaticResource BoolToVis}}"/>
+
+                    <!-- Platzhalter, wenn keine Dateien vorhanden sind. -->
+                    <Border Height="150" BorderBrush="#CCC" BorderThickness="1"
+                            Background="White"
+                            Visibility="{Binding KeineDateienVorhanden, Converter={StaticResource BoolToVis}}">
+                        <TextBlock Margin="10" TextWrapping="Wrap"
+                                   VerticalAlignment="Center" Foreground="#888"
+                                   Text="Keine bestehenden Jahres-Buchungsdateien (JahrXXXX.eca) im Datenverzeichnis gefunden. Bitte rechts eine neue Buchungsdatei anlegen oder ein Datenverzeichnis mit vorhandenen Dateien wählen."/>
+                    </Border>
+                </Grid>
+
+                <Button Content="Jahreswechsel..."
+                        HorizontalAlignment="Right"
+                        Margin="0,10,0,0"
+                        IsDefault="True"
+                        Command="{Binding JahreswechselCommand}"/>
+            </StackPanel>
+        </GroupBox>
+
+        <!-- [Option 2: neue, leere Buchungsdatei] -->
+        <GroupBox Grid.Row="1"
+                  Header="Neue, leere Buchungsdatei anlegen">
+            <StackPanel>
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="80"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+
+                    <TextBlock Grid.Row="0" Grid.Column="0" Style="{StaticResource LabelStyle}"
+                               Text="Buchungsjahr (vierstellig, z.B. 2026):"/>
+                    <TextBox Grid.Row="0" Grid.Column="1"
+                             Text="{Binding JahrText, UpdateSourceTrigger=PropertyChanged}"
+                             MaxLength="4" Padding="4,3" Margin="0,2"/>
+
+                    <TextBlock Grid.Row="1" Grid.Column="0" Style="{StaticResource LabelStyle}"
+                               Text="Währungskürzel (z.B. EUR, SFR):"/>
+                    <TextBox Grid.Row="1" Grid.Column="1"
+                             Text="{Binding Waehrung, UpdateSourceTrigger=PropertyChanged}"
+                             MaxLength="3" Padding="4,3" Margin="0,2"/>
+                </Grid>
+
+                <TextBlock Style="{StaticResource ErrorStyle}" Text="{Binding JahrFehler}"/>
+                <TextBlock Style="{StaticResource ErrorStyle}" Text="{Binding WaehrungFehler}"/>
+
+                <Button Content="Neu anlegen"
+                        HorizontalAlignment="Right"
+                        Margin="0,10,0,0"
+                        Command="{Binding NeuCommand}"/>
+            </StackPanel>
+        </GroupBox>
+
+        <!-- [Abbrechen] -->
+        <Button Grid.Row="2"
+                Content="Abbrechen"
+                HorizontalAlignment="Right"
+                IsCancel="True"
+                Command="{Binding AbbrechenCommand}"/>
+    </Grid>
+</Window>

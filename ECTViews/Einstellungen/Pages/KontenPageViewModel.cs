@@ -223,6 +223,24 @@ namespace ECTViews.EinstellungenUi.Pages
         public EUKontoVM(EUKonto modell, string gruppe) { Modell = modell; Gruppe = gruppe; }
 
         public string Name => Modell.Name;
+
+        /// <summary>Unterkategorie des Kontos -- strukturiert/rueckt die Konten
+        /// in der EÜR ein. Wird sofort persistiert.</summary>
+        public string Unterkategorie
+        {
+            get => Modell.Unterkategorie;
+            set
+            {
+                var neu = (value ?? "").Trim();
+                if (Modell.Unterkategorie == neu) return;
+                Modell.Unterkategorie = neu;
+                OnPropertyChanged();
+                EUKonten.SpeichereUnterkategorie(Modell);
+                Statusleiste.Melde(string.IsNullOrEmpty(neu)
+                    ? $"Unterkategorie von Konto \"{Modell.Name}\" entfernt."
+                    : $"Konto \"{Modell.Name}\" der Unterkategorie \"{neu}\" zugeordnet.");
+            }
+        }
     }
 
     public class FormularKategorieVM : ViewModelBase
