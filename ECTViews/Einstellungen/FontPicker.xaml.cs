@@ -24,6 +24,13 @@ namespace ECTViews.EinstellungenUi
             InitializeComponent();
         }
 
+        /// <summary>Tooltip-Hinweis für die Schriftgrößen-Felder: das Ausgabe-
+        /// Layout skaliert nicht mit der Schrift, daher manuell passend wählen.</summary>
+        public const string GroessenHinweis =
+            "Hinweis: Das Layout der Ausgaben passt sich bewusst nicht an die Schrift an, " +
+            "deshalb bitte die Schriftgröße manuell so anpassen, dass z.B. im " +
+            "Journal nichts abgeschnitten wird.";
+
         // Installierte Schriftfamilien, alphabetisch -- einmalig berechnet.
         private static readonly IReadOnlyList<string> Familien =
             Fonts.SystemFontFamilies

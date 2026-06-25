@@ -8329,6 +8329,17 @@ void CEasyCashView::OnViewJournalKonten()
 #endif
 }
 
+#ifdef USE_ECTENGINE
+// Basis-Schriftgroesse des WPF-Journals: konfigurierte Bildschirmschriftgroesse
+// (0 = automatisch -> 13pt Default), skaliert mit dem Zoomfaktor (100% -> Basis).
+static double JournalSchriftgroesse(int zoomfaktor)
+{
+	int basis = ECT_HoleEinstellungInt("Bildschirmschriftgroesse", 0);
+	if (basis <= 0) basis = 13;
+	return (double)zoomfaktor * basis / 100.0;
+}
+#endif
+
 // Filter auf nächstes Konto
 void CEasyCashView::OnViewJournalKonto()
 {
@@ -8349,7 +8360,7 @@ void CEasyCashView::OnViewJournalKonto()
 			ECT_JournalAktualisiere(m_nAnzeige, m_KontenFilterDisplay,
 				m_MonatsFilterDisplay, m_BetriebFilterDisplay,
 				m_BestandskontoFilterDisplay,
-				(double)m_zoomfaktor * 13.0 / 100.0);
+				JournalSchriftgroesse(m_zoomfaktor));
 #endif
 }
 
@@ -8534,7 +8545,7 @@ void CEasyCashView::ZeigeJournalWpf(int nAnzeigeModus)
 		rcView.Width(), rcView.Height(),
 		GetDocument(),
 		nAnzeigeModus,
-		(double)m_zoomfaktor * 13.0 / 100.0);
+		JournalSchriftgroesse(m_zoomfaktor));
 
 	if (!m_hwndJournalWpf)
 	{
@@ -8724,7 +8735,7 @@ void CEasyCashView::AktualisiereJournalFilter()
 		m_MonatsFilterDisplay,
 		m_BetriebFilterDisplay,
 		m_BestandskontoFilterDisplay,
-		(double)m_zoomfaktor * 13.0 / 100.0);
+		JournalSchriftgroesse(m_zoomfaktor));
 }
 
 #endif // USE_ECTENGINE
@@ -10426,7 +10437,7 @@ void CEasyCashView::SetzeZoomfaktor()
 
 #ifdef USE_ECTENGINE
 	// WPF-Journal mit-zoomen. Mapping: 100% -> 13pt
-	ECT_JournalSetzeZoom((double)m_zoomfaktor * 13.0 / 100.0);
+	ECT_JournalSetzeZoom(JournalSchriftgroesse(m_zoomfaktor));
 #endif
 }
 

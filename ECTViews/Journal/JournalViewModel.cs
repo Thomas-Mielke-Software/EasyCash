@@ -51,6 +51,21 @@ namespace ECTViews.Journal
             private set => SetProperty(ref _aktuellerFilter, value);
         }
 
+        /// <summary>
+        /// Schriftfamilie des Journals = konfigurierte Bildschirmschrift
+        /// (GlobaleEinstellungen). Leere/fehlende Einstellung -> "Segoe UI".
+        /// Wird in <see cref="Aktualisiere"/> neu gemeldet, damit eine in den
+        /// Einstellungen geaenderte Schrift beim naechsten Refresh greift.
+        /// </summary>
+        public string Schriftart
+        {
+            get
+            {
+                var s = GlobaleEinstellungen.Bildschirmschrift;
+                return string.IsNullOrWhiteSpace(s) ? "Segoe UI" : s;
+            }
+        }
+
         // Zoom-Property
         public double Schriftgroesse
         {
@@ -360,6 +375,11 @@ namespace ECTViews.Journal
         public void Aktualisiere(JournalFilter filter = null)
         {
             if (filter != null) AktuellerFilter = filter;
+
+            // Schrift/Groesse koennen sich (ueber die Einstellungen bzw. den
+            // neuen Filter) geaendert haben -- Bindings neu benachrichtigen.
+            OnPropertyChanged(nameof(Schriftart));
+            OnPropertyChanged(nameof(Schriftgroesse));
 
             // Vor dem Clear die Uuid der aktuellen Selektion festhalten -
             // die Buchung^-Referenz darf sich beim nächsten SyncNativeToManaged
