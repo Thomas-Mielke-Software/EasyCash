@@ -33,25 +33,25 @@
                 </Grid.RowDefinitions>
 
                 <TextBlock Grid.Row="0" Grid.Column="0" Text="Vorname" Style="{StaticResource FeldLabel}"/>
-                <TextBox  Grid.Row="0" Grid.Column="1" Text="{Binding Vorname}"/>
+                <TextBox  Grid.Row="0" Grid.Column="1" Text="{Binding Vorname}" MaxLength="30"/>
 
                 <TextBlock Grid.Row="1" Grid.Column="0" Text="Name" Style="{StaticResource FeldLabel}"/>
-                <TextBox  Grid.Row="1" Grid.Column="1" Text="{Binding Name}"/>
+                <TextBox  Grid.Row="1" Grid.Column="1" Text="{Binding Name}" MaxLength="30"/>
 
                 <TextBlock Grid.Row="2" Grid.Column="0" Text="Unternehmensart" Style="{StaticResource FeldLabel}"/>
-                <TextBox  Grid.Row="2" Grid.Column="1" Text="{Binding Unternehmensart1}"/>
+                <TextBox  Grid.Row="2" Grid.Column="1" Text="{Binding Unternehmensart1}" MaxLength="40"/>
 
                 <TextBlock Grid.Row="3" Grid.Column="0" Text="Unternehmensart (2)" Style="{StaticResource FeldLabel}"/>
                 <TextBox  Grid.Row="3" Grid.Column="1" Text="{Binding Unternehmensart2}"/>
 
                 <TextBlock Grid.Row="4" Grid.Column="0" Text="Straße" Style="{StaticResource FeldLabel}"/>
-                <TextBox  Grid.Row="4" Grid.Column="1" Text="{Binding Strasse}"/>
+                <TextBox  Grid.Row="4" Grid.Column="1" Text="{Binding Strasse}" MaxLength="30"/>
 
                 <TextBlock Grid.Row="5" Grid.Column="0" Text="PLZ" Style="{StaticResource FeldLabel}"/>
-                <TextBox  Grid.Row="5" Grid.Column="1" Text="{Binding Plz}" HorizontalAlignment="Left" Width="120"/>
+                <TextBox  Grid.Row="5" Grid.Column="1" Text="{Binding Plz}" MaxLength="5" HorizontalAlignment="Left" Width="120"/>
 
                 <TextBlock Grid.Row="6" Grid.Column="0" Text="Ort" Style="{StaticResource FeldLabel}"/>
-                <TextBox  Grid.Row="6" Grid.Column="1" Text="{Binding Ort}"/>
+                <TextBox  Grid.Row="6" Grid.Column="1" Text="{Binding Ort}" MaxLength="30"/>
 
                 <TextBlock Grid.Row="7" Grid.Column="0" Text="Land" Style="{StaticResource FeldLabel}"/>
                 <ComboBox Grid.Row="7" Grid.Column="1" SelectedIndex="{Binding Land}"
@@ -82,16 +82,16 @@
                 </Grid.RowDefinitions>
 
                 <TextBlock Grid.Row="0" Grid.Column="0" Text="Satz 1 (Regelsatz)" Style="{StaticResource FeldLabel}"/>
-                <TextBox  Grid.Row="0" Grid.Column="1" Text="{Binding Satz1}" HorizontalAlignment="Left" Width="120"/>
+                <TextBox  Grid.Row="0" Grid.Column="1" Text="{Binding Satz1}" MaxLength="12" HorizontalAlignment="Left" Width="120"/>
 
                 <TextBlock Grid.Row="1" Grid.Column="0" Text="Satz 2 (ermäßigt)" Style="{StaticResource FeldLabel}"/>
-                <TextBox  Grid.Row="1" Grid.Column="1" Text="{Binding Satz2}" HorizontalAlignment="Left" Width="120"/>
+                <TextBox  Grid.Row="1" Grid.Column="1" Text="{Binding Satz2}" MaxLength="12" HorizontalAlignment="Left" Width="120"/>
 
                 <TextBlock Grid.Row="2" Grid.Column="0" Text="Satz 3" Style="{StaticResource FeldLabel}"/>
-                <TextBox  Grid.Row="2" Grid.Column="1" Text="{Binding Satz3}" HorizontalAlignment="Left" Width="120"/>
+                <TextBox  Grid.Row="2" Grid.Column="1" Text="{Binding Satz3}" MaxLength="12" HorizontalAlignment="Left" Width="120"/>
 
                 <TextBlock Grid.Row="3" Grid.Column="0" Text="Satz 4" Style="{StaticResource FeldLabel}"/>
-                <TextBox  Grid.Row="3" Grid.Column="1" Text="{Binding Satz4}" HorizontalAlignment="Left" Width="120"/>
+                <TextBox  Grid.Row="3" Grid.Column="1" Text="{Binding Satz4}" MaxLength="12" HorizontalAlignment="Left" Width="120"/>
             </Grid>
         </StackPanel>
     </ScrollViewer>

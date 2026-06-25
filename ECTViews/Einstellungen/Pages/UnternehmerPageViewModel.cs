@@ -11,13 +11,13 @@ namespace ECTViews.EinstellungenUi.Pages
     /// </summary>
     public class UnternehmerPageViewModel : ViewModelBase
     {
-        public string Vorname          { get => GlobaleEinstellungen.UnternehmerVorname; set { GlobaleEinstellungen.UnternehmerVorname = value; OnPropertyChanged(); } }
-        public string Name             { get => GlobaleEinstellungen.UnternehmerName;    set { GlobaleEinstellungen.UnternehmerName = value;    OnPropertyChanged(); } }
-        public string Unternehmensart1 { get => GlobaleEinstellungen.Unternehmensart1;   set { GlobaleEinstellungen.Unternehmensart1 = value;  OnPropertyChanged(); } }
-        public string Unternehmensart2 { get => GlobaleEinstellungen.Unternehmensart2;   set { GlobaleEinstellungen.Unternehmensart2 = value;  OnPropertyChanged(); } }
-        public string Strasse          { get => GlobaleEinstellungen.UnternehmerStrasse; set { GlobaleEinstellungen.UnternehmerStrasse = value; OnPropertyChanged(); } }
-        public string Plz              { get => GlobaleEinstellungen.UnternehmerPlz;     set { GlobaleEinstellungen.UnternehmerPlz = value;     OnPropertyChanged(); } }
-        public string Ort              { get => GlobaleEinstellungen.UnternehmerOrt;     set { GlobaleEinstellungen.UnternehmerOrt = value;     OnPropertyChanged(); } }
+        public string Vorname          { get => GlobaleEinstellungen.UnternehmerVorname; set { GlobaleEinstellungen.UnternehmerVorname = Getrimmt(value); OnPropertyChanged(); } }
+        public string Name             { get => GlobaleEinstellungen.UnternehmerName;    set { GlobaleEinstellungen.UnternehmerName = Getrimmt(value);    OnPropertyChanged(); } }
+        public string Unternehmensart1 { get => GlobaleEinstellungen.Unternehmensart1;   set { GlobaleEinstellungen.Unternehmensart1 = Getrimmt(value);  OnPropertyChanged(); } }
+        public string Unternehmensart2 { get => GlobaleEinstellungen.Unternehmensart2;   set { GlobaleEinstellungen.Unternehmensart2 = Getrimmt(value);  OnPropertyChanged(); } }
+        public string Strasse          { get => GlobaleEinstellungen.UnternehmerStrasse; set { GlobaleEinstellungen.UnternehmerStrasse = Getrimmt(value); OnPropertyChanged(); } }
+        public string Plz              { get => GlobaleEinstellungen.UnternehmerPlz;     set { GlobaleEinstellungen.UnternehmerPlz = Getrimmt(value);     OnPropertyChanged(); } }
+        public string Ort              { get => GlobaleEinstellungen.UnternehmerOrt;     set { GlobaleEinstellungen.UnternehmerOrt = Getrimmt(value);     OnPropertyChanged(); } }
 
         /// <summary>0 = Deutschland, 1 = Österreich, 2 = Schweiz. Eine
         /// Änderung belegt die vier MwSt-Sätze mit den Landesvorgaben vor.</summary>
@@ -37,10 +37,14 @@ namespace ECTViews.EinstellungenUi.Pages
         // MwSt-Sätze (vat1..vat4) -- als String, weil deutsches Dezimalkomma
         // erlaubt ist (z.B. "7,5"). 0 = nicht verwendet.
         // -----------------------------------------------------------------
-        public string Satz1 { get => GlobaleEinstellungen.Vat1; set { GlobaleEinstellungen.Vat1 = value; OnPropertyChanged(); } }
-        public string Satz2 { get => GlobaleEinstellungen.Vat2; set { GlobaleEinstellungen.Vat2 = value; OnPropertyChanged(); } }
-        public string Satz3 { get => GlobaleEinstellungen.Vat3; set { GlobaleEinstellungen.Vat3 = value; OnPropertyChanged(); } }
-        public string Satz4 { get => GlobaleEinstellungen.Vat4; set { GlobaleEinstellungen.Vat4 = value; OnPropertyChanged(); } }
+        public string Satz1 { get => GlobaleEinstellungen.Vat1; set { GlobaleEinstellungen.Vat1 = Getrimmt(value); OnPropertyChanged(); } }
+        public string Satz2 { get => GlobaleEinstellungen.Vat2; set { GlobaleEinstellungen.Vat2 = Getrimmt(value); OnPropertyChanged(); } }
+        public string Satz3 { get => GlobaleEinstellungen.Vat3; set { GlobaleEinstellungen.Vat3 = Getrimmt(value); OnPropertyChanged(); } }
+        public string Satz4 { get => GlobaleEinstellungen.Vat4; set { GlobaleEinstellungen.Vat4 = Getrimmt(value); OnPropertyChanged(); } }
+
+        /// <summary>Schneidet fuehrende/abschliessende Leerzeichen weg (kein
+        /// hartes Kuerzen auf die Maximallaenge -- das erledigt MaxLength).</summary>
+        private static string Getrimmt(string wert) => wert?.Trim();
 
         /// <summary>
         /// Belegt die vier Sätze mit den gesetzlichen Vorgaben des Landes vor
