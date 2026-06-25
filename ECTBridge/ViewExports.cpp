@@ -422,6 +422,68 @@ void ECT_SetzeBetriebeUndBestandskonten(
 }
 
 // ----------------------------------------------------------
+// "Buchungsjahr waehlen"-Dialog
+// ----------------------------------------------------------
+
+// Bridge-internes Flag fuer den verzoegerten Jahreswechsel (siehe ViewExports.h).
+// Native Variable, auch in dieser /clr-TU unproblematisch.
+static bool g_bJahreswechselNachInit = false;
+
+void ECT_MerkeJahreswechselNachInit()
+{
+    g_bJahreswechselNachInit = true;
+}
+
+BOOL ECT_HoleUndLoescheJahreswechselNachInit()
+{
+    BOOL b = g_bJahreswechselNachInit ? TRUE : FALSE;
+    g_bJahreswechselNachInit = false;
+    return b;
+}
+
+/// Hilfsfunktion: managed String^ --> nativen char-Puffer (ANSI/cp1252).
+static void KopiereInPuffer(System::String^ s, char* pBuf, int nBufLen)
+{
+    if (!pBuf || nBufLen <= 0) return;
+    CString cs = ECTBridge::ToNative(s);
+    strncpy_s(pBuf, nBufLen, (LPCTSTR)cs, _TRUNCATE);
+}
+
+int ECT_ShowBuchungsjahrWaehlenDialog(
+    LPCSTR pszDatenverzeichnis, int nDefaultJahr, LPCSTR pszDefaultWaehrung,
+    HWND hWndOwner,
+    int* pnJahrOut, char* pszWaehrungOut, int nWaehrungBufLen,
+    char* pszQuelldateiOut, int nQuelldateiBufLen)
+{
+    try
+    {
+        System::String^ verzeichnis = pszDatenverzeichnis
+            ? gcnew System::String(pszDatenverzeichnis) : System::String::Empty;
+        System::String^ waehrung = pszDefaultWaehrung
+            ? gcnew System::String(pszDefaultWaehrung) : gcnew System::String("EUR");
+
+        IntPtr hwnd = IntPtr((void*)hWndOwner);
+
+        ECTViews::BuchungsjahrWaehlenErgebnis^ ergebnis =
+            ECTViews::ViewHost::ZeigeBuchungsjahrWaehlenDialog(
+                verzeichnis, nDefaultJahr, waehrung, hwnd);
+
+        if (pnJahrOut) *pnJahrOut = ergebnis->Jahr;
+        KopiereInPuffer(ergebnis->Waehrung, pszWaehrungOut, nWaehrungBufLen);
+        KopiereInPuffer(ergebnis->QuelldateiPfad, pszQuelldateiOut, nQuelldateiBufLen);
+
+        return (int)ergebnis->Aktion;   // 0=Abbruch, 1=Neu, 2=Jahreswechsel
+    }
+    catch (Exception^ ex)
+    {
+        CString msg;
+        msg = "Fehler im Dialog 'Buchungsjahr waehlen': "; msg += CString(ex->Message);
+        AfxMessageBox(msg, MB_ICONERROR);
+        return 0;   // Abbruch
+    }
+}
+
+// ----------------------------------------------------------
 // Buchungsjournal
 // ----------------------------------------------------------
 

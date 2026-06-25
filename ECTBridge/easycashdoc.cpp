@@ -29,6 +29,7 @@
 #endif
 #include "EasyCashDoc.h"
 #include "EasyCashDocBridge.h"  // fuer SyncNativeToManaged() in Jahreswechsel()
+#include "ViewExports.h"        // fuer ECT_ShowBuchungsjahrWaehlenDialog() in OnNewDocument()
 //#include "BuchungsjahrWaehlen.h"
 //#include "Konvertierung.h"
 //#include "AfAGenauigkeit.h"
@@ -695,11 +696,135 @@ CEasyCashDoc::~CEasyCashDoc()
 	if (Dauerbuchungen) delete Dauerbuchungen;
 }
 
+// Sucht ein bereits geoeffnetes Buchungsdokument mit dem angegebenen Pfad
+// (ausser pAusnahme). Rueckgabe NULL, wenn keines offen ist.
+static CEasyCashDoc* FindeGeoeffnetesDokument(LPCTSTR lpszPfad, CDocument* pAusnahme)
+{
+	CWinApp* pApp = AfxGetApp();
+	POSITION posTmpl = pApp->GetFirstDocTemplatePosition();
+	while (posTmpl)
+	{
+		CDocTemplate* pTmpl = pApp->GetNextDocTemplate(posTmpl);
+		POSITION posDoc = pTmpl->GetFirstDocPosition();
+		while (posDoc)
+		{
+			CDocument* pDoc = pTmpl->GetNextDoc(posDoc);
+			if (pDoc != pAusnahme && !pDoc->GetPathName().IsEmpty() &&
+				pDoc->GetPathName().CompareNoCase(lpszPfad) == 0)
+				return (CEasyCashDoc*)pDoc;
+		}
+	}
+	return NULL;
+}
+
 BOOL CEasyCashDoc::OnNewDocument()
 {
 	if (!CDocument::OnNewDocument())
 		return FALSE;
 
+	// Datenverzeichnis aus dem ini-Pfad ableiten (Dateiname abschneiden).
+	char szDatenverzeichnis[500];
+	GetIniFileName(szDatenverzeichnis, sizeof(szDatenverzeichnis));
+	{
+		char* cpBackslash = strrchr(szDatenverzeichnis, '\\');
+		if (cpBackslash) *cpBackslash = '\0';
+	}
+
+	int nDefaultJahr = CTime::GetCurrentTime().GetYear();
+
+	// Ergebnis-Puffer fuer den WPF-Dialog.
+	int  nJahrAusDialog = nDefaultJahr;
+	char szWaehrung[16];
+	strncpy_s(szWaehrung, sizeof(szWaehrung), (LPCTSTR)csWaehrung, _TRUNCATE);
+	char szQuelldatei[1000];
+	szQuelldatei[0] = '\0';
+
+	HWND hWndOwner = AfxGetMainWnd() ? AfxGetMainWnd()->GetSafeHwnd() : NULL;
+
+	// 0 = Abbruch, 1 = neue Buchungsdatei, 2 = Jahreswechsel
+	int nAktion = ECT_ShowBuchungsjahrWaehlenDialog(
+		szDatenverzeichnis, nDefaultJahr, (LPCTSTR)csWaehrung, hWndOwner,
+		&nJahrAusDialog, szWaehrung, sizeof(szWaehrung),
+		szQuelldatei, sizeof(szQuelldatei));
+
+	if (nAktion == 0)   // Abbruch
+		return FALSE;
+
+	if (nAktion == 2)   // Jahreswechsel aus bestehender Buchungsdatei
+	{
+		// Sicherheitsabfrage: Ist die Quelldatei bereits in EC&T geoeffnet und hat
+		// sie ungespeicherte Aenderungen? Dann muss sie zuerst gespeichert werden,
+		// damit der Jahreswechsel den aktuellen Stand verwendet (statt des aelteren
+		// Festplatten-Stands). Speichern-oder-Abbrechen anbieten.
+		CEasyCashDoc* pOffen = FindeGeoeffnetesDokument(szQuelldatei, this);
+		if (pOffen && pOffen->IsModified())
+		{
+			const char* cpName = strrchr(szQuelldatei, '\\');
+			cpName = cpName ? cpName + 1 : szQuelldatei;
+			CString frage;
+			frage.Format(
+				"Die Buchungsdatei '%s' ist bereits in EC&T ge\366ffnet und hat "
+				"ungespeicherte \304nderungen. Sie muss zuerst gespeichert werden, "
+				"damit der Jahreswechsel den aktuellen Stand verwendet.\r\n\r\n"
+				"Jetzt speichern und fortfahren? (Abbrechen = kein Jahreswechsel.)",
+				cpName);
+			if (AfxMessageBox(frage, MB_OKCANCEL | MB_ICONQUESTION) != IDOK)
+				return FALSE;   // Abbruch -> kein Jahreswechsel
+			pOffen->OnFileSave();   // wie "Datei -> Speichern": schreibt den aktuellen Stand
+			if (pOffen->IsModified())
+				return FALSE;       // Speichern fehlgeschlagen/abgebrochen -> kein Jahreswechsel
+		}
+
+		// Quelldatei (Vorjahr) in dieses frische Dokument laden. Der eigentliche
+		// Jahreswechsel wird verzoegert in CEasyCashView::OnInitialUpdate ueber die
+		// normale Menue-Routine OnFileJahreswechsel angestossen, sobald View und
+		// Frame stehen.
+		if (!OnOpenDocument(szQuelldatei))
+			return FALSE;
+		SetPathName(szQuelldatei);
+		ECT_MerkeJahreswechselNachInit();
+		return TRUE;
+	}
+
+	// nAktion == 1: neue, leere Buchungsdatei anlegen (alte IDOK-Logik).
+	nJahr = nJahrAusDialog;
+	csWaehrung = szWaehrung;
+	SetModifiedFlag("Neue Buchungsdatei erzeugt", FALSE);
+
+	char buf[300];
+	char ini_filename[500];
+
+	// normalen Dateinamen erzeugen
+	sprintf(buf, "Jahr%04d.eca", nJahr);
+
+	// schon einmal ECA-Datei mit diesem Namen erzeugt?
+	GetIniFileName(ini_filename, sizeof(ini_filename));
+	int n = GetPrivateProfileInt("NeuesDokumentNummer", buf, 0, ini_filename);
+	char nummerbuf[10];
+	sprintf(nummerbuf, "%d", n + 1);
+	WritePrivateProfileString("NeuesDokumentNummer", buf, nummerbuf, ini_filename);
+
+	// dann ein "-1", "-2" ... an den Dateinamen anhaengen
+	if (n > 0)
+		sprintf(buf, "Jahr%04d-%d.eca", nJahr, n);
+
+	TRY
+	{
+		char* cp1 = strrchr(ini_filename, '\\');
+		if (cp1)
+		{
+			strcpy(++cp1, buf);
+			SetPathName(ini_filename, FALSE);
+		}
+	}
+	CATCH_ALL(e)
+	{
+		SetTitle(buf);  // sicherstellen, dass ein Titel gesetzt ist
+	}
+	END_CATCH_ALL
+
+	// Hook Erweiterungs-DLLs
+	::CIterateExtensionDLLs("ECTE_OpenDocument", (void *)this);
 
 	return TRUE;
 }
@@ -1312,6 +1437,24 @@ void CEasyCashDoc::SavePublic()
 	strcpy(lpszPathName, GetPathName());
 	GetIniFileName(IniFileName, sizeof(IniFileName));
 	if (*lpszPathName) WritePrivateProfileString("Allgemein", "LetzteDatei", lpszPathName, IniFileName);
+}
+// Speichert das Dokument explizit unter dem uebergebenen Pfad. Im Gegensatz zu
+// SavePublic()/OnFileSaveAs() wird der gewaehlte Ordner NICHT ins Datenverzeichnis
+// umgebogen -- der Nutzer kann also bewusst woanders speichern (z.B. Testzwecke).
+// Liegt der Ordner ausserhalb des Datenverzeichnisses, warnt DoSave per
+// DatenverzeichnisCheck. DoFileSave/OnFileSave wird absichtlich umgangen, weil es
+// eine noch nicht existierende Datei faelschlich als "readonly" einstuft und dann
+// doch in den SaveAs-/Datenverzeichnis-Pfad liefe. Kein Datei-Dialog -- der
+// Aufrufer hat den Pfad bereits bestaetigt.
+BOOL CEasyCashDoc::SpeichereUnter(LPCTSTR lpszPathName)
+{
+	if (!DoSave(lpszPathName, TRUE))   // angepasstes CDocument::DoSave: schreibt nach
+		return FALSE;                  // lpszPathName, setzt den Pfad (bReplace), warnt bei Fremdordner
+	char IniFileName[500];
+	GetIniFileName(IniFileName, sizeof(IniFileName));
+	if (lpszPathName && *lpszPathName)
+		WritePrivateProfileString("Allgemein", "LetzteDatei", lpszPathName, IniFileName);
+	return TRUE;
 }
 
 void CEasyCashDoc::OnFileSaveAs() 

@@ -138,6 +138,55 @@ ECTBRIDGE_API void ECT_SetzeBetriebeUndBestandskonten(
     const int* pBestandskontenSalden, int nBestandskontenCount);
 
 // ──────────────────────────────────────────────
+// "Buchungsjahr wählen"-Dialog (beim Anlegen eines neuen Dokuments)
+// ──────────────────────────────────────────────
+
+/// <summary>
+/// Zeigt den WPF-Dialog "Buchungsjahr wählen", der beim Erzeugen eines
+/// neuen Dokuments erscheint. Bietet zwei Aktionen: Jahreswechsel aus einer
+/// bestehenden JahrXXXX.eca-Datei (empfohlen) oder Anlegen einer neuen,
+/// leeren Buchungsdatei (Jahr + Währung).
+///
+/// Parameter:
+///   pszDatenverzeichnis - Verzeichnis ohne abschließenden Backslash, in dem
+///                         nach *.eca-Buchungsdateien gesucht wird
+///   nDefaultJahr        - Vorbelegung des Jahr-Feldes
+///   pszDefaultWaehrung  - Vorbelegung des Währungs-Feldes
+///   hWndOwner           - HWND des MFC-Elternfensters (für modale Darstellung)
+///   pnJahrOut           - [out] gewähltes Jahr (nur bei Rückgabe 1 gültig)
+///   pszWaehrungOut      - [out] gewähltes Währungskürzel
+///   nWaehrungBufLen     - Größe des Währungs-Puffers
+///   pszQuelldateiOut    - [out] voller Pfad der Jahreswechsel-Quelldatei
+///                         (nur bei Rückgabe 2 gültig)
+///   nQuelldateiBufLen   - Größe des Quelldatei-Puffers
+///
+/// Rückgabe:
+///   0 = Abbruch, 1 = neue Buchungsdatei, 2 = Jahreswechsel
+/// </summary>
+ECTBRIDGE_API int ECT_ShowBuchungsjahrWaehlenDialog(
+    LPCSTR pszDatenverzeichnis, int nDefaultJahr, LPCSTR pszDefaultWaehrung,
+    HWND hWndOwner,
+    int* pnJahrOut, char* pszWaehrungOut, int nWaehrungBufLen,
+    char* pszQuelldateiOut, int nQuelldateiBufLen);
+
+/// <summary>
+/// Merkt vor, dass nach dem nächsten OnInitialUpdate ein Jahreswechsel
+/// angestoßen werden soll. Wird von CEasyCashDoc::OnNewDocument gesetzt, wenn
+/// der Dialog die Jahreswechsel-Aktion liefert. Der Umweg über ein Bridge-
+/// internes Flag (statt eines Doc-Members) vermeidet eine Layout-Divergenz
+/// zwischen den parallel existierenden CEasyCashDoc-Definitionen in ECTIFace
+/// und ECTBridge. Unkritisch, weil OnNewDocument und OnInitialUpdate eines
+/// neuen Dokuments synchron innerhalb von OnFileNew nacheinander laufen.
+/// </summary>
+ECTBRIDGE_API void ECT_MerkeJahreswechselNachInit();
+
+/// <summary>
+/// Liefert das gemerkte Flag und löscht es (einmalige Konsumierung). Wird in
+/// CEasyCashView::OnInitialUpdate abgefragt.
+/// </summary>
+ECTBRIDGE_API BOOL ECT_HoleUndLoescheJahreswechselNachInit();
+
+// ──────────────────────────────────────────────
 // Buchungsjournal
 // ──────────────────────────────────────────────
 

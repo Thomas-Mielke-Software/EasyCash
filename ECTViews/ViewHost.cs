@@ -206,6 +206,84 @@ namespace ECTViews
             view.ShowDialog();
             return vm;
         }
+
+        /// <summary>
+        /// Zeigt den "Buchungsjahr wählen"-Dialog beim Anlegen eines neuen
+        /// Dokuments. Scannt das Datenverzeichnis nach bestehenden
+        /// JahrXXXX.eca-Dateien (Jahreswechsel-Quellen) und liefert die vom
+        /// Benutzer gewählte Aktion zurück.
+        /// </summary>
+        /// <param name="datenverzeichnis">Verzeichnis ohne abschließenden Backslash.</param>
+        /// <param name="defaultJahr">Vorbelegung des Jahr-Feldes.</param>
+        /// <param name="defaultWaehrung">Vorbelegung des Währungs-Feldes.</param>
+        /// <param name="ownerHwnd">HWND des MFC-Elternfensters (optional).</param>
+        public static BuchungsjahrWaehlenErgebnis ZeigeBuchungsjahrWaehlenDialog(
+            string datenverzeichnis, int defaultJahr, string defaultWaehrung,
+            IntPtr ownerHwnd = default)
+        {
+            EnsureWpfInitialized();
+
+            var vm = new BuchungsjahrWaehlenViewModel(defaultJahr, defaultWaehrung);
+            vm.SetzeDateien(SucheBuchungsdateien(datenverzeichnis));
+
+            var view = new BuchungsjahrWaehlenView(vm);
+            if (ownerHwnd != IntPtr.Zero)
+                new WindowInteropHelper(view) { Owner = ownerHwnd };
+
+            view.ShowDialog();
+
+            return new BuchungsjahrWaehlenErgebnis
+            {
+                Aktion = vm.Aktion,
+                Jahr = vm.Jahr,
+                Waehrung = vm.Waehrung ?? string.Empty,
+                QuelldateiPfad = vm.QuelldateiPfad ?? string.Empty
+            };
+        }
+
+        /// <summary>
+        /// Listet *.eca-Dateien im Verzeichnis auf, aufsteigend sortiert
+        /// (jüngste zuletzt -- entspricht dem alten LBS_SORT der MFC-Liste).
+        /// </summary>
+        private static System.Collections.Generic.IEnumerable<BuchungsdateiItem>
+            SucheBuchungsdateien(string datenverzeichnis)
+        {
+            var liste = new System.Collections.Generic.List<BuchungsdateiItem>();
+            if (string.IsNullOrEmpty(datenverzeichnis) ||
+                !System.IO.Directory.Exists(datenverzeichnis))
+                return liste;
+
+            try
+            {
+                foreach (var pfad in System.IO.Directory.GetFiles(datenverzeichnis, "*.eca"))
+                {
+                    liste.Add(new BuchungsdateiItem
+                    {
+                        Name = System.IO.Path.GetFileName(pfad),
+                        VollerPfad = pfad
+                    });
+                }
+            }
+            catch (System.IO.IOException)
+            {
+                // Verzeichnis nicht lesbar -- leere Liste, Dialog zeigt Hinweis.
+            }
+
+            liste.Sort((a, b) => string.Compare(
+                a.Name, b.Name, StringComparison.OrdinalIgnoreCase));
+            return liste;
+        }
+    }
+
+    /// <summary>
+    /// Ergebnis von ViewHost.ZeigeBuchungsjahrWaehlenDialog.
+    /// </summary>
+    public sealed class BuchungsjahrWaehlenErgebnis
+    {
+        public BuchungsjahrAktion Aktion { get; set; }
+        public int Jahr { get; set; }
+        public string Waehrung { get; set; }
+        public string QuelldateiPfad { get; set; }
     }
 
     /// <summary>

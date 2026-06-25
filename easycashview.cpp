@@ -287,6 +287,16 @@ void CEasyCashView::OnInitialUpdate()
 	ZeigeJournalWpf(m_nAnzeige);
 #endif
 
+#ifdef USE_ECTENGINE
+	// Verzoegerter Jahreswechsel: Hat der "Buchungsjahr waehlen"-Dialog (in
+	// CEasyCashDoc::OnNewDocument) den Jahreswechsel angefordert, jetzt -- da View
+	// und Frame stehen -- die normale Menue-Routine OnFileJahreswechsel anstossen.
+	// PostMessage (nicht SendMessage), damit OnInitialUpdate zuerst vollstaendig
+	// durchlaeuft und das Fenster sichtbar ist.
+	if (ECT_HoleUndLoescheJahreswechselNachInit())
+		PostMessage(WM_COMMAND, ID_FILE_JAHRESWECHSEL);
+#endif
+
 	int nMandant;
 	if ((nMandant = GetMandant()) >= 0)
 	{
@@ -7758,10 +7768,56 @@ void CEasyCashView::OnFileJahreswechsel()
 		cp = buf;
 
 	sprintf(cp, "Jahr%04d.eca", pNewDoc->nJahr);
-	pNewDoc->SetPathName(buf, FALSE);
-	
-	pNewDoc->SetModifiedFlag("Neue Buchungsdatei wurde über Jahreswechsel generiert", TRUE, FALSE);
-	pNewDoc->SavePublic();
+
+	// --- Dreistufige Absicherung gegen versehentliches Ueberschreiben einer
+	//     bestehenden Jahres-Buchungsdatei ---
+
+	// Stufe 1: Existiert die Zieldatei schon, einen eindeutigen Vorschlagsnamen
+	// mit "-k"-Suffix erzeugen (Zaehler NeuesDokumentNummer in der easyct.ini,
+	// wie beim Anlegen einer neuen Buchungsdatei in OnNewDocument). So fuehrt ein
+	// blosses Bestaetigen nie zum Ueberschreiben.
+	if (GetFileAttributes(buf) != 0xFFFFFFFF)
+	{
+		char ini_filename[500];
+		GetIniFileName(ini_filename, sizeof(ini_filename));
+		char schluessel[64];
+		sprintf(schluessel, "Jahr%04d.eca", pNewDoc->nJahr);
+		int nDokNr = GetPrivateProfileInt("NeuesDokumentNummer", schluessel, 0, ini_filename);
+		do
+		{
+			nDokNr++;
+			sprintf(cp, "Jahr%04d-%d.eca", pNewDoc->nJahr, nDokNr);
+		} while (GetFileAttributes(buf) != 0xFFFFFFFF);
+		char nummer[16];
+		sprintf(nummer, "%d", nDokNr);
+		WritePrivateProfileString("NeuesDokumentNummer", schluessel, nummer, ini_filename);
+	}
+
+	// Stufe 2 + 3: Datei-Speichern-Dialog mit Ueberschreib-Warnung. Der eigene
+	// Dialog ist noetig, weil die angepasste CDocument::DoSave-Implementierung
+	// (siehe ECTBridge\EasyCashDoc.cpp) sonst ohne Rueckfrage direkt speichert.
+	CFileDialog dlgSpeichern(FALSE, "eca", buf,
+		OFN_HIDEREADONLY | OFN_OVERWRITEPROMPT | OFN_PATHMUSTEXIST,
+		"EasyCash&Tax Buchungsdatei (*.eca)|*.eca|Alle Dateien (*.*)|*.*||", this);
+	dlgSpeichern.m_ofn.lpstrTitle = "Neu erzeugte Jahres-Buchungsdatei speichern unter";
+	if (dlgSpeichern.DoModal() != IDOK)
+	{
+		// Abbruch: nichts speichern, den erzeugten Jahreswechsel verwerfen.
+		delete pNewDoc;
+		return;
+	}
+	strcpy(buf, dlgSpeichern.GetPathName());
+
+	pNewDoc->SetModifiedFlag("Neue Buchungsdatei wurde \374ber Jahreswechsel generiert", TRUE, FALSE);
+	// Explizit unter dem im Dialog bestaetigten Pfad speichern. SpeichereUnter()
+	// respektiert den gewaehlten Ordner (anders als SavePublic) und warnt, wenn
+	// ausserhalb des Datenverzeichnisses gespeichert wird.
+	if (!pNewDoc->SpeichereUnter(buf))
+	{
+		AfxMessageBox("Die neue Jahres-Buchungsdatei konnte nicht gespeichert werden.");
+		delete pNewDoc;
+		return;
+	}
 	strcpy(buf, pNewDoc->GetPathName());
 	delete pNewDoc;
 

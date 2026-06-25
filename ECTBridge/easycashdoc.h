@@ -168,6 +168,7 @@ public:
 	int  EinnahmenSummeNetto(int MonatsFilter, LPCTSTR KontoFilter = "");
 	int  AusgabenSummeNetto(int MonatsFilter, LPCTSTR KontoFilter = "");
 	void SavePublic();
+	BOOL SpeichereUnter(LPCTSTR lpszPathName);  // explizit speichern, Ordner respektieren (siehe .cpp)
 	BOOL ConvertToEuro();
 	static char *GetWaehrungskuerzel(int i);
 	static double GetUmrechnungskurs(int i);
