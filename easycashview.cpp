@@ -8481,6 +8481,23 @@ void CEasyCashView::OnViewJournalBetrieb()
 
 void CEasyCashView::OnViewJournalSwitch() 
 {
+#ifdef USE_ECTENGINE
+	// Legacy-Verhalten: nur weiterschalten, wenn das Journal bereits sichtbar
+	// ist. Ist das Einstellungsfenster aktiv, wird es geschlossen und der
+	// zuletzt gezeigte Journal-Modus wiederhergestellt (kein Weiterschalten).
+	if (m_hwndEinstellungenWpf)
+	{
+		VerstecktEinstellungenWpf();
+		switch (m_nAnzeige)
+		{
+		case 0: OnViewJournalDatum(); break;
+		case 1: OnViewJournalKonten(); break;
+		case 2: OnViewJournalBestkonten(); break;
+		case 3: OnViewJournalAnlagenverzeichnis(); break;
+		}
+		return;
+	}
+#endif
 	if (pPluginWnd || m_GewaehltesFormular != -1)
 	{
 		// plugin fenster schlieﬂen

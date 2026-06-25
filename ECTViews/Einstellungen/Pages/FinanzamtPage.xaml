@@ -29,6 +29,7 @@
                     <RowDefinition Height="Auto"/>
                     <RowDefinition Height="Auto"/>
                     <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
                 </Grid.RowDefinitions>
 
                 <TextBlock Grid.Row="0" Grid.Column="0" Text="Name" Style="{StaticResource FeldLabel}"/>
@@ -50,33 +51,22 @@
                 <TextBox  Grid.Row="5" Grid.Column="1" Text="{Binding Steuernummer}" MaxLength="19"/>
 
                 <TextBlock Grid.Row="6" Grid.Column="0" Text="Wirtschafts-ID-Nr." Style="{StaticResource FeldLabel}"/>
-                <TextBox  Grid.Row="6" Grid.Column="1" MaxLength="17"
-                          Text="{Binding WirtschaftsId, ValidatesOnDataErrors=True, NotifyOnValidationError=True}">
-                    <TextBox.Style>
-                        <Style TargetType="TextBox" BasedOn="{StaticResource {x:Type TextBox}}">
-                            <!-- Standard-Tooltip: erklaert Aufbau und Hintergrund der W-IdNr. -->
-                            <Setter Property="ToolTip">
-                                <Setter.Value>
-                                    <ToolTip MaxWidth="360">
-                                        <TextBlock TextWrapping="Wrap">
-                                            Wirtschafts-Identifikationsnummer (W-IdNr.): bundeseinheitliche Nummer für wirtschaftlich Tätige, die das Bundeszentralamt für Steuern seit Ende 2024 automatisch vergibt (keine Beantragung nötig).<LineBreak/><LineBreak/>
-                                            Aufbau: Länderkürzel (2 Buchstaben) + 9 Ziffern + Bindestrich + 5-stelliges Unterscheidungsmerkmal, z.B. DE123456789-00001 (17 Zeichen). Der vordere Teil entspricht der USt-IdNr.; das Unterscheidungsmerkmal (00001, 00002, ...) steht für die einzelne wirtschaftliche Tätigkeit.<LineBreak/><LineBreak/>
-                                            Das Feld darf leer bleiben.
-                                        </TextBlock>
-                                    </ToolTip>
-                                </Setter.Value>
-                            </Setter>
-                            <Style.Triggers>
-                                <!-- Bei Formatfehler: roter Rahmen + Fehlertext als Tooltip. -->
-                                <Trigger Property="Validation.HasError" Value="True">
-                                    <Setter Property="ToolTip"
-                                            Value="{Binding RelativeSource={RelativeSource Self},
-                                                            Path=(Validation.Errors)[0].ErrorContent}"/>
-                                </Trigger>
-                            </Style.Triggers>
-                        </Style>
-                    </TextBox.Style>
+                <TextBox  Grid.Row="6" Grid.Column="1" MaxLength="17" Text="{Binding WirtschaftsId}">
+                    <!-- Info-Tooltip: erklaert Aufbau und Hintergrund der W-IdNr. -->
+                    <TextBox.ToolTip>
+                        <ToolTip MaxWidth="360">
+                            <TextBlock TextWrapping="Wrap">
+                                Wirtschafts-Identifikationsnummer (W-IdNr.): bundeseinheitliche Nummer für wirtschaftlich Tätige, die das Bundeszentralamt für Steuern seit Ende 2024 automatisch vergibt (keine Beantragung nötig).<LineBreak/><LineBreak/>
+                                Aufbau: Länderkürzel (2 Buchstaben) + 9 Ziffern + Bindestrich + 5-stelliges Unterscheidungsmerkmal, z.B. DE123456789-00001 (17 Zeichen). Der vordere Teil entspricht der USt-IdNr.; das Unterscheidungsmerkmal (00001, 00002, ...) steht für die einzelne wirtschaftliche Tätigkeit.<LineBreak/><LineBreak/>
+                                Das Feld darf leer bleiben.
+                            </TextBlock>
+                        </ToolTip>
+                    </TextBox.ToolTip>
                 </TextBox>
+
+                <!-- Validierungsfehler in Rot unter dem Feld, wie im Buchen-Dialog. -->
+                <TextBlock Grid.Row="7" Grid.Column="1" Text="{Binding WirtschaftsIdFehler}"
+                           Style="{StaticResource FehlerText}"/>
             </Grid>
         </StackPanel>
     </ScrollViewer>

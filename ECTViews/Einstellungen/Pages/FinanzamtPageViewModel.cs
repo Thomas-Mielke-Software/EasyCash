@@ -1,11 +1,10 @@
-using System.ComponentModel;
 using ECTEngine;
 using ECTViews.ViewModels;
 
 namespace ECTViews.EinstellungenUi.Pages
 {
     /// <summary>Stammdaten des zuständigen Finanzamts ([Finanzamt]).</summary>
-    public class FinanzamtPageViewModel : ViewModelBase, IDataErrorInfo
+    public class FinanzamtPageViewModel : ViewModelBase
     {
         public string Name          { get => GlobaleEinstellungen.FinanzamtName;          set { GlobaleEinstellungen.FinanzamtName = Getrimmt(value);          OnPropertyChanged(); } }
         public string Name2         { get => GlobaleEinstellungen.FinanzamtName2;         set { GlobaleEinstellungen.FinanzamtName2 = Getrimmt(value);         OnPropertyChanged(); } }
@@ -13,17 +12,25 @@ namespace ECTViews.EinstellungenUi.Pages
         public string Plz           { get => GlobaleEinstellungen.FinanzamtPlz;           set { GlobaleEinstellungen.FinanzamtPlz = Getrimmt(value);           OnPropertyChanged(); } }
         public string Ort           { get => GlobaleEinstellungen.FinanzamtOrt;           set { GlobaleEinstellungen.FinanzamtOrt = Getrimmt(value);           OnPropertyChanged(); } }
         public string Steuernummer  { get => GlobaleEinstellungen.FinanzamtSteuernummer;  set { GlobaleEinstellungen.FinanzamtSteuernummer = Getrimmt(value);  OnPropertyChanged(); } }
-        public string WirtschaftsId { get => GlobaleEinstellungen.FinanzamtWirtschaftsId; set { GlobaleEinstellungen.FinanzamtWirtschaftsId = Getrimmt(value); OnPropertyChanged(); } }
+        public string WirtschaftsId
+        {
+            get => GlobaleEinstellungen.FinanzamtWirtschaftsId;
+            set
+            {
+                GlobaleEinstellungen.FinanzamtWirtschaftsId = Getrimmt(value);
+                OnPropertyChanged();
+                OnPropertyChanged(nameof(WirtschaftsIdFehler));  // Fehlertext mit aktualisieren
+            }
+        }
 
         // -----------------------------------------------------------------
         // Validierung (advisory, blockiert das Speichern nicht -- wie der
         // Hinweis-Dialog im alten MFC-Code). Nur die W-IdNr hat eine
-        // Format-Pruefung; alle anderen Felder sind reine Freitexte.
+        // Format-Pruefung; der Fehlertext wird wie im Buchen-Dialog als rote
+        // Zeile unter dem Feld angezeigt (leer = kein Fehler -> Zeile
+        // verschwindet ueber den TextBlock-Trigger).
         // -----------------------------------------------------------------
-        public string Error => null;
-
-        public string this[string spalte]
-            => spalte == nameof(WirtschaftsId) ? PruefeWirtschaftsId(WirtschaftsId) : null;
+        public string WirtschaftsIdFehler => PruefeWirtschaftsId(WirtschaftsId) ?? "";
 
         /// <summary>
         /// Prueft die Wirtschafts-Identifikationsnummer (W-IdNr.) auf das

@@ -40,6 +40,22 @@
         <Setter Property="Margin" Value="0,4,0,0"/>
     </Style>
 
+    <!-- Fehlertext unter einem Feld: rot, klein, verschwindet bei leerem Text.
+         Gleiches Muster wie ErrorStyle in BuchungView. -->
+    <Style TargetType="TextBlock" x:Key="FehlerText">
+        <Setter Property="Foreground" Value="#D32F2F"/>
+        <Setter Property="FontSize" Value="11"/>
+        <Setter Property="FontStyle" Value="Italic"/>
+        <Setter Property="TextWrapping" Value="Wrap"/>
+        <Setter Property="Margin" Value="0,2,0,0"/>
+        <Setter Property="Visibility" Value="Visible"/>
+        <Style.Triggers>
+            <Trigger Property="Text" Value="">
+                <Setter Property="Visibility" Value="Collapsed"/>
+            </Trigger>
+        </Style.Triggers>
+    </Style>
+
     <!-- Eingabefelder -->
     <Style TargetType="TextBox">
         <Setter Property="Padding" Value="4,3"/>
