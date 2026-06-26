@@ -862,6 +862,7 @@ void CEasyCashView::SetzeListenFuerBuchungsdialog()
 		ks.push_back(m_Bestandskonten[i].saldo);
 	}
 
+#ifdef USE_ECTENGINE
 	ECT_SetzeBetriebeUndBestandskonten(
 		bnp.empty() ? nullptr : bnp.data(),
 		bis.empty() ? nullptr : bis.data(),
@@ -870,6 +871,7 @@ void CEasyCashView::SetzeListenFuerBuchungsdialog()
 		kis.empty() ? nullptr : kis.data(),
 		ks.empty()  ? nullptr : ks.data(),
 		nk);
+#endif
 }
 
 void CEasyCashView::OnUpdate(CView* pSender, LPARAM lHint, CObject* pHint) 
@@ -3212,7 +3214,9 @@ void CEasyCashView::DrawToDC_Konten(CDC* pDC_par, DrawInfo *pDrawInfo)
 void CEasyCashView::OnViewJournalDatumWpf()
 {
 	SetzeListenFuerBuchungsdialog();	// Vorher (einmal pro Session) Listen + Bitmaps setzen
+#ifdef USE_ECTENGINE
 	ECT_ZeigeJournal(GetDocument(), GetSafeHwnd());
+#endif
 }
 
 // Hilfsfunktion für DrawToDC_Bestandskonten
@@ -6635,7 +6639,7 @@ BOOL CEasyCashView::OnCommand(WPARAM wParam, LPARAM lParam)
 	// Journalansicht-Menü
 	if (wParam == POPUP_AENDERN || wParam == POPUP_LOESCHEN || wParam == POPUP_KOPIEREN || wParam == POPUP_KOPIEREN_BELEGNUMMER || wParam == POPUP_AFA_ABGANG)
 	{
-		// aus Bildschirm/Scropplosition die Zeilennummer berechnen und 
+		// aus Bildschirm/Scrollposition die Zeilennummer berechnen und 
 		// somit den Pointer in ppPosBuchungsliste
 		index = PopUpPosition.y / charheight;
 		ppb = ppPosBuchungsliste[index];
@@ -6786,117 +6790,104 @@ BOOL CEasyCashView::OnCommand(WPARAM wParam, LPARAM lParam)
 		//    Index bleibt bis zum nächsten Sort stabil.
 
 #else
-	index = PopUpPosition.y / charheight;
-	ppb = ppPosBuchungsliste[index];
-	pb = pDoc->Einnahmen;
-	Buchungstyp = BUCHUNGSTYP_AUSGABEN;
-	while (pb && ppb)
-	{
-		if (pb == *ppb)
+		if (ppb)
 		{
-			Buchungstyp = BUCHUNGSTYP_EINNAHMEN;
-			break;
-		}
-		pb = pb->next;
-	}
-
-	if (ppb)
-	{
-		switch (wParam)
-		{
-		case POPUP_AENDERN:
-			if (*ppb)
+			switch (wParam)
 			{
-				// Hinweis bei nachträglicher Änderung einer AfA
-				if ((*ppb)->AbschreibungNr > 1)
-					AfxMessageBox("Hinweis: Wenn Abschreibungen nachträglich geändert werden, kann dies zur Inkonsistenz mit den entspr. Buchungen aus den Vorjahren führen, insbesondere wenn Betrag, Abschreibungsdauer oder Restwert geändert werden. Ändern Sie deshalb auch die AfA-Buchungen in den Vorjahren entsprechend (was in der Regel nur bei nachträglicher Erfassung der Buchungen sinnvoll ist) oder erzeugen Sie zusätzlich eine Korrekturbuchung (z.B. Sonderabschreibung wegen ungewöhnlicher Abnutzung). Auch ist die VST im Brutto-Betrag zu berücksichtigen und ggf. noch eine weitere Buchung dafür vorzusehen. In jedem Fall liegt die korrekte Abstimmung von Betrag, Dauer und Restwert in Ihrer Verantwortung.");
-
-				// Tu es!
+			case POPUP_AENDERN:
+				if (*ppb)
 				{
-					BuchenDlg dlg(GetDocument(), Buchungstyp, this, ppb);
-					nSelected = index;
-					RedrawSelection(); // selektieren
-					// GetDocument()->UpdateAllViews(NULL);	
-					pBuchungAendernDlg = &dlg;
-					dlg.DoModal();
-					pBuchungAendernDlg = NULL;
-					RedrawSelection();
+					// Hinweis bei nachträglicher Änderung einer AfA
+					if ((*ppb)->AbschreibungNr > 1)
+						AfxMessageBox("Hinweis: Wenn Abschreibungen nachträglich geändert werden, kann dies zur Inkonsistenz mit den entspr. Buchungen aus den Vorjahren führen, insbesondere wenn Betrag, Abschreibungsdauer oder Restwert geändert werden. Ändern Sie deshalb auch die AfA-Buchungen in den Vorjahren entsprechend (was in der Regel nur bei nachträglicher Erfassung der Buchungen sinnvoll ist) oder erzeugen Sie zusätzlich eine Korrekturbuchung (z.B. Sonderabschreibung wegen ungewöhnlicher Abnutzung). Auch ist die VST im Brutto-Betrag zu berücksichtigen und ggf. noch eine weitere Buchung dafür vorzusehen. In jedem Fall liegt die korrekte Abstimmung von Betrag, Dauer und Restwert in Ihrer Verantwortung.");
+
+					// Tu es!
+					{
+						BuchenDlg dlg(GetDocument(), Buchungstyp, this, ppb);
+						nSelected = index;
+						RedrawSelection(); // selektieren
+						// GetDocument()->UpdateAllViews(NULL);	
+						pBuchungAendernDlg = &dlg;
+						dlg.DoModal();
+						pBuchungAendernDlg = NULL;
+						RedrawSelection();
+					}
 				}
-			}
-			break;
+				break;
 
-		case POPUP_LOESCHEN:
-			if (*ppb)
-			{
-				int nDoIt;
-				nSelected = index;
-				RedrawSelection();	// selektieren
-				CString csText;
-				csText.Format("Buchung '%s' wirklich löschen?", (LPCTSTR)(*ppb)->Beschreibung);
-				nDoIt = AfxMessageBox(csText, MB_YESNO | MB_DEFBUTTON2);
-				nSelected = -nSelected;	// deselektieren
-				RedrawSelection();
-
-				if (nDoIt == IDYES)
+			case POPUP_LOESCHEN:
+				if (*ppb)
 				{
-					if (*GetErweiterungKey((*ppb)->Erweiterung, "EasyCash", "SplitBasisbuchung")
-						|| *GetErweiterungKey((*ppb)->Erweiterung, "EasyCash", "SplitGegenbuchungMitVorsteuerabzug")
-						|| *GetErweiterungKey((*ppb)->Erweiterung, "EasyCash", "SplitGegenbuchungOhneVorsteuerabzug"))
-						AfxMessageBox("Hinweis: Diese Buchung ist Teil einer Split-Buchung. Bitte löschen Sie gegebenenfalls auch den korrespondierenden Anteil.", MB_ICONEXCLAMATION);
-
-					pb = (*ppb)->next;
-					(*ppb)->next = NULL;	// ganz wichtig wegen Kettenlöschung
-					delete* ppb;			// access violation v2.51.0.1-85be8316-6104-4e0f-8de8-bac7f47bc1ef v2.51.0.1-9511f9c5-8810-4591-a642-9c002744d709
-					*ppb = pb;
-
-					pDoc->SetModifiedFlag("Buchung wurde gelöscht");
-					pDoc->Sort();
-					//RedrawWindow();
-					pDoc->UpdateAllViews(NULL);
-				}
-			}
-			break;
-
-		case POPUP_KOPIEREN:
-			if (*ppb)
-			{
-				{
-					BuchenDlg dlg(GetDocument(), Buchungstyp, this, ppb, TRUE);
+					int nDoIt;
 					nSelected = index;
-					RedrawSelection(); // selektieren
-					// GetDocument()->UpdateAllViews(NULL);	
-					pBuchungAendernDlg = &dlg;
-					dlg.DoModal();
-					pBuchungAendernDlg = NULL;
+					RedrawSelection();	// selektieren
+					CString csText;
+					csText.Format("Buchung '%s' wirklich löschen?", (LPCTSTR)(*ppb)->Beschreibung);
+					nDoIt = AfxMessageBox(csText, MB_YESNO | MB_DEFBUTTON2);
 					nSelected = -nSelected;	// deselektieren
 					RedrawSelection();
-				}
-			}
-			break;
 
-		case POPUP_KOPIEREN_BELEGNUMMER:
-			if (*ppb)
-			{
+					if (nDoIt == IDYES)
+					{
+						if (*GetErweiterungKey((*ppb)->Erweiterung, "EasyCash", "SplitBasisbuchung")
+							|| *GetErweiterungKey((*ppb)->Erweiterung, "EasyCash", "SplitGegenbuchungMitVorsteuerabzug")
+							|| *GetErweiterungKey((*ppb)->Erweiterung, "EasyCash", "SplitGegenbuchungOhneVorsteuerabzug"))
+							AfxMessageBox("Hinweis: Diese Buchung ist Teil einer Split-Buchung. Bitte löschen Sie gegebenenfalls auch den korrespondierenden Anteil.", MB_ICONEXCLAMATION);
+
+						pb = (*ppb)->next;
+						(*ppb)->next = NULL;	// ganz wichtig wegen Kettenlöschung
+						delete* ppb;			// access violation v2.51.0.1-85be8316-6104-4e0f-8de8-bac7f47bc1ef v2.51.0.1-9511f9c5-8810-4591-a642-9c002744d709
+						*ppb = pb;
+
+						pDoc->SetModifiedFlag("Buchung wurde gelöscht");
+						pDoc->Sort();
+						//RedrawWindow();
+						pDoc->UpdateAllViews(NULL);
+					}
+				}
+				break;
+
+			case POPUP_KOPIEREN:
+				if (*ppb)
 				{
-					BuchenDlg dlg(GetDocument(), Buchungstyp, this, ppb, TRUE, TRUE);
-					nSelected = index;
-					RedrawSelection(); // selektieren
-					// GetDocument()->UpdateAllViews(NULL);	
-					pBuchungAendernDlg = &dlg;
-					dlg.DoModal();
-					pBuchungAendernDlg = NULL;
-					nSelected = -nSelected;	// deselektieren
-					RedrawSelection();
+					{
+						BuchenDlg dlg(GetDocument(), Buchungstyp, this, ppb, TRUE);
+						nSelected = index;
+						RedrawSelection(); // selektieren
+						// GetDocument()->UpdateAllViews(NULL);	
+						pBuchungAendernDlg = &dlg;
+						dlg.DoModal();
+						pBuchungAendernDlg = NULL;
+						nSelected = -nSelected;	// deselektieren
+						RedrawSelection();
+					}
 				}
-			}
-			break;
+				break;
 
-		case POPUP_AFA_ABGANG:
-			if (*ppb)
-			{
-				AfAAbgang(ppb);
+			case POPUP_KOPIEREN_BELEGNUMMER:
+				if (*ppb)
+				{
+					{
+						BuchenDlg dlg(GetDocument(), Buchungstyp, this, ppb, TRUE, TRUE);
+						nSelected = index;
+						RedrawSelection(); // selektieren
+						// GetDocument()->UpdateAllViews(NULL);	
+						pBuchungAendernDlg = &dlg;
+						dlg.DoModal();
+						pBuchungAendernDlg = NULL;
+						nSelected = -nSelected;	// deselektieren
+						RedrawSelection();
+					}
+				}
+				break;
+
+			case POPUP_AFA_ABGANG:
+				if (*ppb)
+				{
+					AfAAbgang(ppb);
+				}
+				break;
 			}
-			break;
 		}
 
 #endif
