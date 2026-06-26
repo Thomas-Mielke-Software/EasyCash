@@ -133,9 +133,21 @@ namespace ECTEngine
         public static IReadOnlyList<EUKonto>        EinnahmenKonten  => _einnahmenKonten;
         public static IReadOnlyList<EUKonto>        AusgabenKonten   => _ausgabenKonten;
 
+        private static bool _formulareGeladen;
+
         public static void Lade()
         {
-            _gruppen         = LadeFormularGruppen();
+            // Die .ecf-Formulare im Programmverzeichnis ändern sich zur Laufzeit
+            // nicht -- nur EINMAL pro Prozess von der Platte lesen und parsen
+            // (das sind dutzende XML-Dateien; jedes erneute Öffnen/Aktualisieren
+            // der Konten-Seite würde sonst alles neu parsen). Die Konten selbst
+            // kommen aus dem (mandantenabhängigen) Cache und werden stets frisch
+            // aufgebaut.
+            if (!_formulareGeladen)
+            {
+                _gruppen        = LadeFormularGruppen();
+                _formulareGeladen = true;
+            }
             _einnahmenKonten = LadeKonten(einnahmen: true);
             _ausgabenKonten  = LadeKonten(einnahmen: false);
         }

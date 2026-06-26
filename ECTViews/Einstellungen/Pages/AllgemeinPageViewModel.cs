@@ -10,6 +10,8 @@ namespace ECTViews.EinstellungenUi.Pages
     /// </summary>
     public class AllgemeinPageViewModel : ViewModelBase
     {
+        public AllgemeinPageViewModel() => EinstellungenLiveSync.Registriere(this);
+
         // Buchen-Dialog-Steuerung
         public bool MwstFeldAktiviert   { get => GlobaleEinstellungen.MwstFeldAktiviert;   set { GlobaleEinstellungen.MwstFeldAktiviert = value;   OnPropertyChanged(); } }
         public bool JahresfeldAktiviert { get => GlobaleEinstellungen.JahresfeldAktiviert; set { GlobaleEinstellungen.JahresfeldAktiviert = value; OnPropertyChanged(); } }

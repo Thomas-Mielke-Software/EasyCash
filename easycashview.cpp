@@ -35,6 +35,7 @@
 #include "ECTBridge\EinstellungenExports.h"
 #include "oleidl.h"
 #include "comdef.h"
+#include <rpcdce.h>
 #include "NeuesFormular.h"
 #include "Formularabschnitt.h"
 #include "XFolderDialog.h"
@@ -5688,21 +5689,39 @@ BOOL CEasyCashView::OnPreparePrinting(CPrintInfo* pInfo)
 					return 0;
 				
 				// unvollständige Buchungen jetzt bearbeiten
+#ifdef USE_ECTENGINE
+				// WPF-Pfad: Der Buchungsdialog synchronisiert zurueck
+				// (SyncManagedToNative) und macht damit ALLE CBuchung*-Pointer
+				// ungueltig. Deshalb pro Durchlauf nur die erste noch
+				// unvollstaendige Buchung bearbeiten -- die aeussere
+				// while-Schleife scannt danach neu und holt die naechste.
+				{
+					CBuchung* pUnvollstaendig = NULL;
+					for (pB = pDoc->Einnahmen; pB && !pUnvollstaendig; pB = pB->next)
+						if (pB->Konto.IsEmpty()) pUnvollstaendig = pB;
+					for (pB = pDoc->Ausgaben; pB && !pUnvollstaendig; pB = pB->next)
+						if (pB->Konto.IsEmpty()) pUnvollstaendig = pB;
+					if (pUnvollstaendig)
+						ECT_ShowBuchungBearbeitenDialogFuerPointer(
+							GetDocument(), pUnvollstaendig, GetSafeHwnd());
+				}
+#else
 				{
 					for (pB = pDoc->Einnahmen; pB; pB = pB->next)
 						if (pB->Konto.IsEmpty())
-						{	
+						{
 							BuchenDlg dlg(GetDocument(), FALSE, this, &pB);
 							dlg.DoModal();
 						}
-							
+
 					for (pB = pDoc->Ausgaben; pB; pB = pB->next)
 						if (pB->Konto.IsEmpty())
-						{	
+						{
 							BuchenDlg dlg(GetDocument(), TRUE, this, &pB);
 							dlg.DoModal();
-						}					
+						}
 				}
+#endif
 			}
 			break;	// alles ok
 
@@ -7087,6 +7106,7 @@ BOOL CEasyCashView::OnCommand(WPARAM wParam, LPARAM lParam)
 		}
 	}
 
+#ifndef USE_ECTENGINE   // Popup-Weiterleitungen nur fuer den Legacy-BuchenDlg
 	// Privat-Split-Menüaktion im Buchen-Dialog
 	int i;
 	if (wParam >= (UINT)POPUP_SPLIT && wParam < (UINT)POPUP_SPLIT + einstellungen5->m_privat_split_size + 1)
@@ -7109,6 +7129,7 @@ BOOL CEasyCashView::OnCommand(WPARAM wParam, LPARAM lParam)
 				else
 					buchenDlg->Waehrungsrechner(i);
 			}
+#endif // !USE_ECTENGINE
 
 	return CScrollView::OnCommand(wParam, lParam);
 }
@@ -8888,7 +8909,42 @@ void CEasyCashView::OnZoomfaktor300()
 	SetzeZoomfaktor();
 }
 
-extern CString MakeUuidString(UUID* pUUID/*=NULL*/);	// borgen wir aus BuchenDlg aus...
+// MakeUuidString: kleine Hilfsfunktion zur Erzeugung von UUIDs.
+// Frueher in BuchenDlg.cpp definiert; hierher verschoben, damit
+// BuchenDlg.cpp im USE_ECTENGINE-Build komplett entfallen kann.
+CString MakeUuidString(UUID* pUUID/*=NULL*/)
+{
+   CString sUUID = "";
+   unsigned char* sTemp;
+   BOOL bAllocated = FALSE;
+
+   if (pUUID == NULL)
+   {
+      pUUID      = new UUID;
+      bAllocated = TRUE;
+   }
+   if (pUUID != NULL)
+   {
+      HRESULT hr;
+      hr = UuidCreate(pUUID);
+      if (hr == RPC_S_OK)
+      {
+         hr = UuidToString(pUUID, &sTemp);
+         if (hr == RPC_S_OK)
+         {
+            sUUID = sTemp;
+            sUUID.MakeUpper();
+            RpcStringFree(&sTemp);
+         }
+      }
+      if (bAllocated)
+      {
+         delete pUUID;
+         pUUID = NULL;
+      }
+   }
+   return sUUID;
+}
 
 void CEasyCashView::LoadProfile()
 {

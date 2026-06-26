@@ -19,6 +19,8 @@
 // Software Foundation, Inc., 51 Franklin St, 5th Floor, Boston, MA 02110, USA. 
 
 #include "stdafx.h"
+
+#ifndef USE_ECTENGINE   // Legacy-MFC-Buchungsdialog: im WPF-Build durch ECTViews/BuchungView ersetzt
 #include "EasyCash.h"
 #include "ECTIFace\EasyCashDoc.h"
 #include "ECTBridge\EinstellungenExports.h"
@@ -35,40 +37,9 @@
 static char THIS_FILE[] = __FILE__;
 #endif
 
-// kleine Hilfsfunktion zur Erzeugung von UUIDs:
-extern CString MakeUuidString(UUID* pUUID/*=NULL*/)
-{
-   CString sUUID = "";
-   unsigned char* sTemp;
-   BOOL bAllocated = FALSE;
-
-   if (pUUID == NULL)
-   {
-      pUUID      = new UUID;
-      bAllocated = TRUE;
-   }
-   if (pUUID != NULL)
-   {
-      HRESULT hr;
-      hr = UuidCreate(pUUID);
-      if (hr == RPC_S_OK)
-      {
-         hr = UuidToString(pUUID, &sTemp);
-         if (hr == RPC_S_OK)
-         {
-            sUUID = sTemp;
-            sUUID.MakeUpper();
-            RpcStringFree(&sTemp);
-         }
-      }
-      if (bAllocated)
-      {
-         delete pUUID;
-         pUUID = NULL;
-      }
-   }
-   return sUUID;
-}
+// MakeUuidString ist jetzt in EasyCashView.cpp definiert, damit BuchenDlg.cpp
+// im USE_ECTENGINE-Build komplett entfallen kann. Hier nur noch deklarieren.
+extern CString MakeUuidString(UUID* pUUID/*=NULL*/);
 
 
 /////////////////////////////////////////////////////////////////////////////
@@ -2135,3 +2106,5 @@ void BuchenDlg::OnBnKillfocusAbschreibungdegressiv()
 			GetDlgItem(IDC_ABSCHREIBUNGSATZ)->SetFocus();
 	}
 }
+
+#endif // !USE_ECTENGINE

@@ -12,7 +12,7 @@ using ECTEngine;
 
 namespace ECTViews.EinstellungenUi.Pages
 {
-    public partial class KontenPage : UserControl
+    public partial class KontenPage : UserControl, IEinstellungenLiveZiel
     {
         public KontenPage()
         {
@@ -20,6 +20,49 @@ namespace ECTViews.EinstellungenUi.Pages
             // Beim Scrollen (egal welche innere Liste) die Rubber-Bands nachziehen.
             AddHandler(ScrollViewer.ScrollChangedEvent,
                 new ScrollChangedEventHandler(OnIrgendwoGescrollt), true);
+            // Verlässt der Tastaturfokus ein Eingabefeld, eine ggf. aufgeschobene
+            // externe Änderung nachholen.
+            AddHandler(LostKeyboardFocusEvent,
+                new KeyboardFocusChangedEventHandler(OnFokusVerloren), true);
+            EinstellungenLiveSync.Registriere(this);
+        }
+
+        // -----------------------------------------------------------------
+        // Live-Sync: Änderung aus einem anderen Dokumentfenster übernehmen,
+        // aber NICHT mitten in einem Drag&Drop oder einer Texteingabe (das
+        // würde die gerade benutzte Liste/Selektion unter den Fingern wegziehen).
+        // -----------------------------------------------------------------
+        private bool _aktualisierungAusstehend;
+
+        public void AufExterneEinstellungsaenderung()
+        {
+            if (InteraktionLaeuft()) { _aktualisierungAusstehend = true; return; }
+            VM?.AktualisiereAusCache();
+        }
+
+        private bool InteraktionLaeuft()
+        {
+            if (_aktiv) return true;   // Drag&Drop läuft
+            // Tastaturfokus in einem Eingabefeld dieser Seite (Unterkategorie-Editor)?
+            if (Keyboard.FocusedElement is DependencyObject fe && fe is TextBox && IsAncestorOf(fe))
+                return true;
+            return false;
+        }
+
+        private void OnFokusVerloren(object sender, KeyboardFocusChangedEventArgs e)
+        {
+            if (_aktualisierungAusstehend)
+                Dispatcher.BeginInvoke(new Action(VerarbeiteAusstehend),
+                    System.Windows.Threading.DispatcherPriority.Background);
+        }
+
+        private void VerarbeiteAusstehend()
+        {
+            if (_aktualisierungAusstehend && !InteraktionLaeuft())
+            {
+                _aktualisierungAusstehend = false;
+                VM?.AktualisiereAusCache();
+            }
         }
 
         private void OnIrgendwoGescrollt(object sender, ScrollChangedEventArgs e)
@@ -373,30 +416,42 @@ namespace ECTViews.EinstellungenUi.Pages
             var kat   = FindeDataContext<FormularKategorieVM>(hit);
             bool ueberKonten = UeberElement(KontenListe, p);
 
-            if (_art == DragArt.Feld)
+            // Eigene Änderung als solche markieren -> der Live-Sync spiegelt sie
+            // diesem Fenster nicht zurück (kein Selbst-Rebuild, der die gerade
+            // gezeichneten Rubber-Bands sofort wieder löschen würde).
+            using (EinstellungenLiveSync.AlsUrheber(this))
             {
-                // Feld auf ein Konto gezogen -> zuweisen.
-                if (konto != null && _dragKat != null && _dragFeld != null)
+                if (_art == DragArt.Feld)
                 {
-                    vm?.WeiseFeldZu(konto, _dragKat.Name, _dragFeld);
-                    ZeigeBaenderFuerFeld(_dragKat, _dragFeld);   // Verknuepfung visualisieren
+                    // Feld auf ein Konto gezogen -> zuweisen.
+                    if (konto != null && _dragKat != null && _dragFeld != null)
+                    {
+                        vm?.WeiseFeldZu(konto, _dragKat.Name, _dragFeld);
+                        ZeigeBaenderFuerFeld(_dragKat, _dragFeld);   // Verknuepfung visualisieren
+                    }
                 }
-            }
-            else if (_art == DragArt.Konto)
-            {
-                // Konto auf ein Formularfeld gezogen -> zuweisen (Vorrang vor
-                // Sortieren, falls die Maus ueber einer Formular-Spalte endet).
-                if (!ueberKonten && feld != null && kat != null)
+                else if (_art == DragArt.Konto)
                 {
-                    vm?.WeiseFeldZu(_dragKonto, kat.Name, feld);
-                    ZeigeBaenderFuerFeld(kat, feld);             // Verknuepfung visualisieren
+                    // Konto auf ein Formularfeld gezogen -> zuweisen (Vorrang vor
+                    // Sortieren, falls die Maus ueber einer Formular-Spalte endet).
+                    if (!ueberKonten && feld != null && kat != null)
+                    {
+                        vm?.WeiseFeldZu(_dragKonto, kat.Name, feld);
+                        ZeigeBaenderFuerFeld(kat, feld);             // Verknuepfung visualisieren
+                    }
+                    else if (ueberKonten && _einfuegeIndex >= 0
+                        && _einfuegeIndex != _natuerlicherIndex)   // Ursprungsposition -> nichts tun
+                        vm?.VerschiebeKontoAnPosition(_dragKonto, _einfuegeIndex);
                 }
-                else if (ueberKonten && _einfuegeIndex >= 0
-                    && _einfuegeIndex != _natuerlicherIndex)   // Ursprungsposition -> nichts tun
-                    vm?.VerschiebeKontoAnPosition(_dragKonto, _einfuegeIndex);
             }
 
             ResetKandidat();
+
+            // Nach dem Drag eine ggf. während des Drags aufgelaufene externe
+            // Änderung (anderes Fenster) nachholen.
+            if (_aktualisierungAusstehend)
+                Dispatcher.BeginInvoke(new Action(VerarbeiteAusstehend),
+                    System.Windows.Threading.DispatcherPriority.Background);
         }
 
         private void ResetKandidat()

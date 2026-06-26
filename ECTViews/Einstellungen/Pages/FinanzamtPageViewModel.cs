@@ -6,18 +6,20 @@ namespace ECTViews.EinstellungenUi.Pages
     /// <summary>Stammdaten des zuständigen Finanzamts ([Finanzamt]).</summary>
     public class FinanzamtPageViewModel : ViewModelBase
     {
-        public string Name          { get => GlobaleEinstellungen.FinanzamtName;          set { GlobaleEinstellungen.FinanzamtName = Getrimmt(value);          OnPropertyChanged(); } }
-        public string Name2         { get => GlobaleEinstellungen.FinanzamtName2;         set { GlobaleEinstellungen.FinanzamtName2 = Getrimmt(value);         OnPropertyChanged(); } }
-        public string Strasse       { get => GlobaleEinstellungen.FinanzamtStrasse;       set { GlobaleEinstellungen.FinanzamtStrasse = Getrimmt(value);       OnPropertyChanged(); } }
-        public string Plz           { get => GlobaleEinstellungen.FinanzamtPlz;           set { GlobaleEinstellungen.FinanzamtPlz = Getrimmt(value);           OnPropertyChanged(); } }
-        public string Ort           { get => GlobaleEinstellungen.FinanzamtOrt;           set { GlobaleEinstellungen.FinanzamtOrt = Getrimmt(value);           OnPropertyChanged(); } }
-        public string Steuernummer  { get => GlobaleEinstellungen.FinanzamtSteuernummer;  set { GlobaleEinstellungen.FinanzamtSteuernummer = Getrimmt(value);  OnPropertyChanged(); } }
+        public FinanzamtPageViewModel() => EinstellungenLiveSync.Registriere(this);
+
+        public string Name          { get => GlobaleEinstellungen.FinanzamtName;          set { GlobaleEinstellungen.FinanzamtName = value;          OnPropertyChanged(); } }
+        public string Name2         { get => GlobaleEinstellungen.FinanzamtName2;         set { GlobaleEinstellungen.FinanzamtName2 = value;         OnPropertyChanged(); } }
+        public string Strasse       { get => GlobaleEinstellungen.FinanzamtStrasse;       set { GlobaleEinstellungen.FinanzamtStrasse = value;       OnPropertyChanged(); } }
+        public string Plz           { get => GlobaleEinstellungen.FinanzamtPlz;           set { GlobaleEinstellungen.FinanzamtPlz = value;           OnPropertyChanged(); } }
+        public string Ort           { get => GlobaleEinstellungen.FinanzamtOrt;           set { GlobaleEinstellungen.FinanzamtOrt = value;           OnPropertyChanged(); } }
+        public string Steuernummer  { get => GlobaleEinstellungen.FinanzamtSteuernummer;  set { GlobaleEinstellungen.FinanzamtSteuernummer = value;  OnPropertyChanged(); } }
         public string WirtschaftsId
         {
             get => GlobaleEinstellungen.FinanzamtWirtschaftsId;
             set
             {
-                GlobaleEinstellungen.FinanzamtWirtschaftsId = Getrimmt(value);
+                GlobaleEinstellungen.FinanzamtWirtschaftsId = value;
                 OnPropertyChanged();
                 OnPropertyChanged(nameof(WirtschaftsIdFehler));  // Fehlertext mit aktualisieren
             }
@@ -41,6 +43,7 @@ namespace ECTViews.EinstellungenUi.Pages
         /// </summary>
         private static string PruefeWirtschaftsId(string wert)
         {
+            wert = wert?.Trim() ?? "";   // Validierung ohne Rand-Leerzeichen (Wert selbst bleibt roh)
             if (string.IsNullOrEmpty(wert))
                 return null;  // leer ist erlaubt
 
@@ -96,9 +99,5 @@ namespace ECTViews.EinstellungenUi.Pages
 
         private static bool IstBuchstabe(char c) => (c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z');
         private static bool IstZiffer(char c)    => c >= '0' && c <= '9';
-
-        /// <summary>Schneidet fuehrende/abschliessende Leerzeichen weg (kein
-        /// hartes Kuerzen auf die Maximallaenge -- das erledigt MaxLength).</summary>
-        private static string Getrimmt(string wert) => wert?.Trim();
     }
 }

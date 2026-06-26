@@ -42,6 +42,23 @@ namespace ECTViews.EinstellungenUi.Pages
             Laden();
         }
 
+        /// <summary>
+        /// Lädt die Preset-Liste aus dem (von außen geänderten) Cache neu und
+        /// stellt die Selektion über den Slot-Index wieder her. Aufrufer
+        /// (PresetsPage) stellt sicher, dass das NICHT während einer laufenden
+        /// Bearbeitung passiert.
+        /// </summary>
+        public void AktualisiereAusCache()
+        {
+            int selIndex = _ausgewaehlt?.Index ?? -1;
+            Laden();
+            if (selIndex >= 0)
+            {
+                var wieder = Presets.FirstOrDefault(p => p.Index == selIndex);
+                if (wieder != null) Ausgewaehlt = wieder;
+            }
+        }
+
         private void Laden()
         {
             Presets.Clear();

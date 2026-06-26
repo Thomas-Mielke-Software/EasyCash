@@ -46,6 +46,8 @@ namespace ECTViews.EinstellungenUi.Pages
 
         public EUEinstellungenPageViewModel()
         {
+            EinstellungenLiveSync.Registriere(this);
+
             var ein = new List<string> { "" };
             ein.AddRange(Einstellungen.EinnahmenKonten);
             EinnahmenKonten = ein;

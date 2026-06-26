@@ -8,6 +8,7 @@
 // Die "Aktuelles Dokument"-Gruppe wird nur aufgebaut, wenn ein Dokument
 // offen ist (hatDokument == true).
 
+using System;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Windows.Controls;
@@ -53,25 +54,29 @@ namespace ECTViews.EinstellungenUi
         /// eines Dokumentwerts gerufen wird (setzt nativ das Modified-Flag).</param>
         public EinstellungenViewModel(BuchungsDocument dokument, System.Action onDokumentGeaendert = null)
         {
-            Items.Add(Seite(GRUPPE_GLOBAL, "Allgemein",     new AllgemeinPage()));
-            Items.Add(Seite(GRUPPE_GLOBAL, "Unternehmer*in", new UnternehmerPage()));
-            Items.Add(Seite(GRUPPE_GLOBAL, "Finanzamt",     new FinanzamtPage()));
-            Items.Add(Seite(GRUPPE_GLOBAL, "Buchungs-Presets", new PresetsPage()));
-            Items.Add(Seite(GRUPPE_GLOBAL, "E/Ü-Konten", new KontenPage()));
-            Items.Add(Seite(GRUPPE_GLOBAL, "E/Ü-Einstellungen", new EUEinstellungenPage()));
+            // Seiten als Fabriken registrieren -- gebaut wird erst beim Anklicken
+            // (siehe EinstellungenNavItem.Seite). So ist das Öffnen sofort da,
+            // und die teure E/Ü-Konten-Seite (.ecf-Parsing) kostet nur dann,
+            // wenn man sie wirklich aufruft.
+            Items.Add(Seite(GRUPPE_GLOBAL, "Allgemein",        () => new AllgemeinPage()));
+            Items.Add(Seite(GRUPPE_GLOBAL, "Unternehmer*in",   () => new UnternehmerPage()));
+            Items.Add(Seite(GRUPPE_GLOBAL, "Finanzamt",        () => new FinanzamtPage()));
+            Items.Add(Seite(GRUPPE_GLOBAL, "Buchungs-Presets", () => new PresetsPage()));
+            Items.Add(Seite(GRUPPE_GLOBAL, "E/Ü-Konten",       () => new KontenPage()));
+            Items.Add(Seite(GRUPPE_GLOBAL, "E/Ü-Einstellungen", () => new EUEinstellungenPage()));
             // Währungen folgt in M3.
 
             if (dokument != null)
             {
                 Items.Add(Seite(GRUPPE_DOKUMENT, "Buchungsjahr & Belegnummern",
-                    new DokumentPage(dokument, onDokumentGeaendert)));
+                    () => new DokumentPage(dokument, onDokumentGeaendert)));
             }
 
             // Erste Seite vorselektieren.
             AusgewaehltesItem = Items.FirstOrDefault();
         }
 
-        private static EinstellungenNavItem Seite(string gruppe, string titel, UserControl seite)
-            => new EinstellungenNavItem { Gruppe = gruppe, Titel = titel, Seite = seite };
+        private static EinstellungenNavItem Seite(string gruppe, string titel, Func<UserControl> fabrik)
+            => new EinstellungenNavItem { Gruppe = gruppe, Titel = titel, SeitenFabrik = fabrik };
     }
 }

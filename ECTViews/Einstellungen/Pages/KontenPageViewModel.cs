@@ -72,6 +72,33 @@ namespace ECTViews.EinstellungenUi.Pages
                     g, FeldGewaehlt, () => MarkiereZugewieseneFelder(_selektiertesKonto)));
         }
 
+        /// <summary>
+        /// Baut die Konten-Liste aus dem (von außen geänderten) Cache neu auf --
+        /// z.B. wenn ein anderes Dokumentfenster die Reihenfolge, eine
+        /// Feldzuweisung oder eine Unterkategorie geändert hat. Die Selektion
+        /// wird best möglich (über Name + Gruppe) wiederhergestellt. Die
+        /// Formular-Spalten (aus den .ecf-Dateien) bleiben unberührt.
+        /// Aufrufer (KontenPage) stellt sicher, dass das NICHT während einer
+        /// laufenden Interaktion passiert.
+        /// </summary>
+        public void AktualisiereAusCache()
+        {
+            EUKonten.Lade();   // Cache neu einlesen -> frische EUKonto-Instanzen
+
+            string selName     = _selektiertesKonto?.Name;
+            bool   selEinnahme = _selektiertesKonto?.Modell.IstEinnahme ?? false;
+
+            Konten.Clear();
+            foreach (var k in EUKonten.EinnahmenKonten)
+                Konten.Add(new EUKontoVM(k, GruppeEinnahmen));
+            foreach (var k in EUKonten.AusgabenKonten)
+                Konten.Add(new EUKontoVM(k, GruppeAusgaben));
+
+            // Selektion (und damit die Feld-Hervorhebung) wiederherstellen.
+            SelektiertesKonto = Konten.FirstOrDefault(
+                v => v.Name == selName && v.Modell.IstEinnahme == selEinnahme);
+        }
+
         private void MarkiereZugewieseneFelder(EUKontoVM konto)
         {
             foreach (var kat in Formulare)
