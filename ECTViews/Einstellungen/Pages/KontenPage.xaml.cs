@@ -73,6 +73,47 @@ namespace ECTViews.EinstellungenUi.Pages
         private KontenPageViewModel VM => DataContext as KontenPageViewModel;
 
         // -----------------------------------------------------------------
+        // Konto anlegen / umbenennen (Namensfeld) / löschen
+        // -----------------------------------------------------------------
+        private void OnNeuEinnahmenkonto(object sender, RoutedEventArgs e) => KontoAnlegen(true);
+        private void OnNeuAusgabenkonto(object sender, RoutedEventArgs e) => KontoAnlegen(false);
+
+        private void KontoAnlegen(bool einnahme)
+        {
+            var vm = VM;
+            if (vm == null) return;
+            // Eigene Änderung -> nicht an dieses Fenster zurückspiegeln.
+            using (EinstellungenLiveSync.AlsUrheber(this))
+                vm.KontoAnlegen(einnahme);
+
+            // Direkt ins Namensfeld springen, damit man den Default-Namen
+            // gleich überschreiben kann.
+            Dispatcher.BeginInvoke(new Action(() =>
+            {
+                KontoNameEditor.Focus();
+                KontoNameEditor.SelectAll();
+            }), System.Windows.Threading.DispatcherPriority.Input);
+        }
+
+        private void OnKontoLoeschen(object sender, RoutedEventArgs e)
+        {
+            var vm = VM;
+            var konto = vm?.SelektiertesKonto;
+            if (konto == null) return;
+
+            var antwort = MessageBox.Show(
+                $"Konto \"{konto.Name}\" wirklich löschen?\n\n"
+              + "Bereits gebuchte Beträge bleiben erhalten, fehlen aber in "
+              + "den dann nicht mehr verknüpften Feldern von Formularen.",
+                "Konto löschen",
+                MessageBoxButton.YesNo, MessageBoxImage.Warning, MessageBoxResult.No);
+            if (antwort != MessageBoxResult.Yes) return;
+
+            using (EinstellungenLiveSync.AlsUrheber(this))
+                vm.KontoLoeschen(konto);
+        }
+
+        // -----------------------------------------------------------------
         // Spaltenbreiten an die Client-Breite anpassen
         // -----------------------------------------------------------------
         private void OnSpaltenScrollSizeChanged(object sender, SizeChangedEventArgs e)

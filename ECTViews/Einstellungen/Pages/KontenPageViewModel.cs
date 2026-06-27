@@ -63,9 +63,9 @@ namespace ECTViews.EinstellungenUi.Pages
             EUKonten.Lade();
 
             foreach (var k in EUKonten.EinnahmenKonten)
-                Konten.Add(new EUKontoVM(k, GruppeEinnahmen));
+                Konten.Add(new EUKontoVM(k, GruppeEinnahmen, PersistiereReihenfolge));
             foreach (var k in EUKonten.AusgabenKonten)
-                Konten.Add(new EUKontoVM(k, GruppeAusgaben));
+                Konten.Add(new EUKontoVM(k, GruppeAusgaben, PersistiereReihenfolge));
 
             foreach (var g in EUKonten.FormularGruppen)
                 Formulare.Add(new FormularKategorieVM(
@@ -90,9 +90,9 @@ namespace ECTViews.EinstellungenUi.Pages
 
             Konten.Clear();
             foreach (var k in EUKonten.EinnahmenKonten)
-                Konten.Add(new EUKontoVM(k, GruppeEinnahmen));
+                Konten.Add(new EUKontoVM(k, GruppeEinnahmen, PersistiereReihenfolge));
             foreach (var k in EUKonten.AusgabenKonten)
-                Konten.Add(new EUKontoVM(k, GruppeAusgaben));
+                Konten.Add(new EUKontoVM(k, GruppeAusgaben, PersistiereReihenfolge));
 
             // Selektion (und damit die Feld-Hervorhebung) wiederherstellen.
             SelektiertesKonto = Konten.FirstOrDefault(
@@ -230,6 +230,50 @@ namespace ECTViews.EinstellungenUi.Pages
             EUKonten.SpeichereReihenfolge(einnahmen, ausgaben);
         }
 
+        // -----------------------------------------------------------------
+        // Anlegen / Löschen von Konten
+        // -----------------------------------------------------------------
+
+        /// <summary>Legt ein neues Konto am Ende der jeweiligen Gruppe an
+        /// (Default-Name "Neues Konto", ohne Feldzuweisung), persistiert und
+        /// selektiert es -- der Aufrufer (KontenPage) springt zum Umbenennen in
+        /// das Namensfeld.</summary>
+        public void KontoAnlegen(bool einnahme)
+        {
+            var modell = new EUKonto("Neues Konto", einnahme, 0, "", null);
+            var vm = new EUKontoVM(modell,
+                einnahme ? GruppeEinnahmen : GruppeAusgaben, PersistiereReihenfolge);
+
+            if (einnahme)
+                Konten.Insert(Konten.Count(k => k.Modell.IstEinnahme), vm); // ans Ende der Einnahmen
+            else
+                Konten.Add(vm);                                              // ans Ende der Ausgaben
+
+            PersistiereReihenfolge();   // vergibt die Slot-Indizes neu + schreibt
+            SelektiertesKonto = vm;
+            Statusleiste.Melde(einnahme
+                ? "Neues Einnahmenkonto angelegt -- bitte benennen."
+                : "Neues Ausgabenkonto angelegt -- bitte benennen.");
+        }
+
+        /// <summary>Löscht das übergebene Konto und persistiert. Bereits gebuchte
+        /// Beträge bleiben unverändert (verlieren nur die Konto-Zuordnung -- wie
+        /// im alten Dialog). Selektiert danach den nächstgelegenen Nachbarn.</summary>
+        public void KontoLoeschen(EUKontoVM konto)
+        {
+            if (konto == null) return;
+            int idx = Konten.IndexOf(konto);
+            if (idx < 0) return;
+
+            string name = konto.Name;
+            Konten.Remove(konto);
+            PersistiereReihenfolge();
+            SelektiertesKonto = Konten.Count == 0
+                ? null
+                : Konten[System.Math.Min(idx, Konten.Count - 1)];
+            Statusleiste.Melde($"Konto \"{name}\" gelöscht.");
+        }
+
         // Feld-Auswahl ändert die Konto-Selektion NICHT mehr: Ein Feld kann mit
         // mehreren Konten verknüpft sein -- die Verbindung wird stattdessen als
         // Rubber-Band-Linien zu allen verknüpften Konten visualisiert (Code-Behind
@@ -247,9 +291,32 @@ namespace ECTViews.EinstellungenUi.Pages
     {
         public EUKonto Modell { get; }
         public string  Gruppe { get; }
-        public EUKontoVM(EUKonto modell, string gruppe) { Modell = modell; Gruppe = gruppe; }
 
-        public string Name => Modell.Name;
+        /// <summary>Persistiert eine Änderung am Konto (Name) -- vom Besitzer-VM
+        /// gesetzt, schreibt die ganze Gruppe neu (Index/Namen konsistent).</summary>
+        private readonly System.Action _onGeaendert;
+
+        public EUKontoVM(EUKonto modell, string gruppe, System.Action onGeaendert = null)
+        {
+            Modell = modell;
+            Gruppe = gruppe;
+            _onGeaendert = onGeaendert;
+        }
+
+        /// <summary>Konto-Name; editierbar (Umbenennen). Leer wird ignoriert.</summary>
+        public string Name
+        {
+            get => Modell.Name;
+            set
+            {
+                var neu = (value ?? "").Trim();
+                if (string.IsNullOrEmpty(neu) || Modell.Name == neu) return;
+                Modell.Name = neu;
+                OnPropertyChanged();
+                _onGeaendert?.Invoke();
+                Statusleiste.Melde($"Konto in \"{neu}\" umbenannt.");
+            }
+        }
 
         /// <summary>Unterkategorie des Kontos -- strukturiert/rueckt die Konten
         /// in der EÜR ein. Wird sofort persistiert.</summary>

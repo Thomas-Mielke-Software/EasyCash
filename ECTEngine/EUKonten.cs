@@ -258,10 +258,20 @@ namespace ECTEngine
                 k.Index = i;   // Slot folgt der neuen Reihenfolge
             }
 
-            // Drei gebündelte Sektions-Schreibvorgaenge (ini).
+            // Drei gebündelte Sektions-Schreibvorgaenge (ini). Da
+            // WritePrivateProfileSection die ganze Sektion ersetzt, fallen
+            // ehemals höhere Indizes in der ini automatisch weg.
             Einstellungen.SchreibeSektion(rechSektion, rech);
             Einstellungen.SchreibeSektion(fzSektion, fz);
             Einstellungen.SchreibeSektion(ukSektion, uk);
+
+            // Wurde gelöscht (Liste kürzer), die Namens-Cache-Slots oberhalb der
+            // neuen Anzahl leeren -- sonst läse NeuAufbauenKonten einen verwaisten
+            // Eintrag als Phantom-Konto (die Schleife dort stoppt erst beim ersten
+            // Leerstring).
+            for (int i = liste.Count; i < 100; i++)
+                Einstellungen.SetzeCacheNur(
+                    namePrefix + i.ToString("D2", CultureInfo.InvariantCulture), "");
 
             return liste.Count;
         }
