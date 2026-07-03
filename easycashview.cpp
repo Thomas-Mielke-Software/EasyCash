@@ -5485,14 +5485,21 @@ void CEasyCashView::OnPrepareDC(CDC* pDC, CPrintInfo* pInfo)
 
 BOOL CEasyCashView::OnPreparePrinting(CPrintInfo* pInfo)
 {
-	// Unter Wine/CrossOver: Drucken abfangen (PrintDlgA crasht ohne konfigurierten Drucker)
+	// Unter Wine/CrossOver ohne eingerichteten Drucker: Drucken abfangen (PrintDlgA crasht dann)
 	{
 		HKEY hKey;
 		if (RegOpenKeyEx(HKEY_LOCAL_MACHINE, _T("Software\\Wine"), 0, KEY_READ, &hKey) == ERROR_SUCCESS)
 		{
 			RegCloseKey(hKey);
-			AfxMessageBox(_T("EasyCash läuft unter Wine/CrossOver.\n\nDas Drucken steht in dieser Umgebung nicht zur Verfügung, da kein Drucker im Wine-Prefix konfiguriert ist.\n\nBitte richten Sie einen Drucker in Ihrem Wine-/CrossOver-Prefix ein."), MB_OK | MB_ICONINFORMATION);
-			return FALSE;
+
+			// Nur abfangen, wenn wirklich kein Standarddrucker eingerichtet ist
+			TCHAR szDevice[256] = _T("");
+			::GetProfileString(_T("windows"), _T("device"), _T(""), szDevice, 256);
+			if (szDevice[0] == _T('\0'))
+			{
+				AfxMessageBox(_T("EasyCash läuft unter Wine/CrossOver.\n\nDas Drucken steht in dieser Umgebung nicht zur Verfügung, wenn kein Drucker im Wine-Prefix konfiguriert ist.\n\nBitte Drucker einrichten (auf MacOS unter Programme -> Druckerzentrale)."), MB_OK | MB_ICONINFORMATION);
+				return FALSE;
+			}
 		}
 	}
 	CEasyCashDoc* pDoc = GetDocument();
