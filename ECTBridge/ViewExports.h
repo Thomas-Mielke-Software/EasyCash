@@ -138,6 +138,32 @@ ECTBRIDGE_API void ECT_SetzeBetriebeUndBestandskonten(
     const int* pBestandskontenSalden, int nBestandskontenCount);
 
 // ──────────────────────────────────────────────
+// Dauerbuchungen
+// ──────────────────────────────────────────────
+
+/// <summary>
+/// Zeigt den WPF-Dauerbuchungs-Verwaltungsdialog (ersetzt DauerbuchungenDlg;
+/// modal statt modeless). Synchronisiert vorher Native->Managed, arbeitet
+/// auf BuchungsDocument.Dauerbuchungen und synchronisiert bei Änderungen
+/// zurück (inkl. SetModifiedFlag).
+///
+/// Rückgabe: TRUE wenn Dauerbuchungen geändert wurden.
+/// </summary>
+ECTBRIDGE_API BOOL ECT_ZeigeDauerbuchungenDialog(
+    void* pDocBridge, HWND hWndOwner);
+
+/// <summary>
+/// Zeigt den kleinen "Dauerbuchungen ausführen bis Monat/Jahr"-Dialog
+/// (ersetzt DauBuchAusfuehren). Die eigentliche Ausführung bleibt beim
+/// Aufrufer: CEasyCashView::DauerbuchungenAusfuehren(*pnJahrOut, *pnMonatOut).
+///
+/// Rückgabe: TRUE wenn "Ausführen" geklickt wurde; *pnMonatOut/*pnJahrOut
+/// sind dann gültig (Jahr bereits normalisiert).
+/// </summary>
+ECTBRIDGE_API BOOL ECT_ZeigeDauerbuchungenAusfuehrenDialog(
+    int nBuchungsjahr, HWND hWndOwner, int* pnMonatOut, int* pnJahrOut);
+
+// ──────────────────────────────────────────────
 // Stammdaten-Verwaltung (Betriebe + Bestandskonten)
 // ──────────────────────────────────────────────
 

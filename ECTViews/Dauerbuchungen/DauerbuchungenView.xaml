@@ -1,0 +1,249 @@
+<Window x:Class="ECTViews.Dauerbuchungen.DauerbuchungenView"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="{Binding Titel}"
+        Width="660" Height="720"
+        MinWidth="560" MinHeight="600"
+        WindowStartupLocation="CenterOwner"
+        ResizeMode="CanResizeWithGrip"
+        ShowInTaskbar="False"
+        Background="#F5F5F5"
+        FontFamily="Segoe UI" FontSize="13">
+
+    <Window.Resources>
+        <Style TargetType="TextBlock" x:Key="LabelStyle">
+            <Setter Property="VerticalAlignment" Value="Center"/>
+            <Setter Property="Margin" Value="0,0,8,0"/>
+            <Setter Property="Foreground" Value="#333"/>
+        </Style>
+        <Style TargetType="TextBox">
+            <Setter Property="Padding" Value="3,2"/>
+            <Setter Property="VerticalAlignment" Value="Center"/>
+        </Style>
+        <Style TargetType="RadioButton">
+            <Setter Property="Margin" Value="0,2"/>
+            <Setter Property="VerticalContentAlignment" Value="Center"/>
+        </Style>
+    </Window.Resources>
+
+    <Grid Margin="12">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*" MinHeight="140"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <!-- [Liste der Dauerbuchungen] -->
+        <ListView Grid.Row="0"
+                  ItemsSource="{Binding Zeilen}"
+                  SelectedItem="{Binding Auswahl}"
+                  IsEnabled="{Binding ListeAktiv}"
+                  MouseDoubleClick="OnZeileDoppelklick">
+            <ListView.View>
+                <GridView>
+                    <GridViewColumn Header="Beschreibung" Width="220"
+                                    DisplayMemberBinding="{Binding Beschreibung}"/>
+                    <GridViewColumn Header="Betrag" Width="90">
+                        <GridViewColumn.CellTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding BetragText}" TextAlignment="Right"
+                                           HorizontalAlignment="Stretch"/>
+                            </DataTemplate>
+                        </GridViewColumn.CellTemplate>
+                    </GridViewColumn>
+                    <GridViewColumn Header="Intervall" Width="110"
+                                    DisplayMemberBinding="{Binding IntervallText}"/>
+                    <GridViewColumn Header="Laufzeit" Width="130"
+                                    DisplayMemberBinding="{Binding BisText}"/>
+                </GridView>
+            </ListView.View>
+        </ListView>
+
+        <!-- [Listen-Knoepfe] -->
+        <StackPanel Grid.Row="1" Orientation="Horizontal" Margin="0,8,0,0"
+                    IsEnabled="{Binding ListeAktiv}">
+            <Button Content="Neu" MinWidth="90" Padding="10,4" Margin="0,0,8,0"
+                    ToolTip="neue Dauerbuchung anlegen" Click="OnNeu"/>
+            <Button Content="Ändern" MinWidth="90" Padding="10,4" Margin="0,0,8,0"
+                    ToolTip="bestehende Dauerbuchung ändern - bitte zuvor oben in der Liste die gewünschte Dauerbuchung auswählen"
+                    Click="OnAendern"/>
+            <Button Content="Löschen" MinWidth="90" Padding="10,4"
+                    ToolTip="bestehende Dauerbuchung löschen - bitte zuvor oben in der Liste die gewünschte Dauerbuchung auswählen"
+                    Click="OnLoeschen"/>
+        </StackPanel>
+
+        <!-- [Editor] -->
+        <GroupBox Grid.Row="2" Header="Dauerbuchung bearbeiten" Padding="10"
+                  Margin="0,10,0,0" IsEnabled="{Binding BearbeitungAktiv}">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+
+                <!-- linke Spalte: Datums- und Wertfelder -->
+                <Grid Grid.Column="0">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+
+                    <TextBlock Grid.Row="0" Grid.Column="0" Style="{StaticResource LabelStyle}"
+                               Text="Von (Monat/Jahr):"
+                               ToolTip="Monat/Jahr der ersten Ausführung"/>
+                    <StackPanel Grid.Row="0" Grid.Column="1" Orientation="Horizontal" Margin="0,2">
+                        <TextBox x:Name="VonMonatBox" Width="34" MaxLength="2"
+                                 Text="{Binding VonMonatText, UpdateSourceTrigger=PropertyChanged}"/>
+                        <TextBlock Text="." VerticalAlignment="Center" Margin="3,0"/>
+                        <TextBox Width="52" MaxLength="4" LostFocus="OnJahrFeldLostFocus"
+                                 Text="{Binding VonJahrText, UpdateSourceTrigger=PropertyChanged}"/>
+                    </StackPanel>
+
+                    <TextBlock Grid.Row="1" Grid.Column="0" Style="{StaticResource LabelStyle}"
+                               Text="Bis (Monat/Jahr) inkl.:"
+                               ToolTip="Monat/Jahr der letzten Ausführung"/>
+                    <StackPanel Grid.Row="1" Grid.Column="1" Orientation="Horizontal" Margin="0,2">
+                        <TextBox Width="34" MaxLength="2"
+                                 Text="{Binding BisMonatText, UpdateSourceTrigger=PropertyChanged}"/>
+                        <TextBlock Text="." VerticalAlignment="Center" Margin="3,0"/>
+                        <TextBox Width="52" MaxLength="4" LostFocus="OnJahrFeldLostFocus"
+                                 Text="{Binding BisJahrText, UpdateSourceTrigger=PropertyChanged}"/>
+                    </StackPanel>
+
+                    <TextBlock Grid.Row="2" Grid.Column="0" Style="{StaticResource LabelStyle}"
+                               Text="Tag der Buchung (1-28):"
+                               ToolTip="Tag im Monat, der in das Buchungsdatum übernommen wird"/>
+                    <TextBox Grid.Row="2" Grid.Column="1" Width="34" MaxLength="3"
+                             HorizontalAlignment="Left" Margin="0,2"
+                             Text="{Binding TagText, UpdateSourceTrigger=PropertyChanged}"/>
+
+                    <TextBlock Grid.Row="3" Grid.Column="0" Style="{StaticResource LabelStyle}"
+                               Text="bereits ausgeführt bis (exkl.):"
+                               ToolTip="hiermit merkt sich das Programm, bis wann die Buchungen schon ausgeführt wurden; sollte anfangs vor dem Von-Datum liegen; durch Zurücksetzen lassen sich Dauerbuchungen noch einmal ausführen"/>
+                    <StackPanel Grid.Row="3" Grid.Column="1" Orientation="Horizontal" Margin="0,2"
+                                IsEnabled="{Binding AktFelderAktiv}">
+                        <TextBox Width="34" MaxLength="2"
+                                 Text="{Binding AktMonatText, UpdateSourceTrigger=PropertyChanged}"/>
+                        <TextBlock Text="." VerticalAlignment="Center" Margin="3,0"/>
+                        <TextBox Width="52" MaxLength="4" LostFocus="OnJahrFeldLostFocus"
+                                 Text="{Binding AktJahrText, UpdateSourceTrigger=PropertyChanged}"/>
+                    </StackPanel>
+
+                    <TextBlock Grid.Row="4" Grid.Column="0" Style="{StaticResource LabelStyle}"
+                               Text="Betrag (inkl. MWSt):"
+                               ToolTip="Geldbetrag, der wiederholt werden soll"/>
+                    <TextBox Grid.Row="4" Grid.Column="1" Width="100"
+                             HorizontalAlignment="Left" HorizontalContentAlignment="Right"
+                             Margin="0,2"
+                             Text="{Binding BetragText, UpdateSourceTrigger=PropertyChanged}"/>
+
+                    <TextBlock Grid.Row="5" Grid.Column="0" Style="{StaticResource LabelStyle}"
+                               Text="MWSt (%):" ToolTip="Mehrwertsteuersatz"/>
+                    <ComboBox Grid.Row="5" Grid.Column="1" Width="70" IsEditable="True"
+                              HorizontalAlignment="Left" Margin="0,2"
+                              ItemsSource="{Binding MwstOptionen}"
+                              Text="{Binding MwstText, UpdateSourceTrigger=PropertyChanged}"/>
+
+                    <TextBlock Grid.Row="6" Grid.Column="0" Style="{StaticResource LabelStyle}"
+                               Text="Beschreibung:"
+                               ToolTip="Buchungs-Beschreibungstext, der wiederholt werden soll; Auswahl aus der Liste übernimmt Buchungs-Preset (Text, MWSt, Konto)"/>
+                    <ComboBox Grid.Row="6" Grid.Column="1" IsEditable="True" Margin="0,2"
+                              x:Name="BeschreibungCombo"
+                              ItemsSource="{Binding PresetOptionen}"
+                              SelectedItem="{Binding GewaehltesPreset}"
+                              Text="{Binding Beschreibung, UpdateSourceTrigger=PropertyChanged}"/>
+
+                    <TextBlock Grid.Row="7" Grid.Column="0" Style="{StaticResource LabelStyle}"
+                               Text="Belegnummer:"
+                               ToolTip="Buchungs-Belegnummer, die wiederholt werden soll"/>
+                    <TextBox Grid.Row="7" Grid.Column="1" Margin="0,2"
+                             Text="{Binding Belegnummer, UpdateSourceTrigger=PropertyChanged}"/>
+
+                    <TextBlock Grid.Row="8" Grid.Column="0" Style="{StaticResource LabelStyle}"
+                               Text="Konto in E/Ü-Rechnung:"
+                               ToolTip="E/Ü-Konto, auf das der Betrag verbucht werden soll"/>
+                    <ComboBox Grid.Row="8" Grid.Column="1" Margin="0,2"
+                              ItemsSource="{Binding KontenOptionen}"
+                              SelectedItem="{Binding KontoAuswahl}"/>
+
+                    <TextBlock Grid.Row="9" Grid.Column="0" Style="{StaticResource LabelStyle}"
+                               Text="Betrieb:"
+                               ToolTip="Betrieb, für den die Buchung angelegt werden soll"/>
+                    <ComboBox Grid.Row="9" Grid.Column="1" Margin="0,2"
+                              ItemsSource="{Binding BetriebeOptionen}"
+                              SelectedItem="{Binding BetriebAuswahl}"/>
+
+                    <TextBlock Grid.Row="10" Grid.Column="0" Style="{StaticResource LabelStyle}"
+                               Text="Bestandskonto:"
+                               ToolTip="Bestandskonto (z.B. 'Bank' oder 'Kasse'), auf das der Betrag verbucht werden soll"/>
+                    <ComboBox Grid.Row="10" Grid.Column="1" Margin="0,2"
+                              ItemsSource="{Binding BestandskontenOptionen}"
+                              SelectedItem="{Binding BestandskontoAuswahl}"/>
+                </Grid>
+
+                <!-- rechte Spalte: Buchungsart + Intervall -->
+                <StackPanel Grid.Column="1" Margin="18,0,0,0">
+                    <GroupBox Header="Buchungsart" Padding="8">
+                        <StackPanel>
+                            <RadioButton Content="laufende Einnahmen" GroupName="Art"
+                                         IsChecked="{Binding IstEinnahme}"
+                                         ToolTip="zu erzeugende Buchungen sollen vom Typ 'Einnahmen' sein"/>
+                            <RadioButton Content="laufende Ausgaben" GroupName="Art"
+                                         IsChecked="{Binding IstAusgabe}"
+                                         ToolTip="zu erzeugende Buchungen sollen vom Typ 'Ausgaben' sein"/>
+                        </StackPanel>
+                    </GroupBox>
+                    <GroupBox Header="Intervall" Padding="8" Margin="0,10,0,0">
+                        <StackPanel>
+                            <RadioButton Content="monatlich buchen" GroupName="Intervall"
+                                         IsChecked="{Binding IntervallMonatlich}"/>
+                            <RadioButton Content="2-monatlich buchen" GroupName="Intervall"
+                                         IsChecked="{Binding IntervallZweiMonatlich}"/>
+                            <RadioButton Content="quartalsmäßig buchen" GroupName="Intervall"
+                                         IsChecked="{Binding IntervallQuartal}"/>
+                            <RadioButton Content="halbjährlich buchen" GroupName="Intervall"
+                                         IsChecked="{Binding IntervallHalbjahr}"/>
+                            <RadioButton Content="jährlich buchen" GroupName="Intervall"
+                                         IsChecked="{Binding IntervallJahr}"/>
+                        </StackPanel>
+                    </GroupBox>
+                </StackPanel>
+            </Grid>
+        </GroupBox>
+
+        <!-- [Platzhalter-Hinweis + Abschluss-Knoepfe] -->
+        <Grid Grid.Row="3" Margin="0,10,0,0">
+            <TextBlock HorizontalAlignment="Left" VerticalAlignment="Center"
+                       MaxWidth="300" TextWrapping="Wrap"
+                       Foreground="#0277BD" FontSize="11" FontStyle="Italic"
+                       Text="Platzhalter in Beschreibung/Belegnummer: $J $j $q $h $2 $m $M $# sowie $+m $++M $-m usw."
+                       ToolTip="$J = Jahr vierstellig, $j = Jahr zweistellig, $q = Quartal, $h = Halbjahr, $2 = 2-Monats-Zeitraum, $m = Monat (1-12), $M = Monat (01-12), $# = laufende Buchungsnummer, $+m = nächster Monat, $-m = Vormonat, $++M / $--M = übernächster/vorletzter Monat mit führender Null"/>
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                <Button Content="Verwerfen" MinWidth="100" Padding="12,5" Margin="0,0,8,0"
+                        IsEnabled="{Binding BearbeitungAktiv}"
+                        ToolTip="eingegebene Werte nicht speichern"
+                        Click="OnVerwerfen"/>
+                <Button Content="Übernehmen" MinWidth="100" Padding="12,5" Margin="0,0,8,0"
+                        IsEnabled="{Binding BearbeitungAktiv}" IsDefault="True"
+                        ToolTip="eingegebene Werte in der Dauerbuchung speichern"
+                        Click="OnUebernehmen"/>
+                <Button Content="Schließen" MinWidth="100" Padding="12,5"
+                        IsCancel="True" ToolTip="Dialogfenster schließen"/>
+            </StackPanel>
+        </Grid>
+    </Grid>
+</Window>

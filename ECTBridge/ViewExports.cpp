@@ -422,6 +422,66 @@ void ECT_SetzeBetriebeUndBestandskonten(
 }
 
 // ----------------------------------------------------------
+// Dauerbuchungen
+// ----------------------------------------------------------
+
+BOOL ECT_ZeigeDauerbuchungenDialog(void* pDocBridge, HWND hWndOwner)
+{
+    try
+    {
+        auto* bridge = static_cast<CEasyCashDocBridge*>(pDocBridge);
+        if (!bridge) return FALSE;
+
+        // Engine-Stand garantieren (Dauerbuchungen kommen aus den nativen
+        // Linked Lists)
+        bridge->SyncNativeToManaged();
+
+        auto engine = GetEngine(bridge);
+        IntPtr hwnd = IntPtr((void*)hWndOwner);
+
+        bool geaendert = ECTViews::ViewHost::ZeigeDauerbuchungenDialog(
+            engine, ECTBridge::ToManaged(bridge->GetPathName()), hwnd);
+
+        if (geaendert)
+        {
+            // Managed Liste zurueck in die native CDauerbuchung-Kette
+            bridge->SyncManagedToNative();
+            bridge->SetModifiedFlag("Dauerbuchungen geaendert");
+        }
+        return geaendert ? TRUE : FALSE;
+    }
+    catch (Exception^ ex)
+    {
+        CString msg;
+        msg = "Fehler im Dauerbuchungen-Dialog: "; msg += CString(ex->Message);
+        AfxMessageBox(msg, MB_ICONERROR);
+        return FALSE;
+    }
+}
+
+BOOL ECT_ZeigeDauerbuchungenAusfuehrenDialog(
+    int nBuchungsjahr, HWND hWndOwner, int* pnMonatOut, int* pnJahrOut)
+{
+    try
+    {
+        IntPtr hwnd = IntPtr((void*)hWndOwner);
+        int monat = 0, jahr = 0;
+        bool ok = ECTViews::ViewHost::ZeigeDauerbuchungenAusfuehrenDialog(
+            nBuchungsjahr, hwnd, monat, jahr);
+        if (pnMonatOut) *pnMonatOut = monat;
+        if (pnJahrOut)  *pnJahrOut  = jahr;
+        return ok ? TRUE : FALSE;
+    }
+    catch (Exception^ ex)
+    {
+        CString msg;
+        msg = "Fehler im Dialog 'Dauerbuchungen ausfuehren': "; msg += CString(ex->Message);
+        AfxMessageBox(msg, MB_ICONERROR);
+        return FALSE;
+    }
+}
+
+// ----------------------------------------------------------
 // Stammdaten-Verwaltung (Betriebe + Bestandskonten)
 // ----------------------------------------------------------
 //

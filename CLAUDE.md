@@ -80,6 +80,10 @@ EasyCash/
       NavigationView.xaml(.cs)
       NavigationItem.cs
       NavigationViewModel.cs
+    Dauerbuchungen/              — Dauerbuchungs-Verwaltung + Ausführen-Abfrage
+      DauerbuchungenView.xaml(.cs)          — Liste + Editor (modal)
+      DauerbuchungenViewModel.cs            — arbeitet auf doc.Dauerbuchungen
+      DauerbuchungenAusfuehrenView.xaml(.cs) — "ausführen bis Monat/Jahr"
     Stammdaten/                  — Betriebe-/Bestandskonten-/Mandanten-Verwaltung
       StammdatenVerwaltenView.xaml(.cs) — Verwaltung + Auswahl (alle 3 Typen)
       StammdatenVerwaltenViewModel.cs   — abstrakt + Betriebe/Bestandskonten
@@ -238,6 +242,21 @@ robuster in hosted-WPF-Szenarien.
   zurück (auch bei Abbrechen) und wechselt nur bei Index >= 0.
   Datenverzeichnis-Picker = WinForms FolderBrowserDialog. Erstanlauf:
   `ECT_ZeigeMandantIconAuswahlDialog`.
+
+### ECTViews — Dauerbuchungen (komplett, Stand 2026-07-08)
+- `DauerbuchungenView` (modal, ersetzt den modeless `DauerbuchungenDlg`):
+  Liste + Editor mit Zustandsmodell wie das Original (Liste gesperrt
+  während Bearbeitung; "ausgeführt bis" nur beim Ändern editierbar).
+  Presets/Konten/MwSt (vat1..4)/Betriebe/Bestandskonten kommen aus dem
+  Einstellungs-Cache der Engine.
+- `DauerbuchungenAusfuehrenView` fragt nur Monat/Jahr ab — die
+  **Ausführung bleibt nativ** in `CEasyCashView::DauerbuchungenAusfuehren`
+  (Platzhalter inkl. $+m/$--M/$#, Buchungsjahr-Rückfrage,
+  Journal-Selektion). Engine-`ResolvePlatzhalter` kennt nur die
+  Basis-Platzhalter.
+- Exports: `ECT_ZeigeDauerbuchungenDialog` (Sync beide Richtungen +
+  SetModifiedFlag bei Änderung), `ECT_ZeigeDauerbuchungenAusfuehrenDialog`.
+- MwSt-Skala beachten: Engine-"Promille" = Prozent x1000 (19 % = 19000).
 
 ### Persistenz
 - `NavigationBreitenverhaeltnis` (Promille) wird vom existierenden

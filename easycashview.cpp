@@ -5928,6 +5928,11 @@ void CEasyCashView::OnEditAusgabeBuchen()
 
 void CEasyCashView::OnEditDauerbuchungenEingeben() 
 {
+#ifdef USE_ECTENGINE
+	// WPF-Dialog (modal statt modeless wie das MFC-Original). Sync in
+	// beide Richtungen macht der Bridge-Export.
+	ECT_ZeigeDauerbuchungenDialog(GetDocument(), AfxGetMainWnd()->GetSafeHwnd());
+#else
 	if (dauerbuchungenDlg) 
 	{
 		dauerbuchungenDlg->DestroyWindow();
@@ -5937,13 +5942,23 @@ void CEasyCashView::OnEditDauerbuchungenEingeben()
 	dauerbuchungenDlg = new DauerbuchungenDlg(GetDocument(), FALSE, this);
 	dauerbuchungenDlg->Create(IDD_DAUERBUCHUNGEN, this);
 	dauerbuchungenDlg->ShowWindow(SW_SHOW);
+#endif
 }
 
 void CEasyCashView::OnEditDauerbuchungenAusfuehren() 
 {
+#ifdef USE_ECTENGINE
+	// WPF-Dialog fragt Monat/Jahr ab; die Ausfuehrung selbst bleibt nativ
+	// (Platzhalter, Buchungsjahr-Rueckfrage, Journal-Selektion).
+	int nMonat = 0, nJahr = 0;
+	if (ECT_ZeigeDauerbuchungenAusfuehrenDialog(GetDocument()->nJahr,
+			AfxGetMainWnd()->GetSafeHwnd(), &nMonat, &nJahr))
+		DauerbuchungenAusfuehren(nJahr, nMonat);
+#else
 	DauBuchAusfuehren dlg(GetDocument(), this);
 	if (dlg.DoModal() == IDOK)
 		DauerbuchungenAusfuehren(dlg.m_jb, dlg.m_mb);
+#endif
 }
 
 void CEasyCashView::OnBuchenDauausJanuar()
@@ -6320,12 +6335,37 @@ void CEasyCashView::DauerbuchungenAusfuehren(int jb, int mb)
 		}
 	}
 #endif
+	// Statusmeldung: Monat im Klartext + Anzahl der erzeugten Buchungen
+	static const char* Monatsnamen[12] = { "Januar", "Februar", "März", "April",
+		"Mai", "Juni", "Juli", "August", "September", "Oktober", "November", "Dezember" };
+	CString csStatus;
+	csStatus.Format("Dauerbuchungen bis einschließlich %s %d ausgeführt",
+		(mb >= 1 && mb <= 12) ? Monatsnamen[mb-1] : "?", jb);
+	int nErzeugt = (int)erzeugteBuchungen.GetSize();
+	if (nErzeugt == 0)
+		csStatus += ", es wurden keine Buchungen erzeugt";
+	else if (nErzeugt == 1)
+		csStatus += ", es wurde eine Buchung erzeugt";
+	else
+	{
+		CString csAnzahl;
+		csAnzahl.Format(", es wurden %d Buchungen erzeugt", nErzeugt);
+		csStatus += csAnzahl;
+	}
+
 	// Recovery-Speichern jetzt einmal nachholen (in der Schleife mit dem 3.
 	// Parameter FALSE unterdrueckt). Erst hier gefahrlos: die Engine ist via
 	// SyncNativeToManaged konsistent und dbp wird nach der Schleife nicht
 	// mehr benutzt, der dabei ausgeloeste SyncManagedToNative ist also ok.
 	if (bDauerbuchungAusgefuehrt)
-		pDoc->SetModifiedFlag("Dauerbuchungen ausgefuehrt", TRUE, TRUE);
+		pDoc->SetModifiedFlag(csStatus, TRUE, TRUE);
+	else
+	{
+		// nichts erzeugt -> Dokument nicht als geändert markieren, nur die
+		// Statuszeile setzen (derselbe Weg wie in SetModifiedFlag)
+		HWND hWndMain = AfxGetMainWnd()->GetSafeHwnd();
+		if (hWndMain) ::SendMessage(hWndMain, WM_SETSTATUS, 0x4712, (LPARAM)(LPCTSTR)csStatus);
+	}
 }
 
 void CEasyCashView::GetUmsatzsteuervorauszahlung(int nZeitraum, CString& csValue)

@@ -242,6 +242,51 @@ namespace ECTViews
         }
 
         /// <summary>
+        /// Zeigt den Dauerbuchungs-Verwaltungsdialog (WPF-Ersatz für
+        /// DauerbuchungenDlg; modal statt modeless). Arbeitet direkt auf
+        /// doc.Dauerbuchungen -- der Aufrufer synchronisiert vorher
+        /// Native->Managed und bei Rückgabe true danach Managed->Native.
+        /// </summary>
+        /// <param name="dateiname">Anzeigename fürs Fenster ("Dauerbuchungen
+        /// für ...", wie das Original mit GetPathName).</param>
+        /// <returns>True wenn mindestens eine Änderung übernommen wurde.</returns>
+        public static bool ZeigeDauerbuchungenDialog(
+            BuchungsDocument doc, string dateiname, IntPtr ownerHwnd = default)
+        {
+            EnsureWpfInitialized();
+
+            var vm = new Dauerbuchungen.DauerbuchungenViewModel(doc, dateiname);
+            var view = new Dauerbuchungen.DauerbuchungenView(vm);
+            if (ownerHwnd != IntPtr.Zero)
+                new WindowInteropHelper(view) { Owner = ownerHwnd };
+
+            view.ShowDialog();
+            return vm.Geaendert;
+        }
+
+        /// <summary>
+        /// Zeigt den kleinen "Dauerbuchungen ausführen bis Monat/Jahr"-Dialog
+        /// (WPF-Ersatz für DauBuchAusfuehren). Die Ausführung selbst bleibt
+        /// beim nativen Aufrufer (DauerbuchungenAusfuehren).
+        /// </summary>
+        /// <returns>True wenn "Ausführen" geklickt wurde; monat/jahr sind
+        /// dann gültig (Jahr bereits gefensterlt/geklemmt).</returns>
+        public static bool ZeigeDauerbuchungenAusfuehrenDialog(
+            int buchungsjahr, IntPtr ownerHwnd, out int monat, out int jahr)
+        {
+            EnsureWpfInitialized();
+
+            var view = new Dauerbuchungen.DauerbuchungenAusfuehrenView(buchungsjahr);
+            if (ownerHwnd != IntPtr.Zero)
+                new WindowInteropHelper(view) { Owner = ownerHwnd };
+
+            view.ShowDialog();
+            monat = view.Monat;
+            jahr = view.Jahr;
+            return view.Bestaetigt;
+        }
+
+        /// <summary>
         /// Zeigt den Verwaltungs-/Auswahl-Dialog für Betriebe (WPF-Ersatz für
         /// CIconAuswahlBetrieb im Modus 1). Änderungen werden sofort über den
         /// Einstellungs-Cache in die ini geschrieben.
