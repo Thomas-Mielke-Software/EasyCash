@@ -1,0 +1,79 @@
+// WIdNrPruefung.cs -- Format-Prüfung der Wirtschafts-Identifikationsnummer.
+//
+// Gemeinsam genutzt von der Finanzamt-Einstellungsseite und dem
+// Unternehmensart-Dialog der Betriebe-Verwaltung (beide zeigen den
+// Fehlertext als rote Zeile unter dem Feld, advisory / nicht blockierend).
+// Logik ursprünglich gespiegelt aus IconAuswahlBetrieb.cpp, erweitert um
+// Unterscheidungsmerkmal- und Prüfziffern-Plausibilität.
+
+namespace ECTViews
+{
+    internal static class WIdNrPruefung
+    {
+        /// <summary>
+        /// Prueft die Wirtschafts-Identifikationsnummer (W-IdNr.) auf das
+        /// vom BZSt vergebene Format: Laenderkuerzel (2 Buchstaben) + 9 Ziffern
+        /// + Bindestrich + 5-stelliges Unterscheidungsmerkmal, z.B.
+        /// "DE123456789-00001" (17 Zeichen). Ein leeres Feld ist zulaessig.
+        /// Liefert null wenn ok, sonst den Fehlertext.
+        /// </summary>
+        internal static string Pruefe(string wert)
+        {
+            wert = wert?.Trim() ?? "";   // Validierung ohne Rand-Leerzeichen (Wert selbst bleibt roh)
+            if (string.IsNullOrEmpty(wert))
+                return null;  // leer ist erlaubt
+
+            if (wert.Length != 17)
+                return "Die Wirtschafts-Identifikationsnummer muss 17 Zeichen lang sein (z.B. DE123456789-00001).";
+            if (!IstBuchstabe(wert[0]) || !IstBuchstabe(wert[1]))
+                return "Die Wirtschafts-Identifikationsnummer muss mit zwei Buchstaben für das Länderkürzel beginnen, z.B. 'DE' oder 'AT'.";
+            if (wert[11] != '-')
+                return "Die Wirtschafts-Identifikationsnummer muss an der 12. Position einen Bindestrich enthalten.";
+            for (int i = 2; i < 17; i++)
+            {
+                if (i == 11) continue;  // den Bindestrich ueberspringen
+                if (!IstZiffer(wert[i]))
+                    return string.Format(
+                        "Die Wirtschafts-Identifikationsnummer muss an der {0}. Position eine Ziffer enthalten.", i + 1);
+            }
+
+            // Unterscheidungsmerkmal (die letzten 5 Ziffern) laeuft laut BZSt
+            // ab 00001 -- 00000 wird nie vergeben. Reine Plausibilitaet, da das
+            // Merkmal selbst keine Pruefziffer hat.
+            if (wert.Substring(12, 5) == "00000")
+                return "Das Unterscheidungsmerkmal (die letzten fünf Ziffern) beginnt bei 00001; 00000 wird nicht vergeben.";
+
+            // Pruefziffer der 9-stelligen Kernnummer -- aber nur fuer deutsche
+            // Nummern (DE). Das MOD-11,10-Verfahren gilt fuer die deutsche
+            // USt-IdNr/W-IdNr; auslaendische Laenderkuerzel nutzen andere
+            // Verfahren und werden hier nicht geprueft.
+            if ((wert[0] == 'D' || wert[0] == 'd') && (wert[1] == 'E' || wert[1] == 'e')
+                && !PruefzifferStimmt(wert.Substring(2, 9)))
+                return "Die Prüfziffer (9. Ziffer der Kernnummer) stimmt nicht -- bitte auf Tippfehler prüfen.";
+
+            return null;
+        }
+
+        /// <summary>
+        /// Prueft die 9-stellige Kernnummer (8 Nutzziffern + Pruefziffer an
+        /// 9. Stelle) nach ISO/IEC 7064 MOD 11,10 -- dem Verfahren der deutschen
+        /// USt-IdNr/W-IdNr. Erwartet genau 9 Ziffern (vom Aufrufer geprueft).
+        /// </summary>
+        private static bool PruefzifferStimmt(string kern)
+        {
+            int summand = 10;
+            for (int i = 0; i < 8; i++)
+            {
+                int m = (summand + (kern[i] - '0')) % 10;
+                if (m == 0) m = 10;
+                summand = (m * 2) % 11;
+            }
+            int pruef = 11 - summand;
+            if (pruef == 10) pruef = 0;
+            return pruef == (kern[8] - '0');
+        }
+
+        private static bool IstBuchstabe(char c) => (c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z');
+        private static bool IstZiffer(char c)    => c >= '0' && c <= '9';
+    }
+}

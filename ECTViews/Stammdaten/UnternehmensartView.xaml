@@ -1,0 +1,86 @@
+<Window x:Class="ECTViews.Stammdaten.UnternehmensartView"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Beschreibung des Betriebs"
+        Width="520" SizeToContent="Height"
+        WindowStartupLocation="CenterOwner"
+        ResizeMode="NoResize"
+        ShowInTaskbar="False"
+        Background="#F5F5F5"
+        FontFamily="Segoe UI" FontSize="13">
+
+    <Window.Resources>
+        <Style TargetType="TextBlock" x:Key="LabelStyle">
+            <Setter Property="VerticalAlignment" Value="Center"/>
+            <Setter Property="Margin" Value="0,0,10,0"/>
+            <Setter Property="Foreground" Value="#333"/>
+        </Style>
+        <Style TargetType="TextBox">
+            <Setter Property="Padding" Value="4,3"/>
+            <Setter Property="Margin" Value="0,3"/>
+        </Style>
+    </Window.Resources>
+
+    <StackPanel Margin="16">
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+
+            <TextBlock Grid.Row="0" Grid.Column="0" Style="{StaticResource LabelStyle}"
+                       Text="Unternehmensart:"/>
+            <TextBox x:Name="Unternehmensart1Box" Grid.Row="0" Grid.Column="1" MaxLength="40"
+                     Text="{Binding Unternehmensart1, UpdateSourceTrigger=PropertyChanged}"/>
+
+            <TextBlock Grid.Row="1" Grid.Column="0" Style="{StaticResource LabelStyle}"
+                       Text="Rechtsform:"/>
+            <TextBox Grid.Row="1" Grid.Column="1" MaxLength="40"
+                     Text="{Binding Unternehmensart2, UpdateSourceTrigger=PropertyChanged}"/>
+
+            <TextBlock Grid.Row="2" Grid.Column="0" Style="{StaticResource LabelStyle}"
+                       Text="Betriebssteuernr.:"/>
+            <TextBox Grid.Row="2" Grid.Column="1" MaxLength="20"
+                     Text="{Binding Steuernummer, UpdateSourceTrigger=PropertyChanged}"/>
+
+            <TextBlock Grid.Row="3" Grid.Column="0" Style="{StaticResource LabelStyle}"
+                       Text="Wirtschafts-ID-Nr.:"/>
+            <TextBox Grid.Row="3" Grid.Column="1" MaxLength="17"
+                     Text="{Binding WirtschaftsIdNr, UpdateSourceTrigger=PropertyChanged}"/>
+
+            <!-- W-IdNr-Fehlertext: rot, verschwindet bei leerem Text -->
+            <TextBlock Grid.Row="4" Grid.Column="1"
+                       Text="{Binding WirtschaftsIdNrFehler}" Foreground="#D32F2F"
+                       FontSize="11" FontStyle="Italic" TextWrapping="Wrap">
+                <TextBlock.Style>
+                    <Style TargetType="TextBlock">
+                        <Style.Triggers>
+                            <Trigger Property="Text" Value="">
+                                <Setter Property="Visibility" Value="Collapsed"/>
+                            </Trigger>
+                        </Style.Triggers>
+                    </Style>
+                </TextBlock.Style>
+            </TextBlock>
+        </Grid>
+
+        <TextBlock Margin="0,10,0,0" TextWrapping="Wrap"
+                   Foreground="#0277BD" FontSize="11" FontStyle="Italic"
+                   Text="Hinweis: die entsprechenden Felder in den Einstellungen (persönliche Daten und Finanzamt) werden durch die Angaben hier aufgehoben und stattdessen in Formularen benutzt."/>
+
+        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right"
+                    Margin="0,14,0,0">
+            <Button Content="OK" MinWidth="100" Padding="14,5" Margin="0,0,8,0"
+                    IsDefault="True" Click="OnOk"/>
+            <Button Content="Abbrechen" MinWidth="100" Padding="14,5"
+                    IsCancel="True"/>
+        </StackPanel>
+    </StackPanel>
+</Window>

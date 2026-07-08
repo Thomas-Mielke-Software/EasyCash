@@ -422,6 +422,48 @@ void ECT_SetzeBetriebeUndBestandskonten(
 }
 
 // ----------------------------------------------------------
+// Stammdaten-Verwaltung (Betriebe + Bestandskonten)
+// ----------------------------------------------------------
+//
+// Beide Dialoge schreiben ihre Aenderungen sofort ueber den globalen
+// Einstellungs-Cache in die easyct.ini (StammdatenVerwaltung in
+// ECTEngine). Der native Aufrufer liest seine Listen danach per
+// UpdateBetriebeMenu/UpdateBestandskontenMenu neu ein.
+
+int ECT_ZeigeBetriebeVerwaltenDialog(HWND hWndOwner)
+{
+    try
+    {
+        IntPtr hwnd = IntPtr((void*)hWndOwner);
+        return ECTViews::ViewHost::ZeigeBetriebeVerwaltenDialog(hwnd);
+    }
+    catch (Exception^ ex)
+    {
+        CString msg;
+        msg = "Fehler in ECT_ZeigeBetriebeVerwaltenDialog: "; msg += CString(ex->Message);
+        AfxMessageBox(msg, MB_ICONERROR);
+        return -1;
+    }
+}
+
+int ECT_ZeigeBestandskontenVerwaltenDialog(int nBuchungsjahr, HWND hWndOwner)
+{
+    try
+    {
+        IntPtr hwnd = IntPtr((void*)hWndOwner);
+        return ECTViews::ViewHost::ZeigeBestandskontenVerwaltenDialog(
+            nBuchungsjahr, hwnd);
+    }
+    catch (Exception^ ex)
+    {
+        CString msg;
+        msg = "Fehler in ECT_ZeigeBestandskontenVerwaltenDialog: "; msg += CString(ex->Message);
+        AfxMessageBox(msg, MB_ICONERROR);
+        return -1;
+    }
+}
+
+// ----------------------------------------------------------
 // "Buchungsjahr waehlen"-Dialog
 // ----------------------------------------------------------
 

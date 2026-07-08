@@ -242,6 +242,47 @@ namespace ECTViews
         }
 
         /// <summary>
+        /// Zeigt den Verwaltungs-/Auswahl-Dialog für Betriebe (WPF-Ersatz für
+        /// CIconAuswahlBetrieb im Modus 1). Änderungen werden sofort über den
+        /// Einstellungs-Cache in die ini geschrieben.
+        /// </summary>
+        /// <returns>Index des gewählten Betriebs ("Sel. anzeigen"), oder -1
+        /// für "Alle anzeigen"/Abbruch.</returns>
+        public static int ZeigeBetriebeVerwaltenDialog(IntPtr ownerHwnd = default)
+        {
+            EnsureWpfInitialized();
+
+            var vm = new Stammdaten.BetriebeVerwaltenViewModel();
+            var view = new Stammdaten.StammdatenVerwaltenView(vm);
+            if (ownerHwnd != IntPtr.Zero)
+                new WindowInteropHelper(view) { Owner = ownerHwnd };
+
+            view.ShowDialog();
+            return view.GewaehlterIndex;
+        }
+
+        /// <summary>
+        /// Zeigt den Verwaltungs-/Auswahl-Dialog für Bestandskonten (WPF-Ersatz
+        /// für CIconAuswahlBestandskonto im Modus 1).
+        /// </summary>
+        /// <param name="buchungsjahr">Buchungsjahr des aktiven Dokuments --
+        /// der Anfangssaldo-Dialog bearbeitet den Saldo des Vorjahres.</param>
+        /// <returns>Index des gewählten Bestandskontos, oder -1.</returns>
+        public static int ZeigeBestandskontenVerwaltenDialog(
+            int buchungsjahr, IntPtr ownerHwnd = default)
+        {
+            EnsureWpfInitialized();
+
+            var vm = new Stammdaten.BestandskontenVerwaltenViewModel(buchungsjahr);
+            var view = new Stammdaten.StammdatenVerwaltenView(vm);
+            if (ownerHwnd != IntPtr.Zero)
+                new WindowInteropHelper(view) { Owner = ownerHwnd };
+
+            view.ShowDialog();
+            return view.GewaehlterIndex;
+        }
+
+        /// <summary>
         /// Listet *.eca-Dateien im Verzeichnis auf, aufsteigend sortiert
         /// (jüngste zuletzt -- entspricht dem alten LBS_SORT der MFC-Liste).
         /// </summary>

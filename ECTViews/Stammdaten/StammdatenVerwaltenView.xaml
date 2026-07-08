@@ -1,0 +1,98 @@
+<Window x:Class="ECTViews.Stammdaten.StammdatenVerwaltenView"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="{Binding Titel}"
+        Width="680" Height="560"
+        MinWidth="520" MinHeight="420"
+        WindowStartupLocation="CenterOwner"
+        ResizeMode="CanResizeWithGrip"
+        ShowInTaskbar="False"
+        Background="#F5F5F5"
+        FontFamily="Segoe UI" FontSize="13">
+
+    <Grid Margin="12">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <!-- [Eintrags-Raster wie die alte CListCtrl-Icon-Ansicht] -->
+        <ListBox Grid.Row="0"
+                 ItemsSource="{Binding Eintraege}"
+                 SelectedItem="{Binding Auswahl}"
+                 MouseDoubleClick="OnDoppelklick"
+                 ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+                 VirtualizingPanel.IsVirtualizing="False">
+            <ListBox.ItemsPanel>
+                <ItemsPanelTemplate>
+                    <WrapPanel/>
+                </ItemsPanelTemplate>
+            </ListBox.ItemsPanel>
+            <ListBox.ItemTemplate>
+                <DataTemplate>
+                    <StackPanel Width="96" Margin="2" ToolTip="{Binding Name}">
+                        <Image Source="{Binding Icon}" Width="32" Height="32"
+                               Margin="0,4,0,2" SnapsToDevicePixels="True"/>
+                        <TextBlock Text="{Binding Name}" TextWrapping="Wrap"
+                                   TextAlignment="Center" FontSize="11"
+                                   MaxHeight="42" TextTrimming="CharacterEllipsis"/>
+                    </StackPanel>
+                </DataTemplate>
+            </ListBox.ItemTemplate>
+        </ListBox>
+
+        <!-- [Editor unter der Liste, wie bei der Konten-Seite] -->
+        <GroupBox Grid.Row="1" Header="Bearbeiten" Padding="8" Margin="0,10,0,0">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+
+                <TextBlock Grid.Column="0" Text="Name:" VerticalAlignment="Center"
+                           Margin="0,0,8,0" Foreground="#333"/>
+                <TextBox x:Name="NameBox" Grid.Column="1" Padding="4,3"
+                         VerticalAlignment="Center"
+                         IsEnabled="{Binding EintragGewaehlt}"
+                         Text="{Binding Auswahl.Name, UpdateSourceTrigger=LostFocus}"
+                         KeyDown="OnNameBoxKeyDown"
+                         ToolTip="Umbenennen: Namen direkt hier ändern (bestehende Buchungen behalten den alten Namen)"/>
+
+                <Button Grid.Column="2" Margin="10,0,0,0" Padding="10,4"
+                        Content="Icon ändern..."
+                        IsEnabled="{Binding EintragGewaehlt}"
+                        Click="OnIconAendern"/>
+                <Button Grid.Column="3" Margin="8,0,0,0" Padding="10,4"
+                        Content="{Binding PropertyKnopfText}"
+                        IsEnabled="{Binding EintragGewaehlt}"
+                        Click="OnPropertyBearbeiten"/>
+                <Button Grid.Column="4" Margin="8,0,0,0" Padding="10,4"
+                        Content="Löschen"
+                        IsEnabled="{Binding EintragGewaehlt}"
+                        Click="OnLoeschen"/>
+            </Grid>
+        </GroupBox>
+
+        <!-- [Neu + Auswahl-Knoepfe: OK = "Sel. anzeigen", Cancel = "Alle anzeigen"
+             wie CIconAuswahlBetrieb::InitDialog im Modus 1] -->
+        <Grid Grid.Row="2" Margin="0,10,0,0">
+            <Button HorizontalAlignment="Left" MinWidth="140" Padding="14,5"
+                    Content="{Binding NeuKnopfText}"
+                    Click="OnNeu"/>
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                <Button Content="Sel. anzeigen" MinWidth="110" Padding="14,5"
+                        Margin="0,0,8,0" IsDefault="True"
+                        IsEnabled="{Binding EintragGewaehlt}"
+                        ToolTip="Journal nur für den gewählten Eintrag anzeigen (Filter setzen)"
+                        Click="OnSelAnzeigen"/>
+                <Button Content="Alle anzeigen" MinWidth="110" Padding="14,5"
+                        IsCancel="True"
+                        ToolTip="Filter aufheben und wieder alle anzeigen"/>
+            </StackPanel>
+        </Grid>
+    </Grid>
+</Window>

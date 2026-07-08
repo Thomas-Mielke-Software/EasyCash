@@ -138,6 +138,36 @@ ECTBRIDGE_API void ECT_SetzeBetriebeUndBestandskonten(
     const int* pBestandskontenSalden, int nBestandskontenCount);
 
 // ──────────────────────────────────────────────
+// Stammdaten-Verwaltung (Betriebe + Bestandskonten)
+// ──────────────────────────────────────────────
+
+/// <summary>
+/// Zeigt den WPF-Verwaltungs-/Auswahl-Dialog für Betriebe (ersetzt
+/// CIconAuswahlBetrieb im Modus 1, siehe OnViewJournalBetrieb).
+/// Anlegen/Löschen/Umbenennen/Icon/Unternehmensart werden sofort über
+/// den globalen Einstellungs-Cache in die easyct.ini geschrieben --
+/// der Aufrufer muss danach seine Betriebe-Liste neu einlesen
+/// (UpdateBetriebeMenu ruft UpdateBetriebe).
+///
+/// Rückgabe:
+///   >= 0  Index des gewählten Betriebs ("Sel. anzeigen" -> Filter setzen)
+///   -1    "Alle anzeigen" / Abbruch -> Filter aufheben
+/// </summary>
+ECTBRIDGE_API int ECT_ZeigeBetriebeVerwaltenDialog(HWND hWndOwner);
+
+/// <summary>
+/// Wie ECT_ZeigeBetriebeVerwaltenDialog, für Bestandskonten (ersetzt
+/// CIconAuswahlBestandskonto im Modus 1, siehe OnViewJournalBestandskonto).
+///
+/// Parameter:
+///   nBuchungsjahr - Buchungsjahr des aktiven Dokuments (pDoc->nJahr);
+///                   der Anfangssaldo-Dialog bearbeitet SaldoJJJJ des
+///                   Vorjahres, wie CIconAuswahlBestandskonto::GetProperty.
+/// </summary>
+ECTBRIDGE_API int ECT_ZeigeBestandskontenVerwaltenDialog(
+    int nBuchungsjahr, HWND hWndOwner);
+
+// ──────────────────────────────────────────────
 // "Buchungsjahr wählen"-Dialog (beim Anlegen eines neuen Dokuments)
 // ──────────────────────────────────────────────
 

@@ -80,6 +80,13 @@ EasyCash/
       NavigationView.xaml(.cs)
       NavigationItem.cs
       NavigationViewModel.cs
+    Stammdaten/                  — Betriebe-/Bestandskonten-Verwaltung
+      StammdatenVerwaltenView.xaml(.cs) — Verwaltung + Filter-Auswahl
+      StammdatenVerwaltenViewModel.cs   — abstrakt + 2 konkrete VMs
+      IconAuswahlView.xaml(.cs)  — wiederverwendbarer Icon-Picker
+      IconKatalog.cs             — Icon-Namen (Spiegel von IconAuswahl*.cpp)
+      UnternehmensartView.xaml   — Betriebsdaten (Tab-getrennter ini-Wert)
+      AnfangssaldoView.xaml      — Anfangssaldo (SaldoJJJJ des Vorjahres)
     Resources/
       icons.bmp                  — Sprite mit Betrieb-Icons (32x32 horiz.)
       icons_bestandskonten.bmp   — Sprite mit Bestandskonto-Icons
@@ -204,6 +211,24 @@ robuster in hosted-WPF-Szenarien.
   `CNavigation::OnSize` denselben Hook ruft)
 - `OnDraw` und `OnUpdate` haben Frühausstieg bei `IstJournalWpfAktiv()`
 - `SetzeZoomfaktor` ruft `ECT_JournalSetzeZoom`
+
+### ECTViews — Stammdaten-Verwaltung (komplett, Stand 2026-07-07)
+- `StammdatenVerwaltenView` ersetzt `CIconAuswahlBetrieb`/`CIconAuswahlBestandskonto`
+  (Modus 1): Verwaltung (Neu/Löschen/Umbenennen inline/Icon/Property)
+  + Filter-Auswahl ("Sel. anzeigen" liefert Index, "Alle anzeigen" = -1).
+- Persistenz: `ECTEngine.StammdatenVerwaltung` hält Einträge roh
+  (Suffix->Wert), schreibt die ini-Sektion komplett neu über
+  `Einstellungen.SchreibeSektion` — SaldoJJJJ-Keys und unbekannte
+  Suffixe überleben, Reihenfolge bleibt beim Löschen stabil (anders
+  als das alte Verschieben des letzten Eintrags in die Lücke).
+- Exports: `ECT_ZeigeBetriebeVerwaltenDialog(hwnd)` /
+  `ECT_ZeigeBestandskontenVerwaltenDialog(nJahr, hwnd)`; Aufrufer in
+  `OnViewJournalBetrieb`/`OnViewJournalBestandskonto` (USE_ECTENGINE),
+  danach liest `UpdateBetriebeMenu`/`UpdateBestandskontenMenu` die
+  ini neu ein (Bridge schreibt synchron).
+- W-IdNr-Prüfung nach `WIdNrPruefung.cs` extrahiert (geteilt von
+  FinanzamtPage + UnternehmensartView).
+- `CIconAuswahlMandant` (Mandanten) bleibt vorerst MFC.
 
 ### Persistenz
 - `NavigationBreitenverhaeltnis` (Promille) wird vom existierenden

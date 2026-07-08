@@ -8450,6 +8450,20 @@ void CEasyCashView::OnViewJournalMonat()
 
 void CEasyCashView::OnViewJournalBestandskonto() 
 {
+#ifdef USE_ECTENGINE
+	// WPF-Verwaltungs-/Auswahl-Dialog (ersetzt CIconAuswahlBestandskonto,
+	// Modus 1). Änderungen (Neu/Löschen/Umbenennen/Icon/Anfangssaldo)
+	// stehen beim Zurückkehren bereits in Cache + ini;
+	// UpdateBestandskontenMenu liest m_Bestandskonten daraus neu ein.
+	int nGewaehlt = ECT_ZeigeBestandskontenVerwaltenDialog(
+		GetDocument()->nJahr, AfxGetMainWnd()->GetSafeHwnd());
+	UpdateBestandskontenMenu();
+	if (nGewaehlt >= 0 && nGewaehlt < m_Bestandskonten.GetSize())
+		m_BestandskontoFilterDisplay = m_Bestandskonten[nGewaehlt].name;
+	else
+		m_BestandskontoFilterDisplay = "";
+	GetDocument()->UpdateAllViews(NULL);
+#else
 	CIconAuswahlBestandskonto dlg(this);
 	dlg.m_nModus = 1;
 	int nReturn = dlg.DoModal();	
@@ -8465,6 +8479,7 @@ void CEasyCashView::OnViewJournalBestandskonto()
 		m_BestandskontoFilterDisplay = "";
 	//RedrawWindow();
 	GetDocument()->UpdateAllViews(NULL);
+#endif
 }
 
 void CEasyCashView::OnViewJournalBestkonten() 
@@ -8530,6 +8545,20 @@ void CEasyCashView::OnViewJournalBestandskonten()
 
 void CEasyCashView::OnViewJournalBetrieb() 
 {
+#ifdef USE_ECTENGINE
+	// WPF-Verwaltungs-/Auswahl-Dialog (ersetzt CIconAuswahlBetrieb, Modus 1).
+	// Änderungen (Neu/Löschen/Umbenennen/Icon/Unternehmensart) stehen beim
+	// Zurückkehren bereits in Cache + ini; UpdateBetriebeMenu liest
+	// m_Betriebe daraus neu ein.
+	int nGewaehlt = ECT_ZeigeBetriebeVerwaltenDialog(
+		AfxGetMainWnd()->GetSafeHwnd());
+	UpdateBetriebeMenu();
+	if (nGewaehlt >= 0 && nGewaehlt < m_Betriebe.GetSize())
+		m_BetriebFilterDisplay = m_Betriebe[nGewaehlt].name;
+	else
+		m_BetriebFilterDisplay = "";
+	GetDocument()->UpdateAllViews(NULL);
+#else
 	CIconAuswahlBetrieb dlg(this);
 	dlg.m_nModus = 1;
 	int nReturn = dlg.DoModal();
@@ -8545,6 +8574,7 @@ void CEasyCashView::OnViewJournalBetrieb()
 		m_BetriebFilterDisplay = "";
 	//RedrawWindow();
 	GetDocument()->UpdateAllViews(NULL);
+#endif
 }
 
 void CEasyCashView::OnViewJournalSwitch() 

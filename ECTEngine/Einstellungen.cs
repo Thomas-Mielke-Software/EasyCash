@@ -231,6 +231,26 @@ namespace ECTEngine
         /// <summary>Diagnose: alle aktuell gecachten Schlüssel.</summary>
         public static IEnumerable<string> AlleSchluessel => _cache.Keys;
 
+        /// <summary>
+        /// Liefert einen Schnappschuss aller Cache-Schlüssel, die mit dem
+        /// Präfix beginnen (case-insensitiv, thread-sicher). Wird von der
+        /// Stammdaten-Verwaltung genutzt, um alle Eintrags-Keys einer
+        /// Sektion (inkl. unbekannter Suffixe wie SaldoJJJJ) zu finden.
+        /// </summary>
+        public static List<string> HoleSchluesselMitPraefix(string praefix)
+        {
+            var ergebnis = new List<string>();
+            if (string.IsNullOrEmpty(praefix)) return ergebnis;
+            lock (_gate)
+            {
+                foreach (var key in _cache.Keys)
+                    if (key.StartsWith(praefix, StringComparison.OrdinalIgnoreCase)
+                        && !string.IsNullOrEmpty(_cache[key]))
+                        ergebnis.Add(key);
+            }
+            return ergebnis;
+        }
+
         // ---------------------------------------------------------------------
 
         /// <summary>
