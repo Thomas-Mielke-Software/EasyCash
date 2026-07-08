@@ -24,6 +24,7 @@
 #include "ECTBridge\EinstellungenExports.h"
 #ifdef USE_ECTENGINE
 #include "ECTBridge\JournalExports.h"
+#include "ECTBridge\ViewExports.h"
 #endif
 #include "EasyCashView.h"
 #include "..\GrafLib\cimage\cimage.h"
@@ -1238,6 +1239,134 @@ void CMainFrame::OnUpdateAppLook(CCmdUI* pCmdUI)
 
 void CMainFrame::OnFileMandanten() 
 {
+#ifdef USE_ECTENGINE
+	// WPF-Verwaltungs-/Auswahl-Dialog (ersetzt CIconAuswahlMandant, Modus 1).
+	// Die Mandanten liegen im App-Profil (theApp), das die Bridge nicht
+	// erreicht: Liste rein, geänderte Liste zurück, hier persistieren.
+	CString Mandant0Existiert = theApp.GetProfileString("Mandanten", "Mandant00Datenverzeichnis", "");
+	if (Mandant0Existiert.IsEmpty())
+	{
+		// Mandanten erzeugen, wenn nicht vorhanden (Ablauf + Texte wie im
+		// MFC-Original, nur der Icon-Picker ist jetzt WPF)
+		if (AfxMessageBox("Mit dieser Funktion können Mandanten angelegt werden, d.h. Datenverzeichnisse für verschiedene Steuerpflichtige, die so z.B. auch verschiedene Kontenrahmen nutzen können. Wenn es darum geht, verschiedene Geschäftsbereiche durch separate Einnahme-Überschuss-Rechnungen abzubilden bitte den Menüpunkt 'Journal nur für Betrieb' im Ansicht-Menü wählen (wird enthalten sein ab v1.5X). Zunächst bitte ein Symbol auswählen, das den bisherigen Datenbestand als 'Mandant 1' repräsentiert...", MB_OKCANCEL) == IDCANCEL) return;
+
+		// Icon wählen (WPF)
+		int nIcon = ECT_ZeigeMandantIconAuswahlDialog(GetSafeHwnd());
+		if (nIcon < 0)
+			return;
+
+		CString csSelected;
+		csSelected.Format("%d", nIcon);
+		theApp.WriteProfileString("Mandanten", "Mandant00Name", "Mandant 1");
+		theApp.WriteProfileString("Mandanten", "Mandant00Datenverzeichnis", theApp.GetProfileString("Allgemein", "Datenverzeichnis", ""));
+		theApp.WriteProfileString("Mandanten", "Mandant00Icon", csSelected);
+
+		SetMandant(0);
+		if (AfxMessageBox("Sehr gut! Das bisherige Datenverzeichnis wurde mit dem neu erstellten Mandanten 'Mandant 1' verknüpft. Als nächstes im Mandanten-Auswahl Dialog bitte mit dem Knopf 'Neuer Mandant' einen oder mehrere weitere Mandanten anlegen und zum Schluss den Mandanten, mit dem Sie aktuell arbeiten wollen mit Doppelklick auf das Icon auswählen. Hinweis: Bitte benutzen Sie ein anderes Verzeichnis als das des ersten Mandanten. Jeder Mandant benötigt ein eigenes Verzeichnis.", MB_OKCANCEL) == IDCANCEL) return;
+	}
+
+	{
+		// Mandanten aus dem App-Profil einsammeln. Lücken (durch das alte
+		// Tausch-Löschen möglich) werden kompaktiert -- unkritisch, weil die
+		// Liste nach dem Dialog komplett zurückgeschrieben wird und sich der
+		// Auswahl-Index auf die zurückgeschriebene Liste bezieht.
+		const int MAX_MANDANTEN = 100;
+		const int NAME_LEN = 256;
+		const int VERZ_LEN = 1000;
+		static char aNamen[MAX_MANDANTEN][NAME_LEN];
+		static int  aIcons[MAX_MANDANTEN];
+		static char aVerzeichnisse[MAX_MANDANTEN][VERZ_LEN];
+		LPCSTR apNamen[MAX_MANDANTEN];
+		LPCSTR apVerzeichnisse[MAX_MANDANTEN];
+
+		int nAnzahl = 0, nHoechsterSlot = -1;
+		int i;
+		for (i = 0; i < MAX_MANDANTEN; i++)
+		{
+			CString csKey, csName, csVerzeichnis, csIcon;
+			csKey.Format("Mandant%-02.2dName", i);
+			csName = theApp.GetProfileString("Mandanten", csKey, "");
+			csKey.Format("Mandant%-02.2dDatenverzeichnis", i);
+			csVerzeichnis = theApp.GetProfileString("Mandanten", csKey, "");
+			csKey.Format("Mandant%-02.2dIcon", i);
+			csIcon = theApp.GetProfileString("Mandanten", csKey, "0");
+			if (csName.IsEmpty() && csVerzeichnis.IsEmpty())
+				continue;	// Lücke überspringen
+			nHoechsterSlot = i;
+			strncpy_s(aNamen[nAnzahl], NAME_LEN, (LPCTSTR)csName, _TRUNCATE);
+			strncpy_s(aVerzeichnisse[nAnzahl], VERZ_LEN, (LPCTSTR)csVerzeichnis, _TRUNCATE);
+			aIcons[nAnzahl] = atoi(csIcon);
+			nAnzahl++;
+		}
+		for (i = 0; i < nAnzahl; i++)
+		{
+			apNamen[i] = aNamen[i];
+			apVerzeichnisse[i] = aVerzeichnisse[i];
+		}
+
+		// WPF-Dialog: liefert Auswahl-Index und die geänderte Liste zurück
+		// (in denselben Puffern -- die Bridge kopiert die Eingabe, bevor der
+		// Dialog läuft, und befüllt die Out-Puffer erst danach)
+		int nAnzahlNeu = -1;
+		int nGewaehlt = ECT_ZeigeMandantenVerwaltenDialog(
+			apNamen, aIcons, apVerzeichnisse, nAnzahl,
+			GetSafeHwnd(),
+			&aNamen[0][0], NAME_LEN,
+			aIcons,
+			&aVerzeichnisse[0][0], VERZ_LEN,
+			MAX_MANDANTEN, &nAnzahlNeu);
+
+		// Geänderte Liste IMMER zurückschreiben (auch bei Abbrechen), damit
+		// Neu/Löschen/Umbenennen/Icon/Datenverzeichnis erhalten bleiben --
+		// wie im Original, das direkt ins Profil schrieb
+		if (nAnzahlNeu >= 0)
+		{
+			for (i = 0; i < nAnzahlNeu; i++)
+			{
+				CString csKey, csIcon;
+				csIcon.Format("%d", aIcons[i]);
+				csKey.Format("Mandant%-02.2dName", i);
+				theApp.WriteProfileString("Mandanten", csKey, aNamen[i]);
+				csKey.Format("Mandant%-02.2dDatenverzeichnis", i);
+				theApp.WriteProfileString("Mandanten", csKey, aVerzeichnisse[i]);
+				csKey.Format("Mandant%-02.2dIcon", i);
+				theApp.WriteProfileString("Mandanten", csKey, csIcon);
+			}
+			// Slots gelöschter/kompaktierter Einträge leeren
+			for (i = nAnzahlNeu; i <= nHoechsterSlot; i++)
+			{
+				CString csKey;
+				csKey.Format("Mandant%-02.2dName", i);
+				theApp.WriteProfileString("Mandanten", csKey, "");
+				csKey.Format("Mandant%-02.2dDatenverzeichnis", i);
+				theApp.WriteProfileString("Mandanten", csKey, "");
+				csKey.Format("Mandant%-02.2dIcon", i);
+				theApp.WriteProfileString("Mandanten", csKey, "");
+			}
+		}
+
+		if (nGewaehlt < 0 || nGewaehlt >= nAnzahlNeu)
+			return;	// Abbrechen -> kein Mandantenwechsel
+
+		// Mandantenwechsel wie im Original
+		SetMandant(nGewaehlt);
+		CString csDatenverzeichnis = aVerzeichnisse[nGewaehlt];
+		if (!csDatenverzeichnis.IsEmpty())
+			theApp.WriteProfileString("Allgemein", "Datenverzeichnis", csDatenverzeichnis);
+
+		char szIniFileName[VERZ_LEN + 20];
+		strcpy(szIniFileName, (LPCTSTR)csDatenverzeichnis);
+		strcat(szIniFileName, "\\easyct.ini");
+		SetIniFileName(szIniFileName);	// lädt auch den Einstellungs-Cache neu
+
+		char last_file[500];
+		GetPrivateProfileString("Allgemein", "LetzteDatei", "", last_file, sizeof(last_file), szIniFileName);
+		if (*last_file != '\0')
+			AfxGetApp()->OpenDocumentFile(last_file);
+		else
+			AfxMessageBox("Hinweis: Unter Menü->Datei->Neu kann jetzt eine neue Buchungsdatei angelegt werden.");
+	}
+#else
 	CString Mandant0Existiert = theApp.GetProfileString("Mandanten", "Mandant00Datenverzeichnis", "");
 	if (Mandant0Existiert.IsEmpty())
 	{
@@ -1289,6 +1418,7 @@ void CMainFrame::OnFileMandanten()
 		else
 			AfxMessageBox("Hinweis: Unter Menü->Datei->Neu kann jetzt eine neue Buchungsdatei angelegt werden.");
 	}
+#endif
 }
 
 

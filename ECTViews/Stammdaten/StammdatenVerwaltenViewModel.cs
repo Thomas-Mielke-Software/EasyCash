@@ -48,6 +48,7 @@ namespace ECTViews.Stammdaten
                 if (string.IsNullOrEmpty(neu) || Modell.Name == neu) return;
                 Modell.Name = neu;
                 OnPropertyChanged();
+                OnPropertyChanged(nameof(ToolTipText));
                 _besitzer.Persistiere();
                 Statusleiste.Melde($"In \"{neu}\" umbenannt.");
             }
@@ -67,6 +68,12 @@ namespace ECTViews.Stammdaten
 
         /// <summary>Zugeschnittenes Icon aus dem Sprite (null-tolerant).</summary>
         public ImageSource Icon => IconSpriteSplitter.Crop(_besitzer.Sprite, Modell.Icon);
+
+        /// <summary>Tooltip in der Liste -- typspezifisch (Mandanten zeigen
+        /// z.B. das Datenverzeichnis mit an).</summary>
+        public string ToolTipText => _besitzer.EintragToolTip(this);
+
+        internal void MeldeToolTipGeaendert() => OnPropertyChanged(nameof(ToolTipText));
     }
 
     public abstract class StammdatenVerwaltenViewModel : ViewModelBase
@@ -96,6 +103,20 @@ namespace ECTViews.Stammdaten
         public abstract string NeuKnopfText { get; }
         /// <summary>Beschriftung des Property-Knopfs (wie IDC_PROPERTY im Original).</summary>
         public abstract string PropertyKnopfText { get; }
+
+        // OK-/Abbrechen-Beschriftung: Betriebe/Bestandskonten dienen der
+        // Journal-Filter-Auswahl ("Sel. anzeigen"/"Alle anzeigen"), Mandanten
+        // dem Mandantenwechsel -- dort passen die Filter-Texte nicht.
+        public virtual string OkKnopfText => "Sel. anzeigen";
+        public virtual string AbbrechenKnopfText => "Alle anzeigen";
+        public virtual string OkKnopfToolTip =>
+            "Journal nur für den gewählten Eintrag anzeigen (Filter setzen)";
+        public virtual string AbbrechenKnopfToolTip =>
+            "Filter aufheben und wieder alle anzeigen";
+
+        /// <summary>Tooltip eines Listen-Eintrags (Default: nur der Name).</summary>
+        internal virtual string EintragToolTip(StammdatenEintragVM eintrag)
+            => eintrag.Name;
         internal abstract string Sektion { get; }
         internal abstract string Praefix { get; }
         internal abstract BitmapSource Sprite { get; }
@@ -119,16 +140,18 @@ namespace ECTViews.Stammdaten
             // Subklassen-Konstruktion nutzbar -> Laden explizit über Lade().
         }
 
-        /// <summary>Einträge aus dem Einstellungs-Cache (neu) laden.</summary>
-        public void Lade()
+        /// <summary>Einträge aus dem Einstellungs-Cache (neu) laden.
+        /// Mandanten überschreiben das (App-Profil statt Cache).</summary>
+        public virtual void Lade()
         {
             Eintraege.Clear();
             foreach (var e in StammdatenVerwaltung.Lese(Sektion, Praefix))
                 Eintraege.Add(new StammdatenEintragVM(e, this));
         }
 
-        /// <summary>Schreibt die komplette Liste in Cache + ini-Sektion.</summary>
-        internal void Persistiere()
+        /// <summary>Schreibt die komplette Liste in Cache + ini-Sektion.
+        /// Mandanten überschreiben das (der native Aufrufer persistiert).</summary>
+        internal virtual void Persistiere()
         {
             StammdatenVerwaltung.Schreibe(Sektion, Praefix,
                 Eintraege.Select(vm => vm.Modell).ToList());
@@ -194,6 +217,7 @@ namespace ECTViews.Stammdaten
         {
             if (eintrag == null) return;
             eintrag.Modell.Werte[PropertySuffix] = wert ?? "";
+            eintrag.MeldeToolTipGeaendert();
             Persistiere();
         }
     }

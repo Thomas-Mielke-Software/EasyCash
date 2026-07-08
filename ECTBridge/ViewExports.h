@@ -167,6 +167,44 @@ ECTBRIDGE_API int ECT_ZeigeBetriebeVerwaltenDialog(HWND hWndOwner);
 ECTBRIDGE_API int ECT_ZeigeBestandskontenVerwaltenDialog(
     int nBuchungsjahr, HWND hWndOwner);
 
+/// <summary>
+/// Zeigt den WPF-Verwaltungs-/Auswahl-Dialog für Mandanten (ersetzt
+/// CIconAuswahlMandant im Modus 1, siehe CMainFrame::OnFileMandanten).
+///
+/// Die Mandanten liegen im Anwendungsprofil (theApp.GetProfileString),
+/// das die Bridge nicht erreicht -- deshalb übergibt der Aufrufer die
+/// aktuelle Liste und bekommt die (ggf. per Neu/Löschen/Umbenennen/Icon/
+/// Datenverzeichnis geänderte) Liste über die Out-Puffer zurück. Er muss
+/// sie IMMER zurückschreiben, wenn *pnAnzahlOut >= 0 ist -- auch bei
+/// Abbruch, denn Verwaltungs-Änderungen sollen wie im Original erhalten
+/// bleiben. Bei einer Exception ist *pnAnzahlOut == -1 (nichts schreiben).
+///
+/// Parameter:
+///   pNamen/pIcons/pVerzeichnisse - aktuelle Mandanten (nAnzahl Stück)
+///   pszNamenOut         - Puffer für nMaxAnzahlOut Namen, je nNamenStride Bytes
+///   pIconsOut           - Puffer für nMaxAnzahlOut Icon-Indizes
+///   pszVerzeichnisseOut - Puffer für nMaxAnzahlOut Pfade, je nVerzStride Bytes
+///   pnAnzahlOut         - [out] Anzahl zurückgegebener Einträge (-1 bei Fehler)
+///
+/// Rückgabe:
+///   >= 0  Index des gewählten Mandanten (bezogen auf die Out-Liste)
+///   -1    Abbrechen -> kein Mandantenwechsel
+/// </summary>
+ECTBRIDGE_API int ECT_ZeigeMandantenVerwaltenDialog(
+    LPCSTR* pNamen, const int* pIcons, LPCSTR* pVerzeichnisse, int nAnzahl,
+    HWND hWndOwner,
+    char* pszNamenOut, int nNamenStride,
+    int* pIconsOut,
+    char* pszVerzeichnisseOut, int nVerzStride,
+    int nMaxAnzahlOut, int* pnAnzahlOut);
+
+/// <summary>
+/// Reiner Icon-Picker mit den Mandanten-Icons (= Betriebe-Sprite).
+/// Für den Erstanlauf in OnFileMandanten ("Mandant 1" anlegen).
+/// Rückgabe: Icon-Index, oder -1 bei Abbruch.
+/// </summary>
+ECTBRIDGE_API int ECT_ZeigeMandantIconAuswahlDialog(HWND hWndOwner);
+
 // ──────────────────────────────────────────────
 // "Buchungsjahr wählen"-Dialog (beim Anlegen eines neuen Dokuments)
 // ──────────────────────────────────────────────

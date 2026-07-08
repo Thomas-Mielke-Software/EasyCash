@@ -1167,17 +1167,16 @@ void CEasyCashApp::OnFileOpen()
 {
 	char szPathName[500], IniFileName[500];
 	GetIniFileName(IniFileName, sizeof(IniFileName));
-	if (*IniFileName) GetPrivateProfileString("Allgemein", "LetzteDatei", "", szPathName, sizeof(szPathName), IniFileName);
-	//CString csDatenverzeichnis = theApp.GetProfileString("Allgemein", "Datenverzeichnis", "");
-	//if (!csDatenverzeichnis.IsEmpty())
-		//SetCurrentDirectory(csDatenverzeichnis);
-	//CWinAppEx::OnFileOpen();
 
-	if (!*szPathName)
+	// Immer das Daten- bzw. Mandantenverzeichnis vorauswählen (Verzeichnis
+	// der easyct.ini), NICHT die zuletzt geöffnete Datei -- die kann in
+	// einem fremden Verzeichnis liegen (z.B. dem eines anderen Mandanten).
+	// Als Namensvorschlag dient die Jahresdatei des aktuellen Jahres.
+	*szPathName = '\0';
+	GetIniFileName(szPathName, 500);
 	{
-		GetIniFileName(szPathName, 500);
 		char *cp1 = strrchr(szPathName, '\\');
-		if (cp1) 
+		if (cp1)
 		{
 			*cp1 = '\0';
 			CTime now;

@@ -31,7 +31,7 @@
             </ListBox.ItemsPanel>
             <ListBox.ItemTemplate>
                 <DataTemplate>
-                    <StackPanel Width="96" Margin="2" ToolTip="{Binding Name}">
+                    <StackPanel Width="96" Margin="2" ToolTip="{Binding ToolTipText}">
                         <Image Source="{Binding Icon}" Width="32" Height="32"
                                Margin="0,4,0,2" SnapsToDevicePixels="True"/>
                         <TextBlock Text="{Binding Name}" TextWrapping="Wrap"
@@ -77,21 +77,23 @@
             </Grid>
         </GroupBox>
 
-        <!-- [Neu + Auswahl-Knoepfe: OK = "Sel. anzeigen", Cancel = "Alle anzeigen"
-             wie CIconAuswahlBetrieb::InitDialog im Modus 1] -->
+        <!-- [Neu + Auswahl-Knoepfe: Texte kommen aus dem ViewModel.
+             Betriebe/Bestandskonten: "Sel. anzeigen"/"Alle anzeigen"
+             (wie CIconAuswahlBetrieb::InitDialog im Modus 1),
+             Mandanten: "Auswählen"/"Abbrechen"] -->
         <Grid Grid.Row="2" Margin="0,10,0,0">
             <Button HorizontalAlignment="Left" MinWidth="140" Padding="14,5"
                     Content="{Binding NeuKnopfText}"
                     Click="OnNeu"/>
             <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
-                <Button Content="Sel. anzeigen" MinWidth="110" Padding="14,5"
+                <Button Content="{Binding OkKnopfText}" MinWidth="110" Padding="14,5"
                         Margin="0,0,8,0" IsDefault="True"
                         IsEnabled="{Binding EintragGewaehlt}"
-                        ToolTip="Journal nur für den gewählten Eintrag anzeigen (Filter setzen)"
+                        ToolTip="{Binding OkKnopfToolTip}"
                         Click="OnSelAnzeigen"/>
-                <Button Content="Alle anzeigen" MinWidth="110" Padding="14,5"
+                <Button Content="{Binding AbbrechenKnopfText}" MinWidth="110" Padding="14,5"
                         IsCancel="True"
-                        ToolTip="Filter aufheben und wieder alle anzeigen"/>
+                        ToolTip="{Binding AbbrechenKnopfToolTip}"/>
             </StackPanel>
         </Grid>
     </Grid>

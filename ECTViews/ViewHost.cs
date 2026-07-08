@@ -283,6 +283,68 @@ namespace ECTViews
         }
 
         /// <summary>
+        /// Zeigt den Verwaltungs-/Auswahl-Dialog für Mandanten (WPF-Ersatz für
+        /// CIconAuswahlMandant im Modus 1). Die Mandanten liegen im
+        /// App-Profil (Registry) -- deshalb übergibt der Aufrufer die Liste
+        /// und bekommt die (ggf. geänderte) Liste im Ergebnis zurück, um sie
+        /// selbst zu persistieren. Das gilt auch bei Abbruch, damit
+        /// Verwaltungs-Änderungen wie im MFC-Original erhalten bleiben.
+        /// </summary>
+        /// <param name="aktuellesDatenverzeichnis">Aktuelles Daten-/
+        /// Mandantenverzeichnis -- Vorauswahl-Fallback für den
+        /// Ordner-Picker (optional).</param>
+        public static MandantenVerwaltenErgebnis ZeigeMandantenVerwaltenDialog(
+            System.Collections.Generic.IList<string> namen,
+            System.Collections.Generic.IList<int> icons,
+            System.Collections.Generic.IList<string> datenverzeichnisse,
+            string aktuellesDatenverzeichnis = null,
+            IntPtr ownerHwnd = default)
+        {
+            EnsureWpfInitialized();
+
+            var vm = new Stammdaten.MandantenVerwaltenViewModel(
+                namen, icons, datenverzeichnisse, aktuellesDatenverzeichnis);
+            var view = new Stammdaten.StammdatenVerwaltenView(vm);
+            if (ownerHwnd != IntPtr.Zero)
+                new WindowInteropHelper(view) { Owner = ownerHwnd };
+
+            view.ShowDialog();
+
+            var ergebnis = new MandantenVerwaltenErgebnis
+            {
+                GewaehlterIndex = view.GewaehlterIndex
+            };
+            foreach (var e in vm.Eintraege)
+            {
+                ergebnis.Namen.Add(e.Name);
+                ergebnis.Icons.Add(e.IconIndex);
+                ergebnis.Datenverzeichnisse.Add(vm.HoleProperty(e));
+            }
+            return ergebnis;
+        }
+
+        /// <summary>
+        /// Zeigt den reinen Icon-Picker mit den Mandanten-Icons (= Betriebe-
+        /// Sprite). Für den Erstanlauf in OnFileMandanten, wenn "Mandant 1"
+        /// aus dem bisherigen Datenbestand angelegt wird.
+        /// </summary>
+        /// <returns>Icon-Index, oder -1 bei Abbruch.</returns>
+        public static int ZeigeMandantIconAuswahlDialog(IntPtr ownerHwnd = default)
+        {
+            EnsureWpfInitialized();
+
+            var vm = new Stammdaten.IconAuswahlViewModel(
+                "Icon für Mandant wählen",
+                SpriteBetriebe, Stammdaten.IconKatalog.Betriebe);
+            var view = new Stammdaten.IconAuswahlView(vm);
+            if (ownerHwnd != IntPtr.Zero)
+                new WindowInteropHelper(view) { Owner = ownerHwnd };
+
+            view.ShowDialog();
+            return view.GewaehlterIndex;
+        }
+
+        /// <summary>
         /// Listet *.eca-Dateien im Verzeichnis auf, aufsteigend sortiert
         /// (jüngste zuletzt -- entspricht dem alten LBS_SORT der MFC-Liste).
         /// </summary>
@@ -314,6 +376,25 @@ namespace ECTViews
                 a.Name, b.Name, StringComparison.OrdinalIgnoreCase));
             return liste;
         }
+    }
+
+    /// <summary>
+    /// Ergebnis von ViewHost.ZeigeMandantenVerwaltenDialog: die komplette
+    /// (ggf. geänderte) Mandanten-Liste plus Auswahl-Index. Der native
+    /// Aufrufer schreibt die Liste ins App-Profil zurück und wechselt bei
+    /// GewaehlterIndex >= 0 zum gewählten Mandanten.
+    /// </summary>
+    public sealed class MandantenVerwaltenErgebnis
+    {
+        /// <summary>Index in der Liste, oder -1 bei Abbrechen.</summary>
+        public int GewaehlterIndex { get; set; } = -1;
+
+        public System.Collections.Generic.List<string> Namen { get; }
+            = new System.Collections.Generic.List<string>();
+        public System.Collections.Generic.List<int> Icons { get; }
+            = new System.Collections.Generic.List<int>();
+        public System.Collections.Generic.List<string> Datenverzeichnisse { get; }
+            = new System.Collections.Generic.List<string>();
     }
 
     /// <summary>

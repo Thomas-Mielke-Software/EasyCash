@@ -16,6 +16,12 @@
     <Compile Remove="Views\ScrollIntoViewForListBox.cs" />
   </ItemGroup>
 
+  <!-- WinForms nur für den FolderBrowserDialog der Mandanten-Verwaltung
+       (WPF/.NET 4.8 hat keinen eigenen Ordner-Picker). -->
+  <ItemGroup>
+    <Reference Include="System.Windows.Forms" />
+  </ItemGroup>
+
   <!-- Sprite-Bitmaps für Betrieb/Bestandskonto-Icons als WPF-Ressourcen.
        Werden zur Laufzeit über pack://-URI geladen. Die Dateien müssen
        im Projektverzeichnis unter Resources/ liegen — am einfachsten

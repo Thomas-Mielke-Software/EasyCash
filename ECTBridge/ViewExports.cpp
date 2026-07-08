@@ -526,6 +526,91 @@ int ECT_ShowBuchungsjahrWaehlenDialog(
 }
 
 // ----------------------------------------------------------
+// Mandanten-Verwaltung
+// ----------------------------------------------------------
+//
+// Die Mandanten liegen im App-Profil (theApp), das die Bridge nicht
+// erreicht: Liste rein, geaenderte Liste ueber Out-Puffer zurueck,
+// der native Aufrufer persistiert (siehe ViewExports.h).
+
+// Fuer die Ordner-Picker-Vorauswahl: Verzeichnis der easyct.ini
+// (= aktuelles Daten-/Mandantenverzeichnis), siehe ectifacemisc.cpp
+extern "C" AFX_EXT_CLASS BOOL GetIniFileName(char* buffer3, int size);
+
+int ECT_ZeigeMandantenVerwaltenDialog(
+    LPCSTR* pNamen, const int* pIcons, LPCSTR* pVerzeichnisse, int nAnzahl,
+    HWND hWndOwner,
+    char* pszNamenOut, int nNamenStride,
+    int* pIconsOut,
+    char* pszVerzeichnisseOut, int nVerzStride,
+    int nMaxAnzahlOut, int* pnAnzahlOut)
+{
+    if (pnAnzahlOut) *pnAnzahlOut = -1;   // Default: nichts zurueckschreiben
+    try
+    {
+        auto namen = MachListe(pNamen, nAnzahl);
+        auto icons = MachIntListe(pIcons, nAnzahl);
+        auto verzeichnisse = MachListe(pVerzeichnisse, nAnzahl);
+
+        // Aktuelles Daten-/Mandantenverzeichnis als Vorauswahl-Fallback
+        // fuer den Ordner-Picker (Verzeichnis der easyct.ini)
+        char iniBuf[1024] = "";
+        System::String^ aktuellesVerzeichnis = System::String::Empty;
+        if (GetIniFileName(iniBuf, sizeof(iniBuf)) && *iniBuf)
+        {
+            char* cp = strrchr(iniBuf, '\\');
+            if (cp) *cp = '\0';
+            aktuellesVerzeichnis = gcnew System::String(iniBuf);
+        }
+
+        IntPtr hwnd = IntPtr((void*)hWndOwner);
+        ECTViews::MandantenVerwaltenErgebnis^ ergebnis =
+            ECTViews::ViewHost::ZeigeMandantenVerwaltenDialog(
+                namen, icons, verzeichnisse, aktuellesVerzeichnis, hwnd);
+
+        int nOut = ergebnis->Namen->Count;
+        if (nOut > nMaxAnzahlOut) nOut = nMaxAnzahlOut;
+        for (int i = 0; i < nOut; i++)
+        {
+            if (pszNamenOut && nNamenStride > 0)
+                KopiereInPuffer(ergebnis->Namen[i],
+                    pszNamenOut + i * nNamenStride, nNamenStride);
+            if (pIconsOut)
+                pIconsOut[i] = ergebnis->Icons[i];
+            if (pszVerzeichnisseOut && nVerzStride > 0)
+                KopiereInPuffer(ergebnis->Datenverzeichnisse[i],
+                    pszVerzeichnisseOut + i * nVerzStride, nVerzStride);
+        }
+        if (pnAnzahlOut) *pnAnzahlOut = nOut;
+
+        return ergebnis->GewaehlterIndex < nOut ? ergebnis->GewaehlterIndex : -1;
+    }
+    catch (Exception^ ex)
+    {
+        CString msg;
+        msg = "Fehler in ECT_ZeigeMandantenVerwaltenDialog: "; msg += CString(ex->Message);
+        AfxMessageBox(msg, MB_ICONERROR);
+        return -1;
+    }
+}
+
+int ECT_ZeigeMandantIconAuswahlDialog(HWND hWndOwner)
+{
+    try
+    {
+        IntPtr hwnd = IntPtr((void*)hWndOwner);
+        return ECTViews::ViewHost::ZeigeMandantIconAuswahlDialog(hwnd);
+    }
+    catch (Exception^ ex)
+    {
+        CString msg;
+        msg = "Fehler in ECT_ZeigeMandantIconAuswahlDialog: "; msg += CString(ex->Message);
+        AfxMessageBox(msg, MB_ICONERROR);
+        return -1;
+    }
+}
+
+// ----------------------------------------------------------
 // Buchungsjournal
 // ----------------------------------------------------------
 

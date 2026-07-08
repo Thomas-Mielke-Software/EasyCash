@@ -80,9 +80,11 @@ EasyCash/
       NavigationView.xaml(.cs)
       NavigationItem.cs
       NavigationViewModel.cs
-    Stammdaten/                  — Betriebe-/Bestandskonten-Verwaltung
-      StammdatenVerwaltenView.xaml(.cs) — Verwaltung + Filter-Auswahl
-      StammdatenVerwaltenViewModel.cs   — abstrakt + 2 konkrete VMs
+    Stammdaten/                  — Betriebe-/Bestandskonten-/Mandanten-Verwaltung
+      StammdatenVerwaltenView.xaml(.cs) — Verwaltung + Auswahl (alle 3 Typen)
+      StammdatenVerwaltenViewModel.cs   — abstrakt + Betriebe/Bestandskonten
+      MandantenVerwaltenViewModel.cs    — In-Memory-Liste (App-Profil!),
+                                          FolderBrowserDialog (WinForms)
       IconAuswahlView.xaml(.cs)  — wiederverwendbarer Icon-Picker
       IconKatalog.cs             — Icon-Namen (Spiegel von IconAuswahl*.cpp)
       UnternehmensartView.xaml   — Betriebsdaten (Tab-getrennter ini-Wert)
@@ -228,7 +230,14 @@ robuster in hosted-WPF-Szenarien.
   ini neu ein (Bridge schreibt synchron).
 - W-IdNr-Prüfung nach `WIdNrPruefung.cs` extrahiert (geteilt von
   FinanzamtPage + UnternehmensartView).
-- `CIconAuswahlMandant` (Mandanten) bleibt vorerst MFC.
+- **Mandanten (Stand 2026-07-08)**: dritte VM-Subklasse, aber ANDERE
+  Persistenz — Mandanten liegen im App-Profil (theApp/Registry), nicht
+  in der easyct.ini. Listen-Roundtrip über
+  `ECT_ZeigeMandantenVerwaltenDialog` (Liste rein, geänderte Liste über
+  Out-Puffer zurück); `OnFileMandanten` (mainfrm.cpp) schreibt sie IMMER
+  zurück (auch bei Abbrechen) und wechselt nur bei Index >= 0.
+  Datenverzeichnis-Picker = WinForms FolderBrowserDialog. Erstanlauf:
+  `ECT_ZeigeMandantIconAuswahlDialog`.
 
 ### Persistenz
 - `NavigationBreitenverhaeltnis` (Promille) wird vom existierenden
