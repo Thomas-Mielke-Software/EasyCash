@@ -88,6 +88,14 @@ namespace ECTViews.Stammdaten
                 return;
 
             _vm.Loeschen(eintrag);
+
+            // Typspezifische Nachbehandlung (Mandanten: Moduswechsel-Meldungen
+            // beim Löschen des vorletzten/letzten Mandanten). Verlangt die VM
+            // das Schließen, wird der Dialog wie ein Abbruch beendet -- die
+            // (jetzt leere) Liste wird vom nativen Aufrufer trotzdem
+            // zurückgeschrieben, GewaehlterIndex bleibt -1.
+            if (_vm.NachLoeschen(this, eintrag))
+                DialogResult = false;
         }
 
         private void OnIconAendern(object sender, RoutedEventArgs e)

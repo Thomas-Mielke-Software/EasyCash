@@ -457,9 +457,21 @@ namespace ECTViews.EinstellungenUi.Pages
                 }
             }
 
-            /// <summary>Ohne Konto wird die Zeile nicht gespeichert.</summary>
-            public string KontoFehler => string.IsNullOrWhiteSpace(_konto)
-                ? "Ohne Konto wird die Zeile nicht gespeichert." : "";
+            /// <summary>Ohne Konto wird die Zeile nicht gespeichert; eine
+            /// Feld-Spezifikation ("$de:Formular=Id|...||") wird live auf
+            /// Syntaxfehler geprüft.</summary>
+            public string KontoFehler
+            {
+                get
+                {
+                    if (string.IsNullOrWhiteSpace(_konto))
+                        return "Ohne Konto wird die Zeile nicht gespeichert.";
+                    if (KontoFeldSpezifikation.IstSpezifikation(_konto)
+                        && KontoFeldSpezifikation.Parse(_konto, out var fehler) == null)
+                        return fehler;
+                    return "";
+                }
+            }
 
             private string _mwstAusdruck;
             /// <summary>Leer = Eingabefeld im Buchen-Dialog; sonst Festwert

@@ -147,7 +147,7 @@ namespace ECTEngine
                 // leeres Template = von Basis kopiert
                 zeile.Beschreibung  = LoeseText(vz.TextTemplate, basis.Beschreibung, textVars, basis.Datum);
                 zeile.Belegnummer   = LoeseText(vz.BelegTemplate, basis.Belegnummer, textVars, basis.Datum);
-                zeile.Konto         = LoeseText(vz.Konto, "", textVars, basis.Datum);
+                zeile.Konto         = LoeseKonto(vz.Konto, textVars, basis.Datum, zeile);
                 zeile.Betrieb       = LoeseText(vz.BetriebTemplate, basis.Betrieb, textVars, basis.Datum);
                 zeile.Bestandskonto = LoeseText(vz.BestandskontoTemplate, basis.Bestandskonto, textVars, basis.Datum);
 
@@ -263,6 +263,37 @@ namespace ECTEngine
             if (string.IsNullOrEmpty(template)) return basisWert ?? "";
             var interpoliert = FormelParser.Interpoliere(template, textVars);
             return Dauerbuchung.ResolvePlatzhalter(interpoliert, datum);
+        }
+
+        /// <summary>
+        /// Konto-Feld einer Zusatz-Zeile auflösen: Feld-Spezifikationen
+        /// ("$de:Formular=Id|...||") werden über den KontoFeldSelektor zum
+        /// erstbesten verknüpften Konto aufgelöst (rein lesend -- die Anlage
+        /// eines fehlenden Kontos macht die UI beim Laden der Vorlage);
+        /// alles andere ist ein normales Text-Template.
+        /// </summary>
+        private static string LoeseKonto(string kontoFeld,
+            IReadOnlyDictionary<string, string> textVars, DateTime datum,
+            GruppenZeile zeile)
+        {
+            var aufloesung = KontoFeldSelektor.LoeseAuf(kontoFeld);
+            if (!aufloesung.IstSpezifikation)
+                return LoeseText(kontoFeld, "", textVars, datum);
+
+            if (aufloesung.Fehler.Length > 0)
+            {
+                if (zeile.Fehler.Length == 0)
+                    zeile.Fehler = "Konto: " + aufloesung.Fehler;
+                return "";
+            }
+            if (aufloesung.Konto == null)
+            {
+                if (zeile.Fehler.Length == 0)
+                    zeile.Fehler = "Konto: Es gibt noch kein Konto mit den "
+                        + "benötigten Feld-Verknüpfungen.";
+                return "";
+            }
+            return aufloesung.Konto;
         }
     }
 }

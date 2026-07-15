@@ -1,17 +1,17 @@
 // EasyCashView.cpp : implementation of the CEasyCashView class
 //
-// Diese Datei ist Bestandteil von EasyCash&Tax, der freien EÜR-Fibu
+// Diese Datei ist Bestandteil von EasyCash&Tax, der freien Eï¿½R-Fibu
 //
 // Copyleft (GPLv3) 2020  Thomas Mielke
 // 
-// Dies ist freie Software; Sie dürfen sie unter den Bedingungen der 
+// Dies ist freie Software; Sie dï¿½rfen sie unter den Bedingungen der 
 // GNU General Public License, wie von der Free Software Foundation 
-// veröffentlicht, weiterverteilen und/oder modifizieren; entweder gemäß 
-// Version 3 der Lizenz oder (nach Ihrer Option) jeder späteren Version.
+// verï¿½ffentlicht, weiterverteilen und/oder modifizieren; entweder gemï¿½ï¿½ 
+// Version 3 der Lizenz oder (nach Ihrer Option) jeder spï¿½teren Version.
 //
-// Diese Software wird in der Hoffnung weiterverbreitet, dass sie nützlich 
+// Diese Software wird in der Hoffnung weiterverbreitet, dass sie nï¿½tzlich 
 // sein wird, jedoch OHNE IRGENDEINE GARANTIE, auch ohne die implizierte 
-// Garantie der MARKTREIFE oder der VERWENDBARKEIT FÜR EINEN BESTIMMTEN ZWECK.
+// Garantie der MARKTREIFE oder der VERWENDBARKEIT Fï¿½R EINEN BESTIMMTEN ZWECK.
 // Mehr Details finden Sie in der GNU Lesser General Public License.
 //
 // Sie sollten eine Kopie der GNU General Public License Version 3 zusammen mit 
@@ -151,7 +151,7 @@ END_MESSAGE_MAP()
 /////////////////////////////////////////////////////////////////////////////
 // CEasyCashView construction/destruction
 
-static char *cpMonat[] = { "Januar", "Februar", "März", "April", "Mai", "Juni", "Juli", "August", "September", "Oktober", "November", "Dezember" };
+static char *cpMonat[] = { "Januar", "Februar", "Mï¿½rz", "April", "Mai", "Juni", "Juli", "August", "September", "Oktober", "November", "Dezember" };
 
 CEasyCashView::CEasyCashView()
 {
@@ -196,7 +196,7 @@ CEasyCashView::CEasyCashView()
 	char buffer[1000];
 	extern CEasyCashApp theApp;
 	char EasyCashIniFilenameBuffer[1000];
-	if (!GetIniFileName(EasyCashIniFilenameBuffer, sizeof(EasyCashIniFilenameBuffer))) { AfxMessageBox("Konnte Konfigurationsdatei EasyCT.ini nicht öffnen"); return; }
+	if (!GetIniFileName(EasyCashIniFilenameBuffer, sizeof(EasyCashIniFilenameBuffer))) { AfxMessageBox("Konnte Konfigurationsdatei EasyCT.ini nicht ï¿½ffnen"); return; }
 	GetPrivateProfileString("Allgemein", "Anzeige", "0", buffer, sizeof(buffer), EasyCashIniFilenameBuffer);
 	m_nAnzeige = atoi(buffer);
 
@@ -246,7 +246,7 @@ CEasyCashView::~CEasyCashView()
 	char buffer[1000];
 	extern CEasyCashApp theApp;
 	char EasyCashIniFilenameBuffer[1000];
-	if (!GetIniFileName(EasyCashIniFilenameBuffer, sizeof(EasyCashIniFilenameBuffer))) { AfxMessageBox("Konnte Konfigurationsdatei EasyCT.ini nicht öffnen"); return; }
+	if (!GetIniFileName(EasyCashIniFilenameBuffer, sizeof(EasyCashIniFilenameBuffer))) { AfxMessageBox("Konnte Konfigurationsdatei EasyCT.ini nicht ï¿½ffnen"); return; }
 	sprintf(buffer, "%d", (int)m_nAnzeige);
 	WritePrivateProfileString("Allgemein", "Anzeige", (LPCSTR)buffer, EasyCashIniFilenameBuffer);	
 	int i;
@@ -313,26 +313,26 @@ void CEasyCashView::OnInitialUpdate()
 	m_timeLetzteZwangsverkleinerung = CTime::GetCurrentTime() - CTimeSpan(1);
 	SetupScroll();
 
-	// Popup-Menü aufbauen
+	// Popup-Menï¿½ aufbauen
 	PopUp.CreatePopupMenu();
-	PopUp.AppendMenu(MF_STRING, POPUP_AENDERN, "Buchung &ändern");
-	PopUp.AppendMenu(MF_STRING, POPUP_LOESCHEN, "Buchung &löschen");
+	PopUp.AppendMenu(MF_STRING, POPUP_AENDERN, "Buchung &ï¿½ndern");
+	PopUp.AppendMenu(MF_STRING, POPUP_LOESCHEN, "Buchung &lï¿½schen");
 	PopUp.AppendMenu(MF_STRING, POPUP_KOPIEREN, "Buchung &kopieren");
 	PopUp.AppendMenu(MF_STRING, POPUP_KOPIEREN_BELEGNUMMER, "Buchung kopieren mit neuer &Belegnummer");	
 	PopUp.AppendMenu(MF_STRING, POPUP_AFA_ABGANG, "Anlagengut &ausscheiden lassen");	
 
-	// Popup-Menü aufbauen
+	// Popup-Menï¿½ aufbauen
 	PopUpFormular.CreatePopupMenu();
 	PopUpFormular.AppendMenu(MF_STRING, POPUPFORMULAR_NEUES_FELD, "&Neues Feld hier erzeugen");
 	PopUpFormular.AppendMenu(MF_STRING, POPUPFORMULAR_NEUER_ABSCHNITT, "Neuen Ab&schnitt hier erzeugen");
 	PopUpFormular.AppendMenu(MF_STRING, POPUPFORMULAR_FELDER_BEARBEITEN, "&Feld bearbeiten");
 	//PopUpFormular.AppendMenu(MF_STRING|MF_GRAYED, POPUPFORMULAR_KALKULATION_BEARBEITEN, "&Kalkulation bearbeiten");
-	PopUpFormular.AppendMenu(MF_STRING, POPUPFORMULAR_FOLMULARDATEI_OEFFNEN, "Formulardatei im &Editor öffnen");
+	PopUpFormular.AppendMenu(MF_STRING, POPUPFORMULAR_FOLMULARDATEI_OEFFNEN, "Formulardatei im &Editor ï¿½ffnen");
 	PopUpFormular.AppendMenu(MF_STRING, POPUPFORMULAR_FELDER_ANZEIGEN, "Felder &anzeigen/ausblenden");
 	PopUpFormular.AppendMenu(MF_STRING, POPUPFORMULAR_FELDWERT_KOPIEREN, "Feldwert in die &Zwischenablage kopieren");	
 
 	propdlg = new CPropertySheet("EasyCash Einstellungen", this);
-	// propdlg->EnableDynamicLayout(TRUE); Sheet-Fenster vergrößert sich bei jedem DoModal() :(
+	// propdlg->EnableDynamicLayout(TRUE); Sheet-Fenster vergrï¿½ï¿½ert sich bei jedem DoModal() :(
 	einstellungen1 = new CEinstellungen1();
 	einstellungen1->m_pDoc = GetDocument();
 	einstellungen1->m_pView = this;
@@ -355,24 +355,24 @@ void CEasyCashView::OnInitialUpdate()
 	{
 		CString Mandant0Existiert = theApp.GetProfileString("Mandanten", "Mandant00Datenverzeichnis", "");
 		if (Mandant0Existiert.IsEmpty())
-			AfxMessageBox("EasyCash wurde frisch installiert oder die Daten wurden aus dem Datenverzeichnis entfernt. Bitte geben Sie zunächst Ihre \
-Daten für den Formulardruck ein (zumindest die Steuernummer, damit diese Meldung nicht mehr erscheint). \
-Für den Fall, dass die Daten verschoben wurden, ändern Sie bitte das Datenverzeichnis entsprechend \
-(im Applikationsmenü, der runde Knopf oben links, vorletzter Punkt im Menü: 'Wähle neues Datenverzeichnis aus')", MB_ICONEXCLAMATION);
+			AfxMessageBox("EasyCash wurde frisch installiert oder die Daten wurden aus dem Datenverzeichnis entfernt. Bitte geben Sie zunï¿½chst Ihre \
+Daten fï¿½r den Formulardruck ein (zumindest die Steuernummer, damit diese Meldung nicht mehr erscheint). \
+Fï¿½r den Fall, dass die Daten verschoben wurden, ï¿½ndern Sie bitte das Datenverzeichnis entsprechend \
+(im Applikationsmenï¿½, der runde Knopf oben links, vorletzter Punkt im Menï¿½: 'Wï¿½hle neues Datenverzeichnis aus')", MB_ICONEXCLAMATION);
 		else
-			AfxMessageBox("Das Datenverzeichnis für den Mandanten wurde neu angelegt oder die Daten wurden daraus entfernt. Bitte geben Sie zunächst seine \
-Daten für den Formulardruck ein (zumindest die Steuernummer, damit diese Meldung nicht mehr erscheint). \
-Für den Fall, dass die Daten verschoben wurden, ändern Sie bitte das Datenverzeichnis entsprechend \
-(im Applikationsmenü, der runde Knopf oben links, vorletzter Punkt im Menü: 'Wähle neues Datenverzeichnis aus')", MB_ICONEXCLAMATION);
+			AfxMessageBox("Das Datenverzeichnis fï¿½r den Mandanten wurde neu angelegt oder die Daten wurden daraus entfernt. Bitte geben Sie zunï¿½chst seine \
+Daten fï¿½r den Formulardruck ein (zumindest die Steuernummer, damit diese Meldung nicht mehr erscheint). \
+Fï¿½r den Fall, dass die Daten verschoben wurden, ï¿½ndern Sie bitte das Datenverzeichnis entsprechend \
+(im Applikationsmenï¿½, der runde Knopf oben links, vorletzter Punkt im Menï¿½: 'Wï¿½hle neues Datenverzeichnis aus')", MB_ICONEXCLAMATION);
 		OnViewOptions();
 	}
 
-	// Jahreswechsel fällig?
+	// Jahreswechsel fï¿½llig?
 	CTime now = CTime::GetCurrentTime();
 	if (now.GetYear() == GetDocument()->nJahr + 1)
 		if (m_nJahreswechselAbfrage < now.GetYear())
 		{
-			if (AfxMessageBox("Ein neues Jahr ist angebrochen. Im Menü unter Datei->Jahreswechsel können Sie Abschreibungen und Dauerbuchungen in eine neue Jahres-Buchungsdatei übernehmen. Soll ich diesen Hinweis nächstes Jahr wieder anzeigen?", MB_YESNO) == IDYES)
+			if (AfxMessageBox("Ein neues Jahr ist angebrochen. Im Menï¿½ unter Datei->Jahreswechsel kï¿½nnen Sie Abschreibungen und Dauerbuchungen in eine neue Jahres-Buchungsdatei ï¿½bernehmen. Soll ich diesen Hinweis nï¿½chstes Jahr wieder anzeigen?", MB_YESNO) == IDYES)
 				m_nJahreswechselAbfrage = now.GetYear();
 			else
 				m_nJahreswechselAbfrage = 3001;
@@ -394,7 +394,7 @@ Für den Fall, dass die Daten verschoben wurden, ändern Sie bitte das Datenverzei
 		case 3:	AfxGetMainWnd()->GetMenu()->GetSubMenu(3)->CheckMenuRadioItem(ID_VIEW_JOURNAL_DATUM, ID_VIEW_JOURNAL_BESTANDSKONTEN, ID_VIEW_JOURNAL_ANLAGENVERZEICHNIS, MF_BYCOMMAND); break;
 		}
 
-	// Formulare in Menü laden
+	// Formulare in Menï¿½ laden
 	UpdateFormularMenu();
 
 	m_cbmIcons.LoadBitmap(IDB_ICONS);
@@ -404,7 +404,7 @@ Für den Fall, dass die Daten verschoben wurden, ändern Sie bitte das Datenverzei
 	m_tbiIconsBestandskonten.SetImageSize(CSize(32, 32));
 	m_tbiIconsBestandskonten.Load(IDB_ICONS_BESTANDSKONTEN);	
 
-	// neuer Ribbon-Kram für alten Plugin-Kram
+	// neuer Ribbon-Kram fï¿½r alten Plugin-Kram
 	CMFCRibbonButton* pAnsichtPluginsButton;
 	if (pAnsichtPluginsButton = ((CMainFrame*)AfxGetMainWnd())->m_pAnsichtPluginsButton)
 	{
@@ -547,7 +547,7 @@ for (iii = 0; iii < 100; iii++)
 		m_pBuchung->AbschreibungSatz = 0;
 
 
-		pDoc->SetModifiedFlag("Neue Einnahmenbuchung wurde eingefügt");
+		pDoc->SetModifiedFlag("Neue Einnahmenbuchung wurde eingefï¿½gt");
 	}
 
 	pDoc->Sort();
@@ -582,9 +582,9 @@ void CEasyCashView::UpdateFormularMenu()
 		if (pBtnAnsichtFormular = DYNAMIC_DOWNCAST(CMFCRibbonButton, arAnsichtFormulareButtons[i]))
 			pBtnAnsichtFormular->RemoveAllSubItems();
 */	CMFCRibbonButton* pBtnAnsichtFormulare = ((CMainFrame*)AfxGetMainWnd())->m_pAnsichtFormulareButton;
-	if (pBtnAnsichtFormulare)	// Dummy von Ribbon-Button Menü entfernen	// XXXXXXXXXXXXX
+	if (pBtnAnsichtFormulare)	// Dummy von Ribbon-Button Menï¿½ entfernen	// XXXXXXXXXXXXX
 		pBtnAnsichtFormulare->RemoveAllSubItems();							// XXXXXXXXXXXXX
-	CMFCRibbonButton* pArrBtnSubmenus[200];	// für das Gruppieren von Voranmeldungsformularen
+	CMFCRibbonButton* pArrBtnSubmenus[200];	// fï¿½r das Gruppieren von Voranmeldungsformularen
 	for (i = 0; i < 200; i++)
 		pArrBtnSubmenus[i] = NULL;
 	for (i = 0; i < m_csaFormulare.GetSize(); i++)
@@ -612,16 +612,16 @@ void CEasyCashView::UpdateFormularMenu()
 						csKey.Format("Betrieb%02dName", iBetrieb);
 						GetPrivateProfileString("Betriebe", csKey, "", betrieb, sizeof(betrieb), inifile);
 						if (!*betrieb || iBetrieb > 100) { if (iBetrieb>0) i--; break; }
-						CString csMenuText = (CString)attr_anzeigename + " für " + betrieb;
+						CString csMenuText = (CString)attr_anzeigename + " fï¿½r " + betrieb;
 						if (AfxGetMainWnd() && AfxGetMainWnd()->GetMenu() && AfxGetMainWnd()->GetMenu()->GetSubMenu(4)) //VS9
 							AfxGetMainWnd()->GetMenu()->GetSubMenu(4)->InsertMenu(nPos++, MF_BYPOSITION, ID_FORMULAR_BASE+i, csMenuText);
-						if (pBtnAnsichtFormulare)	// Ribbon-Button Menü aufbauen
+						if (pBtnAnsichtFormulare)	// Ribbon-Button Menï¿½ aufbauen
 						{
-							if (!strncmp(attr_anzeigename, "Umsatzsteuer-Voranmeldung ", 26) || !strncmp(attr_anzeigename, "U30 ", 4))	// Extrawurst für UST-VA: Submenüs für die entspr. Jahre
+							if (!strncmp(attr_anzeigename, "Umsatzsteuer-Voranmeldung ", 26) || !strncmp(attr_anzeigename, "U30 ", 4))	// Extrawurst fï¿½r UST-VA: Submenï¿½s fï¿½r die entspr. Jahre
 							{
 								int nStringlength = !strncmp(attr_anzeigename, "U30 ", 4) ? 4 : 26;
 								int nOesterreichOffset = nStringlength == 4 ? 100 : 0;
-								int nJahr = atoi(attr_anzeigename + nStringlength) % 100;	// kleine Hashmap der Jahre, für die USt-VA-Formulare existieren
+								int nJahr = atoi(attr_anzeigename + nStringlength) % 100;	// kleine Hashmap der Jahre, fï¿½r die USt-VA-Formulare existieren
 								if (!pArrBtnSubmenus[nJahr+nOesterreichOffset])
 								{
 									pArrBtnSubmenus[nJahr+nOesterreichOffset] = new CMFCRibbonButton(ID_ANSICHT_FORMULARE, (LPCTSTR)csMenuText.Left(nStringlength+4), 21);
@@ -634,9 +634,9 @@ void CEasyCashView::UpdateFormularMenu()
 								if (csZeitraum.Right(5) == " (AT)") csZeitraum = csZeitraum.Mid(0, csZeitraum.GetLength()-5);
 								pArrBtnSubmenus[nJahr+nOesterreichOffset]->AddSubItem(new CMFCRibbonButton(ID_FORMULAR_BASE + i, (LPCTSTR)csZeitraum));
 							}
-							else if (!strncmp(attr_anzeigename, "E/Ü-Rechnung ", 13))
+							else if (!strncmp(attr_anzeigename, "E/ï¿½-Rechnung ", 13))
 								pBtnAnsichtFormulare->AddSubItem(new CMFCRibbonButton(ID_FORMULAR_BASE + i, (LPCTSTR)csMenuText, 23));
-							else if (!strncmp(attr_anzeigename, "Umsatzsteuererklärung ", 22))
+							else if (!strncmp(attr_anzeigename, "Umsatzsteuererklï¿½rung ", 22))
 								pBtnAnsichtFormulare->AddSubItem(new CMFCRibbonButton(ID_FORMULAR_BASE + i, (LPCTSTR)csMenuText, 24));
 							else 
 								pBtnAnsichtFormulare->AddSubItem(new CMFCRibbonButton(ID_FORMULAR_BASE + i, (LPCTSTR)csMenuText));
@@ -657,13 +657,13 @@ void CEasyCashView::UpdateFormularMenu()
 				{
 					if (AfxGetMainWnd() && AfxGetMainWnd()->GetMenu() && AfxGetMainWnd()->GetMenu()->GetSubMenu(4))	//VS9
 						AfxGetMainWnd()->GetMenu()->GetSubMenu(4)->InsertMenu(nPos++, MF_BYPOSITION, ID_FORMULAR_BASE+i, attr_anzeigename);
-					if (pBtnAnsichtFormulare)	// Ribbon-Button Menü aufbauen
+					if (pBtnAnsichtFormulare)	// Ribbon-Button Menï¿½ aufbauen
 					{
 						if (!strncmp(attr_anzeigename, "Umsatzsteuer-Voranmeldung ", 26) || !strncmp(attr_anzeigename, "U30 ", 4))
 						{
 							int nStringlength = !strncmp(attr_anzeigename, "U30 ", 4) ? 4 : 26;
 							int nOesterreichOffset = nStringlength == 4 ? 100 : 0;
-							int nJahr = atoi(attr_anzeigename + nStringlength) % 100;	// kleine Hashmap der Jahre, für die USt-VA-Formulare existieren
+							int nJahr = atoi(attr_anzeigename + nStringlength) % 100;	// kleine Hashmap der Jahre, fï¿½r die USt-VA-Formulare existieren
 							if (!pArrBtnSubmenus[nJahr+nOesterreichOffset])
 							{
 								pArrBtnSubmenus[nJahr+nOesterreichOffset] = new CMFCRibbonButton(ID_ANSICHT_FORMULARE, (LPCTSTR)((CString)attr_anzeigename).Left(nStringlength+4), 21);
@@ -676,9 +676,9 @@ void CEasyCashView::UpdateFormularMenu()
 							if (csZeitraum.Right(5) == " (AT)") csZeitraum = csZeitraum.Mid(0, csZeitraum.GetLength()-5);
 							pArrBtnSubmenus[nJahr+nOesterreichOffset]->AddSubItem(new CMFCRibbonButton(ID_FORMULAR_BASE + i, (LPCTSTR)csZeitraum));
 						}
-						else if (!strncmp(attr_anzeigename, "E/Ü-Rechnung ", 13))
+						else if (!strncmp(attr_anzeigename, "E/ï¿½-Rechnung ", 13))
 							pBtnAnsichtFormulare->AddSubItem(new CMFCRibbonButton(ID_FORMULAR_BASE + i, (LPCTSTR)attr_anzeigename, 23));
-						else if (!strncmp(attr_anzeigename, "Umsatzsteuererklärung ", 22))
+						else if (!strncmp(attr_anzeigename, "Umsatzsteuererklï¿½rung ", 22))
 							pBtnAnsichtFormulare->AddSubItem(new CMFCRibbonButton(ID_FORMULAR_BASE + i, (LPCTSTR)attr_anzeigename, 24));
 						else 
 							pBtnAnsichtFormulare->AddSubItem(new CMFCRibbonButton(ID_FORMULAR_BASE + i, (LPCTSTR)attr_anzeigename));
@@ -703,7 +703,7 @@ void CEasyCashView::UpdateFormularMenu()
 	{
 		if (pBtnAnsichtFormulare) pBtnAnsichtFormulare->AddSubItem(new CMFCRibbonButton(ID_FORMULAR_INFO, "<weitere Formulare ...>"));
 		if (pBtnAnsichtFormulare) pBtnAnsichtFormulare->AddSubItem(new CMFCRibbonButton(ID_FORMULAR_NEU, "<eigenes Formular erzeugen>"));
-		if (pBtnAnsichtFormulare) pBtnAnsichtFormulare->AddSubItem(new CMFCRibbonButton(ID_FORMULAR_MENUUPDATE, "<Formular-Menü aktualisieren>"));
+		if (pBtnAnsichtFormulare) pBtnAnsichtFormulare->AddSubItem(new CMFCRibbonButton(ID_FORMULAR_MENUUPDATE, "<Formular-Menï¿½ aktualisieren>"));
 	}
 
 	ASSERT(m_csaFormulare.GetSize() == m_csaFormularnamen.GetSize());
@@ -726,7 +726,7 @@ void CEasyCashView::OnTimer(UINT_PTR nIDEvent)
 
 void CEasyCashView::UpdateBetriebeMenu()
 {
-	// neuer Ribbon-Kram für Betriebe-Filter
+	// neuer Ribbon-Kram fï¿½r Betriebe-Filter
 	UpdateBetriebe();
 	CMFCRibbonButton* m_pBtnFilterBetrieb;
 	if (m_pBtnFilterBetrieb = ((CMainFrame*)AfxGetMainWnd())->m_pFilterBetriebButton)
@@ -750,7 +750,7 @@ void CEasyCashView::UpdateBetriebeMenu()
 
 void CEasyCashView::UpdateBestandskontenMenu()
 {
-	// neuer Ribbon-Kram für Bestandskonto-Filter		
+	// neuer Ribbon-Kram fï¿½r Bestandskonto-Filter		
 	UpdateBestandskonten();
 	CMFCRibbonButton* m_pBtnFilterBestandskonto;
 	if (m_pBtnFilterBestandskonto = ((CMainFrame*)AfxGetMainWnd())->m_pFilterBestandskontoButton)
@@ -828,7 +828,7 @@ void CEasyCashView::UpdateBestandskonten()
 	SetzeListenFuerBuchungsdialog();
 }
 
-// callback für sortierte Gruppen (Bestandskonten) in der Navigations-Seitenleiste
+// callback fï¿½r sortierte Gruppen (Bestandskonten) in der Navigations-Seitenleiste
 int CALLBACK GroupCompare(int Arg1, int Arg2, void *Arg3)
 {
 	if (Arg1 == Arg2) return 0;
@@ -886,7 +886,7 @@ void CEasyCashView::OnUpdate(CView* pSender, LPARAM lHint, CObject* pHint)
 	// Hook Erweiterungs-DLLs
 	CIterateExtensionDLLs("ECTE_UpdateDocument", (void *)GetDocument());
 
-	// Ansicht Menü anpassen	 // Ansicht	    // Journal für Konto
+	// Ansicht Menï¿½ anpassen	 // Ansicht	    // Journal fï¿½r Konto
 	CWnd *w = AfxGetMainWnd();
 
 	int i, j;
@@ -903,7 +903,7 @@ void CEasyCashView::OnUpdate(CView* pSender, LPARAM lHint, CObject* pHint)
 		ausgaben_posten_name[i]   = "";
 	}
 
-	// benutzte E/Ü-Konten und Bestandskonten in Einnahmen finden
+	// benutzte E/ï¿½-Konten und Bestandskonten in Einnahmen finden
 	if (m_nAnzeige != 3)  // Anlagenverzeichnis braucht nur Ausgaben
 		for (p = pDoc->Einnahmen; p; p = p->next)
 		{
@@ -915,7 +915,7 @@ void CEasyCashView::OnUpdate(CView* pSender, LPARAM lHint, CObject* pHint)
 					break;
 				}
 
-				// leer? Dann neu übernehmen
+				// leer? Dann neu ï¿½bernehmen
 				if (einnahmen_posten_name[j].IsEmpty())
 				{
 					einnahmen_posten_name[j] = p->Konto;
@@ -935,15 +935,15 @@ void CEasyCashView::OnUpdate(CView* pSender, LPARAM lHint, CObject* pHint)
 				csaBestandskontenMitBuchungenUnsortiert.Add(p->Bestandskonto);			
 		}
 
-	// benutzte E/Ü-Konten und Bestandskonten in Ausgaben finden
+	// benutzte E/ï¿½-Konten und Bestandskonten in Ausgaben finden
 	for (p = pDoc->Ausgaben; p; p = p->next)
 	{
 		if (m_nAnzeige == 3 && p->AbschreibungJahre <= 1 && p->Erweiterung.Find("|UrspruenglichesKonto=") == -1)
-			continue;  // wenn Anlagenverzeichnis: nur AfA-Buchungen berücksichtigen
+			continue;  // wenn Anlagenverzeichnis: nur AfA-Buchungen berï¿½cksichtigen
 
 		for (j = 0; j < 100; j++)
 		{
-			CString csKonto = "";  // AfA-Abgang im Anlagenverzeichnis? Dann nicht das Restbuchwertkonto anzeigen, sondern das ursprüngliche Konto
+			CString csKonto = "";  // AfA-Abgang im Anlagenverzeichnis? Dann nicht das Restbuchwertkonto anzeigen, sondern das ursprï¿½ngliche Konto
 			if (m_nAnzeige == 3 && p->AbschreibungJahre <= 1)
 			{
 				CString *pcsUrspruenglichesKonto = GetErweiterungKeyCS(p->Erweiterung, "EasyCash", "UrspruenglichesKonto");
@@ -997,13 +997,13 @@ void CEasyCashView::OnUpdate(CView* pSender, LPARAM lHint, CObject* pHint)
 			}
 
 
-	// für Menüaufbau benötigte Daten in m_KontenMitBuchungen speichern:
+	// fï¿½r Menï¿½aufbau benï¿½tigte Daten in m_KontenMitBuchungen speichern:
 //		if (!pDrawInfo->pm) 	
 	{
 		m_KontenMitBuchungen.RemoveAll();
 		m_KontenMitBuchungen.Add("<alle Konten>");
  
-		for (i = 0; i < 100; i++)  // in der Reihenfolge der regulären Konten wie in den Einstellungen auflisten
+		for (i = 0; i < 100; i++)  // in der Reihenfolge der regulï¿½ren Konten wie in den Einstellungen auflisten
 		{			
 			if (!einstellungen1 || einstellungen1->EinnahmenRechnungsposten[i].IsEmpty()) break;
 			for (j = 0; j < 100; j++)
@@ -1016,19 +1016,19 @@ void CEasyCashView::OnUpdate(CView* pSender, LPARAM lHint, CObject* pHint)
 				}
 			}
 		}
-		for (j = 0; j < 100; j++)  // auch die Konten aus Buchungen auflisten, für die es in den Einstellungen keine Konten gibt
+		for (j = 0; j < 100; j++)  // auch die Konten aus Buchungen auflisten, fï¿½r die es in den Einstellungen keine Konten gibt
 		{
 			if (einnahmen_posten_name[j].IsEmpty()) break;
 			for (i = 0; i < m_KontenMitBuchungen.GetSize(); i++)
 				if ("Einnahmen: " + einnahmen_posten_name[j] == m_KontenMitBuchungen[i])
 					break;  // schon drin
 			if (i == m_KontenMitBuchungen.GetSize())  // Rouge-Konto in Buchung?
-				m_KontenMitBuchungen.Add((CString)"Einnahmen: " + einnahmen_posten_name[j]);  // zusätzlich aufnehmen
+				m_KontenMitBuchungen.Add((CString)"Einnahmen: " + einnahmen_posten_name[j]);  // zusï¿½tzlich aufnehmen
 		}
 		nKontenMitBuchungenErsteAusgabenbuchung = m_KontenMitBuchungen.GetSize();
 		if (bUnzugewieseneEinnahmenbuchungenExistieren)
 			m_KontenMitBuchungen.Add((CString)"--- [noch zu keinem Konto zugewiesene Einnahmen] ---");
-		for (i = 0; i < 100; i++)  // in der Reihenfolge der regulären Konten wie in den Einstellungen auflisten
+		for (i = 0; i < 100; i++)  // in der Reihenfolge der regulï¿½ren Konten wie in den Einstellungen auflisten
 		{			
 			if (!einstellungen1 || einstellungen1->AusgabenRechnungsposten[i].IsEmpty()) break;
 			for (j = 0; j < 100; j++)
@@ -1041,20 +1041,20 @@ void CEasyCashView::OnUpdate(CView* pSender, LPARAM lHint, CObject* pHint)
 				}
 			}
 		}
-		for (j = 0; j < 100; j++)  // auch die Konten aus Buchungen auflisten, für die es in den Einstellungen keine Konten gibt
+		for (j = 0; j < 100; j++)  // auch die Konten aus Buchungen auflisten, fï¿½r die es in den Einstellungen keine Konten gibt
 		{
 			if (ausgaben_posten_name[j].IsEmpty()) break;
 			for (i = 0; i < m_KontenMitBuchungen.GetSize(); i++)
 				if ("Ausgaben: " + ausgaben_posten_name[j] == m_KontenMitBuchungen[i])
 					break;  // schon drin
 			if (i == m_KontenMitBuchungen.GetSize())  // Rouge-Konto in Buchung?
-				m_KontenMitBuchungen.Add((CString)"Ausgaben: " + ausgaben_posten_name[j]);  // zusätzlich aufnehmen
+				m_KontenMitBuchungen.Add((CString)"Ausgaben: " + ausgaben_posten_name[j]);  // zusï¿½tzlich aufnehmen
 		}
 		if (bUnzugewieseneAusgabenbuchungenExistieren)
 			m_KontenMitBuchungen.Add((CString)"--- [noch zu keinem Konto zugewiesene Ausgaben] ---");
 	}
 
-/*		// alter Menü-Kram für Konten-Filter
+/*		// alter Menï¿½-Kram fï¿½r Konten-Filter
 	CMenu *pJFK = NULL;		
 	int n = 0;	//VS9
 	if (AfxGetMainWnd() && AfxGetMainWnd()->GetMenu())
@@ -1077,7 +1077,7 @@ void CEasyCashView::OnUpdate(CView* pSender, LPARAM lHint, CObject* pHint)
 			pJFK->AppendMenu(MF_STRING|MF_UNCHECKED, ID_VIEW_JOURNAL_FUER_KONTO_BASE + i, (LPCTSTR)m_KontenMitBuchungen[i]);
 	}
 */
-	// neuer Ribbon-Kram für Konten-Filter
+	// neuer Ribbon-Kram fï¿½r Konten-Filter
 	CMFCRibbonButton* pBtnFilterKonto;
 	if (pBtnFilterKonto = ((CMainFrame*)AfxGetMainWnd())->m_pFilterKontoButton)
 	{
@@ -1086,6 +1086,12 @@ void CEasyCashView::OnUpdate(CView* pSender, LPARAM lHint, CObject* pHint)
 		for (i = 0; i < m_KontenMitBuchungen.GetSize(); i++)
 			pBtnFilterKonto->AddSubItem(new CMFCRibbonButton(ID_VIEW_JOURNAL_FUER_KONTO_BASE + i, (LPCTSTR)m_KontenMitBuchungen[i]));
 	}
+
+#ifdef USE_ECTENGINE
+	// Buchungsvorlagen-Dropdowns der Einnahme-/Ausgabe-Knoepfe auf den
+	// aktuellen Einstellungs-Cache nachfuehren (Dokument-/Mandantenwechsel).
+	((CMainFrame*)AfxGetMainWnd())->UpdateBuchungsvorlagenMenu();
+#endif
 
 #ifdef USE_ECTENGINE
 	if (IstJournalWpfAktiv())
@@ -1104,7 +1110,7 @@ void CEasyCashView::OnUpdate(CView* pSender, LPARAM lHint, CObject* pHint)
 	{
 		CListCtrl &nav = m_pNavigationWnd->GetListCtrl();
 		nav.ModifyStyle(LVS_ICON, LVS_REPORT);
-		if (nav.GetHeaderCtrl()->GetItemCount())	// Spalte hinzufügen, wenn noch nicht vorhanden
+		if (nav.GetHeaderCtrl()->GetItemCount())	// Spalte hinzufï¿½gen, wenn noch nicht vorhanden
 			nav.DeleteColumn(0);
 		CRect clir;
 		m_pNavigationWnd->GetClientRect(&clir);
@@ -1337,14 +1343,14 @@ void CEasyCashView::CaptionBoxCheckOnUpdate()
 	if (m_bAfaKorrketuren)
 	{
 		CString csTemp;
-		csTemp.Format("Es wurden %d Ausgabenbuchungen mit einer AfA-Dauer von 0 gefunden und automatisch auf den Minimalwert von 1 korrigiert. Gegebenenfalls kann sich dadurch die Summe der Vorsteuer geändert haben. Bitte evtl. bereits versendete USt.-Voranmeldungen auf Differenzen prüfen.", m_bAfaKorrketuren);
+		csTemp.Format("Es wurden %d Ausgabenbuchungen mit einer AfA-Dauer von 0 gefunden und automatisch auf den Minimalwert von 1 korrigiert. Gegebenenfalls kann sich dadurch die Summe der Vorsteuer geï¿½ndert haben. Bitte evtl. bereits versendete USt.-Voranmeldungen auf Differenzen prï¿½fen.", m_bAfaKorrketuren);
 		m_bAfaKorrketuren = 0;
 		pDoc->SetModifiedFlag("AfA-Buchungen korrigiert");
 		theApp.CaptionBox(csTemp, ID_FILE_SAVE, "Speichern", "korrigierte Buchungsdaten speichern");
 		return;
 	}
 
-	// stimmt das Buchungsjahr des Dokuments mit denen der Buchungen überein?
+	// stimmt das Buchungsjahr des Dokuments mit denen der Buchungen ï¿½berein?
 	BOOL bGefunden = FALSE;
 	if (pDoc->Einnahmen || pDoc->Ausgaben)
 	{
@@ -1378,7 +1384,7 @@ void CEasyCashView::CaptionBoxCheckOnUpdate()
 		if (!bGefunden)
 		{
 			CString csMeldung;
-			csMeldung.Format("Alle Buchungen liegen außerhalb des Buchungsjahres %04d, weshalb Auswertungen und Formulare leer erscheinen werden.", pDoc->nJahr);
+			csMeldung.Format("Alle Buchungen liegen auï¿½erhalb des Buchungsjahres %04d, weshalb Auswertungen und Formulare leer erscheinen werden.", pDoc->nJahr);
 			theApp.CaptionBox(csMeldung, ID_VIEW_OPTIONS, "Beheben", "aktuelles Buchungsjahr in den Einstellungen anpassen");
 			return;
 		}
@@ -1392,7 +1398,7 @@ void CEasyCashView::CaptionBoxCheckOnUpdate()
 	GetUmsatzsteuervorauszahlung(41, q);
 	if ((m1.Trim() != "" || m2.Trim() != "" || m3.Trim() != "") && q.Trim() != "")
 	{
-		theApp.CaptionBox("Es gibt eine Vorauszahlung für das 1. Quartal, die mit einer Monats-Vorauszahlung in dem Zeitraum kollidiert.",
+		theApp.CaptionBox("Es gibt eine Vorauszahlung fï¿½r das 1. Quartal, die mit einer Monats-Vorauszahlung in dem Zeitraum kollidiert.",
 			ID_EDIT_UMSATZSTEUERVORAUSZAHLUNGEN, "Beheben", "zum Umsatzsteuerzahlungen-Dialog gehen, um das zu korrigieren");
 		return;
 	}
@@ -1404,7 +1410,7 @@ void CEasyCashView::CaptionBoxCheckOnUpdate()
 		GetUmsatzsteuervorauszahlung(42, q);
 		if ((m1.Trim() != "" || m2.Trim() != "" || m3.Trim() != "") && q.Trim() != "")
 		{
-			theApp.CaptionBox("Es gibt eine Vorauszahlung für das 2. Quartal, die mit einer Monats-Vorauszahlung in dem Zeitraum kollidiert.",
+			theApp.CaptionBox("Es gibt eine Vorauszahlung fï¿½r das 2. Quartal, die mit einer Monats-Vorauszahlung in dem Zeitraum kollidiert.",
 				ID_EDIT_UMSATZSTEUERVORAUSZAHLUNGEN, "Beheben", "zum Umsatzsteuerzahlungen-Dialog gehen, um das zu korrigieren");
 			return;
 		}
@@ -1416,7 +1422,7 @@ void CEasyCashView::CaptionBoxCheckOnUpdate()
 			GetUmsatzsteuervorauszahlung(43, q);
 			if ((m1.Trim() != "" || m2.Trim() != "" || m3.Trim() != "") && q.Trim() != "")
 			{
-				theApp.CaptionBox("Es gibt eine Vorauszahlung für das 3. Quartal, die mit einer Monats-Vorauszahlung in dem Zeitraum kollidiert.",
+				theApp.CaptionBox("Es gibt eine Vorauszahlung fï¿½r das 3. Quartal, die mit einer Monats-Vorauszahlung in dem Zeitraum kollidiert.",
 					ID_EDIT_UMSATZSTEUERVORAUSZAHLUNGEN, "Beheben", "zum Umsatzsteuerzahlungen-Dialog gehen, um das zu korrigieren");
 				return;
 			}
@@ -1428,7 +1434,7 @@ void CEasyCashView::CaptionBoxCheckOnUpdate()
 				GetUmsatzsteuervorauszahlung(44, q);
 				if ((m1.Trim() != "" || m2.Trim() != "" || m3.Trim() != "") && q.Trim() != "")
 				{
-					theApp.CaptionBox("Es gibt eine Vorauszahlung für das 4. Quartal, die mit einer Monats-Vorauszahlung in dem Zeitraum kollidiert.",
+					theApp.CaptionBox("Es gibt eine Vorauszahlung fï¿½r das 4. Quartal, die mit einer Monats-Vorauszahlung in dem Zeitraum kollidiert.",
 						ID_EDIT_UMSATZSTEUERVORAUSZAHLUNGEN, "Beheben", "zum Umsatzsteuerzahlungen-Dialog gehen, um das zu korrigieren");
 					return;
 				}
@@ -1546,7 +1552,7 @@ void CEasyCashView::OnSize(UINT nType, int cx, int cy)
 	}
 
 	if (m_timeLetzteZwangsverkleinerung < CTime::GetCurrentTime() - CTimeSpan(0, 0, 0, 1)  // unterbinden, wenn gerade Zoomverkleinerung im Gange ist
-		&& m_zoomfaktor < m_wunschzoomfaktor && cx > cx_old) // bei Vergrößerung der Fensterbreite versuchen, den Wunsch-Zoomlevel wieder herzustellen, wenn er zwangsweise verkleinert wurde
+		&& m_zoomfaktor < m_wunschzoomfaktor && cx > cx_old) // bei Vergrï¿½ï¿½erung der Fensterbreite versuchen, den Wunsch-Zoomlevel wieder herzustellen, wenn er zwangsweise verkleinert wurde
 			m_zoomfaktor = m_wunschzoomfaktor; 
 	cx_old = cx;
 
@@ -1569,7 +1575,7 @@ void CEasyCashView::SetupScroll()
 	VERIFY(pDC->GetOutputTextMetrics(&Metrics));
 	ReleaseDC(pDC);		// DC freigeben - sonst GDI-Handle-Leak ueber lange Laufzeit
 
-	// A4 für vert. Größe setzen, ansonsten Fensterbreite nehmen...
+	// A4 fï¿½r vert. Grï¿½ï¿½e setzen, ansonsten Fensterbreite nehmen...
 	charwidth = Metrics.tmAveCharWidth * m_zoomfaktor / 100;
 	charheight = Metrics.tmHeight * m_zoomfaktor / 100;
 	CRect r;
@@ -1797,7 +1803,7 @@ void CEasyCashView::CheckAnlagenverzeichnisLayout(DrawInfo *pDrawInfo)
 	pDrawInfo->spalte_afanr = pDrawInfo->letzte_spalte_device-2;
 }
 
-// nicht mehr genügend Platz für "Beschreibung" Spaltenüberschrift? Dann verkleinern!
+// nicht mehr genï¿½gend Platz fï¿½r "Beschreibung" Spaltenï¿½berschrift? Dann verkleinern!
 bool CEasyCashView::CheckPlatzFuerBeschreibung(DrawInfo *pDrawInfo)
 {
 	if (!pDrawInfo->pm)
@@ -1825,18 +1831,18 @@ bool CEasyCashView::CheckPlatzFuerBeschreibung(DrawInfo *pDrawInfo)
 	return TRUE;
 }
 
-// return: FALSE, wenn kein Platz mehr für Beschreibung ist und Zoomlevel verkleinert werden muss
+// return: FALSE, wenn kein Platz mehr fï¿½r Beschreibung ist und Zoomlevel verkleinert werden muss
 bool CEasyCashView::DrawToDC_EinnahmenHeader(DrawInfo *pDrawInfo)
 {
 //	TRACE0("DrawToDC_EinnahmenHeader");
 //	if (pDrawInfo->zeige_bestandskontoicon)
 //		Icon(pDrawInfo, pDrawInfo->spalte_bestandskontoicon, pDrawInfo->line, pDrawInfo->line+1, &m_cbmIconsBestandskonten, 1);
 
-	// nicht mehr genügend Platz für "Beschreibung" Spaltenüberschrift? Dann verkleinern!
+	// nicht mehr genï¿½gend Platz fï¿½r "Beschreibung" Spaltenï¿½berschrift? Dann verkleinern!
 	if (!CheckPlatzFuerBeschreibung(pDrawInfo))
 		return FALSE;
 
-	// Spaltenüberschriften
+	// Spaltenï¿½berschriften
 	Text(pDrawInfo, pDrawInfo->spalte_datum, pDrawInfo->line, "Datum");
 	if (pDrawInfo->zeige_belegnummernspalte) Text(pDrawInfo, pDrawInfo->spalte_belegnummer, pDrawInfo->line, "Beleg");
 	Text(pDrawInfo, pDrawInfo->spalte_beschreibung, pDrawInfo->line, "Beschreibung");
@@ -1870,7 +1876,7 @@ void CEasyCashView::DrawToDC_AusgabenHeader(DrawInfo *pDrawInfo)
 //	if (pDrawInfo->zeige_bestandskontoicon)
 //		Icon(pDrawInfo, pDrawInfo->spalte_bestandskontoicon, pDrawInfo->line, pDrawInfo->line+1, &m_cbmIconsBestandskonten, 1);
 
-	// Spaltenüberschriften
+	// Spaltenï¿½berschriften
 	Text(pDrawInfo, pDrawInfo->spalte_datum, pDrawInfo->line, "Datum");
 	if (pDrawInfo->zeige_belegnummernspalte) Text(pDrawInfo, pDrawInfo->spalte_belegnummer, pDrawInfo->line, "Beleg");
 	Text(pDrawInfo, pDrawInfo->spalte_beschreibung, pDrawInfo->line, "Beschreibung");
@@ -1899,14 +1905,14 @@ void CEasyCashView::DrawToDC_AusgabenHeader(DrawInfo *pDrawInfo)
 
 void CEasyCashView::DrawToDC_AnlagenverzeichnisHeader(DrawInfo *pDrawInfo)
 {
-	// Spaltenüberschriften
+	// Spaltenï¿½berschriften
 	Text(pDrawInfo, pDrawInfo->spalte_beschreibung, pDrawInfo->line, "Beschreibung");
 	Text(pDrawInfo, pDrawInfo->spalte_datum, pDrawInfo->line, "Ansch.Datum");
 	pDrawInfo->m_pDC->SetTextAlign(TA_RIGHT);
 	Text(pDrawInfo, pDrawInfo->spalte_anschaffungskosten, pDrawInfo->line, "Ansch.kosten");
 	Text(pDrawInfo, pDrawInfo->spalte_buchwert_beginn, pDrawInfo->line, "Buchw.Beginn");
 	Text(pDrawInfo, pDrawInfo->spalte_afa, pDrawInfo->line, "AfA");
-	Text(pDrawInfo, pDrawInfo->spalte_abgaenge, pDrawInfo->line, "Abgänge");
+	Text(pDrawInfo, pDrawInfo->spalte_abgaenge, pDrawInfo->line, "Abgï¿½nge");
 	Text(pDrawInfo, pDrawInfo->spalte_afanr, pDrawInfo->line, "AfANr");
 	Text(pDrawInfo, pDrawInfo->spalte_buchwert_ende, pDrawInfo->line, "Buchw.Ende");
 	pDrawInfo->m_pDC->SetTextAlign(TA_LEFT);
@@ -1927,17 +1933,17 @@ bool CEasyCashView::DrawToDC_BestandskontenHeader(DrawInfo *pDrawInfo, int nIcon
 {
 	char buf[300];	
 
-	// nicht mehr genügend Platz für "Beschreibung" Spaltenüberschrift? Dann verkleinern!
+	// nicht mehr genï¿½gend Platz fï¿½r "Beschreibung" Spaltenï¿½berschrift? Dann verkleinern!
 	if (!CheckPlatzFuerBeschreibung(pDrawInfo))
 		return FALSE;
 
 	pDrawInfo->brutto_summe = nAnfangssaldo;
 
-	// großes Bestandskonto-Icon anzeigen
+	// groï¿½es Bestandskonto-Icon anzeigen
 	if (nIcon >= 0)
 		Icon(pDrawInfo, 1, pDrawInfo->line-2, pDrawInfo->line, &m_cbmIconsBestandskonten, nIcon);
 
-	// Spaltenüberschriften
+	// Spaltenï¿½berschriften
 	Text(pDrawInfo, pDrawInfo->spalte_datum, pDrawInfo->line, "Datum");
 	if (pDrawInfo->zeige_belegnummernspalte) Text(pDrawInfo, pDrawInfo->spalte_belegnummer, pDrawInfo->line, "Beleg");
 	Text(pDrawInfo, pDrawInfo->spalte_beschreibung, pDrawInfo->line, "Beschreibung");
@@ -1958,11 +1964,11 @@ bool CEasyCashView::DrawToDC_BestandskontenHeader(DrawInfo *pDrawInfo, int nIcon
 
 	// Anfangssaldo-Zeile
 	int nOldBkMode = pDrawInfo->m_pDC->GetBkMode();
-	pDrawInfo->m_pDC->SetBkMode(TRANSPARENT);	// nötig für:
+	pDrawInfo->m_pDC->SetBkMode(TRANSPARENT);	// nï¿½tig fï¿½r:
 	// jede gerade Zeile grau unterlegen
 	if (!(pDrawInfo->line % 2)) GraueBox(pDrawInfo, pDrawInfo->spalte_datum, pDrawInfo->line, pDrawInfo->spalte_afanr, pDrawInfo->line+1);
 	
-	char* cp = "Anfangssaldo/Übertrag";
+	char* cp = "Anfangssaldo/ï¿½bertrag";
 	if (nBuchungenDavor)
 		sprintf(buf, "%s (inkl. %d Buchung(en) vor dem %d.%d.%d -- siehe Journal nach Datum)", cp, nBuchungenDavor, von.GetDay(), von.GetMonth(), von.GetYear());
 	else
@@ -2092,7 +2098,7 @@ void CEasyCashView::DrawToDC_AnlagenverzeichnisFooter(DrawInfo *pDrawInfo)
 	int_to_currency_tausenderpunkt(pDrawInfo->netto_summe, 10, buf);
 	Text(pDrawInfo, pDrawInfo->spalte_afa, pDrawInfo->line, buf);
 
-	// Abgänge
+	// Abgï¿½nge
 	int_to_currency_tausenderpunkt(pDrawInfo->abgaenge_summe, 10, buf);
 	Text(pDrawInfo, pDrawInfo->spalte_abgaenge, pDrawInfo->line, buf);
 
@@ -2112,7 +2118,7 @@ void CEasyCashView::DrawToDC_EinnahmenLine(DrawInfo *pDrawInfo, CBuchung *p)
 	char buf[3000];
 
 	int nOldBkMode = pDrawInfo->m_pDC->GetBkMode();
-	pDrawInfo->m_pDC->SetBkMode(TRANSPARENT);	// nötig für:
+	pDrawInfo->m_pDC->SetBkMode(TRANSPARENT);	// nï¿½tig fï¿½r:
 	// jede gerade Zeile grau unterlegen
 	if (!(pDrawInfo->line % 2) && pDrawInfo->line != nSelected) GraueBox(pDrawInfo, pDrawInfo->spalte_datum, pDrawInfo->line, pDrawInfo->spalte_afanr, pDrawInfo->line+1);
 	
@@ -2155,7 +2161,7 @@ void CEasyCashView::DrawToDC_EinnahmenLine(DrawInfo *pDrawInfo, CBuchung *p)
 	netto = p->GetNetto();
 	mwst_betrag = p->Betrag - netto;
 	
-	// Summen mitführen
+	// Summen mitfï¿½hren
 	pDrawInfo->ust += mwst_betrag;
 	pDrawInfo->brutto_summe += p->Betrag;
 	pDrawInfo->netto_summe += netto;
@@ -2194,7 +2200,7 @@ void CEasyCashView::DrawToDC_EinnahmenLine(DrawInfo *pDrawInfo, CBuchung *p)
 void CEasyCashView::DrawToDC_AusgabenLine(DrawInfo *pDrawInfo, CBuchung *p)
 {
 	int nOldBkMode = pDrawInfo->m_pDC->GetBkMode();
-	pDrawInfo->m_pDC->SetBkMode(TRANSPARENT);	// nötig für:
+	pDrawInfo->m_pDC->SetBkMode(TRANSPARENT);	// nï¿½tig fï¿½r:
 	// jede gerade Zeile grau unterlegen
 	if (!(pDrawInfo->line % 2) && pDrawInfo->line != nSelected) GraueBox(pDrawInfo, pDrawInfo->spalte_datum, pDrawInfo->line, pDrawInfo->spalte_afanr, pDrawInfo->line+1);
 	
@@ -2235,7 +2241,7 @@ void CEasyCashView::DrawToDC_AusgabenLine(DrawInfo *pDrawInfo, CBuchung *p)
 	TextEx(pDrawInfo, pDrawInfo->spalte_beschreibung, pDrawInfo->line, pDrawInfo->spalte_beschreibung_ende, pDrawInfo->line, p->Beschreibung.GetBuffer(0));
 
 	long mwst_betrag = 0, netto = 0;
-	if (p->Konto == "VST-Beträge separat")
+	if (p->Konto == "VST-Betrï¿½ge separat")
 	{
 		mwst_betrag = p->Betrag;
 		pDrawInfo->vst += mwst_betrag;
@@ -2251,7 +2257,7 @@ void CEasyCashView::DrawToDC_AusgabenLine(DrawInfo *pDrawInfo, CBuchung *p)
 		// Netto-Betrag berechnen
 		netto = p->GetBuchungsjahrNetto(pDoc);
 
-		// Korrektur bei ungültigen AfA-Angaben
+		// Korrektur bei ungï¿½ltigen AfA-Angaben
 		if (p->AbschreibungNr < 1 || p->AbschreibungJahre < 1)
 		{
 			m_bAfaKorrketuren++;
@@ -2265,7 +2271,7 @@ void CEasyCashView::DrawToDC_AusgabenLine(DrawInfo *pDrawInfo, CBuchung *p)
 		else
 			mwst_betrag = 0;
 		
-		// Summen mitführen
+		// Summen mitfï¿½hren
 		pDrawInfo->vst += mwst_betrag;
 		if (p->AbschreibungNr == 1) 
 			pDrawInfo->brutto_summe += netto + mwst_betrag;
@@ -2323,7 +2329,7 @@ void CEasyCashView::DrawToDC_AusgabenLine(DrawInfo *pDrawInfo, CBuchung *p)
 void CEasyCashView::DrawToDC_AnlagenverzeichnisLine(DrawInfo *pDrawInfo, CBuchung *p)
 {
 	int nOldBkMode = pDrawInfo->m_pDC->GetBkMode();
-	pDrawInfo->m_pDC->SetBkMode(TRANSPARENT);	// nötig für:
+	pDrawInfo->m_pDC->SetBkMode(TRANSPARENT);	// nï¿½tig fï¿½r:
 	// jede gerade Zeile grau unterlegen
 	if (!(pDrawInfo->line % 2) && pDrawInfo->line != nSelected) GraueBox(pDrawInfo, pDrawInfo->spalte_beschreibung, pDrawInfo->line, pDrawInfo->spalte_afanr, pDrawInfo->line+1);
 	
@@ -2346,7 +2352,7 @@ void CEasyCashView::DrawToDC_AnlagenverzeichnisLine(DrawInfo *pDrawInfo, CBuchun
 	// Beschreibungstext
 	TextEx(pDrawInfo, pDrawInfo->spalte_beschreibung, pDrawInfo->line, pDrawInfo->spalte_beschreibung_ende, pDrawInfo->line, p->Beschreibung.GetBuffer(0));
 
-	// Korrektur bei ungültigen AfA-Angaben
+	// Korrektur bei ungï¿½ltigen AfA-Angaben
 	if (p->AbschreibungNr < 1 || p->AbschreibungJahre < 1)
 	{
 		m_bAfaKorrketuren++;
@@ -2381,7 +2387,7 @@ void CEasyCashView::DrawToDC_AnlagenverzeichnisLine(DrawInfo *pDrawInfo, CBuchun
 		pDrawInfo->buchwert_beginn_summe += currency_to_int((*pcsErweiterungswert).TrimLeft().GetBuffer());
 		delete pcsErweiterungswert;
 
-		// Abgänge
+		// Abgï¿½nge
 		int_to_currency_tausenderpunkt(p->GetNetto(), 8, buf);
 		Text(pDrawInfo, pDrawInfo->spalte_abgaenge, pDrawInfo->line, buf);
 		pDrawInfo->abgaenge_summe += p->GetNetto();
@@ -2402,7 +2408,7 @@ void CEasyCashView::DrawToDC_AnlagenverzeichnisLine(DrawInfo *pDrawInfo, CBuchun
 
 		// Netto-AfA-Betrag 
 		long netto = p->GetBuchungsjahrNetto(pDoc);	
-		pDrawInfo->netto_summe += netto;	// Summe mitführen
+		pDrawInfo->netto_summe += netto;	// Summe mitfï¿½hren
 		int_to_currency_tausenderpunkt(netto, 8, buf);
 		Text(pDrawInfo, pDrawInfo->spalte_afa, pDrawInfo->line, buf);
 
@@ -2428,7 +2434,7 @@ void CEasyCashView::DrawToDC_BestandskontenLine(DrawInfo *pDrawInfo, CBuchung *p
 	char buf[3000];
 
 	int nOldBkMode = pDrawInfo->m_pDC->GetBkMode();
-	pDrawInfo->m_pDC->SetBkMode(TRANSPARENT);	// nötig für:
+	pDrawInfo->m_pDC->SetBkMode(TRANSPARENT);	// nï¿½tig fï¿½r:
 	// jede gerade Zeile grau unterlegen
 	if (!(pDrawInfo->line % 2)) GraueBox(pDrawInfo, pDrawInfo->spalte_datum, pDrawInfo->line, pDrawInfo->spalte_afanr, pDrawInfo->line+1);
 	
@@ -2455,7 +2461,7 @@ void CEasyCashView::DrawToDC_BestandskontenLine(DrawInfo *pDrawInfo, CBuchung *p
 
 	TextEx(pDrawInfo, pDrawInfo->spalte_beschreibung, pDrawInfo->line, pDrawInfo->spalte_ust, pDrawInfo->line, p->Beschreibung.GetBuffer(0));
 
-	// Summen mitführen
+	// Summen mitfï¿½hren
 	pDrawInfo->brutto_summe += cBuchungsart == 'e' ? p->Betrag : -(p->Betrag);
 
 	// Netto-Betrag
@@ -2472,7 +2478,7 @@ void CEasyCashView::DrawToDC_BestandskontenLine(DrawInfo *pDrawInfo, CBuchung *p
 	pDrawInfo->m_pDC->SetBkMode(nOldBkMode);
 }
 
-// n = folgende Zeilen, die zusammenhängend auf eine Seite sollen
+// n = folgende Zeilen, die zusammenhï¿½ngend auf eine Seite sollen
 void CEasyCashView::DrawToDC_LineBreak(DrawInfo *pDrawInfo, int n)
 {
 	if (pDrawInfo->pm)
@@ -2573,7 +2579,7 @@ TRACE1("pDrawInfo->pInfo->m_nCurPage: %d\r\n", (int)pDrawInfo->pInfo->m_nCurPage
 	}
 	pDrawInfo->m_pDC->SetTextColor(m_TextColor);
 
-	//--- Überschrift beim Druck ---
+	//--- ï¿½berschrift beim Druck ---
 
 	if (pDrawInfo->pm) 
 	{
@@ -2613,23 +2619,23 @@ TRACE1("pDrawInfo->pInfo->m_nCurPage: %d\r\n", (int)pDrawInfo->pInfo->m_nCurPage
 		if (m_KontenFilterDisplay != "<alle Konten>" && m_MonatsFilterDisplay)
 		{
 			if (m_MonatsFilterDisplay > 12)
-				sprintf(buffer, "Buchungsjournal für %s -- %d. Quartal %04d",
+				sprintf(buffer, "Buchungsjournal fï¿½r %s -- %d. Quartal %04d",
 					(LPCSTR)m_KontenFilterDisplay, m_MonatsFilterDisplay - 12, pDoc->nJahr);
 			else
-				sprintf(buffer, "Buchungsjournal für %s -- Monat %02d/%04d",
+				sprintf(buffer, "Buchungsjournal fï¿½r %s -- Monat %02d/%04d",
 					(LPCSTR)m_KontenFilterDisplay, m_MonatsFilterDisplay, pDoc->nJahr);
 		}
 		else if (m_MonatsFilterDisplay)
 		{
 			if (m_MonatsFilterDisplay > 12)
-				sprintf(buffer, "Buchungsjournal für %d. Quartal %04d",
+				sprintf(buffer, "Buchungsjournal fï¿½r %d. Quartal %04d",
 					m_MonatsFilterDisplay - 12, pDoc->nJahr);
 			else
-				sprintf(buffer, "Buchungsjournal für Monat %02d/%04d",
+				sprintf(buffer, "Buchungsjournal fï¿½r Monat %02d/%04d",
 					m_MonatsFilterDisplay, pDoc->nJahr);
 		}
 		else
-			sprintf(buffer, "Buchungsjournal für %s",
+			sprintf(buffer, "Buchungsjournal fï¿½r %s",
 				(LPCSTR)m_KontenFilterDisplay);
 
 		Text(pDrawInfo, pDrawInfo->spalte_datum, pDrawInfo->line++, buffer);
@@ -2646,14 +2652,14 @@ TRACE1("pDrawInfo->pInfo->m_nCurPage: %d\r\n", (int)pDrawInfo->pInfo->m_nCurPage
 			if (m_MonatsFilterDisplay)
 			{
 				if (m_MonatsFilterDisplay > 12)
-					sprintf(buffer, "EINNAHMEN für %d. Quartal %04d",
+					sprintf(buffer, "EINNAHMEN fï¿½r %d. Quartal %04d",
 						m_MonatsFilterDisplay - 12, pDoc->nJahr);
 				else
-					sprintf(buffer, "EINNAHMEN für Monat %02d/%04d",
+					sprintf(buffer, "EINNAHMEN fï¿½r Monat %02d/%04d",
 						m_MonatsFilterDisplay, pDoc->nJahr);
 			}
 			else			
-				sprintf(buffer, "EINNAHMEN für %d", pDoc->nJahr);
+				sprintf(buffer, "EINNAHMEN fï¿½r %d", pDoc->nJahr);
 		}
 		else 
 			sprintf(buffer, "EINNAHMEN");
@@ -2680,11 +2686,11 @@ TRACE1("pDrawInfo->pInfo->m_nCurPage: %d\r\n", (int)pDrawInfo->pInfo->m_nCurPage
 			p = *pp;
 			if (!p) break;
 
-			// Filter für Druck
+			// Filter fï¿½r Druck
 			if (pDrawInfo->pm && (p->Datum < von || p->Datum > bis)) continue;
 			if (pDrawInfo->pm && m_KontenFilterPrinter != "<alle Konten>" && m_KontenFilterPrinter != p->Konto) continue;
 			if (pDrawInfo->pm && m_BetriebFilterPrinter != "<alle Betriebe>" && m_BetriebFilterPrinter != p->Betrieb) continue;		
-			// Filter für Bildschirmanzeige
+			// Filter fï¿½r Bildschirmanzeige
 			if (!pDrawInfo->pm && (m_KontenFilterDisplay != "<alle Konten>" && p->Konto.GetLength() && "Einnahmen: " + p->Konto != m_KontenFilterDisplay && "Ausgaben: " + p->Konto != m_KontenFilterDisplay)) continue;
 			if (!pDrawInfo->pm && (m_KontenFilterDisplay != "<alle Konten>" && m_KontenFilterDisplay != "--- [noch zu keinem Konto zugewiesene Einnahmen] ---" && !p->Konto.GetLength())) continue;
 			if (!pDrawInfo->pm && (m_KontenFilterDisplay == "--- [noch zu keinem Konto zugewiesene Einnahmen] ---" && p->Konto.GetLength())) continue;
@@ -2721,14 +2727,14 @@ TRACE1("pDrawInfo->pInfo->m_nCurPage: %d\r\n", (int)pDrawInfo->pInfo->m_nCurPage
 			if (m_MonatsFilterDisplay)
 			{
 				if (m_MonatsFilterDisplay > 12)
-					sprintf(buffer, "AUSGABEN für %d. Quartal %04d",
+					sprintf(buffer, "AUSGABEN fï¿½r %d. Quartal %04d",
 						m_MonatsFilterDisplay - 12, pDoc->nJahr);
 				else
-					sprintf(buffer, "AUSGABEN für Monat %02d/%04d",
+					sprintf(buffer, "AUSGABEN fï¿½r Monat %02d/%04d",
 						m_MonatsFilterDisplay, pDoc->nJahr);
 			}
 			else			
-				sprintf(buffer, "AUSGABEN für %d", pDoc->nJahr);
+				sprintf(buffer, "AUSGABEN fï¿½r %d", pDoc->nJahr);
 		}
 		else 
 			sprintf(buffer, "AUSGABEN");
@@ -2753,11 +2759,11 @@ TRACE1("pDrawInfo->pInfo->m_nCurPage: %d\r\n", (int)pDrawInfo->pInfo->m_nCurPage
 			p = *pp;
 			if (!p) break;
 
-			// Filter für Druck
+			// Filter fï¿½r Druck
 			if (pDrawInfo->pm && (p->Datum < von || p->Datum > bis)) continue;
 			if (pDrawInfo->pm && m_KontenFilterPrinter != "<alle Konten>" && m_KontenFilterPrinter != p->Konto) continue;
 			if (pDrawInfo->pm && m_BetriebFilterPrinter != "<alle Betriebe>" && m_BetriebFilterPrinter != p->Betrieb) continue;	
-			// Filter für Bildschirmanzeige
+			// Filter fï¿½r Bildschirmanzeige
 			if (!pDrawInfo->pm && (m_KontenFilterDisplay != "<alle Konten>" && p->Konto.GetLength() && "Einnahmen: " + p->Konto != m_KontenFilterDisplay && "Ausgaben: " + p->Konto != m_KontenFilterDisplay)) continue;
 			if (!pDrawInfo->pm && (m_KontenFilterDisplay != "<alle Konten>" && m_KontenFilterDisplay != "--- [noch zu keinem Konto zugewiesene Ausgaben] ---" && !p->Konto.GetLength())) continue;
 			if (!pDrawInfo->pm && (m_KontenFilterDisplay == "--- [noch zu keinem Konto zugewiesene Ausgaben] ---" && p->Konto.GetLength())) continue;
@@ -2783,7 +2789,7 @@ TRACE1("pDrawInfo->pInfo->m_nCurPage: %d\r\n", (int)pDrawInfo->pInfo->m_nCurPage
 			GetDocument()->UpdateAllViews(NULL);
 	}
 
-	// Wichtig für das Printer-Mainframe um die Anzahl Seiten zu ermitteln
+	// Wichtig fï¿½r das Printer-Mainframe um die Anzahl Seiten zu ermitteln
 	if (pDrawInfo->pInfo)
 	{
 		max_seitenzahl = seitenzaehler;
@@ -2853,7 +2859,7 @@ void CEasyCashView::DrawToDC_Konten(CDC* pDC_par, DrawInfo *pDrawInfo)
 	BOOL ausgaben_posten_buchungen[100];
 	BOOL ausgaben_posten_buchungen_unzugewiesen = FALSE;
 
-	// reguläre Konten 
+	// regulï¿½re Konten 
 	for (i = 0; i < 100; i++)
 	{
 		einnahmen_posten_name[i]  = einstellungen1->EinnahmenRechnungsposten[i];
@@ -2876,7 +2882,7 @@ void CEasyCashView::DrawToDC_Konten(CDC* pDC_par, DrawInfo *pDrawInfo)
 	}
 	pDrawInfo->m_pDC->SetTextColor(m_TextColor);
 
-	//--- Überschrift beim Druck ---
+	//--- ï¿½berschrift beim Druck ---
 
 	if (pDrawInfo->pm) 
 	{
@@ -2920,39 +2926,39 @@ void CEasyCashView::DrawToDC_Konten(CDC* pDC_par, DrawInfo *pDrawInfo)
 		if (m_KontenFilterDisplay != "<alle Konten>" && m_MonatsFilterDisplay)
 		{
 			if (m_MonatsFilterDisplay > 12)
-				sprintf(buffer, "Buchungsjournal für %s -- %d. Quartal %04d",
+				sprintf(buffer, "Buchungsjournal fï¿½r %s -- %d. Quartal %04d",
 					(LPCSTR)m_KontenFilterDisplay, m_MonatsFilterDisplay - 12, pDoc->nJahr);
 			else
-				sprintf(buffer, "Buchungsjournal für %s -- Monat %02d/%04d",
+				sprintf(buffer, "Buchungsjournal fï¿½r %s -- Monat %02d/%04d",
 					(LPCSTR)m_KontenFilterDisplay, m_MonatsFilterDisplay, pDoc->nJahr);
 		}
 		else if (m_MonatsFilterDisplay)
 		{
 			if (m_MonatsFilterDisplay > 12)
-				sprintf(buffer, "Buchungsjournal für %d. Quartal %04d",
+				sprintf(buffer, "Buchungsjournal fï¿½r %d. Quartal %04d",
 					m_MonatsFilterDisplay - 12, pDoc->nJahr);
 			else
-				sprintf(buffer, "Buchungsjournal für Monat %02d/%04d",
+				sprintf(buffer, "Buchungsjournal fï¿½r Monat %02d/%04d",
 					m_MonatsFilterDisplay, pDoc->nJahr);
 		}
 		else
-			sprintf(buffer, "Buchungsjournal für %s",
+			sprintf(buffer, "Buchungsjournal fï¿½r %s",
 				(LPCSTR)m_KontenFilterDisplay);
 
 		Text(pDrawInfo, pDrawInfo->spalte_datum, pDrawInfo->line++, buffer);
 		pDrawInfo->line++;
 	}
 
-	//--- Konten für Einnahmen vorbereiten ---
+	//--- Konten fï¿½r Einnahmen vorbereiten ---
 
 	BOOL bDruckeUeberschrift = FALSE;
 	for (p = pDoc->Einnahmen; p; p = p->next)
 	{
-		// Filter für Druck
+		// Filter fï¿½r Druck
 		if (pDrawInfo->pm && (p->Datum < von || p->Datum > bis)) continue;
 		if (pDrawInfo->pm && m_KontenFilterPrinter != "<alle Konten>" && m_KontenFilterPrinter != p->Konto) continue;
 		if (pDrawInfo->pm && m_BetriebFilterPrinter != "<alle Betriebe>" && m_BetriebFilterPrinter != p->Betrieb) continue;		
-		// Filter für Bildschirmanzeige
+		// Filter fï¿½r Bildschirmanzeige
 		if (!pDrawInfo->pm && (m_KontenFilterDisplay != "<alle Konten>" && p->Konto.GetLength() && "Einnahmen: " + p->Konto != m_KontenFilterDisplay && "Ausgaben: " + p->Konto != m_KontenFilterDisplay)) continue;
 		if (!pDrawInfo->pm && (m_KontenFilterDisplay != "<alle Konten>" && m_KontenFilterDisplay != "--- [noch zu keinem Konto zugewiesene Einnahmen] ---" && !p->Konto.GetLength())) continue;
 		if (!pDrawInfo->pm && (m_KontenFilterDisplay == "--- [noch zu keinem Konto zugewiesene Einnahmen] ---" && p->Konto.GetLength())) continue;
@@ -2970,7 +2976,7 @@ void CEasyCashView::DrawToDC_Konten(CDC* pDC_par, DrawInfo *pDrawInfo)
 				break;
 			}
 
-			// leer? Dann neu übernehmen
+			// leer? Dann neu ï¿½bernehmen
 			if (einnahmen_posten_name[j].IsEmpty())
 			{
 				einnahmen_posten_name[j] = p->Konto;
@@ -2988,7 +2994,7 @@ void CEasyCashView::DrawToDC_Konten(CDC* pDC_par, DrawInfo *pDrawInfo)
 
 			if (j >= 100) 
 			{
-				AfxMessageBox("Zu viele Einnahmen-Konten. Bitte überflüssige Konten aus Buchungen entfernen!");			
+				AfxMessageBox("Zu viele Einnahmen-Konten. Bitte ï¿½berflï¿½ssige Konten aus Buchungen entfernen!");			
 				m_nAnzeige = 0;
 				return;
 			}
@@ -3069,16 +3075,16 @@ void CEasyCashView::DrawToDC_Konten(CDC* pDC_par, DrawInfo *pDrawInfo)
 		}
 	}
 
-	//--- Konten für Ausgaben vorbereiten ---
+	//--- Konten fï¿½r Ausgaben vorbereiten ---
 
 	bDruckeUeberschrift = FALSE;
 	for (p = pDoc->Ausgaben; p; p = p->next)
 	{
-		// Filter für Druck
+		// Filter fï¿½r Druck
 		if (pDrawInfo->pm && (p->Datum < von || p->Datum > bis)) continue;
 		if (pDrawInfo->pm && m_KontenFilterPrinter != "<alle Konten>" && m_KontenFilterPrinter != p->Konto) continue;
 		if (pDrawInfo->pm && m_BetriebFilterPrinter != "<alle Betriebe>" && m_BetriebFilterPrinter != p->Betrieb) continue;	
-		// Filter für Bildschirmanzeige
+		// Filter fï¿½r Bildschirmanzeige
 		if (!pDrawInfo->pm && (m_KontenFilterDisplay != "<alle Konten>" && p->Konto.GetLength() && "Einnahmen: " + p->Konto != m_KontenFilterDisplay && "Ausgaben: " + p->Konto != m_KontenFilterDisplay)) continue;
 		if (!pDrawInfo->pm && (m_KontenFilterDisplay != "<alle Konten>" && m_KontenFilterDisplay != "--- [noch zu keinem Konto zugewiesene Ausgaben] ---" && !p->Konto.GetLength())) continue;
 		if (!pDrawInfo->pm && (m_KontenFilterDisplay == "--- [noch zu keinem Konto zugewiesene Ausgaben] ---" && p->Konto.GetLength())) continue;
@@ -3113,7 +3119,7 @@ void CEasyCashView::DrawToDC_Konten(CDC* pDC_par, DrawInfo *pDrawInfo)
 
 			if (j >= 100) 
 			{
-				AfxMessageBox("Zu viele Ausgaben-Konten. Bitte überflüssige Konten aus Buchungen entfernen!");			
+				AfxMessageBox("Zu viele Ausgaben-Konten. Bitte ï¿½berflï¿½ssige Konten aus Buchungen entfernen!");			
 				m_nAnzeige = 0;
 				return;
 			}
@@ -3203,7 +3209,7 @@ void CEasyCashView::DrawToDC_Konten(CDC* pDC_par, DrawInfo *pDrawInfo)
 			GetDocument()->UpdateAllViews(NULL);
 	}
 
-	// Wichtig für das Printer-Mainframe um die Anzahl Seiten zu ermitteln
+	// Wichtig fï¿½r das Printer-Mainframe um die Anzahl Seiten zu ermitteln
 	if (pDrawInfo->pInfo)
 	{
 		max_seitenzahl = seitenzaehler;
@@ -3219,7 +3225,7 @@ void CEasyCashView::OnViewJournalDatumWpf()
 #endif
 }
 
-// Hilfsfunktion für DrawToDC_Bestandskonten
+// Hilfsfunktion fï¿½r DrawToDC_Bestandskonten
 BOOL CEasyCashView::BestandskontoExistiertInBuchungen(CString &bestandskontoname)
 {
 	CEasyCashDoc* pDoc = GetDocument();
@@ -3309,7 +3315,7 @@ void CEasyCashView::DrawToDC_Bestandskonten(CDC* pDC_par, DrawInfo *pDrawInfo)
 	else
 		pDrawInfo->line = 0;
 
-	// temporär Bestandskonten hier speichern, für die tatsächlich auch Buchungen existieren
+	// temporï¿½r Bestandskonten hier speichern, fï¿½r die tatsï¿½chlich auch Buchungen existieren
 	CString bestandskonto_name[100];
 	int     bestandskonto_icon[100];
 	int     bestandskonto_anfangssaldo[100];
@@ -3332,7 +3338,7 @@ void CEasyCashView::DrawToDC_Bestandskonten(CDC* pDC_par, DrawInfo *pDrawInfo)
 	}
 	else
 	{
-		// erst einmal reguläre Bestandskonten mit der gewohnten Sortierung aus den Einstellungen inkl. Icons/Salden auflisten
+		// erst einmal regulï¿½re Bestandskonten mit der gewohnten Sortierung aus den Einstellungen inkl. Icons/Salden auflisten
 		for (i = 0, bestandskonten_anzahl = 0; i < m_Bestandskonten.GetSize(); i++)
 		{
 			int anfangssaldo = m_Bestandskonten[i].saldo;
@@ -3341,7 +3347,7 @@ void CEasyCashView::DrawToDC_Bestandskonten(CDC* pDC_par, DrawInfo *pDrawInfo)
 				bestandskonto_name[bestandskonten_anzahl] = m_Bestandskonten[i].name;
 				bestandskonto_icon[bestandskonten_anzahl] = m_Bestandskonten[i].icon;
 				bestandskonto_anfangssaldo[bestandskonten_anzahl] = anfangssaldo;	
-				TRACE2("\r\nreguläres Bestandskonto %d: %s", bestandskonten_anzahl, bestandskonto_name[bestandskonten_anzahl]);
+				TRACE2("\r\nregulï¿½res Bestandskonto %d: %s", bestandskonten_anzahl, bestandskonto_name[bestandskonten_anzahl]);
 				bestandskonten_anzahl++;
 			}
 		}
@@ -3381,7 +3387,7 @@ void CEasyCashView::DrawToDC_Bestandskonten(CDC* pDC_par, DrawInfo *pDrawInfo)
 					{
 						bestandskonto_icon[i] = -1;
 						bestandskonto_anfangssaldo[i] = 0;
-						TRACE2("\r\nirreguläres Bestandskonto %d: %s", bestandskonten_anzahl, bestandskonto_name[bestandskonten_anzahl]);
+						TRACE2("\r\nirregulï¿½res Bestandskonto %d: %s", bestandskonten_anzahl, bestandskonto_name[bestandskonten_anzahl]);
 					}
 
 					bestandskonten_anzahl++;
@@ -3405,7 +3411,7 @@ void CEasyCashView::DrawToDC_Bestandskonten(CDC* pDC_par, DrawInfo *pDrawInfo)
 	}
 	pDrawInfo->m_pDC->SetTextColor(m_TextColor);
 
-	//--- Überschrift beim Druck ---
+	//--- ï¿½berschrift beim Druck ---
 
 	if (pDrawInfo->pm) 
 	{
@@ -3420,13 +3426,13 @@ void CEasyCashView::DrawToDC_Bestandskonten(CDC* pDC_par, DrawInfo *pDrawInfo)
 	{
 		char buffer[1000];
 		if (m_KontenFilterDisplay != "<alle Konten>" && m_MonatsFilterDisplay)
-			sprintf(buffer, "Buchungsjournal für %s -- Monat %02d/%04d",
+			sprintf(buffer, "Buchungsjournal fï¿½r %s -- Monat %02d/%04d",
 				(LPCSTR)m_KontenFilterDisplay, m_MonatsFilterDisplay, pDoc->nJahr);
 		else if (m_MonatsFilterDisplay)
-			sprintf(buffer, "Buchungsjournal für Monat %02d/%04d",
+			sprintf(buffer, "Buchungsjournal fï¿½r Monat %02d/%04d",
 				m_MonatsFilterDisplay, pDoc->nJahr);
 		else
-			sprintf(buffer, "Buchungsjournal für %s",
+			sprintf(buffer, "Buchungsjournal fï¿½r %s",
 				(LPCSTR)m_KontenFilterDisplay);
 
 		Text(pDrawInfo, pDrawInfo->spalte_datum, pDrawInfo->line++, buffer);
@@ -3440,7 +3446,7 @@ void CEasyCashView::DrawToDC_Bestandskonten(CDC* pDC_par, DrawInfo *pDrawInfo)
 		pDrawInfo->line++; pDrawInfo->line++;
 		DrawToDC_LineBreak(pDrawInfo, 8);
 		pDrawInfo->m_pDC->SetTextColor(m_TextColor);
-		int nSpalteUeberschrift = (!m_Betriebe.GetSize() && m_Bestandskonten.GetSize()) ? pDrawInfo->spalte_datum + 2 : pDrawInfo->spalte_datum;	// wenn nur Bestandskonten und keine Betriebe, dann 2 Zeichen weiter nach rechts schieben, sonst überlappt das Icon des Bestandskontos
+		int nSpalteUeberschrift = (!m_Betriebe.GetSize() && m_Bestandskonten.GetSize()) ? pDrawInfo->spalte_datum + 2 : pDrawInfo->spalte_datum;	// wenn nur Bestandskonten und keine Betriebe, dann 2 Zeichen weiter nach rechts schieben, sonst ï¿½berlappt das Icon des Bestandskontos
 		if (bestandskonto_name[i] != "")
 			Text(pDrawInfo, nSpalteUeberschrift, pDrawInfo->line++, bestandskonto_name[i].GetBuffer(0));
 		else
@@ -3480,10 +3486,10 @@ void CEasyCashView::DrawToDC_Bestandskonten(CDC* pDC_par, DrawInfo *pDrawInfo)
 
 		while (*ppBEinnahmen || *ppBAusgaben)
 		{
-			// Filter für Druck
+			// Filter fï¿½r Druck
 //			if (pDrawInfo->pm && (p->Datum < von || p->Datum > bis)) continue;
 	//		if (pDrawInfo->pm && m_KontenFilterPrinter != "<alle Konten>" && m_KontenFilterPrinter != p->Konto) continue;
-			// Filter für Bildschirmanzeige
+			// Filter fï¿½r Bildschirmanzeige
 	//		if (!pDrawInfo->pm && (m_KontenFilterDisplay != "<alle Konten>" && "Einnahmen: " + p->Konto != m_KontenFilterDisplay && "Ausgaben: " + p->Konto != m_KontenFilterDisplay)) continue;
 //			if (!pDrawInfo->pm && (m_MonatsFilterDisplay && p->Datum.GetMonth() != m_MonatsFilterDisplay)) continue;
 //			if (!pDrawInfo->pm && (m_BetriebFilterDisplay != "" && p->Betrieb != m_BetriebFilterDisplay)) continue;
@@ -3541,7 +3547,7 @@ void CEasyCashView::DrawToDC_Bestandskonten(CDC* pDC_par, DrawInfo *pDrawInfo)
 			GetDocument()->UpdateAllViews(NULL);
 	}
 
-	// Wichtig für das Printer-Mainframe um die Anzahl Seiten zu ermitteln
+	// Wichtig fï¿½r das Printer-Mainframe um die Anzahl Seiten zu ermitteln
 	if (pDrawInfo->pInfo)
 	{
 		max_seitenzahl = seitenzaehler;
@@ -3600,7 +3606,7 @@ void CEasyCashView::DrawToDC_Anlagenverzeichnis(CDC* pDC_par, DrawInfo *pDrawInf
 	BOOL ausgaben_posten_buchungen[100];
 	BOOL ausgaben_posten_buchungen_unzugewiesen = FALSE;
 
-	// reguläre Konten 
+	// regulï¿½re Konten 
 	for (i = 0; i < 100; i++)
 	{
 		ausgaben_posten_name[i]   = einstellungen1->AusgabenRechnungsposten[i];
@@ -3621,7 +3627,7 @@ void CEasyCashView::DrawToDC_Anlagenverzeichnis(CDC* pDC_par, DrawInfo *pDrawInf
 	}
 	pDrawInfo->m_pDC->SetTextColor(m_TextColor);
 
-	//--- Überschrift beim Druck ---
+	//--- ï¿½berschrift beim Druck ---
 
 	if (pDrawInfo->pm) 
 	{
@@ -3661,39 +3667,39 @@ void CEasyCashView::DrawToDC_Anlagenverzeichnis(CDC* pDC_par, DrawInfo *pDrawInf
 		if (m_KontenFilterDisplay != "<alle Konten>" && m_MonatsFilterDisplay)
 		{
 			if (m_MonatsFilterDisplay > 12)
-				sprintf(buffer, "Anlagenverzeichnis für %s -- %d. Quartal %04d",
+				sprintf(buffer, "Anlagenverzeichnis fï¿½r %s -- %d. Quartal %04d",
 					(LPCSTR)m_KontenFilterDisplay, m_MonatsFilterDisplay - 12, pDoc->nJahr);
 			else
-				sprintf(buffer, "Anlagenverzeichnis für %s -- Monat %02d/%04d",
+				sprintf(buffer, "Anlagenverzeichnis fï¿½r %s -- Monat %02d/%04d",
 					(LPCSTR)m_KontenFilterDisplay, m_MonatsFilterDisplay, pDoc->nJahr);
 		}
 		else if (m_MonatsFilterDisplay)
 		{
 			if (m_MonatsFilterDisplay > 12)
-				sprintf(buffer, "Anlagenverzeichnis für %d. Quartal %04d",
+				sprintf(buffer, "Anlagenverzeichnis fï¿½r %d. Quartal %04d",
 					m_MonatsFilterDisplay - 12, pDoc->nJahr);
 			else
-				sprintf(buffer, "Anlagenverzeichnis für Monat %02d/%04d",
+				sprintf(buffer, "Anlagenverzeichnis fï¿½r Monat %02d/%04d",
 					m_MonatsFilterDisplay, pDoc->nJahr);
 		}
 		else
-			sprintf(buffer, "Anlagenverzeichnis für %s",
+			sprintf(buffer, "Anlagenverzeichnis fï¿½r %s",
 				(LPCSTR)m_KontenFilterDisplay);
 
 		Text(pDrawInfo, pDrawInfo->spalte_beschreibung, pDrawInfo->line++, buffer);
 		pDrawInfo->line++;
 	}
 
-	//--- Konten für Ausgaben vorbereiten ---
+	//--- Konten fï¿½r Ausgaben vorbereiten ---
 
 	BOOL bDruckeUeberschrift = FALSE;
 	for (p = pDoc->Ausgaben; p; p = p->next)
 	{
-		// Filter für Druck
+		// Filter fï¿½r Druck
 		if (pDrawInfo->pm && (p->Datum < von || p->Datum > bis)) continue;
 		if (pDrawInfo->pm && m_KontenFilterPrinter != "<alle Konten>" && m_KontenFilterPrinter != p->Konto) continue;
 		if (pDrawInfo->pm && m_BetriebFilterPrinter != "<alle Betriebe>" && m_BetriebFilterPrinter != p->Betrieb) continue;	
-		// Filter für Bildschirmanzeige
+		// Filter fï¿½r Bildschirmanzeige
 		if (!pDrawInfo->pm && (m_KontenFilterDisplay != "<alle Konten>" && p->Konto.GetLength() && "Einnahmen: " + p->Konto != m_KontenFilterDisplay && "Ausgaben: " + p->Konto != m_KontenFilterDisplay)) continue;
 		if (!pDrawInfo->pm && (m_KontenFilterDisplay != "<alle Konten>" && m_KontenFilterDisplay != "--- [noch zu keinem Konto zugewiesene Ausgaben] ---" && !p->Konto.GetLength())) continue;
 		if (!pDrawInfo->pm && (m_KontenFilterDisplay == "--- [noch zu keinem Konto zugewiesene Ausgaben] ---" && p->Konto.GetLength())) continue;
@@ -3741,7 +3747,7 @@ void CEasyCashView::DrawToDC_Anlagenverzeichnis(CDC* pDC_par, DrawInfo *pDrawInf
 
 			if (j >= 100) 
 			{
-				AfxMessageBox("Zu viele Ausgaben-Konten. Bitte überflüssige Konten aus Buchungen entfernen!");			
+				AfxMessageBox("Zu viele Ausgaben-Konten. Bitte ï¿½berflï¿½ssige Konten aus Buchungen entfernen!");			
 				m_nAnzeige = 0;
 				return;
 			}
@@ -3843,7 +3849,7 @@ void CEasyCashView::DrawToDC_Anlagenverzeichnis(CDC* pDC_par, DrawInfo *pDrawInf
 			GetDocument()->UpdateAllViews(NULL);
 	}
 
-	// Wichtig für das Printer-Mainframe um die Anzahl Seiten zu ermitteln
+	// Wichtig fï¿½r das Printer-Mainframe um die Anzahl Seiten zu ermitteln
 	if (pDrawInfo->pInfo)
 	{
 		max_seitenzahl = seitenzaehler;
@@ -3925,18 +3931,18 @@ void CEasyCashView::DrawUmStErklaerungToDC(CDC* pDC, DrawInfo *pDrawInfo)
 
 	if (von > bis) bis = CTime(pDoc->nJahr+1, m_bm, m_bt, 23, 59, 59);
 
-	// Überschrift
+	// ï¿½berschrift
 	{
 		jahr = pDoc->nJahr;
 
 		if (m_vt == 1 && m_vm == 1 && m_bt == 31 && m_bm == 12)
 		{
-			sprintf(buffer, "USt-Erklärung für %d", jahr);
+			sprintf(buffer, "USt-Erklï¿½rung fï¿½r %d", jahr);
 			Text(pDrawInfo, 7, 4, "=========================");
 		}
 		else
 		{
-			sprintf(buffer, "Vorläufige USt-Erklärung für den Zeitraum %02d.%02d.%04d - %02d.%02d.%04d", m_vt, m_vm, jahr, m_bt, m_bm, bis.GetYear());
+			sprintf(buffer, "Vorlï¿½ufige USt-Erklï¿½rung fï¿½r den Zeitraum %02d.%02d.%04d - %02d.%02d.%04d", m_vt, m_vm, jahr, m_bt, m_bm, bis.GetYear());
 			Text(pDrawInfo, 7, 4, "=================================================================");
 		}
 		Text(pDrawInfo, 7, 3,  buffer);
@@ -3956,8 +3962,8 @@ void CEasyCashView::DrawUmStErklaerungToDC(CDC* pDC, DrawInfo *pDrawInfo)
 
 	int line;
 	long ust_summe_gesamt = 0, brutto_summe_gesamt = 0, netto_summe_gesamt = 0;
-	long ust_summe[100000]; // pro Satz ein Zähler
-	long netto_summe[100000]; // pro Satz ein Zähler
+	long ust_summe[100000]; // pro Satz ein Zï¿½hler
+	long netto_summe[100000]; // pro Satz ein Zï¿½hler
 	for (i = 0; i < 100000; i++)
 	{
 		ust_summe[i] = netto_summe[i] = 0;
@@ -3975,7 +3981,7 @@ void CEasyCashView::DrawUmStErklaerungToDC(CDC* pDC, DrawInfo *pDrawInfo)
 				netto = p->GetNetto();
 				mwst_betrag = p->Betrag - netto;
 				
-				// Summen mitführen
+				// Summen mitfï¿½hren
 				if (p->MWSt >= 0 && p->MWSt < 100000)
 				{
 					ust_summe[p->MWSt] += mwst_betrag;
@@ -3986,19 +3992,19 @@ void CEasyCashView::DrawUmStErklaerungToDC(CDC* pDC, DrawInfo *pDrawInfo)
 				}
 
 				// Feld 48 berechnen
-				if (p->Konto.Right(19) == "Steuerfreie Umsätze")
+				if (p->Konto.Right(19) == "Steuerfreie Umsï¿½tze")
 					SteuerfreieUmsaetze += p->Betrag;
 
 				// Feld 43 berechnen
-				if (p->Konto.Right(46) == "Weitere Steuerfreie Umsätze mit Vorsteuerabzug")
+				if (p->Konto.Right(46) == "Weitere Steuerfreie Umsï¿½tze mit Vorsteuerabzug")
 					WeitereSteuerfreieUmsaetze += p->Betrag;
 
-				// UST-ID-Umsätze berechnen
+				// UST-ID-Umsï¿½tze berechnen
 				if (p->Konto.Find("UST-ID") != -1)
 					UStID += p->Betrag;
 			}
 
-		sprintf(buffer, "Währung: %s", (LPCSTR)pDoc->csWaehrung);
+		sprintf(buffer, "Wï¿½hrung: %s", (LPCSTR)pDoc->csWaehrung);
 		Text(pDrawInfo, 7, 14, buffer);
 
 		Text(pDrawInfo, 7, 16, "C. Lieferungen und sonstige Leistungen:");
@@ -4046,7 +4052,7 @@ void CEasyCashView::DrawUmStErklaerungToDC(CDC* pDC, DrawInfo *pDrawInfo)
 		for (p = pDoc->Ausgaben; p; p = p->next)
 			if (p->Datum >= von && p->Datum <= bis && p->Konto[0] != '/')
 			{
-				if (p->Konto == "VST-Beträge separat")
+				if (p->Konto == "VST-Betrï¿½ge separat")
 				{
 					vst += p->Betrag;
 				}
@@ -4062,7 +4068,7 @@ void CEasyCashView::DrawUmStErklaerungToDC(CDC* pDC, DrawInfo *pDrawInfo)
 					else
 						mwst_betrag = 0;
 
-					// Summen mitführen
+					// Summen mitfï¿½hren
 					vst += mwst_betrag;
 					if (p->AbschreibungNr == 1) brutto_summe += p->Betrag;
 					netto_summe += netto;
@@ -4073,7 +4079,7 @@ void CEasyCashView::DrawUmStErklaerungToDC(CDC* pDC, DrawInfo *pDrawInfo)
 				}
 			}
 
-		Text(pDrawInfo, 7, line, "D. Abziehbare Vorsteuerbeträge:");
+		Text(pDrawInfo, 7, line, "D. Abziehbare Vorsteuerbetrï¿½ge:");
 		line++;
 		Text(pDrawInfo, 7, line, "aus Rechnungen von anderen Unternehmen:");
 		int_to_currency_tausenderpunkt(vst, 10, buffer);
@@ -4096,15 +4102,15 @@ void CEasyCashView::DrawUmStErklaerungToDC(CDC* pDC, DrawInfo *pDrawInfo)
 		Text(pDrawInfo, 70, line, buffer);
 		pDC->SetTextAlign(TA_LEFT);
 		line++; line++;
-		Text(pDrawInfo, 7, line, "Vorauszahlungssoll für das Jahr:");
+		Text(pDrawInfo, 7, line, "Vorauszahlungssoll fï¿½r das Jahr:");
 		pDC->SetTextAlign(TA_RIGHT);
 		Text(pDrawInfo, 70, line, "- _______");
 		pDC->SetTextAlign(TA_LEFT);
 		line++; 
-		Text(pDrawInfo, 10, line, "(alle Vorauszahlungen für dieses Jahr)");		
+		Text(pDrawInfo, 10, line, "(alle Vorauszahlungen fï¿½r dieses Jahr)");		
 		line++;
 		
-		// gemerkte Vorauszahlungen berücksichtigen
+		// gemerkte Vorauszahlungen berï¿½cksichtigen
 		char inibuf[1000], inijahr[20], buffer2[1000];
 		CString csMonatsVorauszahlungsbetrag, csQuartalsVorauszahlungsbetrag;
 		int vorauszahlung, gesamt_voranmeldungssoll = 0;
@@ -4126,7 +4132,7 @@ void CEasyCashView::DrawUmStErklaerungToDC(CDC* pDC, DrawInfo *pDrawInfo)
 					if (!bUeberschrift)
 					{
 						bUeberschrift = TRUE;
-						Text(pDrawInfo, 7, line, "Gemerkte Vorauszahlungen (bzw. Erstattungen bei Minusbeträgen):");
+						Text(pDrawInfo, 7, line, "Gemerkte Vorauszahlungen (bzw. Erstattungen bei Minusbetrï¿½gen):");
 						line++;
 					}
 
@@ -4136,9 +4142,9 @@ void CEasyCashView::DrawUmStErklaerungToDC(CDC* pDC, DrawInfo *pDrawInfo)
 						int_to_currency_tausenderpunkt(vorauszahlung, 10, buffer);
 						gesamt_voranmeldungssoll += vorauszahlung;
 						if (vorauszahlung >= 0)
-							sprintf(buffer2, "Vorauszahlung für Monat %d:", i);
+							sprintf(buffer2, "Vorauszahlung fï¿½r Monat %d:", i);
 						else
-							sprintf(buffer2, "Erstattung    für Monat %d:", i);
+							sprintf(buffer2, "Erstattung    fï¿½r Monat %d:", i);
 						Text(pDrawInfo, 10, line, buffer2);
 						pDC->SetTextAlign(TA_RIGHT);
 						Text(pDrawInfo, 55, line, buffer);
@@ -4152,9 +4158,9 @@ void CEasyCashView::DrawUmStErklaerungToDC(CDC* pDC, DrawInfo *pDrawInfo)
 						int_to_currency_tausenderpunkt(vorauszahlung, 10, buffer);
 						gesamt_voranmeldungssoll += vorauszahlung;
 						if (vorauszahlung >= 0)
-							sprintf(buffer2, "Vorauszahlung für Quartal %d:", (i-1) / 3 + 1);
+							sprintf(buffer2, "Vorauszahlung fï¿½r Quartal %d:", (i-1) / 3 + 1);
 						else
-							sprintf(buffer2, "Erstattung    für Quartal %d:", (i-1) / 3 + 1);
+							sprintf(buffer2, "Erstattung    fï¿½r Quartal %d:", (i-1) / 3 + 1);
 						Text(pDrawInfo, 10, line, buffer2);
 						pDC->SetTextAlign(TA_RIGHT);
 						Text(pDrawInfo, 55, line, buffer);
@@ -4200,14 +4206,14 @@ void CEasyCashView::DrawUmStErklaerungToDC(CDC* pDC, DrawInfo *pDrawInfo)
 		pDC->SetTextAlign(TA_LEFT);
 		line++;
 
-		Text(pDrawInfo, 7, line, "Weitere Steuerfreie Umsätze mit Vorsteuerabzug:");
+		Text(pDrawInfo, 7, line, "Weitere Steuerfreie Umsï¿½tze mit Vorsteuerabzug:");
 		sprintf(buffer, "%d", WeitereSteuerfreieUmsaetze / 100);
 		pDC->SetTextAlign(TA_RIGHT);
 		Text(pDrawInfo, 70, line, buffer);
 		pDC->SetTextAlign(TA_LEFT);
 		line++;
 
-		Text(pDrawInfo, 7, line, "Steuerfreie Umsätze ohne Vorsteuerabzug:");
+		Text(pDrawInfo, 7, line, "Steuerfreie Umsï¿½tze ohne Vorsteuerabzug:");
 		sprintf(buffer, "%d", SteuerfreieUmsaetze / 100);
 		pDC->SetTextAlign(TA_RIGHT);
 		Text(pDrawInfo, 70, line, buffer);
@@ -4215,7 +4221,7 @@ void CEasyCashView::DrawUmStErklaerungToDC(CDC* pDC, DrawInfo *pDrawInfo)
 		line++;
 	}
 
-	// Wichtig für das Printer-Mainframe um die Anzahl Seiten zu ermitteln
+	// Wichtig fï¿½r das Printer-Mainframe um die Anzahl Seiten zu ermitteln
 	if (pDrawInfo->pInfo)
 	{
 		max_seitenzahl = 1;
@@ -4232,7 +4238,7 @@ void CEasyCashView::DrawEURechungToDC(CDC* pDC, DrawInfo *pDrawInfo)
 	seitenzaehler = 1;
 	int jahr;
 
-	/* rätselhafter Code:
+	/* rï¿½tselhafter Code:
 	if (!pDrawInfo->pInfo)
 		pDrawInfo->pInfo->m_nCurPage = 0;
 	else
@@ -4256,14 +4262,14 @@ void CEasyCashView::DrawEURechungToDC(CDC* pDC, DrawInfo *pDrawInfo)
 
 	if (m_BetriebFilterPrinter == "<alle Betriebe>") m_BetriebFilterPrinter = "";
 
-	// Überschrift
+	// ï¿½berschrift
 	{
 		char rechnungsname[1000];
 		jahr = pDoc->nJahr;
 		if (!strcmp(GetLandeskuerzel(), "AT"))
 			strcpy(rechnungsname, "Einnahmen-Ausgabenrechnung");
 		else
-			strcpy(rechnungsname, "Einnahmen-Überschussrechnung");
+			strcpy(rechnungsname, "Einnahmen-ï¿½berschussrechnung");
 
 		if (m_BetriebFilterPrinter != "")
 		{
@@ -4275,12 +4281,12 @@ void CEasyCashView::DrawEURechungToDC(CDC* pDC, DrawInfo *pDrawInfo)
 
 		if (m_vt == 1 && m_vm == 1 && m_bt == 31 && m_bm == 12)
 		{
-			sprintf(buffer, "%s für %d", rechnungsname, jahr);
+			sprintf(buffer, "%s fï¿½r %d", rechnungsname, jahr);
 			strcpy(buffer_unterstrich, "=====================================");
 		}
 		else
 		{
-			sprintf(buffer, "%s für den Zeitraum %02d.%02d.%04d - %02d.%02d.%04d", 
+			sprintf(buffer, "%s fï¿½r den Zeitraum %02d.%02d.%04d - %02d.%02d.%04d", 
 				rechnungsname, m_vt, m_vm, jahr, m_bt, m_bm, bis.GetYear());
 			strcpy(buffer_unterstrich, "=====================================================================");
 		}
@@ -4349,11 +4355,11 @@ void CEasyCashView::DrawEURechungToDC(CDC* pDC, DrawInfo *pDrawInfo)
 
 	long einnahmen_gesamtsumme = 0;
 	long einnahmen_mwst_summe = 0;
-	long einnahmen_posten_summe[101];	// pro E/Ü-Rechnungsposten ein Zähler (Einnahmen)
+	long einnahmen_posten_summe[101];	// pro E/ï¿½-Rechnungsposten ein Zï¿½hler (Einnahmen)
 	CString einnahmen_posten_name[101];
 	long ausgaben_gesamtsumme = 0;
 	long ausgaben_mwst_summe = 0;
-	long ausgaben_posten_summe[101];	// pro E/Ü-Rechnungsposten ein Zähler (Ausgaben)
+	long ausgaben_posten_summe[101];	// pro E/ï¿½-Rechnungsposten ein Zï¿½hler (Ausgaben)
 	CString ausgaben_posten_name[101];
 
 	for (i = 0; i < 100; i++)
@@ -4372,7 +4378,7 @@ void CEasyCashView::DrawEURechungToDC(CDC* pDC, DrawInfo *pDrawInfo)
 			ASSERT(!p->Konto.IsEmpty());
 
 			if (p->Datum < von || p->Datum > bis) continue;
-			if (!m_BetriebFilterPrinter.IsEmpty() && p->Betrieb != m_BetriebFilterPrinter) continue;	// nur Buchungen für gewählten Betrieb aufsummieren
+			if (!m_BetriebFilterPrinter.IsEmpty() && p->Betrieb != m_BetriebFilterPrinter) continue;	// nur Buchungen fï¿½r gewï¿½hlten Betrieb aufsummieren
 
 			for (j = 0; j < 101; j++)
 			{
@@ -4393,7 +4399,7 @@ void CEasyCashView::DrawEURechungToDC(CDC* pDC, DrawInfo *pDrawInfo)
 							einnahmen_posten_summe[j] += netto;
 							einnahmen_gesamtsumme += p->Betrag;
 						}
-						einnahmen_mwst_summe += mwst_betrag;		// wird zum Schluß in ein Konto UST geschrieben
+						einnahmen_mwst_summe += mwst_betrag;		// wird zum Schluï¿½ in ein Konto UST geschrieben
 					}
 					else
 					{
@@ -4414,7 +4420,7 @@ void CEasyCashView::DrawEURechungToDC(CDC* pDC, DrawInfo *pDrawInfo)
 
 				if (j >= 100) 
 				{
-					Text(pDrawInfo, 6, 15, "--> FEHLER: Zu viele Konten in der E/Ü-Rechnung! Bitte reduzieren Sie die Anzahl Ihrer Konten auf unter 100. <--");
+					Text(pDrawInfo, 6, 15, "--> FEHLER: Zu viele Konten in der E/ï¿½-Rechnung! Bitte reduzieren Sie die Anzahl Ihrer Konten auf unter 100. <--");
 					return;
 				}
 			}
@@ -4432,7 +4438,7 @@ void CEasyCashView::DrawEURechungToDC(CDC* pDC, DrawInfo *pDrawInfo)
 
 			if (j >= 100) 
 			{
-				Text(pDrawInfo, 6, 15, "--> FEHLER: Zu viele Konten in der E/Ü-Rechnung! Bitte reduzieren Sie die Anzahl Ihrer Konten auf unter 100. <--");
+				Text(pDrawInfo, 6, 15, "--> FEHLER: Zu viele Konten in der E/ï¿½-Rechnung! Bitte reduzieren Sie die Anzahl Ihrer Konten auf unter 100. <--");
 				return;
 			}
 
@@ -4506,9 +4512,9 @@ void CEasyCashView::DrawEURechungToDC(CDC* pDC, DrawInfo *pDrawInfo)
 			ASSERT(!p->Konto.IsEmpty());
 
 			if (p->Datum < von || p->Datum > bis) continue;
-			if (!m_BetriebFilterPrinter.IsEmpty() && p->Betrieb != m_BetriebFilterPrinter) continue;	// nur Buchungen für gewählten Betrieb aufsummieren
+			if (!m_BetriebFilterPrinter.IsEmpty() && p->Betrieb != m_BetriebFilterPrinter) continue;	// nur Buchungen fï¿½r gewï¿½hlten Betrieb aufsummieren
 
-			if (p->Konto == "VST-Beträge separat" && ECT_HoleEinstellungInt("ustvst_gesondert", 0))	// separate VST einfach nur mitzählen, weil wir sowieso ein VST-Konto haben zum Schluss
+			if (p->Konto == "VST-Betrï¿½ge separat" && ECT_HoleEinstellungInt("ustvst_gesondert", 0))	// separate VST einfach nur mitzï¿½hlen, weil wir sowieso ein VST-Konto haben zum Schluss
 			{
 				ausgaben_mwst_summe += p->Betrag;
 				ausgaben_gesamtsumme += p->Betrag;
@@ -4539,7 +4545,7 @@ void CEasyCashView::DrawEURechungToDC(CDC* pDC, DrawInfo *pDrawInfo)
 								ausgaben_posten_summe[j] += netto;
 								ausgaben_gesamtsumme += netto + mwst_betrag;
 							}
-							ausgaben_mwst_summe += mwst_betrag;		// wird zum Schluß in ein Konto VST geschrieben
+							ausgaben_mwst_summe += mwst_betrag;		// wird zum Schluï¿½ in ein Konto VST geschrieben
 						}
 						else
 						{
@@ -4560,7 +4566,7 @@ void CEasyCashView::DrawEURechungToDC(CDC* pDC, DrawInfo *pDrawInfo)
 
 					if (j >= 100) 
 					{
-						Text(pDrawInfo, 6, 15, "--> FEHLER: Zu viele Konten in der E/Ü-Rechnung! Bitte reduzieren Sie die Anzahl Ihrer Konten auf unter 100. <--");
+						Text(pDrawInfo, 6, 15, "--> FEHLER: Zu viele Konten in der E/ï¿½-Rechnung! Bitte reduzieren Sie die Anzahl Ihrer Konten auf unter 100. <--");
 						return;
 					}
 				}
@@ -4577,7 +4583,7 @@ void CEasyCashView::DrawEURechungToDC(CDC* pDC, DrawInfo *pDrawInfo)
 
 			if (j >= 100) 
 			{
-				Text(pDrawInfo, 6, 15, "--> FEHLER: Zu viele Konten in der E/Ü-Rechnung! Bitte reduzieren Sie die Anzahl Ihrer Konten auf unter 100. <--");
+				Text(pDrawInfo, 6, 15, "--> FEHLER: Zu viele Konten in der E/ï¿½-Rechnung! Bitte reduzieren Sie die Anzahl Ihrer Konten auf unter 100. <--");
 				return;
 			}
 
@@ -4645,7 +4651,7 @@ void CEasyCashView::DrawEURechungToDC(CDC* pDC, DrawInfo *pDrawInfo)
 		line++;
 	}
 
-	// Wichtig für das Printer-Mainframe um die Anzahl Seiten zu ermitteln
+	// Wichtig fï¿½r das Printer-Mainframe um die Anzahl Seiten zu ermitteln
 	if (pDrawInfo->pInfo)
 	{
 		max_seitenzahl = seitenzaehler;
@@ -4701,7 +4707,7 @@ void CEasyCashView::DrawFormularToDC(CDC* pDC, DrawInfo *pDrawInfo)
 	querformat_faktor = pDrawInfo->querformat && !pDrawInfo->pm ? 2 : 1;	// horizontale hochskalieren bei Querformat
 	letzte_spalte = 0;
 
-	// Wichtig für das Printer-Mainframe um die Anzahl Seiten zu ermitteln
+	// Wichtig fï¿½r das Printer-Mainframe um die Anzahl Seiten zu ermitteln
 	if (pDrawInfo->pInfo)
 	{
 		max_seitenzahl = anzahl_seiten;
@@ -4740,7 +4746,7 @@ void CEasyCashView::DrawFormularToDC(CDC* pDC, DrawInfo *pDrawInfo)
 	
 	pDC->SetBkMode(TRANSPARENT);
 
-	// Wenn gerade ein Feld verändert wird: Positionsmarke zeigen
+	// Wenn gerade ein Feld verï¿½ndert wird: Positionsmarke zeigen
 	if (m_nFeldMove >= 0 || (pFormularfeldDlg && pFormularfeldDlg->IsWindowVisible()))
 	{
 		CBrush brush;
@@ -4753,14 +4759,14 @@ void CEasyCashView::DrawFormularToDC(CDC* pDC, DrawInfo *pDrawInfo)
 			feldmarkenhoehe = charheight;
 		if (!pDrawInfo->pm)
 		{
-			if (m_bFeldmarkeRechtsbuendig)	// rechtsbündig
+			if (m_bFeldmarkeRechtsbuendig)	// rechtsbï¿½ndig
 			{
 				r.left = (int)((double)ptFeldmarke.x * (charheight * (VCHARS + PAGE_GAP) * querformat_faktor * 1000 / 1414) / 1000 - charheight * 5);
 				r.top = (int)((double)ptFeldmarke.y * ((VCHARS + PAGE_GAP) * charheight) / 1414 - feldmarkenhoehe / 2);
 				r.right = (int)((double)ptFeldmarke.x * (charheight * (VCHARS + PAGE_GAP) * querformat_faktor * 1000 / 1414) / 1000);
 				r.bottom = (int)((double)ptFeldmarke.y * ((VCHARS + PAGE_GAP) * charheight) / 1414 + feldmarkenhoehe / 2);
 			}
-			else									// linksbündig
+			else									// linksbï¿½ndig
 			{
 				r.left = (int)((double)ptFeldmarke.x * (charheight * (VCHARS + PAGE_GAP) * querformat_faktor * 1000 / 1414) / 1000);
 				r.top = (int)((double)ptFeldmarke.y * ((VCHARS + PAGE_GAP) * charheight) / 1414 - feldmarkenhoehe / 2);
@@ -4771,7 +4777,7 @@ void CEasyCashView::DrawFormularToDC(CDC* pDC, DrawInfo *pDrawInfo)
 		}
 	}
 
-	// während Feldmarken-Drag keine Inhalte anzeigen
+	// wï¿½hrend Feldmarken-Drag keine Inhalte anzeigen
 	if (m_nFeldMove >= 0) return;
 
 	// Feldwerte einblenden
@@ -4790,7 +4796,7 @@ void CEasyCashView::DrawFormularToDC(CDC* pDC, DrawInfo *pDrawInfo)
 			strcpy(FontStats.lfFaceName, (LPCSTR)schriftart); 
 			if (pDrawInfo->pm) schriftgroesse = (int)((float)schriftgroesse * pDrawInfo->printer_charheight / charheight * 1000 / (pDrawInfo->querformat ? 1414 : 1000));
 			FontStats.lfHeight  = schriftgroesse > 0 ? schriftgroesse : charheight;
-			FontStats.lfWidth   = 0;	// Breite relativ zur Höhe verkleinern
+			FontStats.lfWidth   = 0;	// Breite relativ zur Hï¿½he verkleinern
 			FontStats.lfQuality = pDrawInfo->pm ? PROOF_QUALITY : DEFAULT_QUALITY;
 			neuerFont.CreateFontIndirect(&FontStats);
 			oldFont = pDC->SelectObject(&neuerFont);	// in den device context damit
@@ -4825,7 +4831,7 @@ void CEasyCashView::DrawFormularToDC(CDC* pDC, DrawInfo *pDrawInfo)
 				else
 					nVeraltet = 0;
 
-				// ggf. Message über veraltete Felder aufbereiten
+				// ggf. Message ï¿½ber veraltete Felder aufbereiten
 				if (nVeraltet && csFeldinhalt.GetLength()) 
 				{
 					if (csVeraltetMessage.GetLength())
@@ -4850,7 +4856,7 @@ void CEasyCashView::DrawFormularToDC(CDC* pDC, DrawInfo *pDrawInfo)
 					else // if (child->GetAttrValue("ausrichtung").CompareNoCase("rechtsbuendig"))
 						pDC->SetTextAlign(TA_RIGHT);
 
-					// von Tausendstel-Seitenbreite bzw. -länge auf logische units umrechnen:
+					// von Tausendstel-Seitenbreite bzw. -lï¿½nge auf logische units umrechnen:
 					if (pDrawInfo->pm)
 					{
 						nHorizontal = nHorizontal * pDrawInfo->printer_gesamtgroesse.cx / 1000;
@@ -4864,20 +4870,20 @@ void CEasyCashView::DrawFormularToDC(CDC* pDC, DrawInfo *pDrawInfo)
 						nVertikal += ((nSeite-1) * ((VCHARS + PAGE_GAP) * charheight)) - charheight / 2;
 					}
 
-					if (m_bFormularfelderAnzeigen && csFeldinhalt == "") csFeldinhalt = "0,00"; // dummy wert eintragen, um besser positionieren zu können
+					if (m_bFormularfelderAnzeigen && csFeldinhalt == "") csFeldinhalt = "0,00"; // dummy wert eintragen, um besser positionieren zu kï¿½nnen
 					pDC->TextOut(nHorizontal, nVertikal, csFeldinhalt);
 					if (letzte_spalte < nHorizontal / charwidth) letzte_spalte = nHorizontal / charwidth;
 
-					// Wenn über das Popup-Menü die Felder kategorisch alle angezeigt werden sollen): Positionsmarke rosa zeigen
+					// Wenn ï¿½ber das Popup-Menï¿½ die Felder kategorisch alle angezeigt werden sollen): Positionsmarke rosa zeigen
 					if (!pDrawInfo->pm && ((nVeraltet && csFeldinhalt.GetLength()) || m_bFormularfelderAnzeigen))
 					{
-						// nur anzeigen, wenn nicht schon das rote Kästchen des aktuell bearbeiteten Feldes angezeigt wird:
+						// nur anzeigen, wenn nicht schon das rote Kï¿½stchen des aktuell bearbeiteten Feldes angezeigt wird:
 						if (!(pFormularfeldDlg && pFormularfeldDlg->IsWindowVisible()))
 						{
 							CBrush brush;	
 							COLORREF colourFelddarstellung;
 
-							// Wenn Felder per mittlerer Maustaste für Multiselekt ausgewählt werden, selektierte Felder blau markieren, ansonsten rot
+							// Wenn Felder per mittlerer Maustaste fï¿½r Multiselekt ausgewï¿½hlt werden, selektierte Felder blau markieren, ansonsten rot
 							colourFelddarstellung = RGB(0xe0,0x80,0x80);
 							if (m_ptFeldMoveMultiselect.GetCount() > 0)
 							{
@@ -4897,14 +4903,14 @@ void CEasyCashView::DrawFormularToDC(CDC* pDC, DrawInfo *pDrawInfo)
 								feldmarkenhoehe = charheight;
 						
 							cp = child->GetAttrValue("ausrichtung");
-							if (cp && !stricmp(cp,"rechtsbuendig"))	// rechtsbündig
+							if (cp && !stricmp(cp,"rechtsbuendig"))	// rechtsbï¿½ndig
 							{
 								r.left = (int)((double)nHorizontal - charheight * 8);
 								r.top = (int)((double)nVertikal);
 								r.right = (int)((double)nHorizontal);
 								r.bottom = (int)((double)nVertikal + feldmarkenhoehe);
 							}
-							else									// linksbündig
+							else									// linksbï¿½ndig
 							{
 								r.left = (int)((double)nHorizontal);
 								r.top = (int)((double)nVertikal);
@@ -4930,7 +4936,7 @@ void CEasyCashView::DrawFormularToDC(CDC* pDC, DrawInfo *pDrawInfo)
 								}
 							}
 
-							// kleinere Schriftgröße
+							// kleinere Schriftgrï¿½ï¿½e
 							CFont *standardFont = pDC->GetCurrentFont();
 							LOGFONT FontStats;
 							CFont neuerFont;	// Font kreieren
@@ -4939,7 +4945,7 @@ void CEasyCashView::DrawFormularToDC(CDC* pDC, DrawInfo *pDrawInfo)
 							standardFont->GetLogFont(&FontStats);
 							strcpy(FontStats.lfFaceName, (LPCSTR)schriftart); 
 							FontStats.lfHeight /= 2;
-							FontStats.lfWidth   = 0;	// Breite relativ zur Höhe verkleinern
+							FontStats.lfWidth   = 0;	// Breite relativ zur Hï¿½he verkleinern
 							FontStats.lfQuality = DEFAULT_QUALITY;
 							neuerFont.CreateFontIndirect(&FontStats);
 							oldFont = pDC->SelectObject(&neuerFont);	// in den device context damit
@@ -4961,7 +4967,7 @@ void CEasyCashView::DrawFormularToDC(CDC* pDC, DrawInfo *pDrawInfo)
 
 		if (csVeraltetMessage.GetLength())
 		{
-			csVeraltetMessage = "Achtung: veraltetes " + csVeraltetMessage + ". Bitte unter Einstellungen -> E/Ü-Konten das Konto mit einem anderen Feld verknüpfen!";
+			csVeraltetMessage = "Achtung: veraltetes " + csVeraltetMessage + ". Bitte unter Einstellungen -> E/ï¿½-Konten das Konto mit einem anderen Feld verknï¿½pfen!";
 			theApp.CaptionBox(csVeraltetMessage);
 		}
 	}
@@ -4970,7 +4976,7 @@ void CEasyCashView::DrawFormularToDC(CDC* pDC, DrawInfo *pDrawInfo)
 }
 
 
-//-- Helfer für Draw-Members
+//-- Helfer fï¿½r Draw-Members
 
 // einache Textausgabe in einer Zeile, angabe der Position in Zehntel-Zeilen/Spalten-Schritten
 void CEasyCashView::Text(DrawInfo *pDrawInfo, int left, int top, char *s)
@@ -5004,14 +5010,14 @@ void CEasyCashView::Text10(DrawInfo *pDrawInfo, int left, int top, char *s)
 			HCHARS * (pDrawInfo->pm?(int)pDrawInfo->printer_charwidth:charwidth),  // right
 			top + 2*(pDrawInfo->pm?(int)pDrawInfo->printer_charheight:charheight)  // bottom
 		   );
-	if (!pDrawInfo->pm && !pDrawInfo->m_pDC->RectVisible(&r)) return;  // Optimierung: rect außerhalb von sichtbarem Bereich? Dann muss nicht dargestellt werden
+	if (!pDrawInfo->pm && !pDrawInfo->m_pDC->RectVisible(&r)) return;  // Optimierung: rect auï¿½erhalb von sichtbarem Bereich? Dann muss nicht dargestellt werden
 	if (pDrawInfo->pm && pDrawInfo->pInfo && seitenzaehler != pDrawInfo->pInfo->m_nCurPage) return;  // bei Druck: nur diese Seite drucken
 
-	// max. erlaubte Fontgröße undefiniert?
+	// max. erlaubte Fontgrï¿½ï¿½e undefiniert?
 	if ((pDrawInfo->pm ? pDrawInfo->printer_fontsize :  pDrawInfo->fontsize) == -1)	
 		TextEx(pDrawInfo, left, top, left+100, top, "%%%calibration\test%%%");	// dann mit TextEx messen
 
-	// Font wählen:
+	// Font wï¿½hlen:
 	CFont *standardFont = pDrawInfo->m_pDC->GetCurrentFont();
 	LOGFONT FontStats;
 	memset(&FontStats, 0x00, sizeof(FontStats));
@@ -5025,7 +5031,7 @@ void CEasyCashView::Text10(DrawInfo *pDrawInfo, int left, int top, char *s)
 	else	
 		if (FontStats.lfHeight > pDrawInfo->fontsize) FontStats.lfHeight = pDrawInfo->fontsize;	
 
-	FontStats.lfWidth   = 0;	// Breite relativ zur Höhe verkleinern
+	FontStats.lfWidth   = 0;	// Breite relativ zur Hï¿½he verkleinern
 	FontStats.lfQuality = pDrawInfo->pm ? PROOF_QUALITY : DEFAULT_QUALITY;
 	FontStats.lfWeight  = pDrawInfo->pm ? ECT_HoleEinstellungInt("[Druck]DruckerschriftFett", 400) : ECT_HoleEinstellungInt("[Druck]BildschirmschriftFett", 400);
 	FontStats.lfItalic  = pDrawInfo->pm ? ECT_HoleEinstellungInt("[Druck]DruckerschriftKursiv", 0) : ECT_HoleEinstellungInt("[Druck]BildschirmschriftKursiv", 0);
@@ -5068,7 +5074,7 @@ RECT CEasyCashView::TextEx(DrawInfo *pDrawInfo, int left, int top, int right, in
 
 	if (!pDrawInfo->pm)
 	{	// Bildschirm DC
-		if (!pDrawInfo->m_pDC->RectVisible(&r) && pDrawInfo->fontsize != -1)  // -1: Kalibrierungstest, nicht aussteigen, sondern maximale Texthöhe messen!
+		if (!pDrawInfo->m_pDC->RectVisible(&r) && pDrawInfo->fontsize != -1)  // -1: Kalibrierungstest, nicht aussteigen, sondern maximale Texthï¿½he messen!
 			return CRect(0, 0, 0, 0);   //  RectVisible() funktioniert manchmal irgendwie nicht richtig...
 		// else 
 		// 	TRACE1("RectVisible: %s\r\n", s_param);
@@ -5116,20 +5122,20 @@ RECT CEasyCashView::TextEx(DrawInfo *pDrawInfo, int left, int top, int right, in
 	memset(&oldFontStats, 0x00, sizeof(oldFontStats));
 	standardFont->GetLogFont(&oldFontStats);
 
-	// Struktur enthält Werte für den modifizierten Font
+	// Struktur enthï¿½lt Werte fï¿½r den modifizierten Font
 	LOGFONT newFontStats;
 	memcpy(&newFontStats, &oldFontStats, sizeof(newFontStats));
 
 	// Font sukszessive verkleinern, bis Text in Rect passt...
-	int h;	// Höhe des neuen Fonts
-	int increment; // um welchen Wert wird h erhöht oder verringert -- benötigt für binäres Suchen
+	int h;	// Hï¿½he des neuen Fonts
+	int increment; // um welchen Wert wird h erhï¿½ht oder verringert -- benï¿½tigt fï¿½r binï¿½res Suchen
 	BOOL bPasst;	// Flag
 //CString csTemp;
 //if (*s_param == ' ' && s_param[1] == 0) {
 //csTemp.Format("\n\rfor h=%d", (int)pDrawInfo->pm ? (ECT_HoleEinstellungInt("Druckerschriftgroesse", 0) ? -MulDiv(ECT_HoleEinstellungInt("Druckerschriftgroesse", 0), pDrawInfo->m_pDC->GetDeviceCaps(LOGPIXELSY), 72) : (int)pDrawInfo->printer_charheight) : (ECT_HoleEinstellungInt("Bildschirmschriftgroesse", 0) ? -MulDiv(ECT_HoleEinstellungInt("Bildschirmschriftgroesse", 0), pDrawInfo->m_pDC->GetDeviceCaps(LOGPIXELSY), 72) : charheight));
 //debug.WriteString(csTemp); }
 	BOOL bErsterDurchlauf = TRUE;
-	for (h = pDrawInfo->pm ? (ECT_HoleEinstellungInt("Druckerschriftgroesse", 0) ?  // Druckerschriftgröße in den Einstellungen gewählt?
+	for (h = pDrawInfo->pm ? (ECT_HoleEinstellungInt("Druckerschriftgroesse", 0) ?  // Druckerschriftgrï¿½ï¿½e in den Einstellungen gewï¿½hlt?
 				 MulDiv(ECT_HoleEinstellungInt("Druckerschriftgroesse", 0), pDrawInfo->m_pDC->GetDeviceCaps(LOGPIXELSY), 72)
 			 : // else
 				 (int)pDrawInfo->printer_charheight) : (ECT_HoleEinstellungInt("Bildschirmschriftgroesse", 0) ?
@@ -5140,11 +5146,11 @@ RECT CEasyCashView::TextEx(DrawInfo *pDrawInfo, int left, int top, int right, in
 		 h += increment)  // for-Inkrementor
 	{
 //if (*s_param == ' ' && s_param[1] == 0) {
-//csTemp.Format("\n\rHöhe: %d", (int)h);
+//csTemp.Format("\n\rHï¿½he: %d", (int)h);
 //debug.WriteString(csTemp); }
 		// Font verkleinern
 		newFontStats.lfHeight  = h;
-		newFontStats.lfWidth   = 0;				// Breite relativ zur Höhe verkleinern
+		newFontStats.lfWidth   = 0;				// Breite relativ zur Hï¿½he verkleinern
 		strcpy(newFontStats.lfFaceName, pDrawInfo->pm ? ECT_HoleEinstellung("Druckerschrift") : ECT_HoleEinstellung("Bildschirmschrift")); 
 		newFontStats.lfWeight  = pDrawInfo->pm ? ECT_HoleEinstellungInt("[Druck]DruckerschriftFett", 400) : ECT_HoleEinstellungInt("[Druck]BildschirmschriftFett", 400);
 		newFontStats.lfItalic  = pDrawInfo->pm ? ECT_HoleEinstellungInt("[Druck]DruckerschriftKursiv", 0) : ECT_HoleEinstellungInt("[Druck]BildschirmschriftKursiv", 0);
@@ -5153,7 +5159,7 @@ RECT CEasyCashView::TextEx(DrawInfo *pDrawInfo, int left, int top, int right, in
 //debug.WriteString(newFontStats.lfFaceName);
 //debug.WriteString("\n\r"); }
 	
-		// mit neuer Größe ausprobieren...
+		// mit neuer Grï¿½ï¿½e ausprobieren...
 		{
 			// Font kreieren
 			CFont kleinererFont;
@@ -5162,13 +5168,13 @@ RECT CEasyCashView::TextEx(DrawInfo *pDrawInfo, int left, int top, int right, in
 			// in den device context damit
 			CFont *oldFont = pDrawInfo->m_pDC->SelectObject(&kleinererFont);
 
-			// neue Höhe test-schreiben
+			// neue Hï¿½he test-schreiben
 			RECT r2 = r;
 			int testhoehe = pDrawInfo->m_pDC->DrawText(s, strlen(s), &r2, DT_LEFT|DT_WORDBREAK|DT_CALCRECT);
 
 			if ((r2.bottom-r2.top <= r.bottom-r.top && r2.right-r2.left <= r.right-r.left))
 			{
-				if (r2.bottom-r2.top == r.bottom-r.top)	// ausreichend angenähert?
+				if (r2.bottom-r2.top == r.bottom-r.top)	// ausreichend angenï¿½hert?
 				{
 					bPasst = TRUE;
 				}
@@ -5177,15 +5183,15 @@ RECT CEasyCashView::TextEx(DrawInfo *pDrawInfo, int left, int top, int right, in
 					increment = abs(increment)/2;	// noch zu klein
 					if (bErsterDurchlauf)
 					{
-					//	h = h * (r.bottom-r.top) / (r2.bottom-r2.top) + 2;	// beim ersten Durchlauf Fonthöhe in der Relation der Rects reduzieren
-						bErsterDurchlauf = FALSE;							// schade: funtionierte nicht bei sehr langen Texten, die zunächst zweizeilige Ergebnisse zeitigten
+					//	h = h * (r.bottom-r.top) / (r2.bottom-r2.top) + 2;	// beim ersten Durchlauf Fonthï¿½he in der Relation der Rects reduzieren
+						bErsterDurchlauf = FALSE;							// schade: funtionierte nicht bei sehr langen Texten, die zunï¿½chst zweizeilige Ergebnisse zeitigten
 					}
 				}
 			}
 			else
-				increment = -abs(increment)/2;	// noch zu groß
+				increment = -abs(increment)/2;	// noch zu groï¿½
 
-			if (!bPasst && increment == 0)	// ab hier Schritt für Schritt die Höhe um 1 verkleinern
+			if (!bPasst && increment == 0)	// ab hier Schritt fï¿½r Schritt die Hï¿½he um 1 verkleinern
 			{
 				if (testhoehe > r.bottom-r.top)
 					increment--;
@@ -5346,15 +5352,15 @@ BOOL CEasyCashView::ScrollbugCheck(CDC *pDC, int top)
 {
 	if (top >= 28680 && m_osvi.dwPlatformId == VER_PLATFORM_WIN32_WINDOWS)
 	{
-		char text0[] = "  Wegen einer Betriebssystembeschränkung in Windows 95/98/ME können keine";
+		char text0[] = "  Wegen einer Betriebssystembeschrï¿½nkung in Windows 95/98/ME kï¿½nnen keine";
 		pDC->TextOut(0, 28694, text0, strlen(text0));
 		char text1[] = "  weiteren Buchungen dargestellt werden.";
 		pDC->TextOut(0, 28712, text1, strlen(text1));
-		char text2[] = "  Filtern Sie das Journal nach Monat oder Konto (zu finden im Ansicht-Menü).";
+		char text2[] = "  Filtern Sie das Journal nach Monat oder Konto (zu finden im Ansicht-Menï¿½).";
 		pDC->TextOut(0, 28730, text2, strlen(text2));
 		char text3[] = "  Der Druck und die Seitenansicht funktionieren auch weiterhin.";
 		pDC->TextOut(0, 28748, text3, strlen(text3));
-		return TRUE;	// nichts anzeigen außer dieser Meldung
+		return TRUE;	// nichts anzeigen auï¿½er dieser Meldung
 	}
 	return FALSE;	// normal anzeigen
 }
@@ -5420,7 +5426,7 @@ void CEasyCashView::Image(DrawInfo *pDrawInfo, char *filename)
 	}
 }
 
-// das Image für die .ecf-Formulardateien
+// das Image fï¿½r die .ecf-Formulardateien
 void CEasyCashView::Image2(DrawInfo *pDrawInfo, char *filename)
 {
 	int left, top, right, bottom;
@@ -5432,7 +5438,7 @@ void CEasyCashView::Image2(DrawInfo *pDrawInfo, char *filename)
 	extern int search_formats(char *);
 	int format = search_formats(filename+strlen(filename)-3);
 
-	BOOL bDeleteImage = FALSE;	// normalerweise können wir das image cachen
+	BOOL bDeleteImage = FALSE;	// normalerweise kï¿½nnen wir das image cachen
 
 	::CImage *image = NULL;
 	int i;
@@ -5467,7 +5473,7 @@ void CEasyCashView::Image2(DrawInfo *pDrawInfo, char *filename)
 				m_csaFormularseitenPfade.Add(filename);
 				break;
 			}
-		if (i >= FORMULARSEITENCACHESIZE)	// kein Platz mehr im Cache? Dann am Ende wieder löschen
+		if (i >= FORMULARSEITENCACHESIZE)	// kein Platz mehr im Cache? Dann am Ende wieder lï¿½schen
 			bDeleteImage = TRUE;
 	}
 
@@ -5511,7 +5517,7 @@ void CEasyCashView::Image2(DrawInfo *pDrawInfo, char *filename)
 	}
 
 	if (bDeleteImage) // war kein Platz mehr im Cache?
-	{	// dann löschen
+	{	// dann lï¿½schen
 		delete image;
 		image = NULL;
 	}
@@ -5629,7 +5635,7 @@ BOOL CEasyCashView::OnPreparePrinting(CPrintInfo* pInfo)
 		if (RegOpenKeyEx(HKEY_LOCAL_MACHINE, _T("Software\\Wine"), 0, KEY_READ, &hKey) == ERROR_SUCCESS)
 		{
 			RegCloseKey(hKey);
-			AfxMessageBox(_T("EasyCash läuft unter Wine/CrossOver.\n\nDas Drucken steht in dieser Umgebung nicht zur Verfügung, da kein Drucker im Wine-Prefix konfiguriert ist.\n\nBitte richten Sie einen Drucker in Ihrem Wine-/CrossOver-Prefix ein."), MB_OK | MB_ICONINFORMATION);
+			AfxMessageBox(_T("EasyCash lï¿½uft unter Wine/CrossOver.\n\nDas Drucken steht in dieser Umgebung nicht zur Verfï¿½gung, da kein Drucker im Wine-Prefix konfiguriert ist.\n\nBitte richten Sie einen Drucker in Ihrem Wine-/CrossOver-Prefix ein."), MB_OK | MB_ICONINFORMATION);
 			return FALSE;
 		}
 	}
@@ -5689,10 +5695,10 @@ BOOL CEasyCashView::OnPreparePrinting(CPrintInfo* pInfo)
 					
 				if (bAlleBuchungenHabenRechnungsposten) break;
 				
-				if (AfxMessageBox("Einige Buchungen haben kein Konto zugewiesen bekommen. Ohne dass jede Buchung solch eine Zuweisung hat, kann keine Einnahmen/Überschuss-Rechnung gedruckt werden. Sollen die entsprechenden Buchungen jetzt bearbeitet werden?", MB_ICONQUESTION|MB_YESNO) == IDNO)
+				if (AfxMessageBox("Einige Buchungen haben kein Konto zugewiesen bekommen. Ohne dass jede Buchung solch eine Zuweisung hat, kann keine Einnahmen/ï¿½berschuss-Rechnung gedruckt werden. Sollen die entsprechenden Buchungen jetzt bearbeitet werden?", MB_ICONQUESTION|MB_YESNO) == IDNO)
 					return 0;
 				
-				// unvollständige Buchungen jetzt bearbeiten
+				// unvollstï¿½ndige Buchungen jetzt bearbeiten
 #ifdef USE_ECTENGINE
 				// WPF-Pfad: Der Buchungsdialog synchronisiert zurueck
 				// (SyncManagedToNative) und macht damit ALLE CBuchung*-Pointer
@@ -5926,7 +5932,22 @@ void CEasyCashView::OnEditAusgabeBuchen()
 #endif
 }
 
-void CEasyCashView::OnEditDauerbuchungenEingeben() 
+#ifdef USE_ECTENGINE
+// Buchen-Dialog mit einer ueber das Ribbon-Dropdown vorgewaehlten
+// Buchungsvorlage oeffnen. Analog zu OnEditEinnahmeBuchen/OnEditAusgabeBuchen,
+// nur mit vorbelegter Vorlage; das Journal wird danach aktualisiert.
+void CEasyCashView::BucheMitVorlage(BOOL bAusgaben, int nVorlagenSlot)
+{
+	if (ECT_ShowBuchungDialogMitVorlage(GetDocument(), bAusgaben,
+		AfxGetMainWnd()->GetSafeHwnd(), nVorlagenSlot))
+	{
+		if (IstJournalWpfAktiv())
+			AktualisiereJournalFilter();
+	}
+}
+#endif
+
+void CEasyCashView::OnEditDauerbuchungenEingeben()
 {
 #ifdef USE_ECTENGINE
 	// WPF-Dialog (modal statt modeless wie das MFC-Original). Sync in
@@ -6081,7 +6102,7 @@ void CEasyCashView::DauerbuchungenAusfuehren(int jb, int mb)
 				if (dbp->AktualisiertBisDatum.GetYear() != pDoc->nJahr)
 				{
 					if (nAusserhalb_des_Buchungsjahrs == -1)
-						nAusserhalb_des_Buchungsjahrs = AfxMessageBox("Mindestens eine Dauerbuchung liegt außerhalb des aktuellen Buchungsjahrs. Eventuell wurden die Dauerbuchungen vor dem 'Jahreswechsel' (Datei-Menü) noch nicht komplett bis Dezember ausgeführt (ggf. im Vorjahr checken). Sollen diese Dauerbuchungen trotzdem in diesem Buchungsjahr ausgeführt werden?", MB_YESNO);
+						nAusserhalb_des_Buchungsjahrs = AfxMessageBox("Mindestens eine Dauerbuchung liegt auï¿½erhalb des aktuellen Buchungsjahrs. Eventuell wurden die Dauerbuchungen vor dem 'Jahreswechsel' (Datei-Menï¿½) noch nicht komplett bis Dezember ausgefï¿½hrt (ggf. im Vorjahr checken). Sollen diese Dauerbuchungen trotzdem in diesem Buchungsjahr ausgefï¿½hrt werden?", MB_YESNO);
 				}
 
 				if (dbp->AktualisiertBisDatum.GetYear() == pDoc->nJahr || nAusserhalb_des_Buchungsjahrs == IDYES)
@@ -6111,7 +6132,7 @@ void CEasyCashView::DauerbuchungenAusfuehren(int jb, int mb)
 					(*p)->Betrieb = dbp->Betrieb;
 					(*p)->Bestandskonto = dbp->Bestandskonto;
 
-					// Platzhalter in die Beschreibung einfügen
+					// Platzhalter in die Beschreibung einfï¿½gen
 					CString temp;
 					int monat = (*p)->Datum.GetMonth();
 					int jahr = (*p)->Datum.GetYear();
@@ -6191,7 +6212,7 @@ void CEasyCashView::DauerbuchungenAusfuehren(int jb, int mb)
 							bLaufendeBuchungsnummerFuerAusgabenVergeben = TRUE;
 					}
 					
-					// Platzhalter in die Belegnummer einfügen
+					// Platzhalter in die Belegnummer einfï¿½gen
 					temp.Format("%-4.4d", jahr);	// Jahr Langform JJJJ
 					(*p)->Belegnummer.Replace("$J", temp);
 					temp.Format("%-2.2d", jahr % 100);	// Jahr Kurzform jj
@@ -6273,7 +6294,7 @@ void CEasyCashView::DauerbuchungenAusfuehren(int jb, int mb)
 					if (bLaufendeBuchungsnummerFuerAusgabenVergeben) pDoc->nLaufendeBuchungsnummerFuerAusgaben++;
 					
 					CString csMessage;
-					csMessage.Format("Dauerbuchungen wurden bis %d/%4d ausgeführt", mb, jb);
+					csMessage.Format("Dauerbuchungen wurden bis %d/%4d ausgefï¿½hrt", mb, jb);
 					// Recovery-Speichern (3. Param) hier unterdruecken -- siehe Erklaerung
 					// am Funktionsende. Sonst: OnWiederherstellungsdateiSave -> Serialize
 					// -> SyncManagedToNative baut die Dauerbuchungsliste neu auf und gibt
@@ -6336,10 +6357,10 @@ void CEasyCashView::DauerbuchungenAusfuehren(int jb, int mb)
 	}
 #endif
 	// Statusmeldung: Monat im Klartext + Anzahl der erzeugten Buchungen
-	static const char* Monatsnamen[12] = { "Januar", "Februar", "März", "April",
+	static const char* Monatsnamen[12] = { "Januar", "Februar", "Mï¿½rz", "April",
 		"Mai", "Juni", "Juli", "August", "September", "Oktober", "November", "Dezember" };
 	CString csStatus;
-	csStatus.Format("Dauerbuchungen bis einschließlich %s %d ausgeführt",
+	csStatus.Format("Dauerbuchungen bis einschlieï¿½lich %s %d ausgefï¿½hrt",
 		(mb >= 1 && mb <= 12) ? Monatsnamen[mb-1] : "?", jb);
 	int nErzeugt = (int)erzeugteBuchungen.GetSize();
 	if (nErzeugt == 0)
@@ -6361,7 +6382,7 @@ void CEasyCashView::DauerbuchungenAusfuehren(int jb, int mb)
 		pDoc->SetModifiedFlag(csStatus, TRUE, TRUE);
 	else
 	{
-		// nichts erzeugt -> Dokument nicht als geändert markieren, nur die
+		// nichts erzeugt -> Dokument nicht als geï¿½ndert markieren, nur die
 		// Statuszeile setzen (derselbe Weg wie in SetModifiedFlag)
 		HWND hWndMain = AfxGetMainWnd()->GetSafeHwnd();
 		if (hWndMain) ::SendMessage(hWndMain, WM_SETSTATUS, 0x4712, (LPARAM)(LPCTSTR)csStatus);
@@ -6411,7 +6432,7 @@ void CEasyCashView::SetUmsatzsteuervorauszahlung(int nZeitraum, CString& csValue
 			csZeitraum.Format("%d. Quartal", nZeitraum - 40);
 		else
 			csZeitraum = "undefinierten";
-		pDoc->SetModifiedFlag("Umsatzsteuervorauszahlungsbetrag für " + csZeitraum + " wurde " + (csVergleich == "" ? "eingetragen" : "geändert"));
+		pDoc->SetModifiedFlag("Umsatzsteuervorauszahlungsbetrag fï¿½r " + csZeitraum + " wurde " + (csVergleich == "" ? "eingetragen" : "geï¿½ndert"));
 	}
 
 	csKey.Format("UST-Zahlbetrag-%04d-%02d", pDoc->nJahr, nZeitraum);
@@ -6440,7 +6461,7 @@ void CEasyCashView::OnEditUmsatzsteuervorauszahlungen()
 	GetUmsatzsteuervorauszahlung(44, dlg.m_q4);
 	CString Key;
 	Key.Format("Sondervorauszahlung%-04.4d", GetDocument()->nJahr);
-	char *cp = GetErweiterungKey(GetDocument()->Erweiterung, "Dauerfristverlängerung", Key);
+	char *cp = GetErweiterungKey(GetDocument()->Erweiterung, "Dauerfristverlï¿½ngerung", Key);
 	char *cp2;
 	if (cp2 = strchr(cp, '|'))
 	{ 
@@ -6472,8 +6493,8 @@ void CEasyCashView::OnEditUmsatzsteuervorauszahlungen()
 		SetUmsatzsteuervorauszahlung(44, dlg.m_q4);
 		if (dlg.m_vorauszahlung != vorauszahlung_merken)
 		{
-			GetDocument()->SetModifiedFlag((CString)"Sondervorauszahlungsbetrag (Dauerfristverlängerung) für das Buchungsjahr wurde " + (vorauszahlung_merken == "" ? "eingetragen" : "geändert"));
-			SetErweiterungKey(GetDocument()->Erweiterung, "Dauerfristverlängerung", Key, dlg.m_vorauszahlung);
+			GetDocument()->SetModifiedFlag((CString)"Sondervorauszahlungsbetrag (Dauerfristverlï¿½ngerung) fï¿½r das Buchungsjahr wurde " + (vorauszahlung_merken == "" ? "eingetragen" : "geï¿½ndert"));
+			SetErweiterungKey(GetDocument()->Erweiterung, "Dauerfristverlï¿½ngerung", Key, dlg.m_vorauszahlung);
 		}
 	}
 }
@@ -6498,7 +6519,7 @@ void CEasyCashView::OnFind(int nIncrement)
 		((CMainFrame*)AfxGetMainWnd())->m_wndFindToolBar.m_comboBox1.GetWindowText(csText);	// VS9
 	else
 	{
-		// GetEditText() würde nicht den tatsächlichen Feldinahlt wiedergeben, würden wir nicht diesen Aufwand zuvor treiben
+		// GetEditText() wï¿½rde nicht den tatsï¿½chlichen Feldinahlt wiedergeben, wï¿½rden wir nicht diesen Aufwand zuvor treiben
 		//CMainFrame *pFrame = static_cast<CMainFrame*>(GetTopLevelFrame());
 		//CMFCRibbonBar* pRibbon = pFrame->GetRibbonBar();
 		//ASSERT_VALID(pRibbon);
@@ -6581,12 +6602,12 @@ void CEasyCashView::ShowFindToolbar(int nShowstate)
 {
 	if (nShowstate == SW_SHOW && pPluginWnd)
 	{
-		// plugin fenster schließen
+		// plugin fenster schlieï¿½en
 		DestroyPlugin();
 		ShowWindow(SW_SHOW);
 	}
 
-	// Formularansicht zurücksetzen
+	// Formularansicht zurï¿½cksetzen
 	m_GewaehltesFormular = -1;
 	GetParent()->ShowWindow(SW_SHOW);
 
@@ -6628,12 +6649,12 @@ void CEasyCashView::OnDestroy()
 		dauerbuchungenDlg = NULL;
 	}
 
-	// plugin fenster schließen
+	// plugin fenster schlieï¿½en
 	DestroyPlugin();
 }
 
 
-//-- Menü Behandlung --------------
+//-- Menï¿½ Behandlung --------------
 
 void CEasyCashView::OnRButtonDown(UINT nFlags, CPoint point) 
 {
@@ -6676,7 +6697,7 @@ BOOL CEasyCashView::OnCommand(WPARAM wParam, LPARAM lParam)
 	int Buchungstyp, index;
 	CEasyCashDoc* pDoc = GetDocument();
 
-	// Journalansicht-Menü
+	// Journalansicht-Menï¿½
 	if (wParam == POPUP_AENDERN || wParam == POPUP_LOESCHEN || wParam == POPUP_KOPIEREN || wParam == POPUP_KOPIEREN_BELEGNUMMER || wParam == POPUP_AFA_ABGANG)
 	{
 		// aus Bildschirm/Scrollposition die Zeilennummer berechnen und 
@@ -6703,21 +6724,21 @@ BOOL CEasyCashView::OnCommand(WPARAM wParam, LPARAM lParam)
 		switch (wParam)
 		{
 		case POPUP_AENDERN:
-			// Hinweis bei nachträglicher Änderung einer AfA
+			// Hinweis bei nachtrï¿½glicher ï¿½nderung einer AfA
 			if (pBuchung->AbschreibungNr > 1)
-				AfxMessageBox("Hinweis: Wenn Abschreibungen nachträglich "
-					"geändert werden, kann dies zur Inkonsistenz mit den "
-					"entspr. Buchungen aus den Vorjahren führen ...");
+				AfxMessageBox("Hinweis: Wenn Abschreibungen nachtrï¿½glich "
+					"geï¿½ndert werden, kann dies zur Inkonsistenz mit den "
+					"entspr. Buchungen aus den Vorjahren fï¿½hren ...");
 
 			nSelected = index;
 			RedrawSelection();  // selektieren
 
-			// WPF-Dialog anzeigen — die Bridge kümmert sich um den Sync
+			// WPF-Dialog anzeigen ï¿½ die Bridge kï¿½mmert sich um den Sync
 			ECT_ShowBuchungBearbeitenDialogFuerPointer(
 				pDoc, pBuchung, GetSafeHwnd());
 
 			// Nach dem Dialog sind alle CBuchung*-Pointer potentiell
-			// ungültig (SyncManagedToNative baut die Listen neu auf).
+			// ungï¿½ltig (SyncManagedToNative baut die Listen neu auf).
 			// Komplettes Redraw:
 			RedrawWindow(NULL, NULL,
 				RDW_INVALIDATE | RDW_UPDATENOW | RDW_ALLCHILDREN);
@@ -6729,7 +6750,7 @@ BOOL CEasyCashView::OnCommand(WPARAM wParam, LPARAM lParam)
 
 			{
 				CString csText;
-				csText.Format("Buchung '%s' wirklich löschen?",
+				csText.Format("Buchung '%s' wirklich lï¿½schen?",
 					(LPCTSTR)pBuchung->Beschreibung);
 				int nDoIt = AfxMessageBox(csText, MB_YESNO | MB_DEFBUTTON2);
 
@@ -6738,8 +6759,8 @@ BOOL CEasyCashView::OnCommand(WPARAM wParam, LPARAM lParam)
 
 				if (nDoIt == IDYES)
 				{
-					// Split-Buchungs-Warnung (VOR dem Löschen — pBuchung ist
-					// danach ungültig!)
+					// Split-Buchungs-Warnung (VOR dem Lï¿½schen ï¿½ pBuchung ist
+					// danach ungï¿½ltig!)
 					if (*GetErweiterungKey(pBuchung->Erweiterung, "EasyCash",
 						"SplitBasisbuchung")
 						|| *GetErweiterungKey(pBuchung->Erweiterung, "EasyCash",
@@ -6748,12 +6769,12 @@ BOOL CEasyCashView::OnCommand(WPARAM wParam, LPARAM lParam)
 							"SplitGegenbuchungOhneVorsteuerabzug"))
 					{
 						AfxMessageBox("Hinweis: Diese Buchung ist Teil einer "
-							"Split-Buchung. Bitte löschen Sie gegebenenfalls "
+							"Split-Buchung. Bitte lï¿½schen Sie gegebenenfalls "
 							"auch den korrespondierenden Anteil.",
 							MB_ICONEXCLAMATION);
 					}
 
-					// Löschen — nach diesem Aufruf ist pBuchung ungültig!
+					// Lï¿½schen ï¿½ nach diesem Aufruf ist pBuchung ungï¿½ltig!
 					ECT_LoescheBuchungPerPointer(pDoc, pBuchung);
 					pBuchung = NULL;  // defensiv
 
@@ -6769,7 +6790,7 @@ BOOL CEasyCashView::OnCommand(WPARAM wParam, LPARAM lParam)
 
 			ECT_ShowBuchungKopierenDialog(
 				pDoc, pBuchung,
-				FALSE,              // Belegnummer aus Vorlage übernehmen
+				FALSE,              // Belegnummer aus Vorlage ï¿½bernehmen
 				GetSafeHwnd());
 
 			nSelected = -nSelected;
@@ -6794,8 +6815,8 @@ BOOL CEasyCashView::OnCommand(WPARAM wParam, LPARAM lParam)
 			break;
 
 		case POPUP_AFA_ABGANG:
-			// AfAAbgang nutzt ppb direkt — bleibt vorerst native.
-			// Kann später auf eine AfaAbgangPerPointer-Funktion umgestellt
+			// AfAAbgang nutzt ppb direkt ï¿½ bleibt vorerst native.
+			// Kann spï¿½ter auf eine AfaAbgangPerPointer-Funktion umgestellt
 			// werden, wenn AfAAbgang in die Engine portiert wird.
 			AfAAbgang(ppb);
 			break;
@@ -6805,9 +6826,9 @@ BOOL CEasyCashView::OnCommand(WPARAM wParam, LPARAM lParam)
 		// WICHTIGE REGELN ZUM UMGANG MIT CBuchung*-POINTERN
 		// -----------------------------------------------------------------
 		//
-		// 1. CBuchung*-Pointer sind nur GÜLTIG BIS ZUM NÄCHSTEN SYNC.
-		//    Jede Funktion, die SyncManagedToNative() auslöst, macht alle
-		//    zuvor gehaltenen CBuchung*-Pointer ungültig. Das sind u.a.:
+		// 1. CBuchung*-Pointer sind nur Gï¿½LTIG BIS ZUM Nï¿½CHSTEN SYNC.
+		//    Jede Funktion, die SyncManagedToNative() auslï¿½st, macht alle
+		//    zuvor gehaltenen CBuchung*-Pointer ungï¿½ltig. Das sind u.a.:
 		//      - ECT_ShowBuchungDialog (neue Buchung)
 		//      - ECT_ShowBuchungBearbeitenDialog(FuerPointer)
 		//      - ECT_ShowBuchungKopierenDialog
@@ -6816,18 +6837,18 @@ BOOL CEasyCashView::OnCommand(WPARAM wParam, LPARAM lParam)
 		//
 		// 2. Nach jedem dieser Aufrufe muss der View das Display KOMPLETT
 		//    neu zeichnen (nicht nur die "aktuelle Zeile"). Die Linked-List-
-		//    Reihenfolge kann sich durch Sort oder Einfügen/Löschen geändert
+		//    Reihenfolge kann sich durch Sort oder Einfï¿½gen/Lï¿½schen geï¿½ndert
 		//    haben, und ppPosBuchungsliste[] ist dann veraltet.
 		//
-		// 3. Split-Warnungen, Beschreibungs-Meldungen etc. müssen VOR dem
+		// 3. Split-Warnungen, Beschreibungs-Meldungen etc. mï¿½ssen VOR dem
 		//    Aufruf der Bridge-Funktion ausgewertet werden, weil der Pointer
-		//    danach ungültig ist.
+		//    danach ungï¿½ltig ist.
 		//
-		// 4. Falls in einem Aufruf mehrere Operationen nacheinander nötig
+		// 4. Falls in einem Aufruf mehrere Operationen nacheinander nï¿½tig
 		//    sind, die auf derselben Buchung arbeiten sollen (z.B. Werte
-		//    prüfen -> ändern -> erneut prüfen), den Index einmal per
+		//    prï¿½fen -> ï¿½ndern -> erneut prï¿½fen), den Index einmal per
 		//    FindeManagedIndex ermitteln und mit dem Index arbeiten. Der
-		//    Index bleibt bis zum nächsten Sort stabil.
+		//    Index bleibt bis zum nï¿½chsten Sort stabil.
 
 #else
 		if (ppb)
@@ -6837,9 +6858,9 @@ BOOL CEasyCashView::OnCommand(WPARAM wParam, LPARAM lParam)
 			case POPUP_AENDERN:
 				if (*ppb)
 				{
-					// Hinweis bei nachträglicher Änderung einer AfA
+					// Hinweis bei nachtrï¿½glicher ï¿½nderung einer AfA
 					if ((*ppb)->AbschreibungNr > 1)
-						AfxMessageBox("Hinweis: Wenn Abschreibungen nachträglich geändert werden, kann dies zur Inkonsistenz mit den entspr. Buchungen aus den Vorjahren führen, insbesondere wenn Betrag, Abschreibungsdauer oder Restwert geändert werden. Ändern Sie deshalb auch die AfA-Buchungen in den Vorjahren entsprechend (was in der Regel nur bei nachträglicher Erfassung der Buchungen sinnvoll ist) oder erzeugen Sie zusätzlich eine Korrekturbuchung (z.B. Sonderabschreibung wegen ungewöhnlicher Abnutzung). Auch ist die VST im Brutto-Betrag zu berücksichtigen und ggf. noch eine weitere Buchung dafür vorzusehen. In jedem Fall liegt die korrekte Abstimmung von Betrag, Dauer und Restwert in Ihrer Verantwortung.");
+						AfxMessageBox("Hinweis: Wenn Abschreibungen nachtrï¿½glich geï¿½ndert werden, kann dies zur Inkonsistenz mit den entspr. Buchungen aus den Vorjahren fï¿½hren, insbesondere wenn Betrag, Abschreibungsdauer oder Restwert geï¿½ndert werden. ï¿½ndern Sie deshalb auch die AfA-Buchungen in den Vorjahren entsprechend (was in der Regel nur bei nachtrï¿½glicher Erfassung der Buchungen sinnvoll ist) oder erzeugen Sie zusï¿½tzlich eine Korrekturbuchung (z.B. Sonderabschreibung wegen ungewï¿½hnlicher Abnutzung). Auch ist die VST im Brutto-Betrag zu berï¿½cksichtigen und ggf. noch eine weitere Buchung dafï¿½r vorzusehen. In jedem Fall liegt die korrekte Abstimmung von Betrag, Dauer und Restwert in Ihrer Verantwortung.");
 
 					// Tu es!
 					{
@@ -6862,7 +6883,7 @@ BOOL CEasyCashView::OnCommand(WPARAM wParam, LPARAM lParam)
 					nSelected = index;
 					RedrawSelection();	// selektieren
 					CString csText;
-					csText.Format("Buchung '%s' wirklich löschen?", (LPCTSTR)(*ppb)->Beschreibung);
+					csText.Format("Buchung '%s' wirklich lï¿½schen?", (LPCTSTR)(*ppb)->Beschreibung);
 					nDoIt = AfxMessageBox(csText, MB_YESNO | MB_DEFBUTTON2);
 					nSelected = -nSelected;	// deselektieren
 					RedrawSelection();
@@ -6872,14 +6893,14 @@ BOOL CEasyCashView::OnCommand(WPARAM wParam, LPARAM lParam)
 						if (*GetErweiterungKey((*ppb)->Erweiterung, "EasyCash", "SplitBasisbuchung")
 							|| *GetErweiterungKey((*ppb)->Erweiterung, "EasyCash", "SplitGegenbuchungMitVorsteuerabzug")
 							|| *GetErweiterungKey((*ppb)->Erweiterung, "EasyCash", "SplitGegenbuchungOhneVorsteuerabzug"))
-							AfxMessageBox("Hinweis: Diese Buchung ist Teil einer Split-Buchung. Bitte löschen Sie gegebenenfalls auch den korrespondierenden Anteil.", MB_ICONEXCLAMATION);
+							AfxMessageBox("Hinweis: Diese Buchung ist Teil einer Split-Buchung. Bitte lï¿½schen Sie gegebenenfalls auch den korrespondierenden Anteil.", MB_ICONEXCLAMATION);
 
 						pb = (*ppb)->next;
-						(*ppb)->next = NULL;	// ganz wichtig wegen Kettenlöschung
+						(*ppb)->next = NULL;	// ganz wichtig wegen Kettenlï¿½schung
 						delete* ppb;			// access violation v2.51.0.1-85be8316-6104-4e0f-8de8-bac7f47bc1ef v2.51.0.1-9511f9c5-8810-4591-a642-9c002744d709
 						*ppb = pb;
 
-						pDoc->SetModifiedFlag("Buchung wurde gelöscht");
+						pDoc->SetModifiedFlag("Buchung wurde gelï¿½scht");
 						pDoc->Sort();
 						//RedrawWindow();
 						pDoc->UpdateAllViews(NULL);
@@ -6932,7 +6953,7 @@ BOOL CEasyCashView::OnCommand(WPARAM wParam, LPARAM lParam)
 
 #endif
 	}
-	// Popup-Menü für Formularansicht
+	// Popup-Menï¿½ fï¿½r Formularansicht
 	else if (wParam == POPUPFORMULAR_NEUES_FELD || wParam == POPUPFORMULAR_NEUER_ABSCHNITT || wParam == POPUPFORMULAR_FELDER_BEARBEITEN 
 		|| wParam == POPUPFORMULAR_KALKULATION_BEARBEITEN || wParam == POPUPFORMULAR_FOLMULARDATEI_OEFFNEN
 		|| wParam == POPUPFORMULAR_FELDER_ANZEIGEN || POPUPFORMULAR_FELDWERT_KOPIEREN)
@@ -6940,7 +6961,7 @@ BOOL CEasyCashView::OnCommand(WPARAM wParam, LPARAM lParam)
 		switch (wParam)
 		{
 		case POPUPFORMULAR_NEUES_FELD:
-			// ggf. vorher Dialog löschen
+			// ggf. vorher Dialog lï¿½schen
 			if (pFormularfeldDlg) 
 			{
 				pFormularfeldDlg->DestroyWindow();
@@ -6956,7 +6977,7 @@ BOOL CEasyCashView::OnCommand(WPARAM wParam, LPARAM lParam)
 			// Formulareigenschaften anzeigen
 			pFormularfeldDlg = new CFormularfeld(this);
 			pFormularfeldDlg->m_csFormulardatei = m_csaFormulare[m_GewaehltesFormular];
-			pFormularfeldDlg->m_ausrichtung = 1;	// rechtsbündig
+			pFormularfeldDlg->m_ausrichtung = 1;	// rechtsbï¿½ndig
 			pFormularfeldDlg->m_anteil = 1;
 			pFormularfeldDlg->m_nachkommaanteil = 1;
 			pFormularfeldDlg->m_bKeineFeldUeberschreibenMeldung = FALSE;
@@ -7032,7 +7053,7 @@ BOOL CEasyCashView::OnCommand(WPARAM wParam, LPARAM lParam)
 
 				if (felder && ((nNaechsteFeldIndex = GetFeldindexFromMausposition(felder)) >= 0))
 				{
-					// ggf. vorher Dialog löschen
+					// ggf. vorher Dialog lï¿½schen
 					if (pFormularfeldDlg) 
 					{
 						pFormularfeldDlg->DestroyWindow();
@@ -7049,7 +7070,7 @@ BOOL CEasyCashView::OnCommand(WPARAM wParam, LPARAM lParam)
 					pFormularfeldDlg->m_seite = atoi(child->GetAttrValue("seite"));						
 					pFormularfeldDlg->m_horizontal = atoi(child->GetAttrValue("horizontal"));						
 					pFormularfeldDlg->m_vertikal = atoi(child->GetAttrValue("vertikal"));
-					ptFeldmarke.x = pFormularfeldDlg->m_horizontal;	// Feldmarke korrigieren auf tatsächliche Feldposition
+					ptFeldmarke.x = pFormularfeldDlg->m_horizontal;	// Feldmarke korrigieren auf tatsï¿½chliche Feldposition
 					ptFeldmarke.y = pFormularfeldDlg->m_vertikal;
 
 					if ((CString)child->GetAttrValue("ausrichtung") == "linksbuendig")
@@ -7106,7 +7127,7 @@ BOOL CEasyCashView::OnCommand(WPARAM wParam, LPARAM lParam)
 			break;
 		case POPUPFORMULAR_FELDER_ANZEIGEN:
 			m_bFormularfelderAnzeigen = !m_bFormularfelderAnzeigen;
-			if (m_bFormularfelderAnzeigen) ((CMainFrame*)AfxGetMainWnd())->SetStatus("In diesem Modus können Formularfelder bearbeitet werden: drag&drop mit linker Maustaste, Gruppenselektion mit mittlerer Maustaste");
+			if (m_bFormularfelderAnzeigen) ((CMainFrame*)AfxGetMainWnd())->SetStatus("In diesem Modus kï¿½nnen Formularfelder bearbeitet werden: drag&drop mit linker Maustaste, Gruppenselektion mit mittlerer Maustaste");
 			GetDocument()->UpdateAllViews(NULL);
 			InvalidateRect(NULL, FALSE);
 			break;
@@ -7138,7 +7159,7 @@ BOOL CEasyCashView::OnCommand(WPARAM wParam, LPARAM lParam)
 	}
 
 #ifndef USE_ECTENGINE   // Popup-Weiterleitungen nur fuer den Legacy-BuchenDlg
-	// Privat-Split-Menüaktion im Buchen-Dialog
+	// Privat-Split-Menï¿½aktion im Buchen-Dialog
 	int i;
 	if (wParam >= (UINT)POPUP_SPLIT && wParam < (UINT)POPUP_SPLIT + einstellungen5->m_privat_split_size + 1)
 		for (i = 0; i < einstellungen5->m_privat_split_size+1; i++)
@@ -7150,7 +7171,7 @@ BOOL CEasyCashView::OnCommand(WPARAM wParam, LPARAM lParam)
 					buchenDlg->PrivatSplit(i);
 			}
 
-	// Währungsrechner-Menüaktion im Buchen-Dialog
+	// Wï¿½hrungsrechner-Menï¿½aktion im Buchen-Dialog
 	if (wParam >= (UINT)POPUP_WAEHRUNGSRECHNER && wParam < (UINT)POPUP_WAEHRUNGSRECHNER + 0000000000 + 2)
 		for (i = 0; i < 00000000000 + 2; i++)
 			if (wParam == (UINT)POPUP_WAEHRUNGSRECHNER + i)
@@ -7170,18 +7191,18 @@ void CEasyCashView::AfAAbgang(CBuchung **ppb)
 	CEasyCashDoc *pDoc = GetDocument();
 
 	if (ppb && (*ppb)->AbschreibungNr > 1 && 
-		(AfxMessageBox((CString)"Anlagengegenstand aus dem Betriebsvermögen ausscheiden lassen? (Die AfA-Buchung wird dabei in eine einfache Ausgaben-Buchung über den Restwert umgewandelt.)", MB_YESNO) == IDYES))
+		(AfxMessageBox((CString)"Anlagengegenstand aus dem Betriebsvermï¿½gen ausscheiden lassen? (Die AfA-Buchung wird dabei in eine einfache Ausgaben-Buchung ï¿½ber den Restwert umgewandelt.)", MB_YESNO) == IDYES))
 	{
 		CString csRestwertKonto;
 		CString csRestwertFeldnummer = ECT_HoleEinstellungInt("land", 0) == 1 ? "9210" : "1135";
 		char *pRestwertKonto = HoleKontoFuerFeld('A', csRestwertFeldnummer);
-		CString csEURoderE1a = ECT_HoleEinstellungInt("land", 0) == 1 ? "E1a" : "EÜR";
+		CString csEURoderE1a = ECT_HoleEinstellungInt("land", 0) == 1 ? "E1a" : "Eï¿½R";
 		if (!pRestwertKonto)
 		{
-			csRestwertKonto = "Restbuchwert abgegangener Anlagengüter";
+			csRestwertKonto = "Restbuchwert abgegangener Anlagengï¿½ter";
 			if (ECT_HoleEinstellungInt("land", 0) == 0 || ECT_HoleEinstellungInt("land", 0) == 1)
-				AfxMessageBox("Es wurde kein Konto gefunden, das mit dem Formularfeld " + csRestwertFeldnummer + " verknüpft ist. Deshalb wurde in der Buchung provisorisch das Konto '" 
-							  + csRestwertKonto + "' eingetragen. Wenn Sie Formulare benutzen, sollten Sie dieses Ausgabenkonto in den Einstellungen -> E/Ü-Konten anlegen und dem " + csEURoderE1a + "-Feld "
+				AfxMessageBox("Es wurde kein Konto gefunden, das mit dem Formularfeld " + csRestwertFeldnummer + " verknï¿½pft ist. Deshalb wurde in der Buchung provisorisch das Konto '" 
+							  + csRestwertKonto + "' eingetragen. Wenn Sie Formulare benutzen, sollten Sie dieses Ausgabenkonto in den Einstellungen -> E/ï¿½-Konten anlegen und dem " + csEURoderE1a + "-Feld "
 							  + csRestwertFeldnummer + " zuweisen.");
 		}
 		else
@@ -7199,12 +7220,12 @@ void CEasyCashView::AfAAbgang(CBuchung **ppb)
 		csUrspruenglicheAbschreibungNr.Format("%d", (*ppb)->AbschreibungJahre);
 		char urspruenglicherRestwert[30];
 		int_to_currency((*ppb)->AbschreibungRestwert, 20, urspruenglicherRestwert);
-		SetErweiterungKey((*ppb)->Erweiterung, "EasyCash", "UrspruenglichesAnschaffungsdatum", csUrspruenglichesAnschaffungsdatum);	/// benötigt im Anlagenverzeichnis
+		SetErweiterungKey((*ppb)->Erweiterung, "EasyCash", "UrspruenglichesAnschaffungsdatum", csUrspruenglichesAnschaffungsdatum);	/// benï¿½tigt im Anlagenverzeichnis
 		SetErweiterungKey((*ppb)->Erweiterung, "EasyCash", "UrspruenglichesKonto", (*ppb)->Konto);									//
 		SetErweiterungKey((*ppb)->Erweiterung, "EasyCash", "UrspruenglicherBetrag", urspruenglicherBetrag);						//
 		SetErweiterungKey((*ppb)->Erweiterung, "EasyCash", "UrspruenglicherNettobetrag", urspruenglicherNettobetrag);				//
 		SetErweiterungKey((*ppb)->Erweiterung, "EasyCash", "UrspruenglicheAbschreibungNr", csUrspruenglicheAbschreibungNr);		//
-		SetErweiterungKey((*ppb)->Erweiterung, "EasyCash", "UrspruenglicheAbschreibungJahre", csUrspruenglicheAbschreibungJahre);	// TODO: "Abgang rückgängigmachen"-Funktion!
+		SetErweiterungKey((*ppb)->Erweiterung, "EasyCash", "UrspruenglicheAbschreibungJahre", csUrspruenglicheAbschreibungJahre);	// TODO: "Abgang rï¿½ckgï¿½ngigmachen"-Funktion!
 		SetErweiterungKey((*ppb)->Erweiterung, "EasyCash", "UrspruenglicherRestwert", urspruenglicherRestwert);					//
 		SetErweiterungKey((*ppb)->Erweiterung, "EasyCash", "UrspruenglichesBestandskonto", (*ppb)->Bestandskonto);				//
 		(*ppb)->Datum = CTime(pDoc->nJahr, 1, 1, 0, 0, 0);
@@ -7215,7 +7236,7 @@ void CEasyCashView::AfAAbgang(CBuchung **ppb)
 		(*ppb)->AbschreibungJahre = 1;
 		(*ppb)->Konto = csRestwertKonto;
 		(*ppb)->Bestandskonto = "kalkulatorische Restbuchwerte (bitte ignorieren)";
-		pDoc->SetModifiedFlag("Anlagengut wurde aus dem Betriebsvermögen entnommen. Ggf. müssen Veräußerungserlöse oder Entsorgungskosten noch separat gebucht werden.");
+		pDoc->SetModifiedFlag("Anlagengut wurde aus dem Betriebsvermï¿½gen entnommen. Ggf. mï¿½ssen Verï¿½uï¿½erungserlï¿½se oder Entsorgungskosten noch separat gebucht werden.");
 		pDoc->InkrementBuchungszaehler();
 		pDoc->UpdateAllViews(NULL);
 	}
@@ -7223,7 +7244,7 @@ void CEasyCashView::AfAAbgang(CBuchung **ppb)
 
 int CEasyCashView::GetFeldindexFromMausposition(LPXNode felder)
 {
-	// Feld über Clickposition bestimmen...
+	// Feld ï¿½ber Clickposition bestimmen...
 	ptFeldmarke.x = ptFeldmarke.x * 1000 / (int)((double)(charheight * (VCHARS + PAGE_GAP) * 1000 / 1414) * querformat_faktor);
 	ptFeldmarke.y = ptFeldmarke.y * 1414 / (int)((double)(VCHARS + PAGE_GAP) * charheight);
 
@@ -7308,7 +7329,7 @@ Code zu hektisch */
 
 			if (nNaechsteFeldIndex >= 0)
 			{
-				// Feld ID über Index holen
+				// Feld ID ï¿½ber Index holen
 				LPXNode child;
 				int nNaechsteFeldId = -1;
 				child = felder->GetChild(nNaechsteFeldIndex);			
@@ -7364,7 +7385,7 @@ void CEasyCashView::OnLButtonDown(UINT nFlags, CPoint point)
 
 	if (m_bFormularfelderAnzeigen && m_GewaehltesFormular >= 0)
 	{
-		// Feld über Clickposition bestimmen...
+		// Feld ï¿½ber Clickposition bestimmen...
 		ptFeldmarke = GetScrollPosition() + point;
 		ptFeldmarke.x = ptFeldmarke.x * 1000 / (int)((double)(charheight * (VCHARS + PAGE_GAP) * 1000 / 1414));
 		ptFeldmarke.y = ptFeldmarke.y * 1414 / (int)((double)(VCHARS + PAGE_GAP) * charheight);
@@ -7407,7 +7428,7 @@ void CEasyCashView::OnLButtonDown(UINT nFlags, CPoint point)
 				ptFeldmarke.x = atoi(child->GetAttrValue("horizontal"));						
 				ptFeldmarke.y = atoi(child->GetAttrValue("vertikal")) +  ((atoi(child->GetAttrValue("seite"))-1) * 1414);
 				LPCTSTR cp = child->GetAttrValue("ausrichtung");
-				m_bFeldmarkeRechtsbuendig = !stricmp(cp,"rechtsbuendig");	// rechtsbündig?
+				m_bFeldmarkeRechtsbuendig = !stricmp(cp,"rechtsbuendig");	// rechtsbï¿½ndig?
 				ptLetzteMousePosition = GetScrollPosition() + point;
 			}
 
@@ -7433,7 +7454,7 @@ void CEasyCashView::OnLButtonUp(UINT nFlags, CPoint point)
 
 		if (downUpDifferenz == CSize(0, 0))
 		{
-			m_ptFeldMoveMultiselect.RemoveAll();  // bei einem einfachem Mausklick: Selektion löschen
+			m_ptFeldMoveMultiselect.RemoveAll();  // bei einem einfachem Mausklick: Selektion lï¿½schen
 			GetDocument()->UpdateAllViews(NULL);
 		}
 
@@ -7472,7 +7493,7 @@ void CEasyCashView::OnLButtonUp(UINT nFlags, CPoint point)
 		opt.newline = true; // no new line
 		if (!xmldoc.SaveFile(m_csaFormulare[m_GewaehltesFormular], &opt))
 		{
-			AfxMessageBox("Konnte die Änderung der Feldposition nicht in der Formulardatei speichern.");
+			AfxMessageBox("Konnte die ï¿½nderung der Feldposition nicht in der Formulardatei speichern.");
 			return;
 		}
 
@@ -7509,7 +7530,7 @@ void CEasyCashView::OnMButtonDown(UINT nFlags, CPoint point)
 		m_ptMittlererMausButtonDown.x = m_ptMittlererMausButtonDown.x * 1000 / (int)((double)(charheight * (VCHARS + PAGE_GAP) * 1000 / 1414));
 		m_ptMittlererMausButtonDown.y = m_ptMittlererMausButtonDown.y * 1414 / (int)((double)(VCHARS + PAGE_GAP) * charheight);
 		
-		m_ptFeldMoveMultiselect.RemoveAll();  // ggf. alter Multi-Selektion löschen
+		m_ptFeldMoveMultiselect.RemoveAll();  // ggf. alter Multi-Selektion lï¿½schen
 	}
 
 	CScrollView::OnMButtonDown(nFlags, point);
@@ -7577,7 +7598,7 @@ void CEasyCashView::OnMButtonUp(UINT nFlags, CPoint point)
 			}
 		}
 		else
-			m_ptFeldMoveMultiselect.RemoveAll();  // ansonsten bei einem einfachen Mittlere-Maustaste-Klick: Selektion löschen
+			m_ptFeldMoveMultiselect.RemoveAll();  // ansonsten bei einem einfachen Mittlere-Maustaste-Klick: Selektion lï¿½schen
 
 		GetDocument()->UpdateAllViews(NULL);
 	}
@@ -7591,10 +7612,10 @@ void CEasyCashView::OnActivateView(BOOL bActivate, CView* pActivateView, CView* 
 	// ----------------------------------------------------------
 	// Beim Aktivieren eines Dokuments dessen Pfad als "LetzteDatei"
 	// festhalten. Sonst verweist LetzteDatei nur auf die zuletzt
-	// geöffnete/gespeicherte Datei statt auf das beim Beenden
-	// tatsächlich aktive Dokument (siehe Issue #1): War eine zweite
-	// Datei geöffnet und wird sie wieder geschlossen, bliebe
-	// LetzteDatei sonst fälschlich auf der geschlossenen Datei stehen.
+	// geï¿½ffnete/gespeicherte Datei statt auf das beim Beenden
+	// tatsï¿½chlich aktive Dokument (siehe Issue #1): War eine zweite
+	// Datei geï¿½ffnet und wird sie wieder geschlossen, bliebe
+	// LetzteDatei sonst fï¿½lschlich auf der geschlossenen Datei stehen.
 	// ----------------------------------------------------------
 	if (bActivate)
 	{
@@ -7617,7 +7638,7 @@ void CEasyCashView::OnActivateView(BOOL bActivate, CView* pActivateView, CView* 
 /*
 	if (bActivate)
 	{
-		// Menü verschönern
+		// Menï¿½ verschï¿½nern
 		CMenu *pMenu = pActivateView->GetMenu();
 		if (pMenu)
 		{
@@ -7636,7 +7657,7 @@ BOOL CEasyCashView::Backup(char *backupdir)
 	DWORD dw = GetFileAttributes(backupdir);
 	if (dw == 0xFFFFFFFF || !(dw & FILE_ATTRIBUTE_DIRECTORY))
 	{
-		AfxMessageBox("Backup-Verzeichnis kann nicht gefunden werden. Bitte Berechtigungen prüfen und nochmals versuchen");
+		AfxMessageBox("Backup-Verzeichnis kann nicht gefunden werden. Bitte Berechtigungen prï¿½fen und nochmals versuchen");
 		return FALSE;
 	}
 	else
@@ -7683,7 +7704,7 @@ void CEasyCashView::OnFileBackupSubfolder()
 	char backupdir[500], *cp;
 	if (!GetIniFileName(backupdir, sizeof(backupdir)-30) || !(cp = strrchr(backupdir, '\\')))
 	{
-		AfxMessageBox("Die Datensicherung konnte nicht erfolgreich durchgeführt werden, weil das Datenverzeichnis nicht ermittelt werden konnte.");
+		AfxMessageBox("Die Datensicherung konnte nicht erfolgreich durchgefï¿½hrt werden, weil das Datenverzeichnis nicht ermittelt werden konnte.");
 		return;
 	}
 	CTime now = CTime::GetCurrentTime();
@@ -7693,11 +7714,11 @@ void CEasyCashView::OnFileBackupSubfolder()
 	if (CreateDirectory(backupdir, NULL) && Backup(backupdir))
 	{
 		CString csMessageText;
-		csMessageText.Format("Die Datensicherung wurde erfolgreich nach '%s' durchgeführt.", backupdir);
+		csMessageText.Format("Die Datensicherung wurde erfolgreich nach '%s' durchgefï¿½hrt.", backupdir);
 		AfxMessageBox(csMessageText);
 	}
 	else
-		AfxMessageBox("Die Datensicherung konnte nicht erfolgreich durchgeführt werden. Bitte kopieren Sie die relevanten Dateien manuell auf ein externes Sicherungsmedium.");
+		AfxMessageBox("Die Datensicherung konnte nicht erfolgreich durchgefï¿½hrt werden. Bitte kopieren Sie die relevanten Dateien manuell auf ein externes Sicherungsmedium.");
 }
 
 void CEasyCashView::OnFileBackupExternal()
@@ -7709,8 +7730,8 @@ void CEasyCashView::OnFileBackupExternal()
 			csBackupDir = "C:\\";
 	csBackupDir.ReleaseBuffer();
 
-	// Backupverzeichnis wählen
-	if (SelectFolder(csBackupDir.GetBuffer(MAX_PATH), "Backup-Medium auswählen (ein Unterverzeichnis mit Zeitstempel wird darin erstellt)")) 
+	// Backupverzeichnis wï¿½hlen
+	if (SelectFolder(csBackupDir.GetBuffer(MAX_PATH), "Backup-Medium auswï¿½hlen (ein Unterverzeichnis mit Zeitstempel wird darin erstellt)")) 
 	{
 		csBackupDir.ReleaseBuffer();
 		theApp.WriteProfileString("Backup", "ExternalBackupDir", csBackupDir);
@@ -7725,11 +7746,11 @@ void CEasyCashView::OnFileBackupExternal()
 		if (CreateDirectory(csBackupDir, NULL) && Backup(csBackupDir.GetBuffer(0)))
 		{
 			CString csMessageText;
-			csMessageText.Format("Die Datensicherung wurde erfolgreich nach '%s' durchgeführt.", csBackupDir.GetBuffer(0));
+			csMessageText.Format("Die Datensicherung wurde erfolgreich nach '%s' durchgefï¿½hrt.", csBackupDir.GetBuffer(0));
 			AfxMessageBox(csMessageText);
 		}
 		else
-			AfxMessageBox("Die Datensicherung konnte nicht erfolgreich durchgeführt werden. Bitte kopieren Sie die relevanten Dateien manuell auf ein externes Sicherungsmedium.");
+			AfxMessageBox("Die Datensicherung konnte nicht erfolgreich durchgefï¿½hrt werden. Bitte kopieren Sie die relevanten Dateien manuell auf ein externes Sicherungsmedium.");
 	}
 }
 
@@ -7753,11 +7774,11 @@ void CEasyCashView::OnFileBackup() // auf CD/DVD
 		if (CreateDirectory(csBackupDir, NULL) && Backup(csBackupDir.GetBuffer(0)))
 		{
 			CString csMessageText;
-			csMessageText.Format("Die Datensicherung wurde erfolgreich nach '%s' durchgeführt. Die Disk kann jetzt gebrannt werden.", csBackupDir.GetBuffer(0));
+			csMessageText.Format("Die Datensicherung wurde erfolgreich nach '%s' durchgefï¿½hrt. Die Disk kann jetzt gebrannt werden.", csBackupDir.GetBuffer(0));
 			AfxMessageBox(csMessageText);
 		}
 		else
-			AfxMessageBox("Die Datensicherung konnte nicht erfolgreich durchgeführt werden. Bitte brennen Sie die relevanten Dateien manuell auf eine disk.");
+			AfxMessageBox("Die Datensicherung konnte nicht erfolgreich durchgefï¿½hrt werden. Bitte brennen Sie die relevanten Dateien manuell auf eine disk.");
 	}
 }
 
@@ -7765,7 +7786,7 @@ void CEasyCashView::OnFileJahreswechsel()
 {
 	CEasyCashDoc *pDoc = GetDocument();
 
-	// sind da noch Dauerbuchungen auszuführen?
+	// sind da noch Dauerbuchungen auszufï¿½hren?
 	CTime aktualisiert_bis_jahresende(pDoc->nJahr, 12, 31, 0, 0, 0);
 	CString csMeldung = "";
 	CDauerbuchung *dbp;
@@ -7778,11 +7799,11 @@ void CEasyCashView::OnFileJahreswechsel()
 		}
 	}
 	if (csMeldung != "")
-		if (AfxMessageBox((CString)"Achtung: Es wurde(n) folgende Dauerbuchung(en) noch nicht bis zum Jahresende bzw. Bis-Datum ausgeführt: " + csMeldung + "\r\n\r\nSoll jetzt wirklich der Jahresabschluss gemacht werden?", MB_YESNO) == IDNO)
+		if (AfxMessageBox((CString)"Achtung: Es wurde(n) folgende Dauerbuchung(en) noch nicht bis zum Jahresende bzw. Bis-Datum ausgefï¿½hrt: " + csMeldung + "\r\n\r\nSoll jetzt wirklich der Jahresabschluss gemacht werden?", MB_YESNO) == IDNO)
 			return;
 
 	CString csMessageText;
-	csMessageText.Format("Es wird dringend empfohlen am Ende des Jahres eine Sicherungskopie der Daten anzulegen. Es wird jetzt im Datenverzeichnis ein Unterverzeichnis 'Backup%04d-Jahreswechsel' angelegt, wo die Daten des beendeten Buchungsjahrs gespeichert werden. Kopieren Sie das Verzeichnis möglichst gleich auf ein externes Medium, z.B. einen USB-Speicherstick. Um die gesetzlichen Vorgaben vollständig zu erfüllen, muss die Datensicherung aber auf einer CD-ROM geschehen, die nicht mehr geändert werden kann. Gespeichert wird die Buchungsdatei (Jahr%04d.eca), die Einstellungsdaten inkl. Kontenrahmen (easyct.ini) und jeweils ein CSV-Export der Einnahmen und Ausgaben (easyct_E.csv und easyct_A.csv). Die CD-ROM muss dann für min. 10 Jahre an einem sicheren Ort aufbewahrt werden.", pDoc->nJahr, pDoc->nJahr);
+	csMessageText.Format("Es wird dringend empfohlen am Ende des Jahres eine Sicherungskopie der Daten anzulegen. Es wird jetzt im Datenverzeichnis ein Unterverzeichnis 'Backup%04d-Jahreswechsel' angelegt, wo die Daten des beendeten Buchungsjahrs gespeichert werden. Kopieren Sie das Verzeichnis mï¿½glichst gleich auf ein externes Medium, z.B. einen USB-Speicherstick. Um die gesetzlichen Vorgaben vollstï¿½ndig zu erfï¿½llen, muss die Datensicherung aber auf einer CD-ROM geschehen, die nicht mehr geï¿½ndert werden kann. Gespeichert wird die Buchungsdatei (Jahr%04d.eca), die Einstellungsdaten inkl. Kontenrahmen (easyct.ini) und jeweils ein CSV-Export der Einnahmen und Ausgaben (easyct_E.csv und easyct_A.csv). Die CD-ROM muss dann fï¿½r min. 10 Jahre an einem sicheren Ort aufbewahrt werden.", pDoc->nJahr, pDoc->nJahr);
 	if (AfxMessageBox(csMessageText, MB_OKCANCEL) == IDOK)
 	{
 		char backupdir[500];
@@ -7799,11 +7820,11 @@ void CEasyCashView::OnFileJahreswechsel()
 
 		if (CreateDirectory(backupdir, NULL) && Backup(backupdir))
 		{
-			csMessageText.Format("Das Datensicherungsverzeichnis '%s' wurde erfolgreich angelegt und kann jetzt auf ein externes Medium kopiert werden. Speichern Sie als Nächstes die _neu_erzeugte_ Jahres-Buchungsdatei mit einem anderen Namen als die Datei des alten Jahres. Im Zweifelsfall beim 'Speichern unter' Dialog einfach nur den Speichern-Knopf drücken, ohne zuvor eine existierende Datei auszuwählen und damit evtl. versehentlich zu überschreiben!", backupdir);
+			csMessageText.Format("Das Datensicherungsverzeichnis '%s' wurde erfolgreich angelegt und kann jetzt auf ein externes Medium kopiert werden. Speichern Sie als Nï¿½chstes die _neu_erzeugte_ Jahres-Buchungsdatei mit einem anderen Namen als die Datei des alten Jahres. Im Zweifelsfall beim 'Speichern unter' Dialog einfach nur den Speichern-Knopf drï¿½cken, ohne zuvor eine existierende Datei auszuwï¿½hlen und damit evtl. versehentlich zu ï¿½berschreiben!", backupdir);
 			AfxMessageBox(csMessageText);
 		}
 		else
-			AfxMessageBox("Die Datensicherung konnte nicht erfolgreich durchgeführt werden. Bitte kopieren Sie die relevanten Dateien manuel auf ein externes Sicherungsmedium.");
+			AfxMessageBox("Die Datensicherung konnte nicht erfolgreich durchgefï¿½hrt werden. Bitte kopieren Sie die relevanten Dateien manuel auf ein externes Sicherungsmedium.");
 	}
 
 	CEasyCashDoc *pNewDoc = pDoc->Jahreswechsel(ECT_HoleEinstellungInt("land", 0));
@@ -7873,7 +7894,7 @@ void CEasyCashView::OnFileJahreswechsel()
 	strcpy(buf, pNewDoc->GetPathName());
 	delete pNewDoc;
 
-	// Bestandskontensalden speichern als Übertrag ins nächste Jahr
+	// Bestandskontensalden speichern als ï¿½bertrag ins nï¿½chste Jahr
 	int j;
 	for (j = 0; j < m_Bestandskonten.GetSize(); j++)
 	{
@@ -7903,7 +7924,7 @@ void CEasyCashView::OnFileJahreswechsel()
 		WritePrivateProfileString("Bestandskonten", csKey.GetBuffer(0), saldobuffer, inifile);
 	}
 
-	if (GetFileAttributes(buf) != 0xFFFFFFFF && AfxMessageBox("Soll das neue Buchungsjahr jetzt gleich geöffnet werden?", MB_YESNO) == IDYES)
+	if (GetFileAttributes(buf) != 0xFFFFFFFF && AfxMessageBox("Soll das neue Buchungsjahr jetzt gleich geï¿½ffnet werden?", MB_YESNO) == IDYES)
 	{
 		//pDoc->OnOpenDocument(buf); <-- katastrophaler Fehler !!!
 
@@ -7913,7 +7934,7 @@ void CEasyCashView::OnFileJahreswechsel()
 		cmdInfo.m_nShellCommand = CCommandLineInfo::FileOpen;
 		if (!theApp.ProcessShellCommand(cmdInfo))
 		{
-			AfxMessageBox("Problem beim Öffnen des neuen Buchungsjahrs.");
+			AfxMessageBox("Problem beim ï¿½ffnen des neuen Buchungsjahrs.");
 		}
 	}
 
@@ -7941,7 +7962,7 @@ BOOL CEasyCashView::Export(char *_Efilename, char *_Afilename, BOOL bExplorerOef
 	CString cse;
 	if (!_Efilename)
 	{
-		if (!GetIniFileName(EinnahmenExportDateiname, sizeof(EinnahmenExportDateiname))) { AfxMessageBox("Konnte Konfigurationsdatei EasyCT.ini nicht öffnen"); return FALSE; }
+		if (!GetIniFileName(EinnahmenExportDateiname, sizeof(EinnahmenExportDateiname))) { AfxMessageBox("Konnte Konfigurationsdatei EasyCT.ini nicht ï¿½ffnen"); return FALSE; }
 		strcpy(EinnahmenExportDateiname+strlen(EinnahmenExportDateiname)-4, "_E.csv");
 		strcpy(AusgabenExportDateiname, EinnahmenExportDateiname);
 		CFileDialog cf(FALSE, "*.CSV", EinnahmenExportDateiname, 0, "Character Separated Value Datei (*.csv)|*.CSV||",this);
@@ -8154,7 +8175,7 @@ BOOL CEasyCashView::Export(char *_Efilename, char *_Afilename, BOOL bExplorerOef
 			File.Close();
 
 			char buffer[2000];
-			sprintf(buffer, "Die Einnahmen wurden in der Datei '%s' abgelegt, die Ausgaben in der Datei '%s'. Das CSV-Format (Comma Separated Values) ist ein universelles Dateiformat für Daten in Tabellenform und wird u.A. von MS-Excel und MS-Access verstanden. Jetzt im Explorer öffnen?",
+			sprintf(buffer, "Die Einnahmen wurden in der Datei '%s' abgelegt, die Ausgaben in der Datei '%s'. Das CSV-Format (Comma Separated Values) ist ein universelles Dateiformat fï¿½r Daten in Tabellenform und wird u.A. von MS-Excel und MS-Access verstanden. Jetzt im Explorer ï¿½ffnen?",
 				cse.GetBuffer(0), csa.GetBuffer(0));
 			if (bExplorerOeffnen && AfxMessageBox(buffer, MB_YESNO) == IDYES)
 			{
@@ -8170,7 +8191,7 @@ BOOL CEasyCashView::Export(char *_Efilename, char *_Afilename, BOOL bExplorerOef
 #if _MFC_VER > 0x0600
 #pragma message("CEasyCashView::OnFileExport() >>>>>>>>>>>>>>>>>>>> SHOpenFolderAndSelectItems vorbereitet. Einfach auskommentieren! <<<<<<<<<<<<<<<<<<<<<<<")
 #endif
-					// nur eine Datei selektieren -- nicht schön, aber geht nicht anders:
+					// nur eine Datei selektieren -- nicht schï¿½n, aber geht nicht anders:
 					ShellExecute(m_hWnd, "open", "explorer.exe", (CString)"/select," + cse, NULL, SW_SHOWNORMAL);
 
 				/*				
@@ -8201,10 +8222,10 @@ BOOL CEasyCashView::Export(char *_Efilename, char *_Afilename, BOOL bExplorerOef
 			}
 		}
 		else
-			AfxMessageBox("Konnte Export-Datei für Ausgaben nicht öffnen", MB_ICONSTOP);
+			AfxMessageBox("Konnte Export-Datei fï¿½r Ausgaben nicht ï¿½ffnen", MB_ICONSTOP);
 	}
 	else
-		AfxMessageBox("Konnte Export-Datei für Einnahmen nicht öffnen", MB_ICONSTOP);
+		AfxMessageBox("Konnte Export-Datei fï¿½r Einnahmen nicht ï¿½ffnen", MB_ICONSTOP);
 
 	return FALSE;
 }
@@ -8225,7 +8246,7 @@ void CEasyCashView::OnViewOptions()
 	einstellungen1->m_buchungsjahr = GetDocument()->nJahr;
 	CString Key;
 	Key.Format("Sondervorauszahlung%-04.4d", GetDocument()->nJahr);
-	char *cp = GetErweiterungKey(GetDocument()->Erweiterung, "Dauerfristverlängerung", Key);
+	char *cp = GetErweiterungKey(GetDocument()->Erweiterung, "Dauerfristverlï¿½ngerung", Key);
 	char *cp2;
 	if (cp2 = strchr(cp, '|'))
 	{ 
@@ -8250,7 +8271,7 @@ void CEasyCashView::OnViewOptions()
 				else
 					nNationaleAfAGenauigkeit = MONATSGENAUE_AFA;
 				break;
-			case 1: // Österreich
+			case 1: // ï¿½sterreich
 				nNationaleAfAGenauigkeit = HALBJAHRES_AFA;
 				break;
 			case 2: // Schweiz
@@ -8260,16 +8281,16 @@ void CEasyCashView::OnViewOptions()
 
 			// Abfrage Voreinstellungen
 			if (nNationaleAfAGenauigkeit != einstellungen1->m_AbschreibungGenauigkeit)
-				if (AfxMessageBox("Das Land wurde geändert und damit auch Regeln zur Abschreibung von Anlagevermögen. Soll die AfA-Genauigkeit gemäß der nationalen Gesetzgebung (Stand 2004) in den Voreinstellungen angepasst werden? (Siehe auch Einstellungen->Allgemein->'Voreinstell. AfA-Genauigkeit')", MB_YESNO) == IDYES)
+				if (AfxMessageBox("Das Land wurde geï¿½ndert und damit auch Regeln zur Abschreibung von Anlagevermï¿½gen. Soll die AfA-Genauigkeit gemï¿½ï¿½ der nationalen Gesetzgebung (Stand 2004) in den Voreinstellungen angepasst werden? (Siehe auch Einstellungen->Allgemein->'Voreinstell. AfA-Genauigkeit')", MB_YESNO) == IDYES)
 					einstellungen1->m_AbschreibungGenauigkeit = nNationaleAfAGenauigkeit;
 			
 			// Abfrage aktuelles Dokument
 			if (nNationaleAfAGenauigkeit != GetDocument()->AbschreibungGenauigkeit)
-				if (AfxMessageBox("Soll die AfA-Genauigkeit für das aktuelle Dokument geändert werden? (Hinweis: Wenn schon ein Jahreswechsel für dieses Jahr gemacht wurde, führt dies evtl. zu einer Inkonsistenz, da der Restwert im Folgejahr nicht mehr verändert werden kann.)", MB_YESNO) == IDYES)
+				if (AfxMessageBox("Soll die AfA-Genauigkeit fï¿½r das aktuelle Dokument geï¿½ndert werden? (Hinweis: Wenn schon ein Jahreswechsel fï¿½r dieses Jahr gemacht wurde, fï¿½hrt dies evtl. zu einer Inkonsistenz, da der Restwert im Folgejahr nicht mehr verï¿½ndert werden kann.)", MB_YESNO) == IDYES)
 					GetDocument()->AbschreibungGenauigkeit = nNationaleAfAGenauigkeit;
 		}
 		else if (afa_genauigkeit_merker != einstellungen1->m_AbschreibungGenauigkeit)
-			if (AfxMessageBox("Soll auch die AfA-Genauigkeit für das aktuelle Dokument geändert werden? (Hinweis: Wenn schon ein Jahreswechsel für dieses Jahr gemacht wurde, führt dies evtl. zu einer Inkonsistenz, da der Restwert im Folgejahr nicht mehr verändert werden kann.)", MB_YESNO) == IDYES)
+			if (AfxMessageBox("Soll auch die AfA-Genauigkeit fï¿½r das aktuelle Dokument geï¿½ndert werden? (Hinweis: Wenn schon ein Jahreswechsel fï¿½r dieses Jahr gemacht wurde, fï¿½hrt dies evtl. zu einer Inkonsistenz, da der Restwert im Folgejahr nicht mehr verï¿½ndert werden kann.)", MB_YESNO) == IDYES)
 				GetDocument()->AbschreibungGenauigkeit = einstellungen1->m_AbschreibungGenauigkeit;
 
 		SaveProfile();
@@ -8299,11 +8320,11 @@ void CEasyCashView::OnViewOptions()
 			GetDocument()->SetModifiedFlag();
 		}
 
-		// sondervorauszahlung gedöns
+		// sondervorauszahlung gedï¿½ns
 		CString Key;
 		CString vorauszahlung_zuvor;
 		Key.Format("Sondervorauszahlung%-04.4d", GetDocument()->nJahr);
-		char *cp = GetErweiterungKey(GetDocument()->Erweiterung, "Dauerfristverlängerung", Key);
+		char *cp = GetErweiterungKey(GetDocument()->Erweiterung, "Dauerfristverlï¿½ngerung", Key);
 		char *cp2;
 		if (cp2 = strchr(cp, '|'))
 		{ 
@@ -8315,7 +8336,7 @@ void CEasyCashView::OnViewOptions()
 			vorauszahlung_zuvor = "";
 		if (einstellungen1->m_sondervorauszahlung != vorauszahlung_zuvor)
 		{
-			SetErweiterungKey(GetDocument()->Erweiterung, "Dauerfristverlängerung", Key, einstellungen1->m_sondervorauszahlung);		
+			SetErweiterungKey(GetDocument()->Erweiterung, "Dauerfristverlï¿½ngerung", Key, einstellungen1->m_sondervorauszahlung);		
 			GetDocument()->SetModifiedFlag();
 		}
 
@@ -8324,13 +8345,13 @@ void CEasyCashView::OnViewOptions()
 			if (einstellungen3->m_wirtschaftsIdNr.GetLength() != 17)
 				AfxMessageBox("Hinweis: Die Wirtschaftsidentifikationsnummer muss 17 Zeichen lang sein.");
 			else if (!isalpha(einstellungen3->m_wirtschaftsIdNr[0]) || !isalpha(einstellungen3->m_wirtschaftsIdNr[1]))
-				AfxMessageBox("Hinweis: Die Wirtschaftsidentifikationsnummer muss mit zwei Buchstaben für das Landeskürzel beginnen, z.B. 'DE' oder 'AT'.");
+				AfxMessageBox("Hinweis: Die Wirtschaftsidentifikationsnummer muss mit zwei Buchstaben fï¿½r das Landeskï¿½rzel beginnen, z.B. 'DE' oder 'AT'.");
 			else if (einstellungen3->m_wirtschaftsIdNr[11] != _T('-'))
 				AfxMessageBox("Hinweis: Die Wirtschaftsidentifikationsnummer muss an der 12. Position einen Bindestrich enthalten.");
 			else
 				for (int i = 2; i < 17; i++)
 				{
-					if (i == 11) i++;  // '-' überspringen
+					if (i == 11) i++;  // '-' ï¿½berspringen
 					if (!isdigit(einstellungen3->m_wirtschaftsIdNr[i]))
 					{
 						CString msg;
@@ -8353,7 +8374,7 @@ void CEasyCashView::OnViewOptions()
 		einstellungen1->m_buchungsjahr = GetDocument()->nJahr;
 		CString Key;
 		Key.Format("Sondervorauszahlung%-04.4d", GetDocument()->nJahr);
-		char *cp = GetErweiterungKey(GetDocument()->Erweiterung, "Dauerfristverlängerung", Key);
+		char *cp = GetErweiterungKey(GetDocument()->Erweiterung, "Dauerfristverlï¿½ngerung", Key);
 		if (cp2 = strchr(cp, '|'))
 		{ 
 			strncpy(einstellungen1->m_sondervorauszahlung.GetBuffer(cp2-cp+1), cp, cp2-cp);
@@ -8476,7 +8497,7 @@ void CEasyCashView::JournalWpfZoomAenderung(int deltaProzent)
 }
 #endif
 
-// Filter auf nächstes Konto
+// Filter auf nï¿½chstes Konto
 void CEasyCashView::OnViewJournalKonto()
 {
 	int i;
@@ -8520,8 +8541,8 @@ void CEasyCashView::OnViewJournalBestandskonto()
 {
 #ifdef USE_ECTENGINE
 	// WPF-Verwaltungs-/Auswahl-Dialog (ersetzt CIconAuswahlBestandskonto,
-	// Modus 1). Änderungen (Neu/Löschen/Umbenennen/Icon/Anfangssaldo)
-	// stehen beim Zurückkehren bereits in Cache + ini;
+	// Modus 1). ï¿½nderungen (Neu/Lï¿½schen/Umbenennen/Icon/Anfangssaldo)
+	// stehen beim Zurï¿½ckkehren bereits in Cache + ini;
 	// UpdateBestandskontenMenu liest m_Bestandskonten daraus neu ein.
 	int nGewaehlt = ECT_ZeigeBestandskontenVerwaltenDialog(
 		GetDocument()->nJahr, AfxGetMainWnd()->GetSafeHwnd());
@@ -8565,7 +8586,7 @@ void CEasyCashView::OnViewJournalBestkonten()
 	// Wenn Plugin aktiv im Fenster, erstmal Plugin deaktivieren
 	DestroyPlugin();
 			
-	// Formularansicht zurücksetzen
+	// Formularansicht zurï¿½cksetzen
 	m_GewaehltesFormular = nSelected = -1;
 
 	GetParent()->ShowWindow(SW_SHOW);
@@ -8593,7 +8614,7 @@ void CEasyCashView::OnViewJournalAnlagenverzeichnis()
 	// Wenn Plugin aktiv im Fenster, erstmal Plugin deaktivieren
 	DestroyPlugin();
 			
-	// Formularansicht zurücksetzen
+	// Formularansicht zurï¿½cksetzen
 	m_GewaehltesFormular = nSelected = -1;
 
 	GetParent()->ShowWindow(SW_SHOW);
@@ -8615,8 +8636,8 @@ void CEasyCashView::OnViewJournalBetrieb()
 {
 #ifdef USE_ECTENGINE
 	// WPF-Verwaltungs-/Auswahl-Dialog (ersetzt CIconAuswahlBetrieb, Modus 1).
-	// Änderungen (Neu/Löschen/Umbenennen/Icon/Unternehmensart) stehen beim
-	// Zurückkehren bereits in Cache + ini; UpdateBetriebeMenu liest
+	// ï¿½nderungen (Neu/Lï¿½schen/Umbenennen/Icon/Unternehmensart) stehen beim
+	// Zurï¿½ckkehren bereits in Cache + ini; UpdateBetriebeMenu liest
 	// m_Betriebe daraus neu ein.
 	int nGewaehlt = ECT_ZeigeBetriebeVerwaltenDialog(
 		AfxGetMainWnd()->GetSafeHwnd());
@@ -8666,7 +8687,7 @@ void CEasyCashView::OnViewJournalSwitch()
 #endif
 	if (pPluginWnd || m_GewaehltesFormular != -1)
 	{
-		// plugin fenster schließen
+		// plugin fenster schlieï¿½en
 		DestroyPlugin();
 
 		// wenn plugin aktiv war, nicht vertauschen sondern den vorigen view beibehalten
@@ -8880,6 +8901,10 @@ void CEasyCashView::VerstecktEinstellungenWpf()
 	ECT_EinstellungenViewAbloesen(m_hwndEinstellungenWpf);
 	m_hwndEinstellungenWpf = NULL;
 
+	// Buchungsposten koennten in den Einstellungen geaendert worden sein --
+	// die Vorlagen-Dropdowns der Einnahme-/Ausgabe-Knoepfe neu aufbauen.
+	((CMainFrame*)AfxGetMainWnd())->UpdateBuchungsvorlagenMenu();
+
 	if (m_einstellungenUeberJournal && m_hwndJournalWpf)
 	{
 		// Journal wieder zeigen und auf aktuelle Groesse nachfuehren.
@@ -9051,7 +9076,7 @@ void CEasyCashView::LoadProfile()
 	CString Datenverzeichnis = theApp.GetProfileString("Allgemein", "Datenverzeichnis", "");
 	if (Datenverzeichnis.IsEmpty())
 	{
-		AfxMessageBox("EasyCash&Tax benötigt ein Datenverzeichnis, in dem zukünftig alle Buchungsdateien (JahrXXXX.eca) sowie die Einstellungen inkl. Konten (easyct.ini) gespeichert werden. Mit dem folgenden Dialog kann solch ein Verzeichnis ausgewählt bzw. erzeugt werden. (Erzeugen geht mit dem mittleren der drei Knöpfe oben rechts im Datenverzeichnis auswählen Dialog). Vorzugsweise legt man das Datenverzeichnis in 'Eigene Dateien' oder -- wenn alle Benutzer dieses Computers darauf Zugriff haben sollen -- in 'Gemeinsame Dateien' an.");
+		AfxMessageBox("EasyCash&Tax benï¿½tigt ein Datenverzeichnis, in dem zukï¿½nftig alle Buchungsdateien (JahrXXXX.eca) sowie die Einstellungen inkl. Konten (easyct.ini) gespeichert werden. Mit dem folgenden Dialog kann solch ein Verzeichnis ausgewï¿½hlt bzw. erzeugt werden. (Erzeugen geht mit dem mittleren der drei Knï¿½pfe oben rechts im Datenverzeichnis auswï¿½hlen Dialog). Vorzugsweise legt man das Datenverzeichnis in 'Eigene Dateien' oder -- wenn alle Benutzer dieses Computers darauf Zugriff haben sollen -- in 'Gemeinsame Dateien' an.");
 	
 		CDatenverzeichnisDlg dvdlg;
 		dvdlg.DoModal();
@@ -9059,8 +9084,8 @@ void CEasyCashView::LoadProfile()
 		if (!SHGetSpecialFolderPath(AfxGetMainWnd()->GetSafeHwnd(), Datenverzeichnis.GetBuffer(MAX_PATH), CSIDL_PERSONAL, FALSE))
 			Datenverzeichnis = "C:\\";
 
-		// Datenverzeichnis wählen
-		if (SelectFolder(Datenverzeichnis.GetBuffer(MAX_PATH), "Datenverzeichnis auswählen")) 
+		// Datenverzeichnis wï¿½hlen
+		if (SelectFolder(Datenverzeichnis.GetBuffer(MAX_PATH), "Datenverzeichnis auswï¿½hlen")) 
 		{
 			Datenverzeichnis.ReleaseBuffer();
 
@@ -9087,7 +9112,7 @@ void CEasyCashView::LoadProfile()
 					if (!csRecentFile.IsEmpty()) csRecentFilesList += (CString) "\r\n" + csRecentFile;
 					csRecentFile = theApp.GetProfileString("Recent File List", "File4", "");
 					if (!csRecentFile.IsEmpty()) csRecentFilesList += (CString) "\r\n" + csRecentFile;
-					if (!csRecentFilesList.IsEmpty()) csRecentFilesList = " Hier sind die Pfade zu den zuletzt geöffneten Dateien: \r\n" + csRecentFilesList + "\r\n\r\nBitte den Explorer benutzen, um die Dateien (sofern relevant) ins Datenverzeichnis '" + Datenverzeichnis + "' zu verschieben.";
+					if (!csRecentFilesList.IsEmpty()) csRecentFilesList = " Hier sind die Pfade zu den zuletzt geï¿½ffneten Dateien: \r\n" + csRecentFilesList + "\r\n\r\nBitte den Explorer benutzen, um die Dateien (sofern relevant) ins Datenverzeichnis '" + Datenverzeichnis + "' zu verschieben.";
 					AfxMessageBox("Die existierende Einstellungsdatei (easyct.ini) wurde aus dem Programmverzeichnis in das neue Datenverzeichnis verschoben. Es wird dringend empfohlen die Buchungsdateien ebenfalls dort zu speichern." + csRecentFilesList);
 				}
 			}
@@ -9103,7 +9128,7 @@ void CEasyCashView::LoadProfile()
 	DWORD dw = GetFileAttributes(Datenverzeichnis);
 	if (dw == 0xFFFFFFFF || !(dw & FILE_ATTRIBUTE_DIRECTORY))
 	{
-		AfxMessageBox("Datenverzeichnis kann nicht gefunden werden. Bitte erneut auswählen!");
+		AfxMessageBox("Datenverzeichnis kann nicht gefunden werden. Bitte erneut auswï¿½hlen!");
 		if (SHGetFolderPath(AfxGetMainWnd()->GetSafeHwnd(), CSIDL_PERSONAL, NULL, SHGFP_TYPE_CURRENT, Datenverzeichnis.GetBuffer(MAX_PATH)) != S_OK)
 			Datenverzeichnis = "C:\\";
 		Datenverzeichnis.ReleaseBuffer();
@@ -9112,7 +9137,7 @@ void CEasyCashView::LoadProfile()
 
 		do 
 		{
-			if (SelectFolder(Datenverzeichnis.GetBuffer(MAX_PATH), "Datenverzeichnis auswählen")) 
+			if (SelectFolder(Datenverzeichnis.GetBuffer(MAX_PATH), "Datenverzeichnis auswï¿½hlen")) 
 			{
 				Datenverzeichnis.ReleaseBuffer();
 				Datenverzeichnis = FailsafeDatenverzeichnis;
@@ -9140,7 +9165,7 @@ void CEasyCashView::LoadProfile()
 			}
 			else
 			{
-				strcat(EasyCashIniFilenameBuffer, uuid.GetBuffer(0));	// Dateinamen an Pfad anfügen
+				strcat(EasyCashIniFilenameBuffer, uuid.GetBuffer(0));	// Dateinamen an Pfad anfï¿½gen
 
 				if (!CopyFile(NetzwerkEasyCashIniFilenameBuffer, EasyCashIniFilenameBuffer, FALSE))	// kann nicht kopieren?
 				{
@@ -9152,7 +9177,7 @@ void CEasyCashView::LoadProfile()
 	}
 
 	
-	//if (!GetIniFileName(EasyCashIniFilenameBuffer, sizeof(EasyCashIniFilenameBuffer))) { AfxMessageBox("Konnte Konfigurationsdatei EasyCT.ini nicht öffnen"); return; }
+	//if (!GetIniFileName(EasyCashIniFilenameBuffer, sizeof(EasyCashIniFilenameBuffer))) { AfxMessageBox("Konnte Konfigurationsdatei EasyCT.ini nicht ï¿½ffnen"); return; }
 
 	if (!propdlg) return;
 
@@ -9261,8 +9286,8 @@ void CEasyCashView::LoadProfile()
 	einstellungen2->m_vat4 = buffer;
 	GetPrivateProfileString("Persoenliche_Daten", "vat_d_aenderung_2007", "0", buffer, sizeof(buffer), EasyCashIniFilenameBuffer);
 	if (einstellungen2->m_land == 0 && atoi(einstellungen2->m_vat1) == 16 && !atoi(buffer))
-	{	// MWSt-Erhöhung 2007 von 16% auf 19%:
-		int n = AfxMessageBox("Soll EasyCash&Tax den MWSt.-Regelsatz in den persönlichen Einstellungen und den Buchungs-Presets von 16% auf 19% erhöhen? (Abbrechen = später nochmal fragen)", MB_YESNOCANCEL);
+	{	// MWSt-Erhï¿½hung 2007 von 16% auf 19%:
+		int n = AfxMessageBox("Soll EasyCash&Tax den MWSt.-Regelsatz in den persï¿½nlichen Einstellungen und den Buchungs-Presets von 16% auf 19% erhï¿½hen? (Abbrechen = spï¿½ter nochmal fragen)", MB_YESNOCANCEL);
 		switch (n)
 		{
 			int i;
@@ -9331,7 +9356,7 @@ void CEasyCashView::LoadProfile()
 
 	BOOL bUnterkategorienVorhanden = FALSE;
 
-	// wenn frische Ini-Datei: Rechnungsposten initialisieren mit EÜR-Konten aus XML-Formulardatei
+	// wenn frische Ini-Datei: Rechnungsposten initialisieren mit Eï¿½R-Konten aus XML-Formulardatei
 	if (bInitRechnungsposten)
 	{
 		char EUeRFormularDateinamenBuffer[1000];
@@ -9363,7 +9388,7 @@ void CEasyCashView::LoadProfile()
 						sprintf(cp, "\\E1a-AT-%-0.4d.ecf", nJahr);
 						if (GetFileAttributes(EUeRFormularDateinamenBuffer) != 0xFFFFFFFF) 
 						{
-							einstellungen2->m_land = 1; // Österreich
+							einstellungen2->m_land = 1; // ï¿½sterreich
 							break;
 						}
 					}
@@ -9420,7 +9445,7 @@ void CEasyCashView::LoadProfile()
 				}
 				CATCH(CFileException, e)
 				{
-					AfxMessageBox("Fehler beim Lesen der EÜR-Formulardefinitionsdatei EUeR.ecf", MB_ICONSTOP);
+					AfxMessageBox("Fehler beim Lesen der Eï¿½R-Formulardefinitionsdatei EUeR.ecf", MB_ICONSTOP);
 				}
 				END_CATCH
 				xmlf.Close();
@@ -9429,7 +9454,7 @@ void CEasyCashView::LoadProfile()
 		}
 	}
 
-	// ggf. Konto für die separate Buchung von Vorsteuerbeträgen anlegen
+	// ggf. Konto fï¿½r die separate Buchung von Vorsteuerbetrï¿½gen anlegen
 	BOOL bInitVSTSeparat = FALSE;
 	if (einstellungen2->m_land == 0)	// nur Deutschland vorerst
 	{
@@ -9439,15 +9464,15 @@ void CEasyCashView::LoadProfile()
 		bInitVSTSeparat = !bVSTBetraegeSeparatAngelegt;
 		if (bInitRechnungsposten || bInitVSTSeparat)
 		{
-			for(int i = 0; i < 100 && einstellungen1->AusgabenRechnungsposten[i] != "VST-Beträge separat"; i++)
+			for(int i = 0; i < 100 && einstellungen1->AusgabenRechnungsposten[i] != "VST-Betrï¿½ge separat"; i++)
 				if (einstellungen1->AusgabenRechnungsposten[i].IsEmpty())
 				{
-					einstellungen1->AusgabenRechnungsposten[i] = "VST-Beträge separat";
-					SetErweiterungKey(einstellungen1->AusgabenFeldzuweisungen[i], "ECT", "E/Ü-Rechnung", "1185");
+					einstellungen1->AusgabenRechnungsposten[i] = "VST-Betrï¿½ge separat";
+					SetErweiterungKey(einstellungen1->AusgabenFeldzuweisungen[i], "ECT", "E/ï¿½-Rechnung", "1185");
 					SetErweiterungKey(einstellungen1->AusgabenFeldzuweisungen[i], "ECT", "Umsatzsteuer-Voranmeldung", "66");
-					if (bUnterkategorienVorhanden) einstellungen1->AusgabenUnterkategorien[i] = "Unabhängig gebuchte Vorsteuer";
+					if (bUnterkategorienVorhanden) einstellungen1->AusgabenUnterkategorien[i] = "Unabhï¿½ngig gebuchte Vorsteuer";
 					WritePrivateProfileString("Allgemein", "VST-Betraege-separat-angelegt", "1", EasyCashIniFilenameBuffer);
-					if (!bVSTBetraegeSeparatAngelegt && !bInitRechnungsposten) AfxMessageBox("Ein Konto 'VST-Beträge separat' wurde angelegt für VST-Beträge, die vom Netto-Betrag entkoppelt sind. Bitte kontrollieren Sie die Formularfeld-Zuweisungen unter Einstellungen->E/Ü-Konten!");
+					if (!bVSTBetraegeSeparatAngelegt && !bInitRechnungsposten) AfxMessageBox("Ein Konto 'VST-Betrï¿½ge separat' wurde angelegt fï¿½r VST-Betrï¿½ge, die vom Netto-Betrag entkoppelt sind. Bitte kontrollieren Sie die Formularfeld-Zuweisungen unter Einstellungen->E/ï¿½-Konten!");
 					bInitVSTSeparat = TRUE;
 					break;
 				}
@@ -9483,7 +9508,7 @@ void CEasyCashView::LoadProfile()
 		*(einstellungen5->m_psatz[0]) = "50,00";
 		*(einstellungen5->m_pustsatz[0]) = "00,00";
 		*(einstellungen5->m_part[1]) = "Private Telefonnutzung";
-		*(einstellungen5->m_psatz[1]) = "47,11 (Beispielschätzwert)";
+		*(einstellungen5->m_psatz[1]) = "47,11 (Beispielschï¿½tzwert)";
 		*(einstellungen5->m_pustsatz[1]) = "100,00";
 	}
 
@@ -9498,7 +9523,7 @@ void CEasyCashView::LoadProfile()
 	einstellungen4->m_finanzamtserstattungen = buffer;
 	if (einstellungen4->m_finanzamtserstattungen == "<noch nicht angelegt>")	// noch kein Wert in der ini?
 	{
-		einstellungen4->m_finanzamtserstattungen = "";							// markieren als schon einmal geprüft
+		einstellungen4->m_finanzamtserstattungen = "";							// markieren als schon einmal geprï¿½ft
 		for (i = 0; i < 100; i++)
 		{
 			CString csTemp = einstellungen1->EinnahmenRechnungsposten[i];
@@ -9514,7 +9539,7 @@ void CEasyCashView::LoadProfile()
 	einstellungen4->m_finanzamtszahlungen = buffer;
 	if (einstellungen4->m_finanzamtszahlungen == "<noch nicht angelegt>")		// noch kein Wert in der ini?
 	{
-		einstellungen4->m_finanzamtszahlungen == "";							// markieren als schon einmal geprüft
+		einstellungen4->m_finanzamtszahlungen == "";							// markieren als schon einmal geprï¿½ft
 		for (i = 0; i < 100; i++)
 		{
 			CString csTemp = einstellungen1->AusgabenRechnungsposten[i];
@@ -9527,7 +9552,7 @@ void CEasyCashView::LoadProfile()
 
 	if (NetzwerkEasyCashIniFilenameBuffer[0] == '\\' && NetzwerkEasyCashIniFilenameBuffer[1] == '\\')	// UNC-Pfad ?
 	{
-		DeleteFile(EasyCashIniFilenameBuffer);	// temporäre Ini wieder löschen
+		DeleteFile(EasyCashIniFilenameBuffer);	// temporï¿½re Ini wieder lï¿½schen
 	}
 
 	if (bInitRechnungsposten || bInitPrivatSplit || bInitVSTSeparat || bInitFinanzamtserstattungen || bInitFinanzamtszahlungen)
@@ -9543,7 +9568,7 @@ void CEasyCashView::SaveProfile()
 	char NetzwerkEasyCashIniFilenameBuffer[1000];
 	*NetzwerkEasyCashIniFilenameBuffer = '\0';
 
-	if (!GetIniFileName(EasyCashIniFilenameBuffer, sizeof(EasyCashIniFilenameBuffer))) { AfxMessageBox("Konnte Konfigurationsdatei EasyCT.ini nicht öffnen"); return; }
+	if (!GetIniFileName(EasyCashIniFilenameBuffer, sizeof(EasyCashIniFilenameBuffer))) { AfxMessageBox("Konnte Konfigurationsdatei EasyCT.ini nicht ï¿½ffnen"); return; }
 
 	if (!propdlg) return;
 
@@ -9560,7 +9585,7 @@ void CEasyCashView::SaveProfile()
 			}
 			else
 			{
-				strcat(EasyCashIniFilenameBuffer, uuid.GetBuffer(0));	// Dateinamen an Pfad anfügen
+				strcat(EasyCashIniFilenameBuffer, uuid.GetBuffer(0));	// Dateinamen an Pfad anfï¿½gen
 
 				if (!CopyFile(NetzwerkEasyCashIniFilenameBuffer, EasyCashIniFilenameBuffer, FALSE))	// kann nicht kopieren?
 				{
@@ -9714,7 +9739,7 @@ void CEasyCashView::SaveProfile()
 	{
 		if (!CopyFile(EasyCashIniFilenameBuffer, NetzwerkEasyCashIniFilenameBuffer, FALSE))	// kann nicht kopieren?
 			AfxMessageBox("Fehler beim Speichern der Einstellungen im Netzwerkpfad.");
-		DeleteFile(EasyCashIniFilenameBuffer);	// temporäre Ini wieder löschen
+		DeleteFile(EasyCashIniFilenameBuffer);	// temporï¿½re Ini wieder lï¿½schen
 	}
 
 	// Cache neu befuellen, damit andere offene Dokumente die Aenderungen sehen
@@ -9811,7 +9836,7 @@ void CEasyCashView::DestroyPlugin()
 					NULL 
 				);
 
-				if (!lpMsgBuf) lpMsgBuf = "keine genauere Fehlerbeschreibung verfügbar";
+				if (!lpMsgBuf) lpMsgBuf = "keine genauere Fehlerbeschreibung verfï¿½gbar";
 				csError.Format("Fehler %lx beim Verlassen des ActiveX-Plugins (QueryControl): %s", (long)dwError, lpMsgBuf);
 				AfxMessageBox(csError);
 */				goto exit_here;
@@ -9854,7 +9879,7 @@ void CEasyCashView::DestroyPlugin()
 			}
 			else if (hRes == DISP_E_UNKNOWNLCID)
 			{
-//				AfxMessageBox("Unbekannte Ländereinstellung beim Verlassen des ActiveX-Plugins.");
+//				AfxMessageBox("Unbekannte Lï¿½ndereinstellung beim Verlassen des ActiveX-Plugins.");
 				goto exit_here;
 			}
 			else if (hRes != S_OK)
@@ -9900,7 +9925,7 @@ BOOL CEasyCashView::OnCmdMsg(UINT nID, int nCode, void* pExtra, AFX_CMDHANDLERIN
 {
 	CPluginElement *pPluginDaten = ((CMainFrame*)AfxGetMainWnd())->m_pPlugins;
 
-	// Submenü Dauerbuchungen ausführen (bis Monat)
+	// Submenï¿½ Dauerbuchungen ausfï¿½hren (bis Monat)
 	if (nID >= ID_BUCHEN_DAUAUS_JANUAR && nID <= ID_BUCHEN_DAUAUS_DEZEMBER && nCode == CN_UPDATE_COMMAND_UI)
 	{
 		int nAktualisiertBisMonat = 0; 
@@ -9920,7 +9945,7 @@ BOOL CEasyCashView::OnCmdMsg(UINT nID, int nCode, void* pExtra, AFX_CMDHANDLERIN
 		((CCmdUI*)pExtra)->Enable(TRUE);
 		return TRUE;
 	}
-	// Submenü Jounal für Monat
+	// Submenï¿½ Jounal fï¿½r Monat
 	else if (nID >= ID_VIEW_JOURNAL_MONATE_ALLE && nID <= ID_VIEW_JOURNAL_MONATE_QUARTAL4)
 	{
 		{
@@ -9985,13 +10010,43 @@ BOOL CEasyCashView::OnCmdMsg(UINT nID, int nCode, void* pExtra, AFX_CMDHANDLERIN
 		((CCmdUI*)pExtra)->Enable(TRUE);
 		return TRUE;
 	}
-	// Submenü Jounalfilter nach Konto
+#ifdef USE_ECTENGINE
+	// Dropdown-Menue der Einnahme-Ribbon-Knopf: Buchungsvorlage 0-99 gewaehlt
+	else if (nID >= ID_CMD_VORLAGE_EINNAHME_BASE && nID < ID_CMD_VORLAGE_EINNAHME_BASE+100)
+	{
+		if (nCode == CN_COMMAND)
+		{
+			BucheMitVorlage(FALSE, nID - ID_CMD_VORLAGE_EINNAHME_BASE);
+			return TRUE;
+		}
+		else if (nCode == CN_UPDATE_COMMAND_UI)
+		{
+			((CCmdUI*)pExtra)->Enable(TRUE);
+			return TRUE;
+		}
+	}
+	// Dropdown-Menue der Ausgabe-Ribbon-Knopf: Buchungsvorlage 0-99 gewaehlt
+	else if (nID >= ID_CMD_VORLAGE_AUSGABE_BASE && nID < ID_CMD_VORLAGE_AUSGABE_BASE+100)
+	{
+		if (nCode == CN_COMMAND)
+		{
+			BucheMitVorlage(TRUE, nID - ID_CMD_VORLAGE_AUSGABE_BASE);
+			return TRUE;
+		}
+		else if (nCode == CN_UPDATE_COMMAND_UI)
+		{
+			((CCmdUI*)pExtra)->Enable(TRUE);
+			return TRUE;
+		}
+	}
+#endif
+	// Submenï¿½ Jounalfilter nach Konto
 	else if (nID >= ID_VIEW_JOURNAL_FUER_KONTO_BASE && nID < ID_VIEW_JOURNAL_FUER_KONTO_BASE+200)
 	{
 		if (nCode == CN_COMMAND)
 		{
-			m_KontenFilterDisplay = m_KontenMitBuchungen[nID-ID_VIEW_JOURNAL_FUER_KONTO_BASE];	
-			GetDocument()->UpdateAllViews(NULL);		
+			m_KontenFilterDisplay = m_KontenMitBuchungen[nID-ID_VIEW_JOURNAL_FUER_KONTO_BASE];
+			GetDocument()->UpdateAllViews(NULL);
 		}
 		else if (nCode == CN_UPDATE_COMMAND_UI)
 		{
@@ -10000,7 +10055,7 @@ BOOL CEasyCashView::OnCmdMsg(UINT nID, int nCode, void* pExtra, AFX_CMDHANDLERIN
 			return TRUE;
 		}
 	}
-	// Submenü Jounalfilter nach  Betrieb
+	// Submenï¿½ Jounalfilter nach  Betrieb
 	else if (nID >= ID_BETRIEBEFILTER_BASE-1 && nID < ID_BETRIEBEFILTER_BASE+200)
 	{
 		if (nCode == CN_COMMAND)
@@ -10034,7 +10089,7 @@ BOOL CEasyCashView::OnCmdMsg(UINT nID, int nCode, void* pExtra, AFX_CMDHANDLERIN
 			return TRUE;
 		}
 	}
-	// Submenü Jounalfilter nach Bestandskonto
+	// Submenï¿½ Jounalfilter nach Bestandskonto
 	else if (nID >= ID_BESTANDSKONTENFILTER_BASE-1 && nID < ID_BESTANDSKONTENFILTER_BASE+200)
 	{
 		if (nCode == CN_COMMAND)
@@ -10073,22 +10128,22 @@ BOOL CEasyCashView::OnCmdMsg(UINT nID, int nCode, void* pExtra, AFX_CMDHANDLERIN
 	{
 		if (nCode == CN_COMMAND)
 		{
-			// plugin fenster schließen
+			// plugin fenster schlieï¿½en
 			DestroyPlugin();
 			
 			if (pFormularfeldDlg) 
 			{
-				// ggf. Formularfeld-Edit-Fenster schließen
+				// ggf. Formularfeld-Edit-Fenster schlieï¿½en
 				pFormularfeldDlg->DestroyWindow();
 				delete pFormularfeldDlg;
 				pFormularfeldDlg = NULL;
 			}
 
-			// gleich Dauerfristverlängerung mit einberechnen, wenn Sondervorauszahlung gefunden wird
+			// gleich Dauerfristverlï¿½ngerung mit einberechnen, wenn Sondervorauszahlung gefunden wird
 			CString Key, Daufri;
 			int daufritage = 0;
 			Key.Format("Sondervorauszahlung%-04.4d", GetDocument()->nJahr);
-			char *cp = GetErweiterungKey(GetDocument()->Erweiterung, "Dauerfristverlängerung", Key);
+			char *cp = GetErweiterungKey(GetDocument()->Erweiterung, "Dauerfristverlï¿½ngerung", Key);
 			char *cp2;
 			if (cp2 = strchr(cp, '|'))
 			{ 
@@ -10105,7 +10160,7 @@ BOOL CEasyCashView::OnCmdMsg(UINT nID, int nCode, void* pExtra, AFX_CMDHANDLERIN
 			{
 				now -= CTimeSpan(28 + daufritage, 0, 0, 0);
 				csFromularnamenMatchDE.Format("Umsatzsteuer-Voranmeldung %d %s (D)", (int)now.GetYear(), (LPCSTR)cpMonat[now.GetMonth()-1]);
-				cpMonat[0] = "Jänner";
+				cpMonat[0] = "Jï¿½nner";
 				csFromularnamenMatchAT.Format("U30 %d %s (AT)", (int)now.GetYear(), (LPCSTR)cpMonat[now.GetMonth()-1]);
 			}
 			else
@@ -10135,16 +10190,16 @@ BOOL CEasyCashView::OnCmdMsg(UINT nID, int nCode, void* pExtra, AFX_CMDHANDLERIN
 		}
 	}
 	else if (nID >= ID_FORMULAR_BASE && nID < ID_FORMULAR_BASE+m_csaFormulare.GetSize())
-	// Formular-Menüpunkt
+	// Formular-Menï¿½punkt
 	{
 		if (nCode == CN_COMMAND)
 		{
-			// plugin fenster schließen
+			// plugin fenster schlieï¿½en
 			DestroyPlugin();
 			
 			if (pFormularfeldDlg) 
 			{
-				// ggf. Formularfeld-Edit-Fenster schließen
+				// ggf. Formularfeld-Edit-Fenster schlieï¿½en
 				pFormularfeldDlg->DestroyWindow();
 				delete pFormularfeldDlg;
 				pFormularfeldDlg = NULL;
@@ -10196,7 +10251,7 @@ BOOL CEasyCashView::OnCmdMsg(UINT nID, int nCode, void* pExtra, AFX_CMDHANDLERIN
 			
 		}
 	}
-	// Submenü Zoomlevel
+	// Submenï¿½ Zoomlevel
 	else if (nID >= ID_ZOOMFAKTOR_50 && nID <= ID_ZOOMFAKTOR_300 && nCode == CN_UPDATE_COMMAND_UI)
 	{
 		BOOL bCheck = FALSE;
@@ -10213,7 +10268,7 @@ BOOL CEasyCashView::OnCmdMsg(UINT nID, int nCode, void* pExtra, AFX_CMDHANDLERIN
 		((CCmdUI*)pExtra)->Enable(TRUE);
 		return TRUE;
 	}
-	// plugins im Menü anzeigen
+	// plugins im Menï¿½ anzeigen
 	else while (pPluginDaten)
 	{
 		if (pPluginDaten->id == nID)
@@ -10222,7 +10277,7 @@ BOOL CEasyCashView::OnCmdMsg(UINT nID, int nCode, void* pExtra, AFX_CMDHANDLERIN
 			{
 				DestroyPlugin();
 				
-				// Formularansicht zurücksetzen
+				// Formularansicht zurï¿½cksetzen
 				m_GewaehltesFormular = -1;
 
 				AtlAxWinInit();	// registiere AtlAxWin80 Klasse -- sollte irgenwor unterhalb auch passieren, aber doppelt schadet nicht...
@@ -10237,7 +10292,7 @@ BOOL CEasyCashView::OnCmdMsg(UINT nID, int nCode, void* pExtra, AFX_CMDHANDLERIN
 				csAufrufEscaped.ReleaseBuffer();
 				int pos;
 				BOOL bPlatzhalterGefunden = FALSE;	// dann nicht Meldung wg. fehlender Init-Member anzeigen
-				while ((pos = csAufrufEscaped.Find("$$ID$$")) >= 0) // ggf. Platzhalter für Doc-Handle einfügen
+				while ((pos = csAufrufEscaped.Find("$$ID$$")) >= 0) // ggf. Platzhalter fï¿½r Doc-Handle einfï¿½gen
 				{
 					CString csTail, csHead;
 					if (csAufrufEscaped.GetLength() > pos+6)
@@ -10327,7 +10382,7 @@ BOOL CEasyCashView::OnCmdMsg(UINT nID, int nCode, void* pExtra, AFX_CMDHANDLERIN
 					}
 					else if (hRes == DISP_E_UNKNOWNLCID)
 					{
-						AfxMessageBox("Unbekannte Ländereinstellung beim Initialisieren des ActiveX-Plugins.");
+						AfxMessageBox("Unbekannte Lï¿½ndereinstellung beim Initialisieren des ActiveX-Plugins.");
 						return TRUE;
 					}
 					else if (hRes != S_OK)
@@ -10376,7 +10431,7 @@ BOOL CEasyCashView::OnCmdMsg(UINT nID, int nCode, void* pExtra, AFX_CMDHANDLERIN
 
 void CEasyCashView::OnFormularInfo()
 {
-	if (AfxMessageBox("Hinweis: Die Formulare für EasyCash&Tax werden üblicherweise bis Ende Januar über ein Update des Hauptprogramms zur Verfügung gestellt. Um zu prüfen, ob es schon ein Update gibt, einfach auf das rote Puzzlestück im Ansicht-Menübereich drücken. Bis zur Release des Updates kann man für eine Vorschau gern das Formular des Vorjahres benutzen. Registrierte User werden per E-Mail benachrichtigt, unregistrierte können sich auf der Homepage www.easyct.de auf dem Laufenden halten.\r\n\r\nÄltere Formulare können über Downloads -> Formulararchiv auf www.easyct.de bezogen werden. Jetzt das Formulararchiv im Browser öffnen?", MB_YESNO) == IDYES)
+	if (AfxMessageBox("Hinweis: Die Formulare fï¿½r EasyCash&Tax werden ï¿½blicherweise bis Ende Januar ï¿½ber ein Update des Hauptprogramms zur Verfï¿½gung gestellt. Um zu prï¿½fen, ob es schon ein Update gibt, einfach auf das rote Puzzlestï¿½ck im Ansicht-Menï¿½bereich drï¿½cken. Bis zur Release des Updates kann man fï¿½r eine Vorschau gern das Formular des Vorjahres benutzen. Registrierte User werden per E-Mail benachrichtigt, unregistrierte kï¿½nnen sich auf der Homepage www.easyct.de auf dem Laufenden halten.\r\n\r\nï¿½ltere Formulare kï¿½nnen ï¿½ber Downloads -> Formulararchiv auf www.easyct.de bezogen werden. Jetzt das Formulararchiv im Browser ï¿½ffnen?", MB_YESNO) == IDYES)
 		ShellExecute(m_hWnd, "open", "https://www.easyct.de/downloads.php?cat_id=7", NULL, ".", SW_SHOWNORMAL);
 }
 
@@ -10489,7 +10544,7 @@ void CEasyCashView::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
 				if (m_GewaehltesFormular < 0 && nSelected >= 0)
 				{
 					int nSelectedNew = 0;
-					while (++nSelectedNew < MAX_BUCHUNGEN)		// Buchungsindex erhöhen
+					while (++nSelectedNew < MAX_BUCHUNGEN)		// Buchungsindex erhï¿½hen
 						if (ppPosBuchungsliste[nSelectedNew])	// erste Buchung suchen ...
 						{
 							nSelected = nSelectedNew;
@@ -10504,7 +10559,7 @@ void CEasyCashView::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
 				if (m_GewaehltesFormular < 0 && nSelected >= 0)
 				{
 					int nSelectedNew = MAX_BUCHUNGEN - 1;
-					while (--nSelectedNew > 0)					// Buchungsindex erhöhen
+					while (--nSelectedNew > 0)					// Buchungsindex erhï¿½hen
 						if (ppPosBuchungsliste[nSelectedNew])	// letzte Buchung suchen ...
 						{
 							nSelected = nSelectedNew;
@@ -10518,7 +10573,7 @@ void CEasyCashView::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
 				if (m_GewaehltesFormular < 0 && nSelected >= 0)
 				{
 					int nSelectedNew = nSelected;
-					while (--nSelectedNew > 0)					// Buchungsindex erhöhen
+					while (--nSelectedNew > 0)					// Buchungsindex erhï¿½hen
 						if (ppPosBuchungsliste[nSelectedNew])	// vorige Buchung suchen ...
 						{
 							nSelected = nSelectedNew;
@@ -10532,8 +10587,8 @@ void CEasyCashView::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
 				if (m_GewaehltesFormular < 0 && nSelected >= 0)
 				{
 					int nSelectedNew = nSelected;
-					while (++nSelectedNew < MAX_BUCHUNGEN)		// Buchungsindex erhöhen
-						if (ppPosBuchungsliste[nSelectedNew])	// nächste Buchung suchen ...
+					while (++nSelectedNew < MAX_BUCHUNGEN)		// Buchungsindex erhï¿½hen
+						if (ppPosBuchungsliste[nSelectedNew])	// nï¿½chste Buchung suchen ...
 						{
 							nSelected = nSelectedNew;
 							RedrawSelection();					// ... und selektieren
@@ -10551,7 +10606,7 @@ void CEasyCashView::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
 						if (scrollPos1 == scrollPos2)					// wind wir bereits auf der ersten Seite?
 						{
 							int nSelectedNew = 0;
-							while (++nSelectedNew < MAX_BUCHUNGEN)		// Buchungsindex erhöhen,
+							while (++nSelectedNew < MAX_BUCHUNGEN)		// Buchungsindex erhï¿½hen,
 								if (ppPosBuchungsliste[nSelectedNew])	// erste Buchung suchen ...
 								{
 									nSelected = nSelectedNew;
@@ -10564,7 +10619,7 @@ void CEasyCashView::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
 							int nSelectedNew = nSelected;
 							nSelectedNew += scrollPos2 - scrollPos1;
 							while (nSelectedNew > 0)	// Buchungsindex verringern
-								if (ppPosBuchungsliste[nSelectedNew])				// beste Buchung für vorige Seite suchen ...
+								if (ppPosBuchungsliste[nSelectedNew])				// beste Buchung fï¿½r vorige Seite suchen ...
 								{
 									nSelected = nSelectedNew;
 									RedrawSelection();								// ... und selektieren
@@ -10586,7 +10641,7 @@ void CEasyCashView::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
 						if (scrollPos1 == scrollPos2)					// wind wir bereits auf der letzten Seite?
 						{
 							int nSelectedNew = MAX_BUCHUNGEN - 1;
-							while (--nSelectedNew > 0)					// dann Buchungsindex erhöhen,
+							while (--nSelectedNew > 0)					// dann Buchungsindex erhï¿½hen,
 								if (ppPosBuchungsliste[nSelectedNew])	// letzte Buchung suchen ...
 								{
 									nSelected = nSelectedNew;
@@ -10598,8 +10653,8 @@ void CEasyCashView::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
 						{
 							int nSelectedNew = nSelected;
 							nSelectedNew += scrollPos2 - scrollPos1;
-							while (nSelectedNew < MAX_BUCHUNGEN)	// Buchungsindex erhöhen
-								if (ppPosBuchungsliste[nSelectedNew])							// beste Buchung für nächste Seite suchen ...
+							while (nSelectedNew < MAX_BUCHUNGEN)	// Buchungsindex erhï¿½hen
+								if (ppPosBuchungsliste[nSelectedNew])							// beste Buchung fï¿½r nï¿½chste Seite suchen ...
 								{
 									nSelected = nSelectedNew;
 									RedrawSelection();											// ... und selektieren
@@ -10644,7 +10699,7 @@ void CEasyCashView::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
 	CScrollView::OnKeyDown(nChar, nRepCnt, nFlags);
 }
 
-// für bewusstes Setzen des Zoomfaktors durch den User (deshalb Wunschzoomfaktor, der durch Fensterverkleinerungen nicht betroffen ist)
+// fï¿½r bewusstes Setzen des Zoomfaktors durch den User (deshalb Wunschzoomfaktor, der durch Fensterverkleinerungen nicht betroffen ist)
 void CEasyCashView::SetzeZoomfaktor()
 {
 	if (m_zoomfaktor > 1000) m_zoomfaktor = 1000;

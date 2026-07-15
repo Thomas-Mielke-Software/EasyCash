@@ -376,6 +376,29 @@ namespace ECTViews.ViewModels
         /// </summary>
         public event System.Action<string> PresetNotizAnzeigen;
 
+        /// <summary>Slot (0-99) einer Buchungsvorlage, die beim Oeffnen des
+        /// Dialogs automatisch geladen werden soll -- gesetzt beim Aufruf ueber
+        /// das Ribbon-Dropdown der Einnahme-/Ausgabe-Knoepfe. -1 = keine Vorwahl.
+        /// Die View wendet sie ueber <see cref="LadeVorgewaehlteVorlage"/> an,
+        /// sobald das Fenster steht.</summary>
+        public int VorgewaehltesPreset { get; set; } = -1;
+
+        /// <summary>Laedt die per <see cref="VorgewaehltesPreset"/> gewaehlte
+        /// Vorlage in die Felder (wie eine manuelle Auswahl aus der
+        /// Vorschlagsliste). Wird von der View beim Laden aufgerufen, damit ein
+        /// eventuell noetiger "Konto anlegen"-Dialog (Feld-Spezifikation) einen
+        /// bereits sichtbaren Owner hat.</summary>
+        public void LadeVorgewaehlteVorlage()
+        {
+            int slot = VorgewaehltesPreset;
+            if (slot < 0) return;
+            var presets = Einstellungen.Presets;
+            if (slot >= presets.Count) return;
+            var p = presets[slot];
+            if (p.IstLeer || p.Ausgabe != _istAusgabe) return;
+            LadePresetInFelder(p, slot);
+        }
+
         // Verhindert Re-Entrancy, wenn das Laden eines Presets die
         // Beschreibung selbst auf den reinen Preset-Text setzt.
         private bool _presetLaden;
@@ -428,10 +451,18 @@ namespace ECTViews.ViewModels
 
         private void LadePresetInFelder(Preset p, int presetSlot)
         {
+            // Vorschlags-Popup zuerst schliessen: das Auflösen einer
+            // Feld-Spezifikation kann den modalen "Konto anlegen"-Dialog
+            // öffnen, der sonst hinter dem noch offenen (immer obenauf
+            // liegenden) Popup verschwindet.
+            VorschlaegeOffen = false;
+
             _presetLaden = true;
             try
             {
-                SelectedKonto = p.Konto;
+                // Feld-Spezifikation ("$de:Formular=Id|...||") -> verknüpftes
+                // Konto suchen bzw. anlegen lassen; sonst 1:1 übernehmen.
+                SelectedKonto = LoeseKontoFeld(p.Konto);
 
                 // MwstText-Setter erzwingt 0, falls das Feld global aus ist.
                 MwstText = p.Mwst > 0

@@ -70,9 +70,71 @@ namespace ECTViews.ViewModels
             for (int i = 0; i < p.Zeilen.Count; i++)
                 Zusatzzeilen.Add(new ZusatzzeileViewModel(
                     p.Zeilen[i], i + 1, AktualisiereZusatzzeilen));
+            LoeseZeilenKontoSpezifikationen(p);
             OnPropertyChanged(nameof(HatZusatzzeilen));
             OnPropertyChanged(nameof(GruppenVorlageName));
             AktualisiereZusatzzeilen();
+        }
+
+        // ------------------------------------------------------------------
+        // Ad-hoc-Kontoselektor ($de:Formular=Id|...|| im Konto-Feld)
+        // ------------------------------------------------------------------
+
+        /// <summary>
+        /// Fragt den Nutzer, ein Konto für den Feld-Bedarf anzulegen
+        /// (KontoAnlegenView). Vom BuchungView-Code-Behind gesetzt; liefert
+        /// den Namen des angelegten Kontos oder null (abgebrochen). Null
+        /// (nicht verdrahtet) = keine Anlage möglich, die Zeile behält dann
+        /// ihren "kein Konto"-Fehler.
+        /// </summary>
+        public Func<IReadOnlyList<KontoFeldBedarf>, string> KontoAnlegenAbfrage { get; set; }
+
+        /// <summary>
+        /// Löst eine Feld-Spezifikation im BASIS-Konto-Feld eines Presets
+        /// zum verknüpften Konto auf; existiert keines, wird die Anlage
+        /// angeboten. Normale Konto-Namen laufen unverändert durch.
+        /// </summary>
+        private string LoeseKontoFeld(string kontoFeld)
+        {
+            var a = KontoFeldSelektor.LoeseAuf(kontoFeld);
+            if (!a.IstSpezifikation) return kontoFeld;
+            if (a.Konto != null) return a.Konto;
+            if (a.Fehler.Length > 0)
+            {
+                Statusleiste.Melde(a.Fehler);
+                return "";
+            }
+
+            var neu = KontoAnlegenAbfrage?.Invoke(a.Bedarf);
+            if (neu == null) return "";
+            LadeKonten();   // das neue Konto in die Auswahl-Liste holen
+            return neu;
+        }
+
+        /// <summary>
+        /// Bietet beim Laden einer Gruppen-Vorlage die Anlage der Konten an,
+        /// deren Zeilen-Spezifikation (noch) kein verknüpftes Konto findet.
+        /// Bricht der Nutzer ab, bleiben weitere Dialoge aus -- die
+        /// betroffenen Zeilen melden ihren Fehler dann in der Live-Anzeige
+        /// und blockieren das Buchen.
+        /// </summary>
+        private void LoeseZeilenKontoSpezifikationen(Preset p)
+        {
+            if (KontoAnlegenAbfrage == null) return;
+            bool angelegt = false;
+            foreach (var z in p.Zeilen)
+            {
+                // Nach jeder Anlage neu auflösen -- mehrere Zeilen können
+                // denselben Bedarf teilen.
+                var a = KontoFeldSelektor.LoeseAuf(z.Konto);
+                if (!a.IstSpezifikation || a.Konto != null || a.Fehler.Length > 0)
+                    continue;
+                if (KontoAnlegenAbfrage(a.Bedarf) != null)
+                    angelegt = true;
+                else
+                    break;
+            }
+            if (angelegt) LadeKonten();
         }
 
         private RelayCommand _gruppeEntfernenCommand;

@@ -135,13 +135,21 @@ namespace ECTViews
         /// mehrere, Basis zuerst; sonst genau eine), oder null wenn
         /// abgebrochen.
         /// </returns>
+        /// <param name="vorgewaehltesPreset">
+        /// Slot (0-99) einer Buchungsvorlage, die beim Oeffnen automatisch
+        /// geladen wird (Auswahl aus dem Ribbon-Dropdown). -1 = keine Vorwahl.
+        /// </param>
         public static IReadOnlyList<Buchung> ZeigeBuchungDialog(
             BuchungsDocument doc, bool ausgaben, IntPtr ownerHwnd = default,
-            Action<IReadOnlyList<Buchung>> onWeiterbuchen = null)
+            Action<IReadOnlyList<Buchung>> onWeiterbuchen = null,
+            int vorgewaehltesPreset = -1)
         {
             EnsureWpfInitialized();
 
-            var vm = new BuchungViewModel(doc, ausgaben);
+            var vm = new BuchungViewModel(doc, ausgaben)
+            {
+                VorgewaehltesPreset = vorgewaehltesPreset
+            };
 
             // "Weiterbuchen": jeder Klick persistiert die Buchung(en) ueber
             // diesen Callback (nativer Aufrufer), der Dialog bleibt offen.
@@ -433,7 +441,9 @@ namespace ECTViews
 
             var ergebnis = new MandantenVerwaltenErgebnis
             {
-                GewaehlterIndex = view.GewaehlterIndex
+                GewaehlterIndex = view.GewaehlterIndex,
+                NichtMandantenModusDatenverzeichnis =
+                    vm.NichtMandantenModusDatenverzeichnis
             };
             foreach (var e in vm.Eintraege)
             {
@@ -463,6 +473,36 @@ namespace ECTViews
 
             view.ShowDialog();
             return view.GewaehlterIndex;
+        }
+
+        /// <summary>
+        /// Plugin-API-Fassade für HoleKontoMitFeldern (ECTBridge): löst eine
+        /// Feld-Spezifikation ("$de:Formular=Id|...||") zum erstbesten
+        /// verknüpften Konto auf; existiert keines, öffnet der Anlage-Dialog
+        /// (KontoAnlegenView). Liefert den Kontonamen oder "" (abgebrochen,
+        /// Spezifikations-Fehler oder alle 100 Slots belegt -- Fehler jeweils
+        /// als MessageBox, wie die Plugin-API es verspricht).
+        /// </summary>
+        public static string HoleKontoMitFeldern(string spez, IntPtr ownerHwnd = default)
+        {
+            EnsureWpfInitialized();
+
+            var a = ECTEngine.KontoFeldSelektor.LoeseAuf(spez);
+            if (!a.IstSpezifikation || a.Fehler.Length > 0)
+            {
+                MessageBox.Show(
+                    a.IstSpezifikation
+                        ? a.Fehler
+                        : "Ungültige Feld-Spezifikation: \"" + spez + "\" "
+                          + "(erwartet z.B. \"$de:E/Ü-Rechnung=1103||\").",
+                    "HoleKontoMitFeldern",
+                    MessageBoxButton.OK, MessageBoxImage.Warning);
+                return "";
+            }
+            if (a.Konto != null) return a.Konto;
+
+            return Stammdaten.KontoAnlegenView.ZeigeDialog(
+                a.Bedarf, owner: null, ownerHwnd: ownerHwnd) ?? "";
         }
 
         /// <summary>
@@ -509,6 +549,13 @@ namespace ECTViews
     {
         /// <summary>Index in der Liste, oder -1 bei Abbrechen.</summary>
         public int GewaehlterIndex { get; set; } = -1;
+
+        /// <summary>Nicht null/leer, wenn im Dialog der LETZTE Mandant gelöscht
+        /// wurde: das Datenverzeichnis dieses Mandanten. Der native Aufrufer
+        /// wechselt dann in den Nicht-Mandanten-Modus und übernimmt dieses
+        /// Verzeichnis als Datenverzeichnis (Allgemein\Datenverzeichnis +
+        /// SetIniFileName).</summary>
+        public string NichtMandantenModusDatenverzeichnis { get; set; }
 
         public System.Collections.Generic.List<string> Namen { get; }
             = new System.Collections.Generic.List<string>();

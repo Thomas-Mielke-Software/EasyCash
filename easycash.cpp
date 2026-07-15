@@ -172,6 +172,7 @@ static int WaehleMandantWpf(HWND hwndOwner)
 	static char aVerzeichnisse[MAX_MANDANTEN][VERZ_LEN];
 	LPCSTR apNamen[MAX_MANDANTEN];
 	LPCSTR apVerzeichnisse[MAX_MANDANTEN];
+	char szNichtMandantVerz[VERZ_LEN] = "";  // beim Loeschen des letzten Mandanten gefuellt
 
 	int nAnzahl = 0, nHoechsterSlot = -1;
 	int i;
@@ -205,7 +206,8 @@ static int WaehleMandantWpf(HWND hwndOwner)
 		&aNamen[0][0], NAME_LEN,
 		aIcons,
 		&aVerzeichnisse[0][0], VERZ_LEN,
-		MAX_MANDANTEN, &nAnzahlNeu);
+		MAX_MANDANTEN, &nAnzahlNeu,
+		szNichtMandantVerz, VERZ_LEN);
 
 	if (nAnzahlNeu >= 0)
 	{
@@ -231,6 +233,16 @@ static int WaehleMandantWpf(HWND hwndOwner)
 			csKey.Format("Mandant%-02.2dIcon", i);
 			theApp.WriteProfileString("Mandanten", csKey, "");
 		}
+	}
+
+	// Sonderfall: der letzte Mandant wurde im Auswahl-Dialog geloescht ->
+	// zurueck in den Nicht-Mandanten-Modus, dessen Datenverzeichnis nutzen.
+	// Rueckgabe -2 signalisiert dem Aufrufer: Datenverzeichnis ist gesetzt.
+	if (szNichtMandantVerz[0] != '\0')
+	{
+		SetMandant(-1);
+		theApp.WriteProfileString("Allgemein", "Datenverzeichnis", szNichtMandantVerz);
+		return -2;
 	}
 
 	if (nGewaehlt < 0 || nGewaehlt >= nAnzahlNeu)
@@ -595,11 +607,20 @@ BOOL CEasyCashApp::InitInstance()
 			// WPF-Mandantenauswahl (ersetzt CIconAuswahlMandant)
 			int nGewaehlt = WaehleMandantWpf(m_pMainWnd->GetSafeHwnd());
 			if (nGewaehlt == -1) return FALSE;
-			csKey.Format("Mandant%-02.2dDatenverzeichnis", nGewaehlt);
-			csDatenverzeichnis = theApp.GetProfileString("Mandanten", csKey, "");
-			if (!csDatenverzeichnis.IsEmpty())
-				theApp.WriteProfileString("Allgemein", "Datenverzeichnis", csDatenverzeichnis);	
-			SetMandant(nGewaehlt);
+			if (nGewaehlt == -2)
+			{
+				// letzter Mandant im Auswahl-Dialog geloescht -> Nicht-Mandanten-Modus;
+				// das Datenverzeichnis hat WaehleMandantWpf bereits gesetzt.
+				csDatenverzeichnis = theApp.GetProfileString("Allgemein", "Datenverzeichnis", "");
+			}
+			else
+			{
+				csKey.Format("Mandant%-02.2dDatenverzeichnis", nGewaehlt);
+				csDatenverzeichnis = theApp.GetProfileString("Mandanten", csKey, "");
+				if (!csDatenverzeichnis.IsEmpty())
+					theApp.WriteProfileString("Allgemein", "Datenverzeichnis", csDatenverzeichnis);
+				SetMandant(nGewaehlt);
+			}
 #else
 			CIconAuswahlMandant dlgIcon;
 			dlgIcon.m_nModus = 1;
@@ -665,6 +686,7 @@ BOOL CEasyCashApp::InitInstance()
 				}
 			}
 				
+			bool bNichtMandantModus = false;  // true, wenn der letzte Mandant im Dialog geloescht wurde
 			if (nPathsMatching != 1)
 			{	// wenn keiner oder mehrere Mandantenpfade mit dem der Datei übereinstimmten, doch Auswahldialog öffnen
 #ifdef USE_ECTENGINE
@@ -673,8 +695,18 @@ BOOL CEasyCashApp::InitInstance()
 				// hier mit nFirstPathMatching == -1 auf)
 				int nGewaehlt = WaehleMandantWpf(m_pMainWnd->GetSafeHwnd());
 				if (nGewaehlt == -1) return FALSE;
-				nFirstPathMatching = nGewaehlt;
-				csKey.Format("Mandant%-02.2dDatenverzeichnis", nGewaehlt);
+				if (nGewaehlt == -2)
+				{
+					// letzter Mandant im Auswahl-Dialog geloescht -> Nicht-Mandanten-Modus;
+					// das Datenverzeichnis hat WaehleMandantWpf bereits gesetzt.
+					bNichtMandantModus = true;
+					csDatenverzeichnis = theApp.GetProfileString("Allgemein", "Datenverzeichnis", "");
+				}
+				else
+				{
+					nFirstPathMatching = nGewaehlt;
+					csKey.Format("Mandant%-02.2dDatenverzeichnis", nGewaehlt);
+				}
 #else
 				CIconAuswahlMandant dlgIcon;
 				dlgIcon.m_nModus = 1;
@@ -691,10 +723,13 @@ BOOL CEasyCashApp::InitInstance()
 				csKey.Format("Mandant%-02.2dDatenverzeichnis", nFirstPathMatching);
 			}
 
-			csDatenverzeichnis = theApp.GetProfileString("Mandanten", csKey, "");
-			if (!csDatenverzeichnis.IsEmpty())
-				theApp.WriteProfileString("Allgemein", "Datenverzeichnis", csDatenverzeichnis);	
-			SetMandant(nFirstPathMatching);
+			if (!bNichtMandantModus)
+			{
+				csDatenverzeichnis = theApp.GetProfileString("Mandanten", csKey, "");
+				if (!csDatenverzeichnis.IsEmpty())
+					theApp.WriteProfileString("Allgemein", "Datenverzeichnis", csDatenverzeichnis);
+				SetMandant(nFirstPathMatching);
+			}
 		}
 		char szIniFileName[500];
 		strcpy(szIniFileName, csDatenverzeichnis.GetBuffer(0));

@@ -1,17 +1,17 @@
 // MainFrm.h : interface of the CMainFrame class
 //
-// Diese Datei ist Bestandteil von EasyCash&Tax, der freien EÜR-Fibu
+// Diese Datei ist Bestandteil von EasyCash&Tax, der freien Eï¿½R-Fibu
 //
 // Copyleft (GPLv3) 2020  Thomas Mielke
 // 
-// Dies ist freie Software; Sie dürfen sie unter den Bedingungen der 
+// Dies ist freie Software; Sie dï¿½rfen sie unter den Bedingungen der 
 // GNU General Public License, wie von der Free Software Foundation 
-// veröffentlicht, weiterverteilen und/oder modifizieren; entweder gemäß 
-// Version 3 der Lizenz oder (nach Ihrer Option) jeder späteren Version.
+// verï¿½ffentlicht, weiterverteilen und/oder modifizieren; entweder gemï¿½ï¿½ 
+// Version 3 der Lizenz oder (nach Ihrer Option) jeder spï¿½teren Version.
 //
-// Diese Software wird in der Hoffnung weiterverbreitet, dass sie nützlich 
+// Diese Software wird in der Hoffnung weiterverbreitet, dass sie nï¿½tzlich 
 // sein wird, jedoch OHNE IRGENDEINE GARANTIE, auch ohne die implizierte 
-// Garantie der MARKTREIFE oder der VERWENDBARKEIT FÜR EINEN BESTIMMTEN ZWECK.
+// Garantie der MARKTREIFE oder der VERWENDBARKEIT Fï¿½R EINEN BESTIMMTEN ZWECK.
 // Mehr Details finden Sie in der GNU Lesser General Public License.
 //
 // Sie sollten eine Kopie der GNU General Public License Version 3 zusammen mit 
@@ -61,7 +61,7 @@ private:
 	void PremultiplyBitmapAlpha(HDC hDC, HBITMAP hBmp);
 };
 
-#define ID_CMD_PLUGIN_BASE 38000	// hier fangen die Comand-IDs der Plugin-Knöpfe an
+#define ID_CMD_PLUGIN_BASE 38000	// hier fangen die Comand-IDs der Plugin-Knï¿½pfe an
 
 class CMainFrame : public CMDIFrameWndEx
 {
@@ -78,6 +78,11 @@ public:
 public:
 	void ShowPlugins(char *szName);
 	void ShowPluginsRibbonMenu(CMFCRibbonButton *pAnsichtPluginsButton, char *szName = NULL, int nIndex = 0);
+#ifdef USE_ECTENGINE
+	// Baut die Dropdown-Menues der Einnahme-/Ausgabe-Knoepfe aus den aktuellen
+	// Buchungsvorlagen (Buchungsposten) neu auf -- Nummer vorangestellt.
+	void UpdateBuchungsvorlagenMenu();
+#endif
 	void DockControlBarLeftOf(CToolBar* Bar, CToolBar* LeftOf);
 	void LoadBitmap(CBitmap **ppcbm, char* filename);
 	void AttachToolbarImages (UINT inNormalImageID, UINT inDisabledImageID, UINT inHotImageID);
@@ -122,6 +127,8 @@ public:
 	CMFCRibbonStatusBar	m_wndStatusBar;
 
 	CMFCRibbonButton* m_pInfoButton;
+	CMFCRibbonButton* m_pEinnahmeButton;		// Split-Button mit Vorlagen-Dropdown
+	CMFCRibbonButton* m_pAusgabeButton;			// Split-Button mit Vorlagen-Dropdown
 	CMFCRibbonButton* m_pFilterKontoButton;
 	CMFCRibbonButton* m_pFilterBetriebButton;
 	CMFCRibbonButton* m_pFilterBestandskontoButton;

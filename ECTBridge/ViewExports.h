@@ -49,6 +49,19 @@ ECTBRIDGE_API BOOL ECT_ShowBuchungDialog(
     void* pDocBridge, BOOL bAusgaben, HWND hWndOwner);
 
 /// <summary>
+/// Wie ECT_ShowBuchungDialog, aber mit einer beim Oeffnen bereits
+/// vorgewaehlten Buchungsvorlage (Buchungsposten). Aufgerufen ueber das
+/// Dropdown-Menue der Einnahme-/Ausgabe-Ribbon-Knoepfe.
+///
+/// Parameter:
+///   nVorlagenSlot - Slot 0-99 der Vorlage im Einstellungs-Cache. Passt die
+///                   Vorlage nicht zur Buchungsart (bAusgaben) oder ist der
+///                   Slot leer, wird sie ignoriert (leerer Dialog).
+/// </summary>
+ECTBRIDGE_API BOOL ECT_ShowBuchungDialogMitVorlage(
+    void* pDocBridge, BOOL bAusgaben, HWND hWndOwner, int nVorlagenSlot);
+
+/// <summary>
 /// Zeigt den WPF-Dialog zur Bearbeitung einer bestehenden Buchung.
 ///
 /// Parameter:
@@ -215,6 +228,11 @@ ECTBRIDGE_API int ECT_ZeigeBestandskontenVerwaltenDialog(
 /// Rückgabe:
 ///   >= 0  Index des gewählten Mandanten (bezogen auf die Out-Liste)
 ///   -1    Abbrechen -> kein Mandantenwechsel
+///
+///   pszNichtMandantVerzOut - [out] beim Loeschen des LETZTEN Mandanten
+///                    dessen Datenverzeichnis (sonst leer); der Aufrufer
+///                    wechselt dann in den Nicht-Mandanten-Modus und nutzt
+///                    dieses Verzeichnis kuenftig als Datenverzeichnis.
 /// </summary>
 ECTBRIDGE_API int ECT_ZeigeMandantenVerwaltenDialog(
     LPCSTR* pNamen, const int* pIcons, LPCSTR* pVerzeichnisse, int nAnzahl,
@@ -222,7 +240,8 @@ ECTBRIDGE_API int ECT_ZeigeMandantenVerwaltenDialog(
     char* pszNamenOut, int nNamenStride,
     int* pIconsOut,
     char* pszVerzeichnisseOut, int nVerzStride,
-    int nMaxAnzahlOut, int* pnAnzahlOut);
+    int nMaxAnzahlOut, int* pnAnzahlOut,
+    char* pszNichtMandantVerzOut, int nNichtMandantVerzBufLen);
 
 /// <summary>
 /// Reiner Icon-Picker mit den Mandanten-Icons (= Betriebe-Sprite).

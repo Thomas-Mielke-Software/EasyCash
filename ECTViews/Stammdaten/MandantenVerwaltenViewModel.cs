@@ -53,6 +53,12 @@ namespace ECTViews.Stammdaten
             }
         }
 
+        // Gesetzt, sobald der LETZTE Mandant gelöscht wurde: das
+        // Datenverzeichnis dieses Mandanten, das der native Aufrufer im
+        // Nicht-Mandanten-Modus als Datenverzeichnis übernehmen soll (sonst
+        // null). Wird vom Ergebnis-Objekt an die Bridge weitergereicht.
+        public string NichtMandantenModusDatenverzeichnis { get; private set; }
+
         public override string Titel => "Mandant auswählen";
         public override string NeuKnopfText => "Neuer Mandant...";
         public override string PropertyKnopfText => "Datenverzeichnis...";
@@ -93,6 +99,53 @@ namespace ECTViews.Stammdaten
             // das nur der native Aufrufer erreicht. Er liest die Liste nach
             // Dialogende aus Eintraege/HoleProperty aus und schreibt sie
             // komplett zurück.
+        }
+
+        // Moduswechsel-Meldungen beim Löschen des vorletzten bzw. letzten
+        // Mandanten. Nach dem Löschen des letzten Mandanten fällt die Software
+        // in den Nicht-Mandanten-Modus zurück (leere Mandanten-Sektion) und
+        // nutzt dessen Datenverzeichnis künftig direkt als Datenverzeichnis --
+        // das setzt der native Aufrufer, hier wird es nur gemeldet und über
+        // NichtMandantenModusDatenverzeichnis weitergereicht.
+        internal override bool NachLoeschen(System.Windows.Window owner,
+            StammdatenEintragVM geloeschter)
+        {
+            const string titel = "Mandant löschen";
+
+            if (Eintraege.Count == 1)
+            {
+                // Vorletzter Mandant gelöscht -- vorwarnen, was das Löschen des
+                // letzten (verbliebenen) Mandanten auslösen würde.
+                var letzter = Eintraege[0];
+                var verz = HoleProperty(letzter);
+                System.Windows.MessageBox.Show(owner,
+                    "Es ist nur noch ein Mandant (\"" + letzter.Name + "\") vorhanden.\n\n" +
+                    "Wenn Sie auch diesen löschen, wechselt die Software wieder in den " +
+                    "Nicht-Mandanten-Modus und nutzt dessen Mandantenverzeichnis" +
+                    (string.IsNullOrEmpty(verz) ? "" : " (\"" + verz + "\")") +
+                    " künftig direkt als Datenverzeichnis.",
+                    titel, System.Windows.MessageBoxButton.OK,
+                    System.Windows.MessageBoxImage.Information);
+                return false;
+            }
+
+            if (Eintraege.Count == 0)
+            {
+                // Letzter Mandant gelöscht -- zurück in den Nicht-Mandanten-Modus.
+                NichtMandantenModusDatenverzeichnis = HoleProperty(geloeschter) ?? "";
+                var verz = NichtMandantenModusDatenverzeichnis;
+                System.Windows.MessageBox.Show(owner,
+                    "Der letzte Mandant (\"" + geloeschter.Name + "\") wurde gelöscht.\n\n" +
+                    "Die Software wechselt wieder in den Nicht-Mandanten-Modus. Dessen " +
+                    "Mandantenverzeichnis" +
+                    (string.IsNullOrEmpty(verz) ? "" : " (\"" + verz + "\")") +
+                    " wird künftig direkt als Datenverzeichnis genutzt.",
+                    titel, System.Windows.MessageBoxButton.OK,
+                    System.Windows.MessageBoxImage.Information);
+                return true;   // Dialog schließen (Moduswechsel übernimmt der Aufrufer)
+            }
+
+            return false;
         }
 
         internal override string EintragToolTip(StammdatenEintragVM eintrag)

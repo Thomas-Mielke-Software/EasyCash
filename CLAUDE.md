@@ -282,6 +282,18 @@ robuster in hosted-WPF-Szenarien.
   zurück (auch bei Abbrechen) und wechselt nur bei Index >= 0.
   Datenverzeichnis-Picker = WinForms FolderBrowserDialog. Erstanlauf:
   `ECT_ZeigeMandantIconAuswahlDialog`.
+- **Moduswechsel beim Löschen (Stand 2026-07-15)**: Wird der VORLETZTE
+  Mandant gelöscht (Liste danach = 1), meldet der Dialog vorab, dass das
+  Löschen des letzten Mandanten in den Nicht-Mandanten-Modus zurückführt.
+  Wird der LETZTE Mandant gelöscht (Liste danach = 0), meldet der Dialog
+  den Moduswechsel und schließt sich; sein Datenverzeichnis wird über
+  `MandantenVerwaltenErgebnis.NichtMandantenModusDatenverzeichnis` +
+  neuen Out-Puffer (`ECT_ZeigeMandantenVerwaltenDialog`) zurückgereicht.
+  Der native Aufrufer (`OnFileMandanten`; im Startup-Pfad `WaehleMandantWpf`
+  mit Rückgabe -2) setzt es als `Allgemein\Datenverzeichnis`, ruft
+  `SetMandant(-1)` + `SetIniFileName` und lädt die letzte Datei. Die
+  Meldungslogik sitzt in `StammdatenVerwaltenViewModel.NachLoeschen`
+  (virtuell; nur Mandanten überschreiben sie).
 
 ### ECTViews — Dauerbuchungen (komplett, Stand 2026-07-08)
 - `DauerbuchungenView` (modal, ersetzt den modeless `DauerbuchungenDlg`):
@@ -337,6 +349,33 @@ robuster in hosted-WPF-Szenarien.
   (`BuchungenLoeschenShared.h`, Definition in JournalExports.cpp, genutzt
   von beiden JournalEventHandlern) per Ja/Nein/Abbrechen, ob die ganze
   Gruppe gelöscht werden soll (Kaskadenlöschen).
+
+### Ad-hoc-Kontoselektor / HoleKontoMitFeldern (Stand 2026-07-15)
+- Konto-Feld einer Vorlagen-Zeile (und Basis-Konto eines Presets) kann
+  statt eines Kontonamens eine **Feld-Spezifikation** tragen:
+  `$de:E/Ü-Rechnung=1103|Umsatzsteuer-Voranmeldung=48||at:Beilage E1a=9040|Umsatzsteuer=1020||`
+  ('$' + Land-Blöcke mit "||" getrennt, Kürzel de/at/ch nach
+  `[Persoenliche_Daten]land` 0/1/2; pro Block `Formularname=Feld-Id`-Paare
+  mit '|' getrennt, UND-Kombination; aufgelöst wird das ERSTBESTE Konto
+  in Slot-Reihenfolge, Einnahmen vor Ausgaben). Erkennungs-Heuristik:
+  `$` + zwei Buchstaben + `:` (kollidiert nicht mit Template-Variablen).
+- Engine: `KontoFeldSelektor.cs` (Parse/LoeseAuf/FindeKonto rein lesend —
+  läuft live in `BuchungsgruppenRechner.Berechne`; `ErmittleFeldInfo`
+  liest Feldnamen + E/A-Typ aus den .ecf via EUKonten; `ErzeugeKonto`
+  persistiert über die EUKonten-Mechanik). Tests: KontoFeldSelektorTests.
+- UI: fehlt das Konto, öffnet beim LADEN der Vorlage `KontoAnlegenView`
+  (nur Kontoname einzugeben, vorbelegt mit den Feldnamen " / "-getrennt);
+  Abbruch lässt den Zeilen-Fehler stehen und blockiert das Buchen.
+  Verdrahtung über `BuchungViewModel.KontoAnlegenAbfrage` (Callback aus
+  dem BuchungView-Code-Behind). Der PresetsPage-Zeilen-Editor prüft die
+  Spezifikation live auf Syntaxfehler.
+- Plugin-API: `HoleKontoMitFeldern(LPCSTR spez)` — V4 in
+  `ECTBridge/KontoExports.cpp` (managed über `ViewHost.HoleKontoMitFeldern`),
+  V3 nativ in `ECTIFace/ectifacemisc.cpp` (auf master implementiert,
+  Commit 41b144b, hierher gemergt; eigener MFC-Dialog IDD_KONTO_ANLEGEN).
+  Rückgabe: Kontoname oder "" (Abbruch, Spezifikations-Fehler oder alle
+  100 Slots belegt — Fehler als MessageBox). Beide Welten müssen sich
+  identisch verhalten (Plugin-Kompatibilität V3/V4).
 
 ### Persistenz
 - `NavigationBreitenverhaeltnis` (Promille) wird vom existierenden

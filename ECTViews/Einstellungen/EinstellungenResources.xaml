@@ -56,15 +56,25 @@
         </Style.Triggers>
     </Style>
 
-    <!-- Eingabefelder -->
+    <!-- Eingabefelder. VerticalAlignment=Center + einheitliche MinHeight,
+         damit Eingabefelder NICHT auf Zeilenhoehe gedehnt werden: steht in
+         einer Grid-Zeile eine (von Natur aus hoehere) ComboBox neben
+         TextBoxen, blieben diese sonst unterschiedlich hoch. So sind Combo-
+         und TextBox gleich hoch und zentriert. Mehrzeilige Felder (Notiz)
+         setzen ihre eigene MinHeight lokal und ueberschreiben das. -->
     <Style TargetType="TextBox">
         <Setter Property="Padding" Value="4,3"/>
         <Setter Property="Margin" Value="0,3"/>
+        <Setter Property="MinHeight" Value="23"/>
+        <Setter Property="VerticalAlignment" Value="Center"/>
         <Setter Property="VerticalContentAlignment" Value="Center"/>
     </Style>
     <Style TargetType="ComboBox">
         <Setter Property="Padding" Value="4,3"/>
         <Setter Property="Margin" Value="0,3"/>
+        <Setter Property="MinHeight" Value="23"/>
+        <Setter Property="VerticalAlignment" Value="Center"/>
+        <Setter Property="VerticalContentAlignment" Value="Center"/>
     </Style>
     <Style TargetType="CheckBox">
         <Setter Property="Margin" Value="0,5"/>

@@ -43,7 +43,7 @@
 
         <TextBlock Grid.Row="0" Text="Buchungsvorlagen" Style="{StaticResource SeitenUeberschrift}"/>
         <TextBlock Grid.Row="1" Style="{StaticResource Hinweis}" Margin="0,0,0,10"
-                   Text="Vorlagen für häufige Buchungen. Die zweistellige Nummer ist die Kurzwahl im Buchen-Dialog und lässt sich zum thematischen Sortieren ändern (z.B. Einnahmen 00-29, Ausgaben 30-99). Die Notiz wird beim Auswählen der Vorlage kurz als Hinweis-Balloon eingeblendet."/>
+                   Text="Vorlagen für häufige Buchungen. Die zweistellige Nummer entspricht der Kurzwahlmöglichkeit im Betragsfeld des Buchen-Dialogs und lässt sich zum thematischen Sortieren ändern (z.B. Einnahmen 00-29, Ausgaben 30-99 -- oder ein Zehnerblock pro Abschnitt im EÜR-Formular). Die Notiz wird beim Auswählen der Vorlage kurz als Hinweis-Balloon eingeblendet."/>
 
         <Grid Grid.Row="2">
             <Grid.ColumnDefinitions>
@@ -185,7 +185,7 @@
                                                Width="120"
                                                ToolTip="Formel für den Betrag, den die Basis-Zeile selbst bucht - z.B. $rest bei belegweiser Aufteilung. Leer = Eingabe unverändert buchen."/>
                                     <TextBox Width="160" Text="{Binding BasisBetragFormel, UpdateSourceTrigger=LostFocus}"/>
-                                    <TextBlock Text=" (z.B. $rest; leer = Eingabebetrag)"
+                                    <TextBlock Text=" (z.B. $rest als Platzhalter für den Restbetrag, der nach Abzug der Zusatz-Zeilen übrig bleibt; leer lassen, damit der Origina-Eingabebetrag in der Basis-Buchung erhalten bleibt -- entspricht also $brutto.)"
                                                Style="{StaticResource Hinweis}" VerticalAlignment="Center"/>
                                 </StackPanel>
                                 <TextBlock Style="{StaticResource ZeilenFehler}"

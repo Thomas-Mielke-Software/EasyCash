@@ -220,6 +220,14 @@ namespace ECTViews.Stammdaten
             eintrag.MeldeToolTipGeaendert();
             Persistiere();
         }
+
+        /// <summary>Typspezifische Nachbehandlung direkt nach dem Löschen
+        /// (der Eintrag ist bereits aus <see cref="Eintraege"/> entfernt und
+        /// persistiert). Rückgabe true = der Verwaltungs-Dialog soll danach
+        /// geschlossen werden. Default: nichts tun. Mandanten überschreiben
+        /// das für die Moduswechsel-Meldungen (letzter/vorletzter Mandant).</summary>
+        internal virtual bool NachLoeschen(System.Windows.Window owner,
+            StammdatenEintragVM geloeschter) => false;
     }
 
     // ----------------------------------------------------------------------

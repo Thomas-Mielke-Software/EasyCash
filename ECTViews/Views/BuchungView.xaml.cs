@@ -35,10 +35,31 @@ namespace ECTViews.Views
             viewModel.PresetNotizAnzeigen += ZeigeNotizBalloon;
             viewModel.RequestFokus += OnRequestFokus;
 
+            // Ad-hoc-Kontoselektor: fehlt das per Feld-Spezifikation
+            // ("$de:Formular=Id|...||") geforderte Konto, fragt der
+            // Anlage-Dialog nach dem Kontonamen.
+            viewModel.KontoAnlegenAbfrage = bedarf =>
+                Stammdaten.KontoAnlegenView.ZeigeDialog(bedarf, owner: this);
+
             // Auch beim erstmaligen Oeffnen die "Weiterbuchen-Verhalten"-
             // Einstellung zum Cursor beachten (nur bei neuer Buchung, nicht
             // beim Bearbeiten/Kopieren).
             Loaded += OnInitialFokus;
+
+            // Ueber das Ribbon-Dropdown vorgewaehlte Buchungsvorlage laden --
+            // erst wenn das Fenster steht, damit ein evtl. noetiger
+            // "Konto anlegen"-Dialog einen sichtbaren Owner hat.
+            Loaded += OnVorwahlLaden;
+        }
+
+        /// <summary>Laedt eine ueber das Ribbon-Dropdown vorgewaehlte Vorlage,
+        /// sobald das Fenster geladen ist (siehe
+        /// <see cref="BuchungViewModel.VorgewaehltesPreset"/>).</summary>
+        private void OnVorwahlLaden(object sender, RoutedEventArgs e)
+        {
+            Loaded -= OnVorwahlLaden;   // nur einmal
+            if (DataContext is BuchungViewModel vm)
+                vm.LadeVorgewaehlteVorlage();
         }
 
         /// <summary>Setzt beim Oeffnen des Dialogs den Anfangsfokus gemaess der
