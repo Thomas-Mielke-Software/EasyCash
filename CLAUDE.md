@@ -97,6 +97,10 @@ EasyCash/
       icons.bmp                  — Sprite mit Betrieb-Icons (32x32 horiz.)
       icons_bestandskonten.bmp   — Sprite mit Bestandskonto-Icons
     IconSpriteSplitter.cs        — Auto-Detect Icon-Größe aus Sprite-Höhe
+    GemeinsameStile.xaml         — app-weite Button-Stile (PrimaryButtonStyle/
+                                   SecondaryButtonStyle, per MergedDictionaries
+                                   einbinden; genutzt von BuchungView +
+                                   Stammdaten-Dialogen)
     ViewHost.cs                  — statische Listen (BetriebeNamen etc.)
   ECTBridge/                   — C++/CLI Mixed-Mode
     ViewExports.h(.cpp)          — ECT_ShowBuchungBearbeitenDialog,
@@ -107,6 +111,24 @@ EasyCash/
 ```
 
 ## Wichtige Konventionen
+
+### Beträge: Locale-Verhalten (Waehrungsformat)
+
+Beträge/Prozente auf der C#-Seite laufen IMMER über
+`ECTEngine.Waehrungsformat` — KEIN hartkodiertes de-DE:
+- **Anzeige + Persistenz**: `Betrag()` / `BetragOhneGruppierung()` /
+  `Zahl()` formatieren mit `CurrentCulture` (Pendant zur
+  DEZIMALKOMMA/TAUSENDERTRENNER-Mechanik: NativeInit.cpp holt
+  LOCALE_SDECIMAL etc., currency_to_int/int_to_currency nutzen sie —
+  native Leser verstehen so die von WPF geschriebenen ini-Werte).
+- **Parsen**: `TryParse()` / `TryParseProzent()` sind locale-FREI und
+  tolerant (deutsch "1.234,56", schweizerisch "1'234.56", englisch
+  "1,234.56") — wichtig beim Mandanten-Umzug zwischen Systemen.
+  Regel: rechts stehender Trenner = Dezimal; einzelner Punkt/Komma =
+  Dezimal; mehrfach = Gruppierung; Apostroph/Leerraum = Gruppierung.
+- **Ausnahme**: die Formelsprache der Buchungsgruppen-Vorlagen
+  (FormelParser) bleibt bewusst locale-fest — Formeln sind portable
+  Vorlagen-Daten, Komma UND Punkt gelten dort immer als Dezimaltrenner.
 
 ### XAML-Stolperfallen
 
@@ -196,6 +218,24 @@ robuster in hosted-WPF-Szenarien.
   `JournalViewModel.SaldoSpaltenBreite`)
 - Navigation rechts (passt zum CExtSplitter-Layout: Pane 0 = View,
   Pane 1 = Navigation)
+- **Schriftgrößen/Zoom (Stand 2026-07-13)**: alle "festen" Spaltenbreiten
+  (Icon/Datum/Brutto/AfA + Saldo/Steuer), Icon-Größen und die
+  Abschnittstitel-Schriften kommen als skalierende VM-Properties
+  (`Skala = Schriftgroesse/13`, `SkalierungAktualisieren()`) — nichts
+  mehr hartkodiert, sonst Text-Abschneiden bei großer
+  `Bildschirmschriftgroesse` bzw. Zoom > 100%. Die Icons werden auf
+  exakt EINE Textzeilenhöhe skaliert (`IconGroesse` = FontSize x
+  LineSpacing der FontFamily), damit die Textzeile die Zeilenhöhe
+  bestimmt — größere Icons blähen die Zeile auf und der oben
+  ausgerichtete Text säße bei kleinen Schriften sichtbar zu hoch.
+  `JournalSchriftgroesse()` (easycashview.cpp) rechnet Punkt -> DIP
+  (pt x 96/72), analog zum nativen `MulDiv(pt, LOGPIXELSY, 72)`.
+  Zoom-Tasten (Strg-)'+'/'-' und Strg-Mausrad fängt das WPF-Journal
+  selbst ab (die native View hat im WPF-Modus keinen Tastatur-Fokus
+  mehr) und meldet sie über das `ZoomAendern`-Event ->
+  `ECT_JournalRegistriereZoomAenderung`-Callback ->
+  `CEasyCashView::JournalWpfZoomAenderung` an `SetzeZoomfaktor()`
+  (Profil-Persistenz, Statuszeile, Broadcast an alle Journals).
 
 ### ECTBridge / Embedding (komplett)
 - `ECT_JournalEinbetten(parent, x,y,w,h, doc, modus, zoom)` →
@@ -257,6 +297,46 @@ robuster in hosted-WPF-Szenarien.
 - Exports: `ECT_ZeigeDauerbuchungenDialog` (Sync beide Richtungen +
   SetModifiedFlag bei Änderung), `ECT_ZeigeDauerbuchungenAusfuehrenDialog`.
 - MwSt-Skala beachten: Engine-"Promille" = Prozent x1000 (19 % = 19000).
+
+### Buchungsgruppen (Phasen A+B fertig, Stand 2026-07-09)
+- Generalisierung des Privat-Splits: mehrzeilige Presets
+  ([Buchungsposten]-Slot + `NNZ<k><Feld>`-Keys, `NNBasisBetrag`-Formel)
+  erzeugen mehrere per UUID verknüpfte Buchungen (Erweiterungs-Keys
+  `Buchungsgruppe`/`BuchungsgruppeRolle`/`BuchungsgruppeVorlage`;
+  Alt-Split-Keys werden lesend weiter erkannt).
+- Engine: `FormelParser.cs` (Arithmetik + Interpolation, KEIN
+  C#-Scripting — geteilte Vorlagen dürfen keinen Code ausführen),
+  `Buchungsgruppen.cs` (`BuchungsgruppenRechner`), Tests in
+  ECTEngine.Tests.
+- UI: `BuchungViewModel.Gruppen.cs` (partial) + Zeilen-Bereich in
+  BuchungView (kompakt/Maske je `Darstellung`-Override); Ergebnis des
+  Buchen-Dialogs ist jetzt eine LISTE (`ErgebnisBuchungen`,
+  `GebuchtUndWeiter` liefert Listen; ECT_ShowBuchungDialog fügt alle ein).
+- **Gruppen-Bearbeitung**: Bearbeiten eines Gruppenmitglieds öffnet die
+  Basis mit kompletter Gruppe (`ZeigeBuchungBearbeitenKombiDialog`);
+  Speichern ersetzt die Zusatz-Buchungen unter gleicher UUID
+  (`ECTBridge_BearbeiteBuchung` in ViewExports.cpp). Fallback
+  Einzel-Bearbeitung bei Alt-Split/fehlender Vorlage. Kopieren entfernt
+  Gruppen-Keys (`Buchung.EntferneGruppe`). Bearbeiten erhält seit dem
+  Phase-A-Bugfix Erweiterungen + AfaGenauigkeit des Originals.
+- **Phase C fertig (2026-07-09)**: Zeilen-Editor auf der PresetsPage
+  (Live-Formelprüfung; Zeilen ohne Konto werden nicht gespeichert),
+  einmaliger [Privat-Split]-Import beim Cache-Laden (Marker-Key
+  `[Buchungsposten]PrivatSplitImportiert`, Formel-Variable `$mwstsatz`),
+  XML-Export/Import über `PresetXml.cs` (*.ectvorlage.xml, reine Daten).
+- **Phase D fertig (2026-07-12)**: Gruppen-Mitglieder tragen im Journal
+  ein dezentes "[G]"-Präfix in der Beschreibungsspalte (Tooltip mit
+  Rolle); Klick auf ein Mitglied markiert die ganze Gruppe als Block
+  (Ctrl/Shift-Klick erlaubt weiter Einzelauswahl innerhalb der Gruppe;
+  die Einzel-Kommandos Ändern/Kopieren/AfA-Abgang akzeptieren deshalb
+  auch eine komplett selektierte Gruppe als "eine" Selektion und wirken
+  auf die Primärzeile bzw. via Kombi-Dialog auf die Basis). Kontextmenü
+  "Buchungsgruppe löschen" löscht alle Mitglieder (ein Sync, ein
+  SetModifiedFlag). Beim Löschen einzelner Mitglieder fragt die geteilte
+  Bridge-Funktion `ECTBridge_LoescheBuchungenMitGruppenAbfrage`
+  (`BuchungenLoeschenShared.h`, Definition in JournalExports.cpp, genutzt
+  von beiden JournalEventHandlern) per Ja/Nein/Abbrechen, ob die ganze
+  Gruppe gelöscht werden soll (Kaskadenlöschen).
 
 ### Persistenz
 - `NavigationBreitenverhaeltnis` (Promille) wird vom existierenden

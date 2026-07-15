@@ -8439,12 +8439,40 @@ void CEasyCashView::OnViewJournalKonten()
 
 #ifdef USE_ECTENGINE
 // Basis-Schriftgroesse des WPF-Journals: konfigurierte Bildschirmschriftgroesse
-// (0 = automatisch -> 13pt Default), skaliert mit dem Zoomfaktor (100% -> Basis).
+// (0 = automatisch -> 13 DIP Default), skaliert mit dem Zoomfaktor (100% -> Basis).
+// Die Einstellung ist in PUNKT (der native Pfad rechnet MulDiv(pt, LOGPIXELSY, 72)),
+// WPF-FontSize dagegen in DIP (1/96 Zoll) -> Umrechnung pt * 96/72.
 static double JournalSchriftgroesse(int zoomfaktor)
 {
 	int basis = ECT_HoleEinstellungInt("Bildschirmschriftgroesse", 0);
-	if (basis <= 0) basis = 13;
-	return (double)zoomfaktor * basis / 100.0;
+	double basisDip = (basis > 0) ? basis * 96.0 / 72.0 : 13.0;
+	return (double)zoomfaktor * basisDip / 100.0;
+}
+
+// Zoom-Aenderung aus dem WPF-Journal (Strg-'+'/'-' bzw. Strg-Mausrad).
+// Statischer Callback (registriert in ZeigeJournalWpf): ermittelt die aktive
+// View und laesst sie den Zoomfaktor umsetzen -- SetzeZoomfaktor persistiert
+// ins Profil, setzt die Statuszeile und verteilt die neue Schriftgroesse
+// ueber ECT_JournalSetzeZoom an alle WPF-Journals.
+void CEasyCashView::JournalWpfZoomAenderung(int deltaProzent)
+{
+	CMDIFrameWnd* pFrame = DYNAMIC_DOWNCAST(CMDIFrameWnd, AfxGetMainWnd());
+	if (!pFrame) return;
+	CMDIChildWnd* pChild = pFrame->MDIGetActive();
+	if (!pChild) return;
+	CEasyCashView* pView = DYNAMIC_DOWNCAST(CEasyCashView, pChild->GetActiveView());
+	if (!pView)
+	{
+		// Fallback: erste CEasyCashView des aktiven Dokuments (wenn der
+		// Fokus im WPF-HWND liegt, ist u.U. keine CView "aktiv").
+		CDocument* pDoc = pChild->GetActiveDocument();
+		POSITION pos = pDoc ? pDoc->GetFirstViewPosition() : NULL;
+		while (pos && !pView)
+			pView = DYNAMIC_DOWNCAST(CEasyCashView, pDoc->GetNextView(pos));
+	}
+	if (!pView) return;
+	pView->m_zoomfaktor += deltaProzent;
+	pView->SetzeZoomfaktor();
 }
 #endif
 
@@ -8701,6 +8729,10 @@ void CEasyCashView::ZeigeJournalWpf(int nAnzeigeModus)
 		GetDocument(),
 		nAnzeigeModus,
 		JournalSchriftgroesse(m_zoomfaktor));
+
+	// Zoom-Tasten aus dem WPF-Journal (Strg-'+'/'-') zurueck in den
+	// nativen Zoom-Mechanismus routen.
+	ECT_JournalRegistriereZoomAenderung(&CEasyCashView::JournalWpfZoomAenderung);
 
 	if (!m_hwndJournalWpf)
 	{
@@ -10626,7 +10658,7 @@ void CEasyCashView::SetzeZoomfaktor()
 	((CMainFrame*)AfxGetMainWnd())->SetStatus(csStatusMessage);
 
 #ifdef USE_ECTENGINE
-	// WPF-Journal mit-zoomen. Mapping: 100% -> 13pt
+	// WPF-Journal mit-zoomen. Mapping: 100% -> Basis (s. JournalSchriftgroesse)
 	ECT_JournalSetzeZoom(JournalSchriftgroesse(m_zoomfaktor));
 #endif
 }

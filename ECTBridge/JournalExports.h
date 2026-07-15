@@ -156,6 +156,23 @@ ECTBRIDGE_API void ECT_NavigationAbloesen(HWND hwndNav);
 /// </summary>
 ECTBRIDGE_API void ECT_JournalSendKey(UINT nChar);
 
+/// <summary>
+/// Callback-Typ fuer Zoom-Aenderungswuensche aus dem WPF-Journal
+/// (Strg-'+'/'-' bzw. Strg-Mausrad). deltaProzent ist +25 oder -25.
+/// </summary>
+typedef void (*ECT_JournalZoomAenderungCallback)(int deltaProzent);
+
+/// <summary>
+/// Registriert den Callback, der bei Zoom-Tasten im WPF-Journal gerufen
+/// wird. Der Aufrufer (easycashview.cpp) setzt darin m_zoomfaktor um und
+/// ruft SetzeZoomfaktor() -- so bleiben Profil-Persistenz, Statuszeile
+/// und alle Journal-Instanzen synchron. NULL deregistriert. Wird der
+/// Callback nie gesetzt (z.B. im OCX-Kontext), sind die Zoom-Tasten
+/// schlicht wirkungslos.
+/// </summary>
+ECTBRIDGE_API void ECT_JournalRegistriereZoomAenderung(
+    ECT_JournalZoomAenderungCallback pfn);
+
 #ifdef __cplusplus
 }
 #endif

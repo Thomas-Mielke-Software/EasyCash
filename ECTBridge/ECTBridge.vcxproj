@@ -193,6 +193,7 @@
     <ClInclude Include="Exports.h" />
     <ClInclude Include="ViewExports.h" />
     <ClInclude Include="AfaAbgangShared.h" />
+    <ClInclude Include="BuchungenLoeschenShared.h" />
     <ClInclude Include="EinstellungenExports.h" />
     <ClInclude Include="EinstellungenViewExports.h" />
     <ClInclude Include="Startoptionen.h" />

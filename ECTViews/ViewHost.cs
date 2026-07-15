@@ -8,6 +8,8 @@
 //   ECTViews::ViewHost::ZeigeBuchungDialog(engine, true);
 
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Windows;
 using System.Windows.Interop;
 using ECTEngine;
@@ -129,17 +131,19 @@ namespace ECTViews
         /// wird der Dialog modal zu diesem Fenster.
         /// </param>
         /// <returns>
-        /// Die neue/geänderte Buchung, oder null wenn abgebrochen.
+        /// Alle erzeugten Buchungen (bei einer Buchungsgruppen-Vorlage
+        /// mehrere, Basis zuerst; sonst genau eine), oder null wenn
+        /// abgebrochen.
         /// </returns>
-        public static Buchung ZeigeBuchungDialog(
+        public static IReadOnlyList<Buchung> ZeigeBuchungDialog(
             BuchungsDocument doc, bool ausgaben, IntPtr ownerHwnd = default,
-            Action<Buchung> onWeiterbuchen = null)
+            Action<IReadOnlyList<Buchung>> onWeiterbuchen = null)
         {
             EnsureWpfInitialized();
 
             var vm = new BuchungViewModel(doc, ausgaben);
 
-            // "Weiterbuchen": jeder Klick persistiert die Buchung ueber
+            // "Weiterbuchen": jeder Klick persistiert die Buchung(en) ueber
             // diesen Callback (nativer Aufrufer), der Dialog bleibt offen.
             if (onWeiterbuchen != null)
                 vm.GebuchtUndWeiter += onWeiterbuchen;
@@ -158,7 +162,7 @@ namespace ECTViews
 
             view.ShowDialog();
 
-            return vm.Bestaetigt ? vm.Ergebnis : null;
+            return vm.Bestaetigt ? vm.ErgebnisBuchungen : null;
         }
 
         /// <summary>
@@ -186,6 +190,78 @@ namespace ECTViews
             {
                 Buchung = vm.Bestaetigt ? vm.Ergebnis : null,
                 AbgangGewuenscht = vm.AbgangGewuenscht
+            };
+        }
+
+        /// <summary>
+        /// Bearbeiten-Dialog mit Buchungsgruppen-Unterstützung:
+        /// Ist die angeklickte Buchung Mitglied einer Gruppe MIT auffindbarer
+        /// mehrzeiliger Vorlage, wird die BASIS-Buchung mit der kompletten
+        /// Gruppe geöffnet (wie bei der Neuerfassung; manuelle Felder aus den
+        /// bestehenden Zusatz-Buchungen vorbelegt, Gruppen-UUID bleibt
+        /// erhalten). Andernfalls normale Einzel-Bearbeitung (mit
+        /// "Abgang buchen"). Der Aufrufer ersetzt <see cref="BuchungBearbeitenKombiErgebnis.ErsetzteBasis"/>
+        /// durch Buchungen[0], entfernt bei WarGruppenBearbeitung alle alten
+        /// Gruppen-Mitglieder und fügt Buchungen[1..] neu ein.
+        /// </summary>
+        public static BuchungBearbeitenKombiErgebnis ZeigeBuchungBearbeitenKombiDialog(
+            BuchungsDocument doc, Buchung angeklickt, IntPtr ownerHwnd = default)
+        {
+            EnsureWpfInitialized();
+
+            // Gruppen-Kontext auflösen: Basis, Mitglieder, Vorlage
+            Buchung basis = null;
+            List<Buchung> zusatz = null;
+            Preset vorlage = null;
+            int slot = -1;
+            string uuid = angeklickt.GruppenUuid;
+            if (uuid != null)
+            {
+                var alle = doc.Buchungen.Where(b => b.GruppenUuid == uuid).ToList();
+                var basisKandidat = alle.FirstOrDefault(b => b.GruppenRolle == 0);
+                slot = basisKandidat?.GruppenVorlage ?? -1;
+                if (basisKandidat != null && slot >= 0
+                    && slot < Einstellungen.Presets.Count
+                    && Einstellungen.Presets[slot].IstMehrzeilig)
+                {
+                    basis = basisKandidat;
+                    vorlage = Einstellungen.Presets[slot];
+                    zusatz = alle.Where(b => !ReferenceEquals(b, basisKandidat))
+                                 .OrderBy(b => b.GruppenRolle).ToList();
+                }
+            }
+
+            if (vorlage == null)
+            {
+                // Einzel-Fallback (Alt-Split ohne Vorlage, gelöschte/
+                // geänderte Vorlage, Basis nicht auffindbar)
+                var vmEinzel = ZeigeBearbeitenInternal(
+                    doc, angeklickt, ownerHwnd, abgangErlaubt: true);
+                return new BuchungBearbeitenKombiErgebnis
+                {
+                    Buchungen = vmEinzel.Bestaetigt ? vmEinzel.ErgebnisBuchungen : null,
+                    AbgangGewuenscht = vmEinzel.AbgangGewuenscht,
+                    WarGruppenBearbeitung = false,
+                    ErsetzteBasis = angeklickt
+                };
+            }
+
+            // Gruppen-Bearbeitung: Dialog auf der Basis öffnen, Gruppe laden
+            var vm = new BuchungViewModel(doc, basis);
+            vm.LadeGruppeFuerBearbeitung(vorlage, slot, zusatz, uuid);
+            BefuelleListen(vm);
+            var view = new BuchungView(vm);
+            if (ownerHwnd != IntPtr.Zero)
+                new WindowInteropHelper(view) { Owner = ownerHwnd };
+
+            view.ShowDialog();
+
+            return new BuchungBearbeitenKombiErgebnis
+            {
+                Buchungen = vm.Bestaetigt ? vm.ErgebnisBuchungen : null,
+                AbgangGewuenscht = false,
+                WarGruppenBearbeitung = true,
+                ErsetzteBasis = basis
             };
         }
 
@@ -451,6 +527,29 @@ namespace ECTViews
         public int Jahr { get; set; }
         public string Waehrung { get; set; }
         public string QuelldateiPfad { get; set; }
+    }
+
+    /// <summary>
+    /// Ergebnis von ViewHost.ZeigeBuchungBearbeitenKombiDialog.
+    /// </summary>
+    public sealed class BuchungBearbeitenKombiErgebnis
+    {
+        /// <summary>Neu gebaute Buchungen (Basis zuerst); null wenn
+        /// abgebrochen. Bei aufgelöster Gruppe ("Vorlage entfernen") genau
+        /// eine Buchung ohne Gruppen-Keys.</summary>
+        public IReadOnlyList<Buchung> Buchungen { get; set; }
+
+        /// <summary>True wenn "Abgang buchen" geklickt wurde (nur im
+        /// Einzel-Fallback möglich).</summary>
+        public bool AbgangGewuenscht { get; set; }
+
+        /// <summary>True wenn der Gruppen-Editor gezeigt wurde -- der
+        /// Aufrufer muss dann die alten Gruppen-Mitglieder entfernen.</summary>
+        public bool WarGruppenBearbeitung { get; set; }
+
+        /// <summary>Die Buchung im Dokument, die durch Buchungen[0] ersetzt
+        /// wird (bei Gruppen die Basis, sonst die angeklickte Buchung).</summary>
+        public Buchung ErsetzteBasis { get; set; }
     }
 
     /// <summary>

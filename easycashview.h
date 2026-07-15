@@ -157,6 +157,11 @@ private:
 	void GroessenAnpassungEinstellungenWpf();
 	void AktualisiereJournalFilter();          // bei Filter-Aenderung
 
+	// Callback fuer Zoom-Aenderungen aus dem WPF-Journal (Strg-'+'/'-').
+	// Statisch, weil er als plain C-Funktionspointer bei der Bridge
+	// registriert wird (ECT_JournalRegistriereZoomAenderung).
+	static void JournalWpfZoomAenderung(int deltaProzent);
+
 	// True solange ein WPF-Journal aktiv ist - dann sollten alle
 	// alten DrawToDC-Pfade und Navigations-Updates uebersprungen
 	// werden, damit nichts ueber das WPF gemalt wird.

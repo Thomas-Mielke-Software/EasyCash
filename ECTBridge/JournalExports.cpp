@@ -16,6 +16,7 @@
 #include "EasyCashDocBridge.h"      // CEasyCashDocBridge + GetEngine(bridge)
 #include "Marshalling.h"            // ECTBridge::ToNative / ToManaged
 #include "AfaAbgangShared.h"     // ECTBridge_FuehreAfaAbgang (geteilt mit ViewExports)
+#include "BuchungenLoeschenShared.h" // gemeinsames Löschen mit Buchungsgruppen-Abfrage
 
 #using "ECTEngine.dll"
 #using "ECTViews.dll"
@@ -30,6 +31,18 @@ extern "C" AFX_EXT_CLASS char* HoleKontoFuerFeld(
     char ea, LPCSTR eurech_feld, LPCSTR uva_feld);
 
 using namespace System;
+
+// ----------------------------------------------------------
+// Zoom-Aenderungs-Callback (Strg-'+'/'-' bzw. Strg-Mausrad im
+// WPF-Journal). Wird von easycashview.cpp registriert; im
+// OCX-Kontext bleibt er NULL und die Zoom-Tasten sind wirkungslos.
+// ----------------------------------------------------------
+static ECT_JournalZoomAenderungCallback g_pfnZoomAenderung = NULL;
+
+void ECT_JournalRegistriereZoomAenderung(ECT_JournalZoomAenderungCallback pfn)
+{
+    g_pfnZoomAenderung = pfn;
+}
 
 // ----------------------------------------------------------
 // Helper: native LPCSTR -> managed String^
@@ -89,44 +102,16 @@ public:
         }
     }
 
-    // Loescht eine ODER mehrere Buchungen (Mehrfachauswahl im Journal).
-    // HINWEIS Encoding: Diese Datei ist cp1252-kodiert (wie ViewExports.cpp); AfxMessageBox ist
-    // MBCS (cp1252). Umlaute als UTF-8-Literal wuerden vermurkst ("loeschen").
-    // Darum den ASCII-unabhaengigen Oktal-Escape \366 (= 0xF6 = cp1252 'ö')
-    // verwenden -- erscheint korrekt, egal wie die Datei gespeichert ist.
+    // Löscht eine ODER mehrere Buchungen (Mehrfachauswahl im Journal).
+    // Bestätigung und Kaskadenlösch-Abfrage für Buchungsgruppen stecken
+    // in der geteilten Funktion (BuchungenLoeschenShared.h, Definition
+    // weiter unten in dieser Datei).
     void OnLoeschenMehrere(System::Collections::Generic::IList<ECTEngine::Buchung^>^ buchungen)
     {
         auto* bridge = static_cast<CEasyCashDocBridge*>(m_pBridge.ToPointer());
-        if (!bridge || buchungen == nullptr || buchungen->Count == 0) return;
-        auto eng = GetEngine(bridge);
-
-        CString frage;
-        if (buchungen->Count == 1)
-        {
-            int idx = FindeBuchungIdx(eng, buchungen[0]);
-            CString desc = (idx >= 0)
-                ? CString(eng->Buchungen[idx]->Beschreibung)
-                : CString(buchungen[0]->Beschreibung);
-            frage.Format("Buchung '%s' wirklich l\366schen?", (LPCTSTR)desc);
-        }
-        else
-        {
-            frage.Format("%d Buchungen wirklich l\366schen?", buchungen->Count);
-        }
-        if (AfxMessageBox(frage, MB_YESNO | MB_DEFBUTTON2) != IDYES)
-            return;
-
-        // Alle selektierten Buchungen per Uuid finden und entfernen. Der
-        // Index wird pro Buchung neu ermittelt, weil RemoveAt die Liste
-        // umnummeriert.
-        for each (ECTEngine::Buchung^ b in buchungen)
-        {
-            int i = FindeBuchungIdx(eng, b);
-            if (i >= 0) eng->Buchungen->RemoveAt(i);
-        }
-        bridge->SyncManagedToNative();
-        bridge->SetModifiedFlag("Buchungen ueber Journal geloescht");
-        ECTViews::Journal::JournalEmbed::AktualisiereAlle(nullptr);
+        if (!bridge) return;
+        if (ECTBridge_LoescheBuchungenMitGruppenAbfrage(bridge, buchungen))
+            ECTViews::Journal::JournalEmbed::AktualisiereAlle(nullptr);
     }
 
     void OnKopieren(ECTEngine::Buchung^ b)
@@ -202,6 +187,15 @@ public:
         if (idx < 0) return;
         ECTBridge_FuehreAfaAbgang(bridge, eng->Buchungen[idx]);
     }
+
+    // Reicht den Zoom-Wunsch (Delta in Prozentpunkten) an den nativen
+    // Mechanismus weiter -- der setzt m_zoomfaktor um und verteilt die
+    // neue Schriftgroesse ueber ECT_JournalSetzeZoom an alle Journals.
+    void OnZoomAenderung(int deltaProzent)
+    {
+        if (g_pfnZoomAenderung)
+            g_pfnZoomAenderung(deltaProzent);
+    }
 };
 
 // ----------------------------------------------------------
@@ -255,6 +249,8 @@ HWND ECT_JournalEinbetten(
                 handler, &JournalEventHandler::OnKopierenMitNeuerBelegnummer);
             vm->BuchungAfaAbgang += gcnew System::Action<ECTEngine::Buchung^>(
                 handler, &JournalEventHandler::OnAfaAbgang);
+            vm->ZoomAendern += gcnew System::Action<int>(
+                handler, &JournalEventHandler::OnZoomAenderung);
         }
 
         return (HWND)hKind.ToPointer();
@@ -510,5 +506,128 @@ bool ECTBridge_FuehreAfaAbgang(CEasyCashDocBridge* bridge, ECTEngine::Buchung^ a
                 "EasyCash", "UrspruenglichesKonto", "")) +
             "' aus dem Betriebsvermögen entnommen");
         ECTViews::Journal::JournalEmbed::AktualisiereAlle(nullptr);
+    return true;
+}
+
+// ----------------------------------------------------------
+// Gemeinsame Lösch-Logik für das Journal-Kontextmenü (beide
+// Journal-Hosts: JournalEmbed und JournalHost). Berücksichtigt
+// Buchungsgruppen: sind Mitglieder einer Gruppe selektiert, deren
+// übrige Mitglieder NICHT selektiert sind, wird per Ja/Nein/Abbrechen
+// gefragt, ob die ganze Gruppe gelöscht werden soll (Kaskadenlöschen).
+// Deklaration in BuchungenLoeschenShared.h.
+//
+// HINWEIS Encoding: AfxMessageBox ist MBCS (cp1252). Umlaute als
+// UTF-8-Literal würden vermurkst ("loeschen"). Darum in den Strings
+// die ASCII-unabhängigen Oktal-Escapes \366 (=0xF6, kleines oe) und
+// \344 (=0xE4, kleines ae) verwenden -- erscheint korrekt, egal wie
+// die Datei gespeichert ist.
+// ----------------------------------------------------------
+bool ECTBridge_LoescheBuchungenMitGruppenAbfrage(
+    CEasyCashDocBridge* bridge,
+    System::Collections::Generic::IList<ECTEngine::Buchung^>^ buchungen)
+{
+    if (!bridge || buchungen == nullptr || buchungen->Count == 0)
+        return false;
+    auto eng = GetEngine(bridge);
+
+    // 1) Selektion auf aktuelle managed Instanzen auflösen (Referenzen
+    //    können nach Sync-Zyklen stale sein) und Duplikate entfernen.
+    auto selUuids    = gcnew System::Collections::Generic::List<System::Guid>();
+    auto loeschListe = gcnew System::Collections::Generic::List<ECTEngine::Buchung^>();
+    for each (ECTEngine::Buchung^ b in buchungen)
+    {
+        int i = FindeBuchungIdx(eng, b);
+        if (i < 0) continue;
+        auto cur = eng->Buchungen[i];
+        if (selUuids->Contains(cur->Uuid)) continue;
+        selUuids->Add(cur->Uuid);
+        loeschListe->Add(cur);
+    }
+    if (loeschListe->Count == 0) return false;
+
+    // 2) Beteiligte Buchungsgruppen und deren NICHT selektierte
+    //    Mitglieder ermitteln.
+    auto gruppen = gcnew System::Collections::Generic::List<System::String^>();
+    for each (ECTEngine::Buchung^ cur in loeschListe)
+    {
+        System::String^ g = cur->GruppenUuid;
+        if (g != nullptr && !gruppen->Contains(g)) gruppen->Add(g);
+    }
+    auto fehlende = gcnew System::Collections::Generic::List<ECTEngine::Buchung^>();
+    if (gruppen->Count > 0)
+    {
+        for each (ECTEngine::Buchung^ bd in eng->Buchungen)
+        {
+            System::String^ g = bd->GruppenUuid;
+            if (g != nullptr && gruppen->Contains(g)
+                && !selUuids->Contains(bd->Uuid))
+                fehlende->Add(bd);
+        }
+    }
+
+    bool bestaetigt = false;
+    if (fehlende->Count > 0)
+    {
+        // Kaskadenlösch-Angebot: Ja = ganze Gruppe(n), Nein = nur die
+        // Selektion, Abbrechen = nichts (ersetzt die alte bloße Warnung
+        // des MFC-Pfads). Default = Abbrechen.
+        int gesamt = loeschListe->Count + fehlende->Count;
+        CString frage;
+        if (loeschListe->Count == 1)
+            frage.Format(
+                "Die Buchung '%s' geh\366rt zu einer Buchungsgruppe.\n\n"
+                "Ja = ganze Gruppe l\366schen (%d Buchungen)\n"
+                "Nein = nur diese Buchung l\366schen",
+                (LPCTSTR)CString(loeschListe[0]->Beschreibung), gesamt);
+        else
+            frage.Format(
+                "Die Auswahl enth\344lt Mitglieder von Buchungsgruppen.\n\n"
+                "Ja = Gruppen komplett l\366schen (%d Buchungen)\n"
+                "Nein = nur die %d ausgew\344hlten Buchungen l\366schen",
+                gesamt, loeschListe->Count);
+        int antwort = AfxMessageBox(frage,
+            MB_YESNOCANCEL | MB_ICONQUESTION | MB_DEFBUTTON3);
+        if (antwort == IDCANCEL) return false;
+        if (antwort == IDYES) loeschListe->AddRange(fehlende);
+        bestaetigt = true;   // Ja/Nein war bereits die Bestätigung
+    }
+
+    if (!bestaetigt)
+    {
+        // Ist die Selektion exakt eine komplette Gruppe (z.B. über das
+        // Kontextmenü "Buchungsgruppe löschen"), das auch so benennen.
+        bool eineKompletteGruppe = (gruppen->Count == 1);
+        if (eineKompletteGruppe)
+            for each (ECTEngine::Buchung^ cur in loeschListe)
+                if (cur->GruppenUuid == nullptr)
+                {
+                    eineKompletteGruppe = false;
+                    break;
+                }
+
+        CString frage;
+        if (eineKompletteGruppe)
+            frage.Format("Buchungsgruppe (%d Buchungen) wirklich l\366schen?",
+                loeschListe->Count);
+        else if (loeschListe->Count == 1)
+            frage.Format("Buchung '%s' wirklich l\366schen?",
+                (LPCTSTR)CString(loeschListe[0]->Beschreibung));
+        else
+            frage.Format("%d Buchungen wirklich l\366schen?",
+                loeschListe->Count);
+        if (AfxMessageBox(frage, MB_YESNO | MB_DEFBUTTON2) != IDYES)
+            return false;
+    }
+
+    // 3) Entfernen (Index pro Buchung neu ermitteln, weil RemoveAt die
+    //    Liste umnummeriert), ein Sync, ein SetModifiedFlag.
+    for each (ECTEngine::Buchung^ b in loeschListe)
+    {
+        int i = FindeBuchungIdx(eng, b);
+        if (i >= 0) eng->Buchungen->RemoveAt(i);
+    }
+    bridge->SyncManagedToNative();
+    bridge->SetModifiedFlag("Buchungen ueber Journal geloescht");
     return true;
 }

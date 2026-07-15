@@ -24,8 +24,6 @@ namespace ECTEngine
     /// </summary>
     public readonly struct Betrag : IEquatable<Betrag>, IComparable<Betrag>
     {
-        private static readonly CultureInfo DeDE = new CultureInfo("de-DE");
-
         /// <summary>Bruttobetrag in Euro.</summary>
         public decimal BruttoWert { get; }
 
@@ -121,8 +119,10 @@ namespace ECTEngine
         // Formatierung
         // ──────────────────────────────────────────────
 
-        /// <summary>Formatiert als Währungsbetrag, z.B. "1.234,56".</summary>
-        public string AlsWaehrung() => BruttoWert.ToString("N2", DeDE);
+        /// <summary>Formatiert als Währungsbetrag nach Systemeinstellung
+        /// (z.B. "1.234,56" auf deutschen, "1'234.56" auf Schweizer
+        /// Systemen -- wie DEZIMALKOMMA/TAUSENDERTRENNER im Alt-Programm).</summary>
+        public string AlsWaehrung() => Waehrungsformat.Betrag(BruttoWert);
 
         public override string ToString() =>
             $"{AlsWaehrung()} (MWSt {MwstProzent}%)";

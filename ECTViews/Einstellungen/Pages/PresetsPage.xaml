@@ -4,7 +4,31 @@
              xmlns:pages="clr-namespace:ECTViews.EinstellungenUi.Pages"
              FontFamily="Segoe UI" FontSize="13">
     <UserControl.Resources>
-        <ResourceDictionary Source="/ECTViews;component/Einstellungen/EinstellungenResources.xaml"/>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="/ECTViews;component/Einstellungen/EinstellungenResources.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+
+            <!-- Fehlertexte im Zeilen-Editor: rot, klein, weg bei leerem Text -->
+            <Style x:Key="ZeilenFehler" TargetType="TextBlock">
+                <Setter Property="Foreground" Value="#D32F2F"/>
+                <Setter Property="FontSize" Value="11"/>
+                <Setter Property="FontStyle" Value="Italic"/>
+                <Setter Property="TextWrapping" Value="Wrap"/>
+                <Style.Triggers>
+                    <Trigger Property="Text" Value="">
+                        <Setter Property="Visibility" Value="Collapsed"/>
+                    </Trigger>
+                </Style.Triggers>
+            </Style>
+
+            <!-- kleine Feld-Beschriftungen ueber den Zeilen-Feldern -->
+            <Style x:Key="KleinLabel" TargetType="TextBlock">
+                <Setter Property="FontSize" Value="11"/>
+                <Setter Property="Foreground" Value="#666"/>
+                <Setter Property="Margin" Value="0,4,0,1"/>
+            </Style>
+        </ResourceDictionary>
     </UserControl.Resources>
     <UserControl.DataContext>
         <pages:PresetsPageViewModel/>
@@ -17,9 +41,9 @@
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
 
-        <TextBlock Grid.Row="0" Text="Buchungs-Presets" Style="{StaticResource SeitenUeberschrift}"/>
+        <TextBlock Grid.Row="0" Text="Buchungsvorlagen" Style="{StaticResource SeitenUeberschrift}"/>
         <TextBlock Grid.Row="1" Style="{StaticResource Hinweis}" Margin="0,0,0,10"
-                   Text="Vorlagen für häufige Buchungen. Die Notiz wird im Buchen-Dialog beim Auswählen des Presets kurz als Hinweis-Balloon eingeblendet."/>
+                   Text="Vorlagen für häufige Buchungen. Die zweistellige Nummer ist die Kurzwahl im Buchen-Dialog und lässt sich zum thematischen Sortieren ändern (z.B. Einnahmen 00-29, Ausgaben 30-99). Die Notiz wird beim Auswählen der Vorlage kurz als Hinweis-Balloon eingeblendet."/>
 
         <Grid Grid.Row="2">
             <Grid.ColumnDefinitions>
@@ -30,11 +54,22 @@
 
             <!-- Master: Liste der Presets + Buttons -->
             <DockPanel Grid.Column="0">
-                <StackPanel DockPanel.Dock="Bottom" Orientation="Horizontal" Margin="0,8,0,0">
-                    <Button Content="Neu" Command="{Binding NeuCommand}"
-                            Padding="12,4" Margin="0,0,6,0"/>
-                    <Button Content="Löschen" Command="{Binding LoeschenCommand}"
-                            Padding="12,4"/>
+                <StackPanel DockPanel.Dock="Bottom" Margin="0,8,0,0">
+                    <StackPanel Orientation="Horizontal">
+                        <Button Content="Neu" Click="OnNeu"
+                                Padding="12,4" Margin="0,0,6,0"/>
+                        <Button Content="Löschen" Command="{Binding LoeschenCommand}"
+                                Padding="12,4"/>
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal" Margin="0,6,0,0">
+                        <Button Content="Exportieren..." Click="OnExportieren"
+                                IsEnabled="{Binding HatAuswahl}"
+                                Padding="12,4" Margin="0,0,6,0"
+                                ToolTip="Ausgewählte Vorlage als XML-Datei speichern (zum Teilen, z.B. im Forum)"/>
+                        <Button Content="Importieren..." Click="OnImportieren"
+                                Padding="12,4"
+                                ToolTip="Buchungsvorlage aus XML-Datei in einen freien Vorlagen-Platz übernehmen"/>
+                    </StackPanel>
                 </StackPanel>
                 <Border BorderBrush="#E0E0E0" BorderThickness="1">
                     <ListBox ItemsSource="{Binding Presets}"
@@ -73,11 +108,27 @@
                         <RowDefinition Height="Auto"/>
                         <RowDefinition Height="Auto"/>
                         <RowDefinition Height="Auto"/>
-                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>  <!-- Buchungsgruppe -->
                     </Grid.RowDefinitions>
 
-                    <TextBlock Grid.Row="0" Grid.Column="0" Text="Beschreibung" Style="{StaticResource FeldLabel}"/>
-                    <TextBox  Grid.Row="0" Grid.Column="1" Text="{Binding Beschreibung, UpdateSourceTrigger=LostFocus}"/>
+                    <TextBlock Grid.Row="0" Grid.Column="0" Text="Nr. / Beschreibung" Style="{StaticResource FeldLabel}"/>
+                    <StackPanel Grid.Row="0" Grid.Column="1">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <TextBox x:Name="NummerBox" Width="42" Margin="0,0,6,0"
+                                     MaxLength="2" TextAlignment="Center"
+                                     Text="{Binding NummerText, UpdateSourceTrigger=LostFocus}"
+                                     ToolTip="Zweistellige Vorlagen-Nummer (Kurzwahl im Buchen-Dialog). Ändern verschiebt die Vorlage auf den angegebenen freien Platz - so lassen sich Vorlagen thematisch sortieren."/>
+                            <TextBox Grid.Column="1"
+                                     Text="{Binding Beschreibung, UpdateSourceTrigger=LostFocus}"/>
+                        </Grid>
+                        <TextBlock Style="{StaticResource ZeilenFehler}"
+                                   Text="{Binding NummerFehler}"/>
+                    </StackPanel>
 
                     <TextBlock Grid.Row="1" Grid.Column="0" Text="Art" Style="{StaticResource FeldLabel}"/>
                     <StackPanel Grid.Row="1" Grid.Column="1" Orientation="Horizontal" Margin="0,3">
@@ -116,6 +167,129 @@
                               VerticalContentAlignment="Top"
                               VerticalScrollBarVisibility="Auto"
                               MinHeight="80" Margin="0,3"/>
+
+                    <!-- [Buchungsgruppe: Zusatz-Zeilen der Vorlage] -->
+                    <StackPanel Grid.Row="8" Grid.Column="0" Grid.ColumnSpan="2"
+                                Margin="0,14,0,0">
+                        <Border BorderBrush="#E0E0E0" BorderThickness="0,1,0,0"
+                                Padding="0,10,0,0">
+                            <StackPanel>
+                                <TextBlock Text="Buchungsgruppe (Zusatz-Zeilen)"
+                                           FontWeight="SemiBold"/>
+                                <TextBlock Style="{StaticResource Hinweis}" Margin="0,2,0,6"
+                                           Text="Zusatz-Zeilen machen die Buchungsvorlage mehrzeilig (Buchungsgruppe): beim Buchen entstehen mehrere verknüpfte Buchungen. Betrag als Formel ($brutto*0,3 / $netto*0,19 / $rest) oder leer für manuelle Eingabe; MwSt fest, $vat1..$vat4 oder $mwstsatz (Satz der Basis), leer = Eingabefeld. In Texten: $beschreibung = Beschreibung der Basis, $beleg, $vorlagenzeile, Datums-Platzhalter."/>
+
+                                <!-- Basis-Betrag-Formel -->
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock Text="Basis bucht" Style="{StaticResource FeldLabel}"
+                                               Width="120"
+                                               ToolTip="Formel für den Betrag, den die Basis-Zeile selbst bucht - z.B. $rest bei belegweiser Aufteilung. Leer = Eingabe unverändert buchen."/>
+                                    <TextBox Width="160" Text="{Binding BasisBetragFormel, UpdateSourceTrigger=LostFocus}"/>
+                                    <TextBlock Text=" (z.B. $rest; leer = Eingabebetrag)"
+                                               Style="{StaticResource Hinweis}" VerticalAlignment="Center"/>
+                                </StackPanel>
+                                <TextBlock Style="{StaticResource ZeilenFehler}"
+                                           Text="{Binding BasisBetragFormelFehler}"/>
+
+                                <!-- Zeilen-Liste -->
+                                <ItemsControl ItemsSource="{Binding Zeilen}" Margin="0,6,0,0">
+                                    <ItemsControl.ItemTemplate>
+                                        <DataTemplate>
+                                            <Border BorderBrush="#E0E0E0" BorderThickness="1"
+                                                    CornerRadius="3" Padding="8" Margin="0,0,0,6"
+                                                    Background="#FAFAFA">
+                                                <Grid>
+                                                    <Grid.ColumnDefinitions>
+                                                        <ColumnDefinition Width="110"/>
+                                                        <ColumnDefinition Width="*"/>
+                                                        <ColumnDefinition Width="90"/>
+                                                        <ColumnDefinition Width="130"/>
+                                                        <ColumnDefinition Width="Auto"/>
+                                                    </Grid.ColumnDefinitions>
+                                                    <Grid.RowDefinitions>
+                                                        <RowDefinition Height="Auto"/>
+                                                        <RowDefinition Height="Auto"/>
+                                                        <RowDefinition Height="Auto"/>
+                                                        <RowDefinition Height="Auto"/>
+                                                        <RowDefinition Height="Auto"/>
+                                                        <RowDefinition Height="Auto"/>
+                                                        <RowDefinition Height="Auto"/>  <!-- Fehlerzeilen -->
+                                                    </Grid.RowDefinitions>
+
+                                                    <!-- Reihe 1: Art / Konto / MwSt / Betrag / Buttons -->
+                                                    <TextBlock Grid.Row="0" Grid.Column="0" Text="Buchungsart" Style="{StaticResource KleinLabel}"/>
+                                                    <TextBlock Grid.Row="0" Grid.Column="1" Text="Konto" Style="{StaticResource KleinLabel}" Margin="6,4,0,1"/>
+                                                    <TextBlock Grid.Row="0" Grid.Column="2" Text="MwSt" Style="{StaticResource KleinLabel}" Margin="6,4,0,1"/>
+                                                    <TextBlock Grid.Row="0" Grid.Column="3" Text="Betrag (Formel)" Style="{StaticResource KleinLabel}" Margin="6,4,0,1"/>
+
+                                                    <ComboBox Grid.Row="1" Grid.Column="0" SelectedIndex="{Binding ArtIndex}">
+                                                        <ComboBoxItem Content="wie Basis"/>
+                                                        <ComboBoxItem Content="Einnahme"/>
+                                                        <ComboBoxItem Content="Ausgabe"/>
+                                                    </ComboBox>
+                                                    <TextBox Grid.Row="1" Grid.Column="1" Margin="6,0,0,0"
+                                                             Text="{Binding Konto, UpdateSourceTrigger=LostFocus}"/>
+                                                    <TextBox Grid.Row="1" Grid.Column="2" Margin="6,0,0,0"
+                                                             Text="{Binding MwstAusdruck, UpdateSourceTrigger=LostFocus}"
+                                                             ToolTip="fest (7 / 10,7), $vat1..$vat4, $mwstsatz - oder leer für ein Eingabefeld im Buchen-Dialog"/>
+                                                    <TextBox Grid.Row="1" Grid.Column="3" Margin="6,0,0,0"
+                                                             Text="{Binding BetragFormel, UpdateSourceTrigger=LostFocus}"
+                                                             ToolTip="z.B. $brutto*0,3 / $netto*0,19 / $rest - oder leer für manuelle Eingabe"/>
+                                                    <StackPanel Grid.Row="1" Grid.Column="4" Orientation="Horizontal" Margin="6,0,0,0">
+                                                        <Button Content="hoch" Padding="6,2" Margin="0,0,4,0"
+                                                                Click="OnZeileHoch" ToolTip="Zeile nach oben verschieben"/>
+                                                        <Button Content="runter" Padding="6,2" Margin="0,0,4,0"
+                                                                Click="OnZeileRunter" ToolTip="Zeile nach unten verschieben"/>
+                                                        <Button Content="entfernen" Padding="6,2"
+                                                                Click="OnZeileEntfernen" ToolTip="Zeile löschen"/>
+                                                    </StackPanel>
+
+                                                    <!-- Reihe 2: Beschreibungs-Template -->
+                                                    <TextBlock Grid.Row="2" Grid.Column="0" Text="Beschreibung" Style="{StaticResource KleinLabel}"/>
+                                                    <TextBox Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="4"
+                                                             Text="{Binding TextTemplate, UpdateSourceTrigger=LostFocus}"
+                                                             ToolTip="Template, z.B. 'Privatanteil $beschreibung (30%)'; leer = Beschreibung der Basis"/>
+                                                    <ComboBox Grid.Row="3" Grid.Column="4" Margin="6,0,0,0"
+                                                              SelectedIndex="{Binding DarstellungIndex}"
+                                                              ToolTip="Darstellung im Buchen-Dialog: automatisch (kompakt; reine Formelzeilen unsichtbar), kompakt erzwingen oder volle Zeilen-Maske">
+                                                        <ComboBoxItem Content="automatisch"/>
+                                                        <ComboBoxItem Content="kompakt"/>
+                                                        <ComboBoxItem Content="Maske"/>
+                                                    </ComboBox>
+
+                                                    <!-- Reihe 3: Beleg / Betrieb / Bestandskonto -->
+                                                    <TextBlock Grid.Row="4" Grid.Column="0" Text="Beleg" Style="{StaticResource KleinLabel}"/>
+                                                    <TextBlock Grid.Row="4" Grid.Column="1" Text="Betrieb" Style="{StaticResource KleinLabel}" Margin="6,4,0,1"/>
+                                                    <TextBlock Grid.Row="4" Grid.Column="2" Grid.ColumnSpan="2" Text="Bestandskonto" Style="{StaticResource KleinLabel}" Margin="6,4,0,1"/>
+                                                    <TextBox Grid.Row="5" Grid.Column="0"
+                                                             Text="{Binding BelegTemplate, UpdateSourceTrigger=LostFocus}"
+                                                             ToolTip="Template, z.B. '$beleg-$vorlagenzeile'; leer = Beleg der Basis"/>
+                                                    <TextBox Grid.Row="5" Grid.Column="1" Margin="6,0,0,0"
+                                                             Text="{Binding BetriebTemplate, UpdateSourceTrigger=LostFocus}"
+                                                             ToolTip="leer = Betrieb der Basis"/>
+                                                    <TextBox Grid.Row="5" Grid.Column="2" Grid.ColumnSpan="2" Margin="6,0,0,0"
+                                                             Text="{Binding BestandskontoTemplate, UpdateSourceTrigger=LostFocus}"
+                                                             ToolTip="leer = Bestandskonto der Basis"/>
+
+                                                    <!-- Prüf-/Hinweiszeilen -->
+                                                    <StackPanel Grid.Row="6" Grid.Column="0" Grid.ColumnSpan="5" Margin="0,4,0,0">
+                                                        <TextBlock Style="{StaticResource ZeilenFehler}" Text="{Binding KontoFehler}"/>
+                                                        <TextBlock Style="{StaticResource ZeilenFehler}" Text="{Binding MwstFehler}"/>
+                                                        <TextBlock Style="{StaticResource ZeilenFehler}" Text="{Binding BetragFehler}"/>
+                                                    </StackPanel>
+                                                </Grid>
+                                            </Border>
+                                        </DataTemplate>
+                                    </ItemsControl.ItemTemplate>
+                                </ItemsControl>
+
+                                <Button Content="Zeile hinzufügen" HorizontalAlignment="Left"
+                                        Padding="12,4" Margin="0,2,0,0"
+                                        IsEnabled="{Binding KannZeileHinzufuegen}"
+                                        Click="OnZeileHinzufuegen"/>
+                            </StackPanel>
+                        </Border>
+                    </StackPanel>
                 </Grid>
             </ScrollViewer>
         </Grid>

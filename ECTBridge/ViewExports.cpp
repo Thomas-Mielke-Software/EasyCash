@@ -13,11 +13,26 @@
 #include "EngineHost.h"
 #include "Marshalling.h"
 #include "AfaAbgangShared.h"   // ECTBridge_FuehreAfaAbgang (geteilt mit JournalExports)
+#include "BuchungenLoeschenShared.h" // gemeinsames Löschen mit Buchungsgruppen-Abfrage
 
 #using "ECTEngine.dll"
 #using "ECTViews.dll"
 
 using namespace System;
+
+// Markiert Buchungen im offenen WPF-Journal (Buchungsgruppe als Block;
+// das Journal scrollt so, dass moeglichst viele Mitglieder sichtbar sind.
+// Der Selektions-Merker im JournalViewModel uebersteht den nachfolgenden
+// Journal-Refresh des nativen Aufrufers).
+static void ECTBridge_SelektiereImJournal(
+    System::Collections::Generic::IReadOnlyList<ECTEngine::Buchung^>^ buchungen)
+{
+    if (buchungen == nullptr || buchungen->Count == 0) return;
+    auto uuids = gcnew System::Collections::Generic::List<System::Guid>();
+    for each (ECTEngine::Buchung^ b in buchungen)
+        uuids->Add(b->Uuid);
+    ECTViews::Journal::JournalEmbed::SelektiereBuchungen(uuids);
+}
 
 // ----------------------------------------------------------
 // Handler fuer "Buchen & naechste": persistiert eine Buchung,
@@ -32,22 +47,38 @@ namespace ECTBridge
     public:
         System::IntPtr m_pBridge;
 
-        void OnBuchenUndNaechste(ECTEngine::Buchung^ buchung)
+        void OnBuchenUndNaechste(System::Collections::Generic::IReadOnlyList<ECTEngine::Buchung^>^ buchungen)
         {
             auto* bridge = static_cast<CEasyCashDocBridge*>(m_pBridge.ToPointer());
-            if (!bridge || buchung == nullptr) return;
+            if (!bridge || buchungen == nullptr || buchungen->Count == 0) return;
 
             auto engine = GetEngine(bridge);
-            engine->Buchungen->Add(buchung);
-            engine->InkrementBuchungszaehler();
+            // Bei Buchungsgruppen kommen mehrere Buchungen auf einmal
+            // (Basis + Zusatz-Zeilen, per Gruppen-UUID verknüpft).
+            for each (ECTEngine::Buchung^ buchung in buchungen)
+            {
+                engine->Buchungen->Add(buchung);
+                engine->InkrementBuchungszaehler();
+            }
             engine->Sort();
 
             bridge->SyncManagedToNative();
-            bridge->SetModifiedFlag(
-                (CString)"Buchung '" + ECTBridge::ToNative(buchung->Beschreibung) + "' hinzugefügt");
+            CString csMeldung = (CString)"Buchung '"
+                + ECTBridge::ToNative(buchungen[0]->Beschreibung) + "' hinzugefügt";
+            if (buchungen->Count > 1)
+            {
+                CString csZusatz;
+                csZusatz.Format(" (Buchungsgruppe, %d Buchungen)", buchungen->Count);
+                csMeldung += csZusatz;
+            }
+            bridge->SetModifiedFlag(csMeldung);
 
             // Offenes WPF-Journal sofort nachziehen.
             ECTViews::Journal::JournalHost::AktualisiereOffenesJournal();
+
+            // Buchungsgruppe als Block markieren
+            if (buchungen->Count > 1)
+                ECTBridge_SelektiereImJournal(buchungen);
         }
     };
 }
@@ -73,28 +104,47 @@ BOOL ECT_ShowBuchungDialog(void* pDocBridge, BOOL bAusgaben, HWND hWndOwner)
 
         auto weiterHandler = gcnew ECTBridge::BuchenWeiterHandler();
         weiterHandler->m_pBridge = IntPtr(pDocBridge);
-        auto weiterCb = gcnew System::Action<ECTEngine::Buchung^>(
+        auto weiterCb = gcnew System::Action<System::Collections::Generic::IReadOnlyList<ECTEngine::Buchung^>^>(
             weiterHandler, &ECTBridge::BuchenWeiterHandler::OnBuchenUndNaechste);
 
-        ECTEngine::Buchung^ ergebnis =
+        // Ergebnis ist eine LISTE: bei Buchungsgruppen-Vorlagen Basis +
+        // Zusatz-Zeilen (per Gruppen-UUID verknüpft), sonst genau eine.
+        System::Collections::Generic::IReadOnlyList<ECTEngine::Buchung^>^ ergebnis =
             ECTViews::ViewHost::ZeigeBuchungDialog(
                 engine, bAusgaben != 0, hwnd, weiterCb);
 
-        if (ergebnis == nullptr)
+        if (ergebnis == nullptr || ergebnis->Count == 0)
             return FALSE;  // Abgebrochen
 
-        // Buchung in die Engine einfügen
-        engine->Buchungen->Add(ergebnis);
-        engine->InkrementBuchungszaehler();
+        // Buchung(en) in die Engine einfügen
+        for each (ECTEngine::Buchung^ b in ergebnis)
+        {
+            engine->Buchungen->Add(b);
+            engine->InkrementBuchungszaehler();
+        }
         engine->Sort();
 
         // Managed --> Native synchronisieren
-        // (damit die Views die neue Buchung sehen)
+        // (damit die Views die neuen Buchungen sehen)
         bridge->SyncManagedToNative();
 
         // Dokument als geändert markieren
-        bridge->SetModifiedFlag(
-            (CString)"Buchung '" + ECTBridge::ToNative(ergebnis->Beschreibung) + "' hinzugefügt");
+        CString csMeldung = (CString)"Buchung '"
+            + ECTBridge::ToNative(ergebnis[0]->Beschreibung) + "' hinzugefügt";
+        if (ergebnis->Count > 1)
+        {
+            CString csZusatz;
+            csZusatz.Format(" (Buchungsgruppe, %d Buchungen)", ergebnis->Count);
+            csMeldung += csZusatz;
+        }
+        bridge->SetModifiedFlag(csMeldung);
+
+        // Buchungsgruppe im offenen WPF-Journal als Block markieren
+        if (ergebnis->Count > 1)
+        {
+            ECTViews::Journal::JournalHost::AktualisiereOffenesJournal();
+            ECTBridge_SelektiereImJournal(ergebnis);
+        }
 
         return TRUE;
     }
@@ -111,6 +161,82 @@ BOOL ECT_ShowBuchungDialog(void* pDocBridge, BOOL bAusgaben, HWND hWndOwner)
 // ECT_ShowBuchungBearbeitenDialog
 // ----------------------------------------------------------
 
+// Gemeinsamer Kern der beiden Bearbeiten-Exports: öffnet den Kombi-Dialog
+// (Gruppen-Bearbeitung, wenn die Buchung Mitglied einer Buchungsgruppe mit
+// auffindbarer Vorlage ist; sonst Einzel-Bearbeitung mit "Abgang buchen")
+// und ersetzt die Buchung(en) im Dokument. Bei Gruppen werden die alten
+// Zusatz-Mitglieder entfernt und durch die neu berechneten ersetzt; die
+// Gruppen-UUID bleibt erhalten (ViewModel).
+static BOOL ECTBridge_BearbeiteBuchung(CEasyCashDocBridge* bridge,
+    ECTEngine::Buchung^ angeklickt, HWND hWndOwner)
+{
+    auto engine = GetEngine(bridge);
+    IntPtr hwnd = IntPtr((void*)hWndOwner);
+
+    auto erg = ECTViews::ViewHost::ZeigeBuchungBearbeitenKombiDialog(
+        engine, angeklickt, hwnd);
+
+    // "Abgang buchen": gleiche AfA-Abgang-Logik wie der Journal-
+    // Kontextmenue-Eintrag (nur im Einzel-Fall moeglich).
+    if (erg->AbgangGewuenscht)
+    {
+        ECTBridge_FuehreAfaAbgang(bridge, angeklickt);
+        return TRUE;
+    }
+
+    if (erg->Buchungen == nullptr || erg->Buchungen->Count == 0)
+        return FALSE;  // Abgebrochen
+
+    ECTEngine::Buchung^ basisAlt = erg->ErsetzteBasis;
+    int idx = engine->Buchungen->IndexOf(basisAlt);
+    if (idx < 0) return FALSE;
+
+    // Bei Gruppen-Bearbeitung: alte Zusatz-Mitglieder entfernen -- sie
+    // werden gleich durch die neu berechneten ersetzt. (Auch beim Aufloesen
+    // der Gruppe via "Vorlage entfernen": dann kommt nur die Basis zurueck.)
+    if (erg->WarGruppenBearbeitung && basisAlt->GruppenUuid != nullptr)
+    {
+        System::String^ uuid = basisAlt->GruppenUuid;
+        for (int i = engine->Buchungen->Count - 1; i >= 0; i--)
+        {
+            auto b = engine->Buchungen[i];
+            if (!System::Object::ReferenceEquals(b, basisAlt)
+                && b->GruppenUuid != nullptr && b->GruppenUuid->Equals(uuid))
+                engine->Buchungen->RemoveAt(i);
+        }
+        idx = engine->Buchungen->IndexOf(basisAlt);
+        if (idx < 0) return FALSE;
+    }
+
+    // Identitaet (Uuid) der Basis uebernehmen, damit die Journal-Selektion
+    // die Buchung trotz neuer Buchung^-Instanz wiederfindet.
+    erg->Buchungen[0]->Uuid = basisAlt->Uuid;
+    engine->Buchungen[idx] = erg->Buchungen[0];
+    for (int k = 1; k < erg->Buchungen->Count; k++)
+        engine->Buchungen->Add(erg->Buchungen[k]);
+
+    engine->Sort();
+    bridge->SyncManagedToNative();
+
+    CString csMeldung = (CString)"Buchung '"
+        + ECTBridge::ToNative(erg->Buchungen[0]->Beschreibung) + "' geändert";
+    if (erg->WarGruppenBearbeitung)
+    {
+        CString csZusatz;
+        csZusatz.Format(" (Buchungsgruppe, %d Buchungen)", erg->Buchungen->Count);
+        csMeldung += csZusatz;
+    }
+    bridge->SetModifiedFlag(csMeldung);
+
+    // Bei Gruppen-Bearbeitung: alle Mitglieder im Journal markieren
+    if (erg->WarGruppenBearbeitung && erg->Buchungen->Count > 1)
+    {
+        ECTViews::Journal::JournalHost::AktualisiereOffenesJournal();
+        ECTBridge_SelektiereImJournal(erg->Buchungen);
+    }
+    return TRUE;
+}
+
 BOOL ECT_ShowBuchungBearbeitenDialog(
     void* pDocBridge, int nBuchungIdx, HWND hWndOwner)
 {
@@ -125,41 +251,8 @@ BOOL ECT_ShowBuchungBearbeitenDialog(
         if (nBuchungIdx < 0 || nBuchungIdx >= engine->Buchungen->Count)
             return FALSE;
 
-        ECTEngine::Buchung^ original = engine->Buchungen[nBuchungIdx];
-
-        // WPF-Dialog anzeigen
-        IntPtr hwnd = IntPtr((void*)hWndOwner);
-        auto ergebnis =
-            ECTViews::ViewHost::ZeigeBuchungBearbeitenDialogMitAbgang(
-                engine, original, hwnd);
-
-        // "Abgang buchen": gleiche AfA-Abgang-Logik wie der Journal-
-        // Kontextmenue-Eintrag, ausgefuehrt auf der bearbeiteten Buchung.
-        if (ergebnis->AbgangGewuenscht)
-        {
-            ECTBridge_FuehreAfaAbgang(bridge, original);
-            return TRUE;
-        }
-
-        ECTEngine::Buchung^ geaendert = ergebnis->Buchung;
-        if (geaendert == nullptr)
-            return FALSE;  // Abgebrochen
-
-        // Identitaet (Uuid) aus dem Original übernehmen, damit Selektion
-        // im Journal trotz neuer Buchung^-Instanz wiedergefunden wird.
-        geaendert->Uuid = original->Uuid;
-
-        // Buchung im Dokument ersetzen
-        engine->Buchungen[nBuchungIdx] = geaendert;
-        engine->Sort();
-
-        // Zurücksynchronisieren
-        bridge->SyncManagedToNative();
-
-        bridge->SetModifiedFlag(
-            (CString)"Buchung '" + ECTBridge::ToNative(geaendert->Beschreibung) + "' geändert");
-
-        return TRUE;
+        return ECTBridge_BearbeiteBuchung(bridge,
+            engine->Buchungen[nBuchungIdx], hWndOwner);
     }
     catch (Exception^ ex)
     {
@@ -202,40 +295,7 @@ BOOL ECT_ShowBuchungBearbeitenDialogFuerPointer(
             return FALSE;
         }
 
-        auto engine = GetEngine(bridge);
-
-        // WPF-Dialog mit der gefundenen Original-Buchung anzeigen
-        IntPtr hwnd = IntPtr((void*)hWndOwner);
-        auto ergebnis =
-            ECTViews::ViewHost::ZeigeBuchungBearbeitenDialogMitAbgang(
-                engine, original, hwnd);
-
-        // "Abgang buchen": gleiche AfA-Abgang-Logik wie der Journal-
-        // Kontextmenue-Eintrag, ausgefuehrt auf der bearbeiteten Buchung.
-        if (ergebnis->AbgangGewuenscht)
-        {
-            ECTBridge_FuehreAfaAbgang(bridge, original);
-            return TRUE;
-        }
-
-        ECTEngine::Buchung^ geaendert = ergebnis->Buchung;
-        if (geaendert == nullptr)
-            return FALSE;  // Abgebrochen
-
-        // Original im Dokument durch geänderte Version ersetzen.
-        // IndexOf nutzt Reference-Equality auf der Buchung^, also
-        // unabhängig vom Sort-Zustand.
-        int idx = engine->Buchungen->IndexOf(original);
-        if (idx < 0) return FALSE;
-        engine->Buchungen[idx] = geaendert;
-        engine->Sort();
-
-        bridge->SyncManagedToNative();
-
-        bridge->SetModifiedFlag(
-            (CString)"Buchung '" + ECTBridge::ToNative(geaendert->Beschreibung) + "' geändert");
-
-        return TRUE;
+        return ECTBridge_BearbeiteBuchung(bridge, original, hWndOwner);
     }
     catch (Exception^ ex)
     {
@@ -266,6 +326,7 @@ BOOL ECT_ShowBuchungKopierenDialog(
 
         // Vorlage klonen -- die Original-Buchung bleibt unverändert
         ECTEngine::Buchung^ vorlage = originalRef->Clone();
+        vorlage->EntferneGruppe();   // Kopie soll NICHT Gruppen-Mitglied werden
 
         if (bNeueBelegnummer)
         {
@@ -709,28 +770,16 @@ namespace ECTBridge
             }
         }
 
+        // Löscht eine ODER mehrere Buchungen; Bestätigung und
+        // Kaskadenlösch-Abfrage für Buchungsgruppen stecken in der
+        // geteilten Funktion (BuchungenLoeschenShared.h, Definition
+        // in JournalExports.cpp).
         void OnLoeschenMehrere(System::Collections::Generic::IList<ECTEngine::Buchung^>^ buchungen)
         {
             auto* bridge = static_cast<CEasyCashDocBridge*>(m_pBridge.ToPointer());
-            if (!bridge || buchungen == nullptr || buchungen->Count == 0) return;
-            auto eng = GetEngine(bridge);
-
-            // Encoding: \366 (Oktal = 0xF6 = cp1252 'oe-Umlaut') statt Literal,
-            // damit AfxMessageBox (MBCS) korrekt anzeigt, unabhaengig vom Dateiencoding.
-            CString frage;
-            if (buchungen->Count == 1)
-                frage.Format("Buchung '%s' wirklich l\366schen?",
-                    (LPCTSTR)ECTBridge::ToNative(buchungen[0]->Beschreibung));
-            else
-                frage.Format("%d Buchungen wirklich l\366schen?", buchungen->Count);
-            if (AfxMessageBox(frage, MB_YESNO | MB_DEFBUTTON2) != IDYES)
-                return;
-
-            for each (ECTEngine::Buchung^ b in buchungen)
-                eng->Buchungen->Remove(b);
-            bridge->SyncManagedToNative();
-            bridge->SetModifiedFlag("Buchungen ueber Journal geloescht");
-            ECTViews::Journal::JournalHost::AktualisiereOffenesJournal();
+            if (!bridge) return;
+            if (ECTBridge_LoescheBuchungenMitGruppenAbfrage(bridge, buchungen))
+                ECTViews::Journal::JournalHost::AktualisiereOffenesJournal();
         }
 
         void OnLoeschen(ECTEngine::Buchung^ b)
@@ -762,6 +811,7 @@ namespace ECTBridge
             // mit dem Index des Klons öffnen.
             auto eng = GetEngine(bridge);
             auto klon = b->Clone();
+            klon->EntferneGruppe();   // Kopie soll NICHT Gruppen-Mitglied werden
             eng->Buchungen->Add(klon);
             int idx = eng->Buchungen->IndexOf(klon);
             bridge->SyncManagedToNative();
@@ -778,6 +828,7 @@ namespace ECTBridge
 
             auto eng = GetEngine(bridge);
             auto klon = b->Clone();
+            klon->EntferneGruppe();   // Kopie soll NICHT Gruppen-Mitglied werden
             klon->Belegnummer = (klon->Art == ECTEngine::Buchungsart::Einnahme)
                 ? eng->LaufendeBelegnrEinnahmen.ToString()
                 : eng->LaufendeBelegnrAusgaben.ToString();

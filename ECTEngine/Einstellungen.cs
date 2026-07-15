@@ -35,7 +35,68 @@ namespace ECTEngine
         }
     }
 
-    /// <summary>Ein Buchungsposten-Preset aus der ini-Sektion [Buchungsposten].</summary>
+    /// <summary>
+    /// Eine Zusatz-Zeile einer Buchungsgruppen-Vorlage (mehrzeiliges Preset).
+    /// Alle Felder sind ROHE Strings aus der ini -- Formeln/Templates werden
+    /// erst beim Buchen ausgewertet (FormelParser). ini-Keys pro Slot NN und
+    /// Zeile k: NNZ&lt;k&gt;Art, NNZ&lt;k&gt;Konto, NNZ&lt;k&gt;MWSt,
+    /// NNZ&lt;k&gt;Betrag, NNZ&lt;k&gt;Text, NNZ&lt;k&gt;Beleg,
+    /// NNZ&lt;k&gt;Betrieb, NNZ&lt;k&gt;Bestandskonto, NNZ&lt;k&gt;Darstellung.
+    /// </summary>
+    public sealed class PresetZeile
+    {
+        /// <summary>"E"/"A"; leer = wie Basiszeile.</summary>
+        public string Art { get; }
+        /// <summary>Konto-Name oder Template (Pflichtfeld der Zeile).</summary>
+        public string Konto { get; }
+        /// <summary>MWSt: Festwert x1000 ("19000") oder Variable ("$vat2");
+        /// leer = wie Basiszeile.</summary>
+        public string MwstAusdruck { get; }
+        /// <summary>Arithmetische Formel ("$brutto*0,3", "$rest");
+        /// leer = manuelle Eingabe beim Buchen.</summary>
+        public string BetragFormel { get; }
+        /// <summary>Beschreibungs-Template ("$B (7% Anteil)");
+        /// leer = von Basis kopiert.</summary>
+        public string TextTemplate { get; }
+        /// <summary>Belegnummern-Template ("$beleg-$vorlagenzeile");
+        /// leer = von Basis kopiert.</summary>
+        public string BelegTemplate { get; }
+        /// <summary>Betrieb (fest oder Template); leer = von Basis kopiert.</summary>
+        public string BetriebTemplate { get; }
+        /// <summary>Bestandskonto (fest oder Template); leer = von Basis kopiert.</summary>
+        public string BestandskontoTemplate { get; }
+        /// <summary>Darstellungs-Override im Buchen-Dialog:
+        /// "" = Heuristik, "kompakt", "maske".</summary>
+        public string Darstellung { get; }
+
+        public PresetZeile(string art, string konto, string mwstAusdruck,
+            string betragFormel, string textTemplate, string belegTemplate = "",
+            string betriebTemplate = "", string bestandskontoTemplate = "",
+            string darstellung = "")
+        {
+            Art                   = art                   ?? "";
+            Konto                 = konto                 ?? "";
+            MwstAusdruck          = mwstAusdruck          ?? "";
+            BetragFormel          = betragFormel          ?? "";
+            TextTemplate          = textTemplate          ?? "";
+            BelegTemplate         = belegTemplate         ?? "";
+            BetriebTemplate       = betriebTemplate       ?? "";
+            BestandskontoTemplate = bestandskontoTemplate ?? "";
+            Darstellung           = darstellung           ?? "";
+        }
+
+        /// <summary>True wenn der Betrag beim Buchen manuell einzugeben ist.</summary>
+        public bool BetragManuell => string.IsNullOrEmpty(BetragFormel);
+
+        public bool IstLeer =>
+            Konto == "" && BetragFormel == "" && TextTemplate == "" &&
+            MwstAusdruck == "" && BelegTemplate == "" && BetriebTemplate == "" &&
+            BestandskontoTemplate == "";
+    }
+
+    /// <summary>Ein Buchungsposten-Preset aus der ini-Sektion [Buchungsposten].
+    /// Mit Zusatz-Zeilen (Zeilen.Count &gt; 0) ist es eine
+    /// Buchungsgruppen-Vorlage; die klassischen 8 Felder bilden Zeile 0.</summary>
     public sealed class Preset
     {
         public string Text    { get; }
@@ -52,8 +113,23 @@ namespace ECTEngine
         /// <summary>Degressiver AfA-Satz in Prozent (nur relevant bei Degressiv).</summary>
         public int    AfaSatz { get; }
 
+        /// <summary>Zusatz-Zeilen der Buchungsgruppen-Vorlage (leer bei
+        /// klassischen Einzel-Presets).</summary>
+        public IReadOnlyList<PresetZeile> Zeilen { get; }
+
+        /// <summary>
+        /// Optionale Formel für den tatsächlich gebuchten Betrag der
+        /// BASIS-Zeile (ini-Key NNBasisBetrag). Leer = der eingegebene
+        /// Betrag wird unverändert gebucht. Beispiel "belegweise
+        /// Aufteilung": Nutzer tippt den Beleg-GESAMTbetrag ein, die
+        /// Zusatz-Zeilen nehmen ihre Anteile, die Basis bucht "$rest".
+        /// $brutto/$netto beziehen sich weiterhin auf die Eingabe.
+        /// </summary>
+        public string BasisBetragFormel { get; }
+
         public Preset(string text, bool ausgabe, int mwst, int afaj, string konto,
-            string notiz = "", bool degressiv = false, int afaSatz = 0)
+            string notiz = "", bool degressiv = false, int afaSatz = 0,
+            IReadOnlyList<PresetZeile> zeilen = null, string basisBetragFormel = null)
         {
             Text      = text    ?? "";
             Ausgabe   = ausgabe;
@@ -63,9 +139,14 @@ namespace ECTEngine
             Notiz     = notiz   ?? "";
             Degressiv = degressiv;
             AfaSatz   = afaSatz;
+            Zeilen    = zeilen  ?? System.Array.Empty<PresetZeile>();
+            BasisBetragFormel = basisBetragFormel ?? "";
         }
 
         public bool IstLeer => string.IsNullOrEmpty(Text) && string.IsNullOrEmpty(Konto);
+
+        /// <summary>True wenn das Preset eine Buchungsgruppen-Vorlage ist.</summary>
+        public bool IstMehrzeilig => Zeilen.Count > 0;
     }
 
     /// <summary>
@@ -118,6 +199,7 @@ namespace ECTEngine
                         _cache[kv.Key] = kv.Value ?? "";
             }
             BaueListenAuf();
+            ImportierePrivatSplitVorlagen();
         }
 
         /// <summary>Cache leeren (z.B. bei Mandantenwechsel vor neuem Laden).</summary>
@@ -272,7 +354,80 @@ namespace ECTEngine
             Speichere(pfx + "Notiz", p.Notiz);
             Speichere(pfx + "Degr", p.Degressiv ? "1" : "0");
             Speichere(pfx + "AfASatz", p.AfaSatz);
+            Speichere(pfx + "BasisBetrag", p.BasisBetragFormel);
+            SchreibeZusatzZeilen(pfx, p.Zeilen);
             BaueListenAuf();
+        }
+
+        /// <summary>Maximale Zusatz-Zeilen pro Buchungsgruppen-Vorlage
+        /// (Z1..Z19; Zeile 0 sind die klassischen Preset-Felder).</summary>
+        public const int MaxPresetZeilen = 20;
+
+        private static readonly string[] _zeilenSuffixe =
+        {
+            "Art", "Konto", "MWSt", "Betrag", "Text",
+            "Beleg", "Betrieb", "Bestandskonto", "Darstellung"
+        };
+
+        /// <summary>Liest die Zusatz-Zeilen eines Preset-Slots
+        /// ([Buchungsposten]NNZ&lt;k&gt;*). Stoppt bei der ersten Zeile
+        /// ohne Konto (Pflichtfeld).</summary>
+        private static IReadOnlyList<PresetZeile> LeseZusatzZeilen(string pfx)
+        {
+            List<PresetZeile> zeilen = null;
+            for (int z = 1; z < MaxPresetZeilen; z++)
+            {
+                var zpfx = pfx + "Z" + z;
+                var konto = Hole(zpfx + "Konto");
+                if (string.IsNullOrEmpty(konto)) break;
+                (zeilen ?? (zeilen = new List<PresetZeile>())).Add(new PresetZeile(
+                    Hole(zpfx + "Art"),
+                    konto,
+                    Hole(zpfx + "MWSt"),
+                    Hole(zpfx + "Betrag"),
+                    Hole(zpfx + "Text"),
+                    Hole(zpfx + "Beleg"),
+                    Hole(zpfx + "Betrieb"),
+                    Hole(zpfx + "Bestandskonto"),
+                    Hole(zpfx + "Darstellung")));
+            }
+            return (IReadOnlyList<PresetZeile>)zeilen ?? System.Array.Empty<PresetZeile>();
+        }
+
+        /// <summary>Schreibt die Zusatz-Zeilen eines Preset-Slots und leert
+        /// die Keys entfallener Zeilen (damit die Leseschleife stoppt und
+        /// keine Leichen in der ini bleiben).</summary>
+        private static void SchreibeZusatzZeilen(string pfx, IReadOnlyList<PresetZeile> zeilen)
+        {
+            int anzahl = zeilen?.Count ?? 0;
+            if (anzahl > MaxPresetZeilen - 1) anzahl = MaxPresetZeilen - 1;
+
+            for (int z = 1; z <= anzahl; z++)
+            {
+                var zeile = zeilen[z - 1];
+                var zpfx = pfx + "Z" + z;
+                Speichere(zpfx + "Art", zeile.Art);
+                Speichere(zpfx + "Konto", zeile.Konto);
+                Speichere(zpfx + "MWSt", zeile.MwstAusdruck);
+                Speichere(zpfx + "Betrag", zeile.BetragFormel);
+                Speichere(zpfx + "Text", zeile.TextTemplate);
+                Speichere(zpfx + "Beleg", zeile.BelegTemplate);
+                Speichere(zpfx + "Betrieb", zeile.BetriebTemplate);
+                Speichere(zpfx + "Bestandskonto", zeile.BestandskontoTemplate);
+                Speichere(zpfx + "Darstellung", zeile.Darstellung);
+            }
+
+            // entfallene Zeilen leeren (alle Suffixe, nicht nur Konto)
+            for (int z = anzahl + 1; z < MaxPresetZeilen; z++)
+            {
+                var zpfx = pfx + "Z" + z;
+                bool vorhanden = false;
+                foreach (var suffix in _zeilenSuffixe)
+                    if (!string.IsNullOrEmpty(Hole(zpfx + suffix))) { vorhanden = true; break; }
+                if (!vorhanden) break;   // keine weiteren Leichen
+                foreach (var suffix in _zeilenSuffixe)
+                    Speichere(zpfx + suffix, "");
+            }
         }
 
         /// <summary>Baut die abgeleiteten Listen (Presets, Konten, …) aus dem
@@ -353,7 +508,8 @@ namespace ECTEngine
                 var notiz   = Hole(pfx + "Notiz");
                 var degr    = Hole(pfx + "Degr") == "1";
                 var afaSatz = HoleInt(pfx + "AfASatz");
-                ps.Add(new Preset(text, ausgabe, mwst, afaj, konto, notiz, degr, afaSatz));
+                ps.Add(new Preset(text, ausgabe, mwst, afaj, konto, notiz, degr, afaSatz,
+                    LeseZusatzZeilen(pfx), Hole(pfx + "BasisBetrag")));
             }
             _presets = ps;
 
@@ -391,18 +547,82 @@ namespace ECTEngine
             _bestandskonten = bk;
         }
 
+        // ---------------------------------------------------------------------
+        // Einmaliger Import der alten [Privat-Split]-Konfiguration als
+        // Buchungsgruppen-Vorlagen (mehrzeilige Presets). Ersetzt die alte
+        // Einstellungsseite einstellungen5 (bleibt USE_ECTIFACE-only).
+        // ---------------------------------------------------------------------
+
+        private const string PrivatSplitMarker = "[Buchungsposten]PrivatSplitImportiert";
+
+        /// <summary>
+        /// Wandelt die Zeilen der ini-Sektion [Privat-Split] (ArtNN/SatzNN/
+        /// UstSatzNN) in mehrzeilige Presets um -- einmalig pro Mandant
+        /// (Marker-Key). Rechnung wie der alte Split in buchendlg.cpp:
+        ///   mit VSt-Abzug  = Brutto * Satz * UstSatz      (MwSt wie Basis)
+        ///   ohne VSt-Abzug = Netto  * Satz * (1-UstSatz)  (MwSt 0)
+        /// </summary>
+        private static void ImportierePrivatSplitVorlagen()
+        {
+            if (Hole(PrivatSplitMarker) == "1") return;
+
+            bool importiert = false;
+            for (int i = 0; i < 10; i++)
+            {
+                var nn = i.ToString("D2");
+                var konto = Hole("[Privat-Split]Art" + nn).Trim();
+                if (konto.Length == 0) continue;
+                decimal satz = ParseProzent(Hole("[Privat-Split]Satz" + nn), 0m);
+                if (satz <= 0m) continue;
+                decimal ust = ParseProzent(Hole("[Privat-Split]UstSatz" + nn), 100m);
+
+                decimal faktorMit = satz / 100m * (ust / 100m);
+                decimal faktorOhne = satz / 100m * ((100m - ust) / 100m);
+                string satzText = satz.ToString("0.##", _deDe);
+                bool beide = faktorMit > 0m && faktorOhne > 0m;
+
+                var zeilen = new List<PresetZeile>();
+                if (faktorMit > 0m)
+                    zeilen.Add(new PresetZeile("E", konto, "$mwstsatz",
+                        "$brutto*" + faktorMit.ToString("0.######", _deDe),
+                        "Privatanteil $beschreibung (" + satzText + "%)"
+                            + (beide ? " - mit VSt-Abzug" : "")));
+                if (faktorOhne > 0m)
+                    zeilen.Add(new PresetZeile("E", konto, "0",
+                        "$netto*" + faktorOhne.ToString("0.######", _deDe),
+                        "Privatanteil $beschreibung (" + satzText + "%)"
+                            + (beide ? " - ohne VSt-Abzug" : "")));
+                if (zeilen.Count == 0) continue;
+
+                // freien Preset-Slot suchen
+                int frei = -1;
+                for (int s = 0; s < _presets.Count; s++)
+                    if (_presets[s].IstLeer) { frei = s; break; }
+                if (frei < 0) break;   // alle 100 Slots belegt
+
+                SpeicherePreset(frei, new Preset(
+                    "Privat-Split: " + konto, true, 19000, 1, "",
+                    "Importiert aus der alten Privat-Split-Konfiguration (" +
+                    satzText + " % Privatanteil, " +
+                    ust.ToString("0.##", _deDe) + " % davon mit VSt-Abzug).",
+                    zeilen: zeilen));
+                importiert = true;
+            }
+
+            if (importiert)
+                Speichere(PrivatSplitMarker, "1");
+        }
+
+        /// <summary>Prozentwert tolerant parsen ("50", "50,0000", "50.5").</summary>
+        private static decimal ParseProzent(string s, decimal fallback)
+            => Waehrungsformat.TryParseProzent(s, out var d) ? d : fallback;
+
         private static readonly CultureInfo _deDe = new CultureInfo("de-DE");
 
+        // Toleranter Parser (Waehrungsformat): versteht deutsche,
+        // schweizerische und englische Schreibweisen. Der frühere
+        // de-DE-Parse las "1234.56" (CH-Bestandsdaten) als 123456!
         private static decimal ParseSaldo(string s)
-        {
-            if (string.IsNullOrWhiteSpace(s)) return 0m;
-            if (decimal.TryParse(s, NumberStyles.Number, _deDe, out decimal d))
-                return d;
-            // Fallback: Punkt als Dezimaltrennzeichen
-            if (decimal.TryParse(s.Replace(',', '.'), NumberStyles.Number,
-                CultureInfo.InvariantCulture, out d))
-                return d;
-            return 0m;
-        }
+            => Waehrungsformat.TryParse(s, out decimal d) ? d : 0m;
     }
 }

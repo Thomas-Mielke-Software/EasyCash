@@ -79,6 +79,25 @@ namespace ECTViews.Journal
         // Icons
         public BitmapSource BetriebIcon { get; set; }
         public BitmapSource BestandskontoIcon { get; set; }
+
+        // ----------------------------------------------
+        // Buchungsgruppen-Kennzeichnung (Phase D)
+        //
+        // Gruppen-Mitglieder werden in der Beschreibungsspalte mit einem
+        // dezenten "[G]"-Praefix markiert (konsistent zur Vorlagen-Liste
+        // auf der PresetsPage) plus Tooltip mit der Rolle.
+        // ----------------------------------------------
+
+        /// <summary>UUID der Buchungsgruppe oder null (kein Mitglied).</summary>
+        public string GruppenUuid { get; set; }
+
+        /// <summary>Tooltip-Text des Gruppen-Symbols ("Teil einer
+        /// Buchungsgruppe, ...") -- null wenn kein Gruppen-Mitglied.</summary>
+        public string GruppenTooltip { get; set; }
+
+        /// <summary>True wenn die Buchung Mitglied einer Buchungsgruppe ist
+        /// (steuert die Sichtbarkeit des "[G]"-Symbols).</summary>
+        public bool IstGruppenMitglied => !string.IsNullOrEmpty(GruppenUuid);
     }
 
     /// <summary>

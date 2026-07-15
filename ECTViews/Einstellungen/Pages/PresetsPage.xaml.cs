@@ -57,5 +57,116 @@ namespace ECTViews.EinstellungenUi.Pages
                 VM?.AktualisiereAusCache();
             }
         }
+
+        // -----------------------------------------------------------------
+        // Neu: anlegen + direkt ins Nr.-Feld springen (Nummer vergeben)
+        // -----------------------------------------------------------------
+
+        private void OnNeu(object sender, RoutedEventArgs e)
+        {
+            VM?.NeuAnlegen();
+            Dispatcher.BeginInvoke(new Action(() =>
+            {
+                NummerBox?.Focus();
+                NummerBox?.SelectAll();
+            }), System.Windows.Threading.DispatcherPriority.Background);
+        }
+
+        // -----------------------------------------------------------------
+        // Buchungsgruppen-Zeilen (Buttons im Zeilen-Editor)
+        // -----------------------------------------------------------------
+
+        private void OnZeileHinzufuegen(object sender, RoutedEventArgs e)
+        {
+            VM?.Ausgewaehlt?.ZeileHinzufuegen();
+        }
+
+        private static PresetsPageViewModel.PresetZeileItem ZeileVon(object sender)
+            => (sender as FrameworkElement)?.DataContext
+                as PresetsPageViewModel.PresetZeileItem;
+
+        private void OnZeileEntfernen(object sender, RoutedEventArgs e)
+        {
+            VM?.Ausgewaehlt?.ZeileEntfernen(ZeileVon(sender));
+        }
+
+        private void OnZeileHoch(object sender, RoutedEventArgs e)
+        {
+            VM?.Ausgewaehlt?.ZeileVerschieben(ZeileVon(sender), -1);
+        }
+
+        private void OnZeileRunter(object sender, RoutedEventArgs e)
+        {
+            VM?.Ausgewaehlt?.ZeileVerschieben(ZeileVon(sender), +1);
+        }
+
+        // -----------------------------------------------------------------
+        // XML-Export/Import (Vorlagen teilen)
+        // -----------------------------------------------------------------
+
+        private void OnExportieren(object sender, RoutedEventArgs e)
+        {
+            var vm = VM;
+            if (vm?.Ausgewaehlt == null) return;
+
+            var xml = vm.ExportiereAusgewaehlt();
+            if (xml == null) return;
+
+            // Ungültige Dateinamen-Zeichen aus der Beschreibung entfernen
+            var name = vm.Ausgewaehlt.Beschreibung ?? "Buchungsvorlage";
+            foreach (var c in System.IO.Path.GetInvalidFileNameChars())
+                name = name.Replace(c, '_');
+
+            var dlg = new Microsoft.Win32.SaveFileDialog
+            {
+                Title = "Buchungsvorlage exportieren",
+                FileName = name + ".ectvorlage.xml",
+                Filter = "EasyCash&Tax-Buchungsvorlage (*.ectvorlage.xml)|*.ectvorlage.xml|Alle Dateien (*.*)|*.*",
+                DefaultExt = ".xml"
+            };
+            if (dlg.ShowDialog(Window.GetWindow(this)) != true) return;
+
+            try
+            {
+                System.IO.File.WriteAllText(dlg.FileName, xml,
+                    new System.Text.UTF8Encoding(false));
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(Window.GetWindow(this),
+                    "Die Vorlage konnte nicht gespeichert werden:\n" + ex.Message,
+                    "Buchungsvorlage exportieren",
+                    MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+
+        private void OnImportieren(object sender, RoutedEventArgs e)
+        {
+            var vm = VM;
+            if (vm == null) return;
+
+            var dlg = new Microsoft.Win32.OpenFileDialog
+            {
+                Title = "Buchungsvorlage importieren",
+                Filter = "EasyCash&Tax-Buchungsvorlage (*.ectvorlage.xml;*.xml)|*.ectvorlage.xml;*.xml|Alle Dateien (*.*)|*.*"
+            };
+            if (dlg.ShowDialog(Window.GetWindow(this)) != true) return;
+
+            string fehler;
+            try
+            {
+                fehler = vm.ImportiereXml(System.IO.File.ReadAllText(dlg.FileName));
+            }
+            catch (Exception ex)
+            {
+                fehler = ex.Message;
+            }
+
+            if (fehler != null)
+                MessageBox.Show(Window.GetWindow(this),
+                    "Die Vorlage konnte nicht importiert werden:\n" + fehler,
+                    "Buchungsvorlage importieren",
+                    MessageBoxButton.OK, MessageBoxImage.Error);
+        }
     }
 }

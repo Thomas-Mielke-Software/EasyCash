@@ -124,10 +124,14 @@ namespace ECTEngine.Tests
         // ──────────────────────────────────────────────
 
         [Fact]
-        public void AlsWaehrung_DeutschesFormat()
+        public void AlsWaehrung_Systemformat()
         {
+            // folgt den Windows-Regionaleinstellungen (wie DEZIMALKOMMA im
+            // Alt-Programm) -- der Test ist deshalb locale-neutral formuliert
             var b = new Betrag(1234.56m);
-            Assert.Equal("1.234,56", b.AlsWaehrung());
+            Assert.Equal(
+                1234.56m.ToString("N2", System.Globalization.CultureInfo.CurrentCulture),
+                b.AlsWaehrung());
         }
 
         // ──────────────────────────────────────────────

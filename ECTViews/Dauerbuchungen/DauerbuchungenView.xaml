@@ -160,7 +160,7 @@
 
                     <TextBlock Grid.Row="6" Grid.Column="0" Style="{StaticResource LabelStyle}"
                                Text="Beschreibung:"
-                               ToolTip="Buchungs-Beschreibungstext, der wiederholt werden soll; Auswahl aus der Liste übernimmt Buchungs-Preset (Text, MWSt, Konto)"/>
+                               ToolTip="Buchungs-Beschreibungstext, der wiederholt werden soll; Auswahl aus der Liste übernimmt Buchungsvorlage (Text, MWSt, Konto)"/>
                     <ComboBox Grid.Row="6" Grid.Column="1" IsEditable="True" Margin="0,2"
                               x:Name="BeschreibungCombo"
                               ItemsSource="{Binding PresetOptionen}"

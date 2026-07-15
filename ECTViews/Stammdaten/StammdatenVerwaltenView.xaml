@@ -10,6 +10,15 @@
         Background="#F5F5F5"
         FontFamily="Segoe UI" FontSize="13">
 
+    <Window.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <!-- app-weite Button-Stile (wie im Buchen-Dialog) -->
+                <ResourceDictionary Source="/ECTViews;component/GemeinsameStile.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </Window.Resources>
+
     <Grid Margin="12">
         <Grid.RowDefinitions>
             <RowDefinition Height="*"/>
@@ -86,13 +95,15 @@
                     Content="{Binding NeuKnopfText}"
                     Click="OnNeu"/>
             <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
-                <Button Content="{Binding OkKnopfText}" MinWidth="110" Padding="14,5"
+                <Button Content="{Binding OkKnopfText}" MinWidth="110" Height="32"
                         Margin="0,0,8,0" IsDefault="True"
+                        Style="{StaticResource PrimaryButtonStyle}"
                         IsEnabled="{Binding EintragGewaehlt}"
                         ToolTip="{Binding OkKnopfToolTip}"
                         Click="OnSelAnzeigen"/>
-                <Button Content="{Binding AbbrechenKnopfText}" MinWidth="110" Padding="14,5"
+                <Button Content="{Binding AbbrechenKnopfText}" MinWidth="110" Height="32"
                         IsCancel="True"
+                        Style="{StaticResource SecondaryButtonStyle}"
                         ToolTip="{Binding AbbrechenKnopfToolTip}"/>
             </StackPanel>
         </Grid>

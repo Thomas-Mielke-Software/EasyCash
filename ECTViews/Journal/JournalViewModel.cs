@@ -76,8 +76,76 @@ namespace ECTViews.Journal
                 {
                     _aktuellerFilter.Schriftgroesse = value;
                     OnPropertyChanged();
+                    SkalierungAktualisieren();
                 }
             }
+        }
+
+        // ----------------------------------------------------------
+        // Skalierung: alle festen Spaltenbreiten sind auf die Basis-
+        // Schriftgroesse 13 ausgelegt und wachsen/schrumpfen linear mit
+        // der tatsaechlichen Schriftgroesse (Einstellungen bzw. Zoom).
+        // Ohne diese Kopplung wird der Text in den Fixbreiten-Spalten
+        // bei groesseren Schriften abgeschnitten.
+        // ----------------------------------------------------------
+        private const double BasisSchriftgroesse = 13.0;
+        private double Skala => Schriftgroesse / BasisSchriftgroesse;
+
+        public double IconSpaltenBreite   => 28.0  * Skala;
+        public double DatumSpaltenBreite  => 90.0  * Skala;
+        public double BruttoSpaltenBreite => 110.0 * Skala;
+        public double AfaSpaltenBreite    => 60.0  * Skala;
+
+        // Abschnittstitel: 15/17 bei Basis-Schriftgroesse 13, zoomen mit.
+        public double TitelSchriftgroesse      => 15.0 * Skala;
+        public double HauptTitelSchriftgroesse => 17.0 * Skala;
+
+        // Icon-Groesse = Hoehe EINER Textzeile der aktuellen Schrift
+        // (FontSize x LineSpacing der FontFamily). Dadurch bestimmt die
+        // Textzeile die Zeilenhoehe -- ein groesseres Icon (frueher fix
+        // 20px) wuerde die Zeile aufblaehen und der oben ausgerichtete
+        // Text saesse bei kleinen Schriften sichtbar zu hoch.
+        private string _lineSpacingSchrift;
+        private double _lineSpacing = 4.0 / 3.0;
+        public double IconGroesse
+        {
+            get
+            {
+                if (_lineSpacingSchrift != Schriftart)
+                {
+                    try
+                    {
+                        _lineSpacing = new System.Windows.Media
+                            .FontFamily(Schriftart).LineSpacing;
+                    }
+                    catch { _lineSpacing = 4.0 / 3.0; }
+                    _lineSpacingSchrift = Schriftart;
+                }
+                return Schriftgroesse * _lineSpacing;
+            }
+        }
+
+        /// <summary>
+        /// Meldet alle von der Schriftgroesse abgeleiteten Layout-Properties
+        /// neu und rechnet die gespeicherten (sichtbarkeitsabhaengigen)
+        /// Spaltenbreiten auf die neue Skala um. Wird vom Schriftgroesse-
+        /// Setter (Zoom) und von Aktualisiere() gerufen.
+        /// </summary>
+        private void SkalierungAktualisieren()
+        {
+            OnPropertyChanged(nameof(IconSpaltenBreite));
+            OnPropertyChanged(nameof(IconGroesse));
+            OnPropertyChanged(nameof(DatumSpaltenBreite));
+            OnPropertyChanged(nameof(BruttoSpaltenBreite));
+            OnPropertyChanged(nameof(AfaSpaltenBreite));
+            OnPropertyChanged(nameof(TitelSchriftgroesse));
+            OnPropertyChanged(nameof(HauptTitelSchriftgroesse));
+
+            SaldoSpaltenBreite     = _zeigeSaldo  ? SaldoBreite         * Skala : 0.0;
+            NettoSpaltenBreite     = _zeigeSteuer ? SteuerNettoBreite   * Skala : 0.0;
+            UStSatzSpaltenBreite   = _zeigeSteuer ? SteuerSatzBreite    * Skala : 0.0;
+            UStBetragSpaltenBreite = _zeigeSteuer ? SteuerBetragBreite  * Skala : 0.0;
+            BelegSpaltenBreite     = BerechneBelegSpaltenBreite();
         }
 
         // Maximale Breite der Belegspalte (1/4 der ListBox-Breite). Wird
@@ -119,6 +187,11 @@ namespace ECTViews.Journal
         private const double SteuerNettoBreite = 100.0;
         private const double SteuerSatzBreite  = 60.0;
         private const double SteuerBetragBreite = 100.0;
+        private const double SaldoBreite = 110.0;
+
+        // Sichtbarkeits-Entscheidung der Saldo-Spalte (Bestandskonten-Modus),
+        // festgehalten fuer die Neu-Skalierung beim Zoomen.
+        private bool _zeigeSaldo;
 
         private double _nettoSpaltenBreite = SteuerNettoBreite;
         public double NettoSpaltenBreite
@@ -165,7 +238,50 @@ namespace ECTViews.Journal
         public JournalBuchungRow SelektierteZeile
         {
             get => _selektierteZeile;
-            set => SetProperty(ref _selektierteZeile, value);
+            set
+            {
+                // Manuelle Selektion (Klick/Tastatur) löst den
+                // Mehrfach-Selektions-Merker -- programmgesteuerte Setzer
+                // (SelektiereBuchungen, Rebuild-Restore) setzen die Guard.
+                if (SetProperty(ref _selektierteZeile, value) && !_selektionIntern)
+                    _mehrfachMerker = null;
+            }
+        }
+
+        // Merker der letzten programmatischen Mehrfach-Selektion (z.B.
+        // Buchungsgruppe nach dem Buchen/Bearbeiten). Wird beim Neuaufbau
+        // der Zeilen re-appliziert, damit die Gruppen-Markierung den
+        // nachfolgenden Journal-Refresh des nativen Aufrufers überlebt.
+        private List<Guid> _mehrfachMerker;
+        private bool _selektionIntern;
+
+        /// <summary>
+        /// Setzt/löst die interne Selektions-Guard von aussen. Die View ruft
+        /// das um ihre programmatische SelectedItems-Manipulation herum auf
+        /// (OnMehrfachSelektion): das Clear/Add feuert die SelectedItem-
+        /// Bindung zurück in <see cref="SelektierteZeile"/>, was ohne Guard
+        /// den Mehrfach-Merker löschen und die Gruppen-Expansion erneut
+        /// anstossen würde (Endlosschleife).
+        /// </summary>
+        internal void SetzeSelektionsGuard(bool aktiv) => _selektionIntern = aktiv;
+
+        /// <summary>
+        /// Erweitert die Selektion auf die komplette Buchungsgruppe der
+        /// angeklickten Zeile (Phase D: Klick auf ein Mitglied markiert die
+        /// ganze Gruppe). Kein-Op, wenn die Zeile kein Gruppen-Mitglied ist
+        /// oder die Gruppe nur aus einer Buchung besteht.
+        /// </summary>
+        public void SelektiereGruppeVon(JournalBuchungRow zeile)
+        {
+            var gruppenUuid = zeile?.Buchung?.GruppenUuid;
+            if (string.IsNullOrEmpty(gruppenUuid)) return;
+
+            var uuids = _doc.Buchungen
+                .Where(b => b.GruppenUuid == gruppenUuid)
+                .Select(b => b.Uuid)
+                .ToList();
+            if (uuids.Count < 2) return;
+            SelektiereBuchungen(uuids);
         }
 
         // Event, das der View abonniert. Liefert die Zeile, die in den
@@ -188,6 +304,13 @@ namespace ECTViews.Journal
         public void SelektiereBuchungen(IList<Guid> uuids)
         {
             if (uuids == null || uuids.Count == 0) return;
+
+            // Merker VOR der Treffer-Suche setzen: sind die Zeilen noch nicht
+            // (neu) aufgebaut, greift die Selektion beim nächsten
+            // Aktualisiere() -- so kann die Bridge direkt nach dem Buchen
+            // selektieren, bevor der native Refresh läuft.
+            _mehrfachMerker = new List<Guid>(uuids);
+
             var set = new HashSet<Guid>(uuids);
             var treffer = Zeilen.OfType<JournalBuchungRow>()
                 .Where(r => r.Buchung != null && set.Contains(r.Buchung.Uuid))
@@ -195,7 +318,9 @@ namespace ECTViews.Journal
             if (treffer.Count == 0) return;
 
             // Primärselektion (für Kontextmenü/Tastatur) auf die letzte setzen.
-            SelektierteZeile = treffer[treffer.Count - 1];
+            _selektionIntern = true;
+            try { SelektierteZeile = treffer[treffer.Count - 1]; }
+            finally { _selektionIntern = false; }
             MehrfachSelektionRequest?.Invoke(treffer);
         }
 
@@ -322,11 +447,21 @@ namespace ECTViews.Journal
         // Commands
         public ICommand BearbeitenCommand { get; }
         public ICommand LoeschenCommand { get; }
+        public ICommand GruppeLoeschenCommand { get; }
         public ICommand KopierenCommand { get; }
         public ICommand KopierenMitNeuerBelegnummerCommand { get; }
         public ICommand AfaAbgangCommand { get; }
 
         // Events
+        /// <summary>
+        /// Zoom-Aenderungswunsch aus der View (Strg-'+'/'-' bzw. Strg-Mausrad),
+        /// Delta in Prozentpunkten (+25/-25). Wird von der Bridge an den
+        /// nativen Zoom-Mechanismus weitergereicht (SetzeZoomfaktor), damit
+        /// Profil-Persistenz, Statuszeile und alle Journals synchron bleiben.
+        /// </summary>
+        public event Action<int> ZoomAendern;
+        public void MeldeZoomAenderung(int deltaProzent) => ZoomAendern?.Invoke(deltaProzent);
+
         public event Action<Buchung> BuchungBearbeiten;
         /// <summary>Loescht alle uebergebenen Buchungen (eine oder mehrere).</summary>
         public event Action<System.Collections.Generic.IList<Buchung>> BuchungenLoeschen;
@@ -338,13 +473,65 @@ namespace ECTViews.Journal
         private bool GenauEine => _selektierteZeilen.Count == 1
                                   && _selektierteZeilen[0].Buchung != null;
 
+        // True wenn ALLE selektierten Zeilen zur selben Buchungsgruppe
+        // gehören (mindestens zwei). Weil ein Klick auf ein Gruppen-Mitglied
+        // die ganze Gruppe markiert, müssen die Einzel-Kommandos (Ändern/
+        // Kopieren/AfA-Abgang) diesen Zustand wie eine Einzelselektion
+        // behandeln -- sonst wären sie für Gruppen-Mitglieder unerreichbar.
+        private bool SelektionIstEineGruppe
+        {
+            get
+            {
+                if (_selektierteZeilen.Count < 2) return false;
+                string uuid = _selektierteZeilen[0].Buchung?.GruppenUuid;
+                if (string.IsNullOrEmpty(uuid)) return false;
+                return _selektierteZeilen.All(
+                    z => z.Buchung?.GruppenUuid == uuid);
+            }
+        }
+
+        // Ziel-Buchung für die Einzel-Kommandos: genau eine Selektion ODER
+        // eine komplett selektierte Buchungsgruppe (dann die Primärzeile,
+        // Fallback erste Zeile). Null wenn kein eindeutiges Ziel existiert.
+        private Buchung EinzelZiel
+        {
+            get
+            {
+                if (GenauEine) return _selektierteZeilen[0].Buchung;
+                if (SelektionIstEineGruppe)
+                {
+                    var prim = _selektierteZeile;
+                    if (prim?.Buchung != null && _selektierteZeilen.Contains(prim))
+                        return prim.Buchung;
+                    return _selektierteZeilen[0].Buchung;
+                }
+                return null;
+            }
+        }
+
+        /// <summary>
+        /// Alle Buchungen der Gruppen, die in der aktuellen Selektion
+        /// vertreten sind (frisch aus dem Dokument aufgelöst) -- Basis für
+        /// "Buchungsgruppe löschen".
+        /// </summary>
+        private List<Buchung> GruppenMitgliederDerSelektion()
+        {
+            var gruppen = new HashSet<string>(_selektierteZeilen
+                .Select(z => z.Buchung?.GruppenUuid)
+                .Where(u => !string.IsNullOrEmpty(u)));
+            if (gruppen.Count == 0) return new List<Buchung>();
+            return _doc.Buchungen
+                .Where(b => b.GruppenUuid != null && gruppen.Contains(b.GruppenUuid))
+                .ToList();
+        }
+
         public JournalViewModel(BuchungsDocument doc)
         {
             _doc = doc ?? throw new ArgumentNullException(nameof(doc));
 
             BearbeitenCommand = new RelayCommand(
-                () => { if (GenauEine) BuchungBearbeiten?.Invoke(_selektierteZeilen[0].Buchung); },
-                () => GenauEine);
+                () => { var z = EinzelZiel; if (z != null) BuchungBearbeiten?.Invoke(z); },
+                () => EinzelZiel != null);
             // Loeschen: eine ODER mehrere -- loescht alle Selektierten.
             LoeschenCommand = new RelayCommand(
                 () =>
@@ -356,17 +543,28 @@ namespace ECTViews.Journal
                     if (liste.Count > 0) BuchungenLoeschen?.Invoke(liste);
                 },
                 () => _selektierteZeilen.Count >= 1);
+            // Buchungsgruppe löschen: alle Mitglieder der Gruppe(n) der
+            // Selektion auf einmal (ein Sync, ein SetModifiedFlag in der
+            // Bridge). Nur aktiv, wenn die Selektion Gruppen-Mitglieder hat.
+            GruppeLoeschenCommand = new RelayCommand(
+                () =>
+                {
+                    var liste = GruppenMitgliederDerSelektion();
+                    if (liste.Count > 0) BuchungenLoeschen?.Invoke(liste);
+                },
+                () => _selektierteZeilen.Any(
+                    z => !string.IsNullOrEmpty(z.Buchung?.GruppenUuid)));
             KopierenCommand = new RelayCommand(
-                () => { if (GenauEine) BuchungKopieren?.Invoke(_selektierteZeilen[0].Buchung); },
-                () => GenauEine);
+                () => { var z = EinzelZiel; if (z != null) BuchungKopieren?.Invoke(z); },
+                () => EinzelZiel != null);
             KopierenMitNeuerBelegnummerCommand = new RelayCommand(
-                () => { if (GenauEine) BuchungKopierenMitNeuerBelegnummer?.Invoke(_selektierteZeilen[0].Buchung); },
-                () => GenauEine);
+                () => { var z = EinzelZiel; if (z != null) BuchungKopierenMitNeuerBelegnummer?.Invoke(z); },
+                () => EinzelZiel != null);
             AfaAbgangCommand = new RelayCommand(
-                () => { if (GenauEine) BuchungAfaAbgang?.Invoke(_selektierteZeilen[0].Buchung); },
-                // Nur bei genau einer noch laufenden Anlage -- Abgang-Buchungen
+                () => { var z = EinzelZiel; if (z != null) BuchungAfaAbgang?.Invoke(z); },
+                // Nur bei einer noch laufenden Anlage -- Abgang-Buchungen
                 // (AfaJahre==1) können nicht nochmal ausgeschieden werden.
-                () => GenauEine && _selektierteZeilen[0].Buchung.AfaJahre > 1);
+                () => EinzelZiel != null && EinzelZiel.AfaJahre > 1);
         }
 
         /// <summary>
@@ -390,22 +588,18 @@ namespace ECTViews.Journal
             // Saldo-Spalte nur im Bestandskonten-Modus sichtbar machen.
             // In den anderen Modi auf 0 - die Spalte ist dann ein
             // Null-Pixel-Strich und stört das Layout nicht.
-            SaldoSpaltenBreite =
-                AktuellerFilter.AnzeigeModus == JournalAnzeigeModus.Bestandskonten
-                ? 110.0 : 0.0;
+            _zeigeSaldo =
+                AktuellerFilter.AnzeigeModus == JournalAnzeigeModus.Bestandskonten;
 
             // Steuer-Spalten (Netto, USt-Satz, USt-Betrag) nur einblenden, wenn
             // mindestens eine angezeigte Buchung tatsaechlich einen USt-Betrag
             // hat (in den Modi Datum/Konten). Sonst die Spalten auf 0 Pixel
             // kollabieren, damit die Beschreibungsspalte den Platz bekommt.
             _zeigeSteuer = BerechneZeigeSteuer();
-            NettoSpaltenBreite     = _zeigeSteuer ? SteuerNettoBreite  : 0.0;
-            UStSatzSpaltenBreite   = _zeigeSteuer ? SteuerSatzBreite   : 0.0;
-            UStBetragSpaltenBreite = _zeigeSteuer ? SteuerBetragBreite : 0.0;
 
-            // Beleg-Spaltenbreite einmal global berechnen (bleibt während
-            // des Scrollens konstant).
-            BelegSpaltenBreite = BerechneBelegSpaltenBreite();
+            // Spaltenbreiten (Saldo/Steuer/Beleg) passend zur aktuellen
+            // Schriftgroesse setzen; skaliert auch alle Fixbreiten-Properties.
+            SkalierungAktualisieren();
 
             switch (AktuellerFilter.AnzeigeModus)
             {
@@ -428,11 +622,23 @@ namespace ECTViews.Journal
             // mitführt. Anschliessend zum wiederhergestellten Eintrag
             // zentrieren (ScrollIntoViewRequest), damit die Buchung nach
             // einer Bearbeitung sichtbar bleibt.
-            if (alteUuid != Guid.Empty)
+            // Mehrfach-Selektion (Buchungsgruppe) hat Vorrang: der Merker
+            // re-appliziert die Gruppen-Markierung nach jedem Neuaufbau,
+            // bis der Anwender manuell eine andere Zeile wählt.
+            if (_mehrfachMerker != null && _mehrfachMerker.Count > 0)
             {
-                SelektierteZeile = Zeilen.OfType<JournalBuchungRow>()
-                    .FirstOrDefault(r => r.Buchung != null
-                                       && r.Buchung.Uuid == alteUuid);
+                SelektiereBuchungen(_mehrfachMerker);
+            }
+            else if (alteUuid != Guid.Empty)
+            {
+                _selektionIntern = true;
+                try
+                {
+                    SelektierteZeile = Zeilen.OfType<JournalBuchungRow>()
+                        .FirstOrDefault(r => r.Buchung != null
+                                           && r.Buchung.Uuid == alteUuid);
+                }
+                finally { _selektionIntern = false; }
                 if (SelektierteZeile != null)
                     ScrollIntoViewRequest?.Invoke(SelektierteZeile);
             }
@@ -966,19 +1172,16 @@ namespace ECTViews.Journal
         }
 
         /// <summary>
-        /// Parst eine deutsche Waehrungs-Zeichenkette ("1234,56" oder
-        /// "-1234,56") nach Cent. Toleriert auch Punkte als
-        /// Tausendertrenner ("1.234,56"). Liefert 0 bei Parse-Fehler.
+        /// Parst eine Währungs-Zeichenkette nach Cent -- tolerant für
+        /// deutsche ("1.234,56"), schweizerische ("1'234.56") und englische
+        /// ("1,234.56") Schreibweisen (Waehrungsformat.TryParse).
+        /// Liefert 0 bei Parse-Fehler.
         /// </summary>
         private static long ParseCurrencyToCent(string s)
         {
-            if (string.IsNullOrWhiteSpace(s)) return 0;
-            s = s.Trim().Replace(".", "");  // Tausendertrenner weg
-            if (decimal.TryParse(s,
-                System.Globalization.NumberStyles.Number,
-                DeDE, out var d))
-                return (long)Math.Round(d * 100m);
-            return 0;
+            return Waehrungsformat.TryParse(s, out decimal d)
+                ? (long)Math.Round(d * 100m)
+                : 0;
         }
 
         // Hilfsmethode: Bestandskonten sammeln, die in Buchungen vorkommen
@@ -1298,6 +1501,8 @@ namespace ECTViews.Journal
                 Buchung = b,
                 IstAusgabe = istAusgabe,
                 ZebraIndex = zebraIdx,
+                GruppenUuid = b.GruppenUuid,
+                GruppenTooltip = BaueGruppenTooltip(b),
                 DatumText = b.Datum.ToString("dd.MM.yyyy", DeDE),
                 BelegText = b.Belegnummer ?? "",
                 BeschreibungText = b.Beschreibung ?? "",
@@ -1311,6 +1516,21 @@ namespace ECTViews.Journal
                 BetriebIcon = HoleIcon(IconArt.Betrieb, b.Betrieb),
                 BestandskontoIcon = HoleIcon(IconArt.Bestandskonto, b.Bestandskonto)
             };
+        }
+
+        /// <summary>
+        /// Tooltip für das "[G]"-Symbol eines Gruppen-Mitglieds; null wenn
+        /// die Buchung zu keiner Buchungsgruppe gehört.
+        /// </summary>
+        private static string BaueGruppenTooltip(Buchung b)
+        {
+            if (string.IsNullOrEmpty(b.GruppenUuid)) return null;
+            int rolle = b.GruppenRolle;
+            if (rolle == 0)
+                return "Teil einer Buchungsgruppe (Basisbuchung)";
+            if (rolle > 0)
+                return "Teil einer Buchungsgruppe (Zusatzbuchung " + rolle + ")";
+            return "Teil einer Buchungsgruppe";
         }
 
         private JournalFooterRow BaueFooter(
@@ -1328,13 +1548,12 @@ namespace ECTViews.Journal
         }
 
         private string FormatBetrag(long cent)
-            => (cent / 100m).ToString("N2", DeDE);
+            => Waehrungsformat.Betrag(cent / 100m);
 
         private string FormatMwstSatz(int promille)
         {
             if (promille == 0) return "";
-            decimal prozent = promille / 1000m;
-            return prozent.ToString("0.##", DeDE) + "%";
+            return Waehrungsformat.Zahl(promille / 1000m) + "%";
         }
 
         /// <summary>

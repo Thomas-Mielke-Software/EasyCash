@@ -13,6 +13,12 @@
         FontFamily="Segoe UI" FontSize="13">
 
     <Window.Resources>
+        <ResourceDictionary>
+        <ResourceDictionary.MergedDictionaries>
+            <!-- app-weite Button-Stile (PrimaryButtonStyle / SecondaryButtonStyle) -->
+            <ResourceDictionary Source="/ECTViews;component/GemeinsameStile.xaml"/>
+        </ResourceDictionary.MergedDictionaries>
+
         <!-- Basis-Stil für Labels -->
         <Style TargetType="TextBlock" x:Key="LabelStyle">
             <Setter Property="VerticalAlignment" Value="Center"/>
@@ -74,93 +80,8 @@
         <!-- Konverter: 0 → leeres Feld (Tag/Monat ohne Vorbelegung) -->
         <local:LeereZahlConverter x:Key="LeereZahl"/>
 
-        <!-- Stil für den primären Aktions-Button (Buchen / Speichern).
-             Eigener ControlTemplate, damit das WPF-Theme beim Hover nicht
-             den Hintergrund überschreibt.
-             Normal: #1976D2 (mittleres Blau)
-             Hover:  #1255B0 (kräftigeres Blau)
-             Pressed: #0D47A1 (dunkles Blau)
-             Disabled: gedämpftes Blaugrau -->
-        <Style x:Key="PrimaryButtonStyle" TargetType="Button">
-            <Setter Property="Foreground" Value="White"/>
-            <Setter Property="FontWeight" Value="SemiBold"/>
-            <Setter Property="BorderThickness" Value="0"/>
-            <Setter Property="Cursor" Value="Hand"/>
-            <Setter Property="Template">
-                <Setter.Value>
-                    <ControlTemplate TargetType="Button">
-                        <Border x:Name="bd"
-                                Background="#1E88E5"
-                                CornerRadius="2"
-                                SnapsToDevicePixels="True"
-                                RenderTransformOrigin="0.5,0.5">
-                            <Border.RenderTransform>
-                                <ScaleTransform ScaleX="1" ScaleY="1"/>
-                            </Border.RenderTransform>
-                            <ContentPresenter HorizontalAlignment="Center"
-                                              VerticalAlignment="Center"/>
-                        </Border>
-                        <ControlTemplate.Triggers>
-                            <Trigger Property="IsMouseOver" Value="True">
-                                <Setter TargetName="bd" Property="Background" Value="#1976D2"/>
-                            </Trigger>
-                            <Trigger Property="IsPressed" Value="True">
-                                <Setter TargetName="bd" Property="RenderTransform">
-                                    <Setter.Value>
-                                        <ScaleTransform ScaleX="1.03" ScaleY="1.08"/>
-                                    </Setter.Value>
-                                </Setter>
-                            </Trigger>
-                            <Trigger Property="IsEnabled" Value="False">
-                                <Setter TargetName="bd" Property="Background" Value="#7FA8CC"/>
-                                <Setter Property="Foreground" Value="#D0D0D0"/>
-                            </Trigger>
-                        </ControlTemplate.Triggers>
-                    </ControlTemplate>
-                </Setter.Value>
-            </Setter>
-        </Style>
-
-        <!-- Stil für den sekundären Button (Abbrechen): grau, gleiches
-             ScaleTransform-Verhalten beim Drücken wie PrimaryButtonStyle. -->
-        <Style x:Key="SecondaryButtonStyle" TargetType="Button">
-            <Setter Property="Foreground" Value="#222"/>
-            <Setter Property="BorderThickness" Value="0"/>
-            <Setter Property="Cursor" Value="Hand"/>
-            <Setter Property="Template">
-                <Setter.Value>
-                    <ControlTemplate TargetType="Button">
-                        <Border x:Name="bd"
-                                Background="#DCDCDC"
-                                CornerRadius="2"
-                                SnapsToDevicePixels="True"
-                                RenderTransformOrigin="0.5,0.5">
-                            <Border.RenderTransform>
-                                <ScaleTransform ScaleX="1" ScaleY="1"/>
-                            </Border.RenderTransform>
-                            <ContentPresenter HorizontalAlignment="Center"
-                                              VerticalAlignment="Center"/>
-                        </Border>
-                        <ControlTemplate.Triggers>
-                            <Trigger Property="IsMouseOver" Value="True">
-                                <Setter TargetName="bd" Property="Background" Value="#C0C0C0"/>
-                            </Trigger>
-                            <Trigger Property="IsPressed" Value="True">
-                                <Setter TargetName="bd" Property="RenderTransform">
-                                    <Setter.Value>
-                                        <ScaleTransform ScaleX="1.03" ScaleY="1.08"/>
-                                    </Setter.Value>
-                                </Setter>
-                            </Trigger>
-                            <Trigger Property="IsEnabled" Value="False">
-                                <Setter TargetName="bd" Property="Background" Value="#EFEFEF"/>
-                                <Setter Property="Foreground" Value="#AAAAAA"/>
-                            </Trigger>
-                        </ControlTemplate.Triggers>
-                    </ControlTemplate>
-                </Setter.Value>
-            </Setter>
-        </Style>
+        <!-- PrimaryButtonStyle/SecondaryButtonStyle kommen aus
+             GemeinsameStile.xaml (MergedDictionaries oben). -->
 
         <!-- DataTemplate für Icon-Listen-Items: Icon links, Name rechts.
              Stretch="Uniform" skaliert das gecroppte Icon proportional auf
@@ -175,6 +96,7 @@
                            VerticalAlignment="Center" FontSize="13"/>
             </StackPanel>
         </DataTemplate>
+        </ResourceDictionary>
     </Window.Resources>
 
     <Grid Margin="12">
@@ -186,6 +108,7 @@
             <RowDefinition Height="Auto"/>  <!-- Belegnummer + Konto -->
             <RowDefinition Height="Auto"/>  <!-- Bestandskonto + Betrieb -->
             <RowDefinition Height="Auto"/>  <!-- AfA -->
+            <RowDefinition Height="Auto"/>  <!-- Buchungsgruppe -->
             <RowDefinition Height="*"/>     <!-- Spacer -->
             <RowDefinition Height="Auto"/>  <!-- Buttons -->
         </Grid.RowDefinitions>
@@ -463,8 +386,178 @@
             </StackPanel>
         </GroupBox>
 
-        <!-- ═══ Zeile 8: Buttons ═══ -->
-        <StackPanel Grid.Row="8" Orientation="Horizontal"
+        <!-- ═══ Zeile 7: Buchungsgruppen-Zeilen (nur bei mehrzeiliger Vorlage) ═══ -->
+        <GroupBox Grid.Row="7" Margin="0,8,0,0" Padding="8"
+                  Visibility="{Binding HatZusatzzeilen, Converter={StaticResource BoolToVis}}">
+            <GroupBox.Header>
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock Text="Buchungsgruppe: "/>
+                    <TextBlock Text="{Binding GruppenVorlageName}" FontWeight="SemiBold"/>
+                </StackPanel>
+            </GroupBox.Header>
+            <StackPanel>
+                <ItemsControl ItemsSource="{Binding Zusatzzeilen}">
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <Border Visibility="{Binding IstSichtbar, Converter={StaticResource BoolToVis}}"
+                                    BorderBrush="#DDD" BorderThickness="0,0,0,1" Padding="0,4">
+                                <StackPanel>
+                                    <!-- [kompakte (additive) Darstellung: nur die Eingabefelder] -->
+                                    <Grid Visibility="{Binding IstKompakt, Converter={StaticResource BoolToVis}}">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="Auto"/>
+                                            <ColumnDefinition Width="Auto"/>
+                                            <ColumnDefinition Width="Auto"/>
+                                            <ColumnDefinition Width="Auto"/>
+                                        </Grid.ColumnDefinitions>
+                                        <StackPanel Grid.Column="0" Orientation="Horizontal">
+                                            <TextBlock Text="{Binding KontoText}" FontWeight="SemiBold"
+                                                       VerticalAlignment="Center"/>
+                                            <TextBlock Text="{Binding BeschreibungText}" Foreground="#777"
+                                                       Margin="8,0,0,0" VerticalAlignment="Center"
+                                                       TextTrimming="CharacterEllipsis"
+                                                       ToolTip="{Binding BeschreibungText}"/>
+                                        </StackPanel>
+                                        <TextBlock Grid.Column="1" Text="Betrag:" VerticalAlignment="Center"
+                                                   Margin="8,0,4,0" Foreground="#333"/>
+                                        <Grid Grid.Column="2" Width="90">
+                                            <TextBox Text="{Binding BetragText, UpdateSourceTrigger=PropertyChanged}"
+                                                     TextAlignment="Right"
+                                                     Visibility="{Binding BetragEditierbar, Converter={StaticResource BoolToVis}}"/>
+                                            <TextBlock Text="{Binding BetragAnzeige}" TextAlignment="Right"
+                                                       VerticalAlignment="Center" Foreground="#555"
+                                                       ToolTip="{Binding BetragFormelTooltip}">
+                                                <TextBlock.Style>
+                                                    <Style TargetType="TextBlock">
+                                                        <Setter Property="Visibility" Value="Visible"/>
+                                                        <Style.Triggers>
+                                                            <DataTrigger Binding="{Binding BetragEditierbar}" Value="True">
+                                                                <Setter Property="Visibility" Value="Collapsed"/>
+                                                            </DataTrigger>
+                                                        </Style.Triggers>
+                                                    </Style>
+                                                </TextBlock.Style>
+                                            </TextBlock>
+                                        </Grid>
+                                        <TextBlock Grid.Column="3" Text="MWSt %:" VerticalAlignment="Center"
+                                                   Margin="10,0,4,0" Foreground="#333"/>
+                                        <Grid Grid.Column="4" Width="50">
+                                            <TextBox Text="{Binding MwstText, UpdateSourceTrigger=PropertyChanged}"
+                                                     TextAlignment="Center"
+                                                     Visibility="{Binding MwstEditierbar, Converter={StaticResource BoolToVis}}"/>
+                                            <TextBlock Text="{Binding MwstAnzeige}" TextAlignment="Center"
+                                                       VerticalAlignment="Center" Foreground="#555"
+                                                       ToolTip="{Binding MwstTooltip}">
+                                                <TextBlock.Style>
+                                                    <Style TargetType="TextBlock">
+                                                        <Setter Property="Visibility" Value="Visible"/>
+                                                        <Style.Triggers>
+                                                            <DataTrigger Binding="{Binding MwstEditierbar}" Value="True">
+                                                                <Setter Property="Visibility" Value="Collapsed"/>
+                                                            </DataTrigger>
+                                                        </Style.Triggers>
+                                                    </Style>
+                                                </TextBlock.Style>
+                                            </TextBlock>
+                                        </Grid>
+                                    </Grid>
+
+                                    <!-- [Masken-Darstellung (subtraktiv): alle aufgelösten Felder,
+                                         berechnete readonly] -->
+                                    <Grid Visibility="{Binding IstMaske, Converter={StaticResource BoolToVis}}">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="Auto"/>
+                                            <ColumnDefinition Width="*"/>
+                                        </Grid.ColumnDefinitions>
+                                        <Grid.RowDefinitions>
+                                            <RowDefinition Height="Auto"/>
+                                            <RowDefinition Height="Auto"/>
+                                            <RowDefinition Height="Auto"/>
+                                            <RowDefinition Height="Auto"/>
+                                        </Grid.RowDefinitions>
+                                        <TextBlock Grid.Row="0" Grid.Column="0" Text="Konto:" Foreground="#333" Margin="0,0,8,2"/>
+                                        <StackPanel Grid.Row="0" Grid.Column="1" Orientation="Horizontal">
+                                            <TextBlock Text="{Binding KontoText}" FontWeight="SemiBold"/>
+                                            <TextBlock Text="{Binding ArtText, StringFormat=' ({0})'}" Foreground="#777"/>
+                                        </StackPanel>
+                                        <TextBlock Grid.Row="1" Grid.Column="0" Text="Beschreibung:" Foreground="#333" Margin="0,0,8,2"/>
+                                        <TextBlock Grid.Row="1" Grid.Column="1" Text="{Binding BeschreibungText}"/>
+                                        <TextBlock Grid.Row="2" Grid.Column="0" Text="Beleg:" Foreground="#333" Margin="0,0,8,2"/>
+                                        <TextBlock Grid.Row="2" Grid.Column="1" Text="{Binding BelegText}"/>
+                                        <TextBlock Grid.Row="3" Grid.Column="0" Text="Betrag / MWSt:" Foreground="#333" Margin="0,0,8,0"/>
+                                        <StackPanel Grid.Row="3" Grid.Column="1" Orientation="Horizontal">
+                                            <Grid Width="90">
+                                                <TextBox Text="{Binding BetragText, UpdateSourceTrigger=PropertyChanged}"
+                                                         TextAlignment="Right"
+                                                         Visibility="{Binding BetragEditierbar, Converter={StaticResource BoolToVis}}"/>
+                                                <TextBlock Text="{Binding BetragAnzeige}" TextAlignment="Right"
+                                                           VerticalAlignment="Center" Foreground="#555"
+                                                           ToolTip="{Binding BetragFormelTooltip}">
+                                                    <TextBlock.Style>
+                                                        <Style TargetType="TextBlock">
+                                                            <Setter Property="Visibility" Value="Visible"/>
+                                                            <Style.Triggers>
+                                                                <DataTrigger Binding="{Binding BetragEditierbar}" Value="True">
+                                                                    <Setter Property="Visibility" Value="Collapsed"/>
+                                                                </DataTrigger>
+                                                            </Style.Triggers>
+                                                        </Style>
+                                                    </TextBlock.Style>
+                                                </TextBlock>
+                                            </Grid>
+                                            <Grid Width="50" Margin="10,0,0,0">
+                                                <TextBox Text="{Binding MwstText, UpdateSourceTrigger=PropertyChanged}"
+                                                         TextAlignment="Center"
+                                                         Visibility="{Binding MwstEditierbar, Converter={StaticResource BoolToVis}}"/>
+                                                <TextBlock Text="{Binding MwstAnzeige}" TextAlignment="Center"
+                                                           VerticalAlignment="Center" Foreground="#555"
+                                                           ToolTip="{Binding MwstTooltip}">
+                                                    <TextBlock.Style>
+                                                        <Style TargetType="TextBlock">
+                                                            <Setter Property="Visibility" Value="Visible"/>
+                                                            <Style.Triggers>
+                                                                <DataTrigger Binding="{Binding MwstEditierbar}" Value="True">
+                                                                    <Setter Property="Visibility" Value="Collapsed"/>
+                                                                </DataTrigger>
+                                                            </Style.Triggers>
+                                                        </Style>
+                                                    </TextBlock.Style>
+                                                </TextBlock>
+                                            </Grid>
+                                            <TextBlock Text="%" VerticalAlignment="Center" Margin="4,0,0,0" Foreground="#777"/>
+                                        </StackPanel>
+                                    </Grid>
+
+                                    <TextBlock Style="{StaticResource ErrorStyle}"
+                                               Text="{Binding ZeilenFehler}"/>
+                                </StackPanel>
+                            </Border>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+
+                <!-- [Summenzeile + Vorlage entfernen] -->
+                <Grid Margin="0,6,0,0">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+                    <StackPanel Grid.Column="0">
+                        <TextBlock Text="{Binding GruppenSummeText}" Foreground="#333"/>
+                        <TextBlock Style="{StaticResource ErrorStyle}"
+                                   Text="{Binding GruppenFehlerText}"/>
+                    </StackPanel>
+                    <Button Grid.Column="1" Content="Vorlage entfernen" Padding="8,2"
+                            VerticalAlignment="Top"
+                            Command="{Binding GruppeEntfernenCommand}"
+                            ToolTip="Zusatz-Zeilen verwerfen und nur die Basis-Buchung buchen"/>
+                </Grid>
+            </StackPanel>
+        </GroupBox>
+
+        <!-- ═══ Zeile 9: Buttons ═══ -->
+        <StackPanel Grid.Row="9" Orientation="Horizontal"
                     HorizontalAlignment="Right" Margin="0,8,0,0">
             <Button Content="{Binding OkButtonText}"
                     Command="{Binding OkCommand}"

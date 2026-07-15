@@ -1,0 +1,102 @@
+<!-- GemeinsameStile.xaml : app-weite Button-Stile.
+
+     Ursprünglich lokal im Buchen-Dialog (BuchungView.xaml); als
+     gemeinsames ResourceDictionary extrahiert, damit Primär-Aktionen
+     überall gleich aussehen (Buchen-Dialog, Stammdaten-Auswahl usw.).
+
+     Einbinden pro View:
+       <ResourceDictionary.MergedDictionaries>
+         <ResourceDictionary Source="/ECTViews;component/GemeinsameStile.xaml"/>
+       </ResourceDictionary.MergedDictionaries>
+
+     Hinweis: die ControlTemplates nutzen feste Größen des Buttons
+     (Width/Height/MinWidth) - das Button-Padding wirkt nicht. -->
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <!-- Stil für den primären Aktions-Button (Buchen / Speichern /
+         Auswählen). Eigener ControlTemplate, damit das WPF-Theme beim
+         Hover nicht den Hintergrund überschreibt.
+         Normal: #1E88E5, Hover: #1976D2, Pressed: leichtes Aufblähen
+         (ScaleTransform), Disabled: gedämpftes Blaugrau -->
+    <Style x:Key="PrimaryButtonStyle" TargetType="Button">
+        <Setter Property="Foreground" Value="White"/>
+        <Setter Property="FontWeight" Value="SemiBold"/>
+        <Setter Property="BorderThickness" Value="0"/>
+        <Setter Property="Cursor" Value="Hand"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="Button">
+                    <Border x:Name="bd"
+                            Background="#1E88E5"
+                            CornerRadius="2"
+                            SnapsToDevicePixels="True"
+                            RenderTransformOrigin="0.5,0.5">
+                        <Border.RenderTransform>
+                            <ScaleTransform ScaleX="1" ScaleY="1"/>
+                        </Border.RenderTransform>
+                        <ContentPresenter HorizontalAlignment="Center"
+                                          VerticalAlignment="Center"/>
+                    </Border>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter TargetName="bd" Property="Background" Value="#1976D2"/>
+                        </Trigger>
+                        <Trigger Property="IsPressed" Value="True">
+                            <Setter TargetName="bd" Property="RenderTransform">
+                                <Setter.Value>
+                                    <ScaleTransform ScaleX="1.03" ScaleY="1.08"/>
+                                </Setter.Value>
+                            </Setter>
+                        </Trigger>
+                        <Trigger Property="IsEnabled" Value="False">
+                            <Setter TargetName="bd" Property="Background" Value="#7FA8CC"/>
+                            <Setter Property="Foreground" Value="#D0D0D0"/>
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <!-- Stil für den sekundären Button (Abbrechen): grau, gleiches
+         ScaleTransform-Verhalten beim Drücken wie PrimaryButtonStyle. -->
+    <Style x:Key="SecondaryButtonStyle" TargetType="Button">
+        <Setter Property="Foreground" Value="#222"/>
+        <Setter Property="BorderThickness" Value="0"/>
+        <Setter Property="Cursor" Value="Hand"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="Button">
+                    <Border x:Name="bd"
+                            Background="#DCDCDC"
+                            CornerRadius="2"
+                            SnapsToDevicePixels="True"
+                            RenderTransformOrigin="0.5,0.5">
+                        <Border.RenderTransform>
+                            <ScaleTransform ScaleX="1" ScaleY="1"/>
+                        </Border.RenderTransform>
+                        <ContentPresenter HorizontalAlignment="Center"
+                                          VerticalAlignment="Center"/>
+                    </Border>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter TargetName="bd" Property="Background" Value="#C0C0C0"/>
+                        </Trigger>
+                        <Trigger Property="IsPressed" Value="True">
+                            <Setter TargetName="bd" Property="RenderTransform">
+                                <Setter.Value>
+                                    <ScaleTransform ScaleX="1.03" ScaleY="1.08"/>
+                                </Setter.Value>
+                            </Setter>
+                        </Trigger>
+                        <Trigger Property="IsEnabled" Value="False">
+                            <Setter TargetName="bd" Property="Background" Value="#EFEFEF"/>
+                            <Setter Property="Foreground" Value="#AAAAAA"/>
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+</ResourceDictionary>

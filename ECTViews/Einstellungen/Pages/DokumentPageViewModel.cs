@@ -89,10 +89,11 @@ namespace ECTViews.EinstellungenUi.Pages
             set
             {
                 string neu = (value ?? "").Trim();
-                // Gültigen Betrag aufs kanonische Format bringen; ungültige
+                // Gültigen Betrag aufs kanonische SYSTEMFORMAT bringen
+                // (native Leser arbeiten mit den Locale-Zeichen); ungültige
                 // Eingabe unverändert lassen, damit der Fehlertext greift.
                 if (TryParseBetrag(neu, out decimal betrag) && betrag >= 0)
-                    neu = betrag.ToString("0.00", _deDe);
+                    neu = Waehrungsformat.BetragOhneGruppierung(betrag);
 
                 if (_doc.Erweiterungen.Hole(DauerfristNs, SondervorauszahlungKey) != neu)
                 {
@@ -121,23 +122,9 @@ namespace ECTViews.EinstellungenUi.Pages
             return null;
         }
 
-        private static readonly System.Globalization.CultureInfo _deDe =
-            new System.Globalization.CultureInfo("de-DE");
-
-        /// <summary>Parst einen Geldbetrag im deutschen Format (Komma als
-        /// Dezimal-, Punkt als Tausendertrennzeichen). Fallback: Punkt als
-        /// Dezimaltrennzeichen, damit "1234.56" auch durchgeht.</summary>
+        /// <summary>Toleranter, locale-freier Betrag-Parser (deutsche,
+        /// schweizerische und englische Schreibweisen).</summary>
         private static bool TryParseBetrag(string s, out decimal betrag)
-        {
-            betrag = 0m;
-            if (string.IsNullOrWhiteSpace(s)) return false;
-            if (decimal.TryParse(s, System.Globalization.NumberStyles.Number, _deDe, out betrag))
-                return true;
-            if (decimal.TryParse(s.Replace(".", "").Replace(',', '.'),
-                System.Globalization.NumberStyles.Number,
-                System.Globalization.CultureInfo.InvariantCulture, out betrag))
-                return true;
-            return false;
-        }
+            => Waehrungsformat.TryParse(s, out betrag);
     }
 }

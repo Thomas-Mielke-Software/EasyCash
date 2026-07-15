@@ -21,6 +21,11 @@ namespace ECTViews.Journal
     {
         private JournalViewModel _vmSubscribed;
 
+        // True, während OnMehrfachSelektion die SelectedItems programmatisch
+        // umbaut -- verhindert, dass die dabei feuernden Selektions-Events
+        // die Gruppen-Expansion erneut anstossen (Endlosschleife).
+        private bool _programmatischeSelektion;
+
         public JournalView()
         {
             InitializeComponent();
@@ -45,7 +50,8 @@ namespace ECTViews.Journal
         }
 
         /// <summary>
-        /// Selektiert mehrere Buchungszeilen auf einmal und scrollt zur letzten.
+        /// Selektiert mehrere Buchungszeilen auf einmal und scrollt so, dass
+        /// moeglichst viele davon sichtbar sind (Buchungsgruppe als Block).
         /// Verwendet die SelectedItems-API direkt (nicht bindbar), was bei
         /// SelectionMode=Extended der robuste Weg für programmatische
         /// Mehrfachauswahl ist.
@@ -55,14 +61,90 @@ namespace ECTViews.Journal
         {
             if (rows == null || rows.Count == 0) return;
             // Asynchron, damit die Container nach einem evtl. vorausgegangenen
-            // Aktualisiere() schon aufgebaut sind.
+            // Aktualisiere() schon aufgebaut sind. Während des Umbaus beide
+            // Guards setzen: die View-Guard stoppt die Klick-Expansion, die
+            // ViewModel-Guard schützt den Mehrfach-Merker vor dem Binding-
+            // Echo der SelectedItem-Änderungen (Clear/Add).
             Dispatcher.BeginInvoke(new System.Action(() =>
             {
-                lstZeilen.SelectedItems.Clear();
-                foreach (var r in rows)
-                    lstZeilen.SelectedItems.Add(r);
-                ZentriereVertikal(rows[rows.Count - 1]);
+                var vm = DataContext as JournalViewModel;
+                _programmatischeSelektion = true;
+                vm?.SetzeSelektionsGuard(true);
+                try
+                {
+                    lstZeilen.SelectedItems.Clear();
+                    foreach (var r in rows)
+                        lstZeilen.SelectedItems.Add(r);
+                    ZeigeBereichVertikal(rows[0], rows[rows.Count - 1]);
+                }
+                finally
+                {
+                    _programmatischeSelektion = false;
+                    vm?.SetzeSelektionsGuard(false);
+                }
             }), System.Windows.Threading.DispatcherPriority.Background);
+        }
+
+        /// <summary>
+        /// Scrollt so, dass der Bereich von <paramref name="erste"/> bis
+        /// <paramref name="letzte"/> moeglichst komplett sichtbar ist:
+        /// passt der Block in den Viewport, wird er zentriert; ist er
+        /// groesser, wird die erste Zeile (mit kleinem Rand) oben
+        /// ausgerichtet. Fallback: letzte Zeile zentrieren.
+        /// </summary>
+        private void ZeigeBereichVertikal(JournalRow erste, JournalRow letzte)
+        {
+            if (ReferenceEquals(erste, letzte))
+            {
+                ZentriereVertikal(erste);
+                return;
+            }
+
+            var scrollViewer = FindeScrollViewer(lstZeilen);
+            if (scrollViewer == null) return;
+
+            double hErste, hLetzte;
+            double topErste = AbsoluterOffsetVon(erste, scrollViewer, out hErste);
+            double topLetzte = AbsoluterOffsetVon(letzte, scrollViewer, out hLetzte);
+            if (double.IsNaN(topErste) || double.IsNaN(topLetzte))
+            {
+                ZentriereVertikal(letzte);
+                return;
+            }
+            if (topLetzte < topErste)   // Sicherheit bei unerwarteter Reihenfolge
+            {
+                var t = topErste; topErste = topLetzte; topLetzte = t;
+                var h = hErste; hErste = hLetzte; hLetzte = h;
+            }
+
+            double blockHoehe = (topLetzte + hLetzte) - topErste;
+            double ziel = blockHoehe <= scrollViewer.ViewportHeight
+                ? topErste - (scrollViewer.ViewportHeight - blockHoehe) / 2
+                : topErste - 8;   // Block groesser als Viewport: Anfang oben
+
+            ziel = System.Math.Max(0,
+                System.Math.Min(ziel, scrollViewer.ScrollableHeight));
+            scrollViewer.ScrollToVerticalOffset(ziel);
+        }
+
+        /// <summary>Absolute Y-Position einer Zeile im Scroll-Inhalt.
+        /// Der Container wird via ScrollIntoView erzwungen
+        /// (UI-Virtualisierung); NaN wenn keiner erzeugt werden konnte.</summary>
+        private double AbsoluterOffsetVon(JournalRow row,
+            System.Windows.Controls.ScrollViewer scrollViewer, out double hoehe)
+        {
+            hoehe = 0;
+            lstZeilen.ScrollIntoView(row);
+            lstZeilen.UpdateLayout();
+
+            var item = lstZeilen.ItemContainerGenerator
+                .ContainerFromItem(row) as System.Windows.Controls.ListBoxItem;
+            if (item == null) return double.NaN;
+
+            hoehe = item.ActualHeight;
+            var transform = item.TransformToAncestor(scrollViewer);
+            return transform.Transform(new System.Windows.Point(0, 0)).Y
+                   + scrollViewer.VerticalOffset;
         }
 
         private void OnScrollIntoViewRequest(JournalRow row)
@@ -143,6 +225,37 @@ namespace ECTViews.Journal
                     NavigiereZeile(e.Key);
                     e.Handled = true;
                     break;
+
+                // Zoom mit (Strg-)'+' / '-'. Der alte native Pfad
+                // (CEasyCashView::OnKeyDown) bekommt keine Tastatur mehr,
+                // sobald die WPF-Liste den Fokus hat -- deshalb hier
+                // abfangen und ueber das ViewModel-Event an den nativen
+                // Zoom-Mechanismus melden. Wie im Original wird der
+                // Strg-Modifier nicht verlangt.
+                case Key.Add:
+                case Key.OemPlus:
+                    (DataContext as JournalViewModel)?.MeldeZoomAenderung(+25);
+                    e.Handled = true;
+                    break;
+                case Key.Subtract:
+                case Key.OemMinus:
+                    (DataContext as JournalViewModel)?.MeldeZoomAenderung(-25);
+                    e.Handled = true;
+                    break;
+            }
+        }
+
+        /// <summary>
+        /// Strg-Mausrad zoomt das Journal (analog zu Strg-'+'/'-').
+        /// Ohne Strg laeuft das Rad normal als Scroll weiter.
+        /// </summary>
+        private void OnListBoxPreviewMouseWheel(object sender, MouseWheelEventArgs e)
+        {
+            if ((Keyboard.Modifiers & ModifierKeys.Control) == 0) return;
+            if (DataContext is JournalViewModel vm && e.Delta != 0)
+            {
+                vm.MeldeZoomAenderung(e.Delta > 0 ? +25 : -25);
+                e.Handled = true;
             }
         }
 
@@ -154,6 +267,33 @@ namespace ECTViews.Journal
         {
             if (DataContext is JournalViewModel vm)
                 vm.SetzeSelektion(lstZeilen.SelectedItems.OfType<JournalBuchungRow>());
+        }
+
+        /// <summary>
+        /// Klick auf ein Buchungsgruppen-Mitglied markiert die ganze Gruppe
+        /// (Phase D). Nur bei einfachem Linksklick ohne Modifier -- Ctrl/
+        /// Shift erlaubt weiterhin die Einzelauswahl innerhalb einer Gruppe
+        /// (z.B. um gezielt EIN Mitglied zu löschen oder zu kopieren).
+        /// </summary>
+        private void OnZeilenMausKlick(object sender, MouseButtonEventArgs e)
+        {
+            if (_programmatischeSelektion) return;
+            if ((Keyboard.Modifiers & (ModifierKeys.Control | ModifierKeys.Shift)) != 0)
+                return;
+            if (!(DataContext is JournalViewModel vm)) return;
+
+            // Nur reagieren, wenn wirklich eine Zeile angeklickt wurde --
+            // Klicks auf Scrollbar/Leerbereich würden sonst die Ansicht
+            // zurück zur selektierten Gruppe springen lassen.
+            var element = e.OriginalSource as System.Windows.DependencyObject;
+            if (element == null) return;
+            var container = ItemsControl.ContainerFromElement(lstZeilen, element)
+                as ListBoxItem;
+            if (container != null && container.IsSelected
+                && container.Content is JournalBuchungRow row)
+            {
+                vm.SelektiereGruppeVon(row);
+            }
         }
 
         private void OnZeilenDoppelklick(object sender, MouseButtonEventArgs e)

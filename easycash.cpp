@@ -152,6 +152,93 @@ int CALLBACK ECTCrashCallback(CR_CRASH_CALLBACK_INFO* pInfo)
 }
 #endif
 
+#ifdef USE_ECTENGINE
+// ----------------------------------------------------------
+// Mandanten-Auswahl im Startup-Pfad über den WPF-Dialog (ersetzt
+// CIconAuswahlMandant in InitInstance). Gleiches Muster wie
+// CMainFrame::OnFileMandanten: Mandanten aus dem App-Profil einsammeln
+// (Lücken kompaktieren), Dialog zeigen, die (ggf. geänderte) Liste
+// IMMER zurückschreiben -- auch bei Abbruch, damit Verwaltungs-
+// Änderungen erhalten bleiben. Rückgabe: Index des gewählten Mandanten
+// (bezogen auf die zurückgeschriebene Liste) oder -1 bei Abbruch.
+// ----------------------------------------------------------
+static int WaehleMandantWpf(HWND hwndOwner)
+{
+	const int MAX_MANDANTEN = 100;
+	const int NAME_LEN = 256;
+	const int VERZ_LEN = 1000;
+	static char aNamen[MAX_MANDANTEN][NAME_LEN];
+	static int  aIcons[MAX_MANDANTEN];
+	static char aVerzeichnisse[MAX_MANDANTEN][VERZ_LEN];
+	LPCSTR apNamen[MAX_MANDANTEN];
+	LPCSTR apVerzeichnisse[MAX_MANDANTEN];
+
+	int nAnzahl = 0, nHoechsterSlot = -1;
+	int i;
+	for (i = 0; i < MAX_MANDANTEN; i++)
+	{
+		CString csKey, csName, csVerzeichnis, csIcon;
+		csKey.Format("Mandant%-02.2dName", i);
+		csName = theApp.GetProfileString("Mandanten", csKey, "");
+		csKey.Format("Mandant%-02.2dDatenverzeichnis", i);
+		csVerzeichnis = theApp.GetProfileString("Mandanten", csKey, "");
+		csKey.Format("Mandant%-02.2dIcon", i);
+		csIcon = theApp.GetProfileString("Mandanten", csKey, "0");
+		if (csName.IsEmpty() && csVerzeichnis.IsEmpty())
+			continue;	// Lücke überspringen
+		nHoechsterSlot = i;
+		strncpy_s(aNamen[nAnzahl], NAME_LEN, (LPCTSTR)csName, _TRUNCATE);
+		strncpy_s(aVerzeichnisse[nAnzahl], VERZ_LEN, (LPCTSTR)csVerzeichnis, _TRUNCATE);
+		aIcons[nAnzahl] = atoi(csIcon);
+		nAnzahl++;
+	}
+	for (i = 0; i < nAnzahl; i++)
+	{
+		apNamen[i] = aNamen[i];
+		apVerzeichnisse[i] = aVerzeichnisse[i];
+	}
+
+	int nAnzahlNeu = -1;
+	int nGewaehlt = ECT_ZeigeMandantenVerwaltenDialog(
+		apNamen, aIcons, apVerzeichnisse, nAnzahl,
+		hwndOwner,
+		&aNamen[0][0], NAME_LEN,
+		aIcons,
+		&aVerzeichnisse[0][0], VERZ_LEN,
+		MAX_MANDANTEN, &nAnzahlNeu);
+
+	if (nAnzahlNeu >= 0)
+	{
+		for (i = 0; i < nAnzahlNeu; i++)
+		{
+			CString csKey, csIcon;
+			csIcon.Format("%d", aIcons[i]);
+			csKey.Format("Mandant%-02.2dName", i);
+			theApp.WriteProfileString("Mandanten", csKey, aNamen[i]);
+			csKey.Format("Mandant%-02.2dDatenverzeichnis", i);
+			theApp.WriteProfileString("Mandanten", csKey, aVerzeichnisse[i]);
+			csKey.Format("Mandant%-02.2dIcon", i);
+			theApp.WriteProfileString("Mandanten", csKey, csIcon);
+		}
+		// Slots gelöschter/kompaktierter Einträge leeren
+		for (i = nAnzahlNeu; i <= nHoechsterSlot; i++)
+		{
+			CString csKey;
+			csKey.Format("Mandant%-02.2dName", i);
+			theApp.WriteProfileString("Mandanten", csKey, "");
+			csKey.Format("Mandant%-02.2dDatenverzeichnis", i);
+			theApp.WriteProfileString("Mandanten", csKey, "");
+			csKey.Format("Mandant%-02.2dIcon", i);
+			theApp.WriteProfileString("Mandanten", csKey, "");
+		}
+	}
+
+	if (nGewaehlt < 0 || nGewaehlt >= nAnzahlNeu)
+		return -1;
+	return nGewaehlt;
+}
+#endif
+
 BOOL CEasyCashApp::InitInstance()
 {
 	extern BOOL CheckReg(char *);
@@ -501,10 +588,20 @@ BOOL CEasyCashApp::InitInstance()
 	{
 		// Mandanten auswählen, wenn vorhanden --> Datenverzeichnis setzen
 		// Dies ist nötig, wenn kein Parameter übergeben wurde, aus dem auf das Datenverzeichnis geschlossen werden kann
-		CIconAuswahlMandant dlgIcon;
 		CString csKey;
 		if (!Mandant0Existiert.IsEmpty())
 		{
+#ifdef USE_ECTENGINE
+			// WPF-Mandantenauswahl (ersetzt CIconAuswahlMandant)
+			int nGewaehlt = WaehleMandantWpf(m_pMainWnd->GetSafeHwnd());
+			if (nGewaehlt == -1) return FALSE;
+			csKey.Format("Mandant%-02.2dDatenverzeichnis", nGewaehlt);
+			csDatenverzeichnis = theApp.GetProfileString("Mandanten", csKey, "");
+			if (!csDatenverzeichnis.IsEmpty())
+				theApp.WriteProfileString("Allgemein", "Datenverzeichnis", csDatenverzeichnis);	
+			SetMandant(nGewaehlt);
+#else
+			CIconAuswahlMandant dlgIcon;
 			dlgIcon.m_nModus = 1;
 			dlgIcon.DoModal();
 			if (dlgIcon.m_nSelected == -1) return FALSE;
@@ -513,6 +610,7 @@ BOOL CEasyCashApp::InitInstance()
 			if (!csDatenverzeichnis.IsEmpty())
 				theApp.WriteProfileString("Allgemein", "Datenverzeichnis", csDatenverzeichnis);	
 			SetMandant(dlgIcon.m_nSelected);
+#endif
 		}
 		char szIniFileName[500];
 		strcpy(szIniFileName, csDatenverzeichnis.GetBuffer(0));
@@ -569,11 +667,21 @@ BOOL CEasyCashApp::InitInstance()
 				
 			if (nPathsMatching != 1)
 			{	// wenn keiner oder mehrere Mandantenpfade mit dem der Datei übereinstimmten, doch Auswahldialog öffnen
+#ifdef USE_ECTENGINE
+				// WPF-Mandantenauswahl; der gewählte Index wird auch für
+				// SetMandant unten übernommen (das Original rief SetMandant
+				// hier mit nFirstPathMatching == -1 auf)
+				int nGewaehlt = WaehleMandantWpf(m_pMainWnd->GetSafeHwnd());
+				if (nGewaehlt == -1) return FALSE;
+				nFirstPathMatching = nGewaehlt;
+				csKey.Format("Mandant%-02.2dDatenverzeichnis", nGewaehlt);
+#else
 				CIconAuswahlMandant dlgIcon;
 				dlgIcon.m_nModus = 1;
 				dlgIcon.DoModal();
 				if (dlgIcon.m_nSelected == -1) return FALSE;
 				csKey.Format("Mandant%-02.2dDatenverzeichnis", dlgIcon.m_nSelected);
+#endif
 			}
 			else
 			{

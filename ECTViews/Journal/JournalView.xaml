@@ -17,7 +17,12 @@
         <SolidColorBrush x:Key="ColHeaderBg"  Color="#FAFAFA"/>
         <SolidColorBrush x:Key="ColBorder"    Color="#888888"/>
 
-        <!-- Spaltenbreiten als Resources für die fixen Spalten.
+        <!-- Alle "festen" Spaltenbreiten kommen als skalierende Properties
+             aus dem ViewModel (IconSpaltenBreite etc.) und wachsen linear
+             mit der Schriftgroesse (Einstellungen bzw. Zoom), sonst wird
+             der Text bei groesseren Schriften abgeschnitten. Gebunden wird
+             wie bei den dynamischen Spalten über Width="Auto" +
+             MinWidth=MaxWidth (GridLength ist nicht direkt double-bindbar).
              Die Belegspalte hat eine globale, für das ganze Journal
              konstante Breite (ViewModel.BelegSpaltenBreite), berechnet
              einmal pro Aktualisiere aus dem 95-Perzentil aller
@@ -26,10 +31,6 @@
              Früher war das ein Auto+SharedSizeGroup-Layout, das beim
              Scrollen in Bereiche mit anderen Belegnummer-Längen
              ruckartig die Spaltenbreite verändert hat. -->
-        <GridLength x:Key="ColW_Icon">28</GridLength>
-        <GridLength x:Key="ColW_Datum">90</GridLength>
-        <GridLength x:Key="ColW_Brutto">110</GridLength>
-        <GridLength x:Key="ColW_AfA">60</GridLength>
 
         <DataTemplate DataType="{x:Type journal:JournalSectionTitle}">
             <TextBlock Text="{Binding Text}"
@@ -37,10 +38,14 @@
                        FontWeight="Bold">
                 <TextBlock.Style>
                     <Style TargetType="TextBlock">
-                        <Setter Property="FontSize" Value="15"/>
+                        <Setter Property="FontSize"
+                                Value="{Binding DataContext.TitelSchriftgroesse,
+                                    RelativeSource={RelativeSource AncestorType=UserControl}}"/>
                         <Style.Triggers>
                             <DataTrigger Binding="{Binding IsMain}" Value="True">
-                                <Setter Property="FontSize" Value="17"/>
+                                <Setter Property="FontSize"
+                                        Value="{Binding DataContext.HauptTitelSchriftgroesse,
+                                            RelativeSource={RelativeSource AncestorType=UserControl}}"/>
                             </DataTrigger>
                             <DataTrigger Binding="{Binding IsEinnahme}" Value="True">
                                 <Setter Property="Foreground" Value="{StaticResource ColEinnahme}"/>
@@ -61,9 +66,21 @@
                     Padding="0,4,0,4">
                 <Grid>
                     <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="{StaticResource ColW_Icon}"/>
-                        <ColumnDefinition Width="{StaticResource ColW_Icon}"/>
-                        <ColumnDefinition Width="{StaticResource ColW_Datum}"/>
+                        <ColumnDefinition Width="Auto"
+                                      MinWidth="{Binding DataContext.IconSpaltenBreite,
+                                          RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                      MaxWidth="{Binding DataContext.IconSpaltenBreite,
+                                          RelativeSource={RelativeSource AncestorType=UserControl}}"/>
+                        <ColumnDefinition Width="Auto"
+                                      MinWidth="{Binding DataContext.IconSpaltenBreite,
+                                          RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                      MaxWidth="{Binding DataContext.IconSpaltenBreite,
+                                          RelativeSource={RelativeSource AncestorType=UserControl}}"/>
+                        <ColumnDefinition Width="Auto"
+                                      MinWidth="{Binding DataContext.DatumSpaltenBreite,
+                                          RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                      MaxWidth="{Binding DataContext.DatumSpaltenBreite,
+                                          RelativeSource={RelativeSource AncestorType=UserControl}}"/>
                         <ColumnDefinition Width="Auto"
                                       MinWidth="{Binding DataContext.BelegSpaltenBreite,
                                           RelativeSource={RelativeSource AncestorType=UserControl}}"
@@ -85,13 +102,21 @@
                                           RelativeSource={RelativeSource AncestorType=UserControl}}"
                                       MaxWidth="{Binding DataContext.UStBetragSpaltenBreite,
                                           RelativeSource={RelativeSource AncestorType=UserControl}}"/>
-                        <ColumnDefinition Width="{StaticResource ColW_Brutto}"/>
+                        <ColumnDefinition Width="Auto"
+                                      MinWidth="{Binding DataContext.BruttoSpaltenBreite,
+                                          RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                      MaxWidth="{Binding DataContext.BruttoSpaltenBreite,
+                                          RelativeSource={RelativeSource AncestorType=UserControl}}"/>
                         <ColumnDefinition Width="Auto"
                                           MinWidth="{Binding DataContext.SaldoSpaltenBreite,
                                               RelativeSource={RelativeSource AncestorType=UserControl}}"
                                           MaxWidth="{Binding DataContext.SaldoSpaltenBreite,
                                               RelativeSource={RelativeSource AncestorType=UserControl}}"/>
-                        <ColumnDefinition Width="{StaticResource ColW_AfA}"/>
+                        <ColumnDefinition Width="Auto"
+                                      MinWidth="{Binding DataContext.AfaSpaltenBreite,
+                                          RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                      MaxWidth="{Binding DataContext.AfaSpaltenBreite,
+                                          RelativeSource={RelativeSource AncestorType=UserControl}}"/>
                     </Grid.ColumnDefinitions>
 
                     <TextBlock Grid.Column="2" Text="Datum" FontWeight="SemiBold"
@@ -153,9 +178,21 @@
         <DataTemplate DataType="{x:Type journal:JournalBuchungRow}">
             <Grid Margin="0,2">
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="{StaticResource ColW_Icon}"/>
-                    <ColumnDefinition Width="{StaticResource ColW_Icon}"/>
-                    <ColumnDefinition Width="{StaticResource ColW_Datum}"/>
+                    <ColumnDefinition Width="Auto"
+                                      MinWidth="{Binding DataContext.IconSpaltenBreite,
+                                          RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                      MaxWidth="{Binding DataContext.IconSpaltenBreite,
+                                          RelativeSource={RelativeSource AncestorType=UserControl}}"/>
+                    <ColumnDefinition Width="Auto"
+                                      MinWidth="{Binding DataContext.IconSpaltenBreite,
+                                          RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                      MaxWidth="{Binding DataContext.IconSpaltenBreite,
+                                          RelativeSource={RelativeSource AncestorType=UserControl}}"/>
+                    <ColumnDefinition Width="Auto"
+                                      MinWidth="{Binding DataContext.DatumSpaltenBreite,
+                                          RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                      MaxWidth="{Binding DataContext.DatumSpaltenBreite,
+                                          RelativeSource={RelativeSource AncestorType=UserControl}}"/>
                     <ColumnDefinition Width="Auto"
                                       MinWidth="{Binding DataContext.BelegSpaltenBreite,
                                           RelativeSource={RelativeSource AncestorType=UserControl}}"
@@ -177,23 +214,37 @@
                                           RelativeSource={RelativeSource AncestorType=UserControl}}"
                                       MaxWidth="{Binding DataContext.UStBetragSpaltenBreite,
                                           RelativeSource={RelativeSource AncestorType=UserControl}}"/>
-                    <ColumnDefinition Width="{StaticResource ColW_Brutto}"/>
+                    <ColumnDefinition Width="Auto"
+                                      MinWidth="{Binding DataContext.BruttoSpaltenBreite,
+                                          RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                      MaxWidth="{Binding DataContext.BruttoSpaltenBreite,
+                                          RelativeSource={RelativeSource AncestorType=UserControl}}"/>
                     <ColumnDefinition Width="Auto"
                                       MinWidth="{Binding DataContext.SaldoSpaltenBreite,
                                           RelativeSource={RelativeSource AncestorType=UserControl}}"
                                       MaxWidth="{Binding DataContext.SaldoSpaltenBreite,
                                           RelativeSource={RelativeSource AncestorType=UserControl}}"/>
-                    <ColumnDefinition Width="{StaticResource ColW_AfA}"/>
+                    <ColumnDefinition Width="Auto"
+                                      MinWidth="{Binding DataContext.AfaSpaltenBreite,
+                                          RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                      MaxWidth="{Binding DataContext.AfaSpaltenBreite,
+                                          RelativeSource={RelativeSource AncestorType=UserControl}}"/>
                 </Grid.ColumnDefinitions>
 
                 <Image Grid.Column="0" Source="{Binding BetriebIcon}"
-                       Width="20" Height="20" Stretch="Uniform"
-                       VerticalAlignment="Top" HorizontalAlignment="Center"
-                       Margin="0,2,0,0"/>
+                       Width="{Binding DataContext.IconGroesse,
+                           RelativeSource={RelativeSource AncestorType=UserControl}}"
+                       Height="{Binding DataContext.IconGroesse,
+                           RelativeSource={RelativeSource AncestorType=UserControl}}"
+                       Stretch="Uniform"
+                       VerticalAlignment="Top" HorizontalAlignment="Center"/>
                 <Image Grid.Column="1" Source="{Binding BestandskontoIcon}"
-                       Width="20" Height="20" Stretch="Uniform"
-                       VerticalAlignment="Top" HorizontalAlignment="Center"
-                       Margin="0,2,0,0"/>
+                       Width="{Binding DataContext.IconGroesse,
+                           RelativeSource={RelativeSource AncestorType=UserControl}}"
+                       Height="{Binding DataContext.IconGroesse,
+                           RelativeSource={RelativeSource AncestorType=UserControl}}"
+                       Stretch="Uniform"
+                       VerticalAlignment="Top" HorizontalAlignment="Center"/>
 
                 <TextBlock Grid.Column="2" Text="{Binding DatumText}"
                            Margin="4,0" VerticalAlignment="Top"/>
@@ -203,10 +254,26 @@
                            TextTrimming="CharacterEllipsis"
                            ToolTip="{Binding BelegText}"/>
 
-                <!-- Beschreibung wickelt sich um, wenn zu lang -->
-                <TextBlock Grid.Column="4" Text="{Binding BeschreibungText}"
-                           Margin="4,0" VerticalAlignment="Top"
-                           TextWrapping="Wrap"/>
+                <!-- Beschreibung wickelt sich um, wenn zu lang.
+                     Gruppen-Mitglieder bekommen ein dezentes "[G]"-Präfix
+                     (konsistent zur Vorlagen-Liste der PresetsPage) mit
+                     Tooltip; bei Nicht-Mitgliedern kollabiert die
+                     Auto-Spalte auf 0. -->
+                <Grid Grid.Column="4" Margin="4,0">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Text="[G]" Foreground="#909090"
+                               FontWeight="SemiBold" Margin="0,0,4,0"
+                               VerticalAlignment="Top"
+                               ToolTip="{Binding GruppenTooltip}"
+                               Visibility="{Binding IstGruppenMitglied,
+                                   Converter={StaticResource BoolToVis}}"/>
+                    <TextBlock Grid.Column="1" Text="{Binding BeschreibungText}"
+                               VerticalAlignment="Top"
+                               TextWrapping="Wrap"/>
+                </Grid>
 
                 <TextBlock Grid.Column="5" Text="{Binding NettoText}"
                            TextAlignment="Right" Margin="4,0"
@@ -243,9 +310,21 @@
                     Padding="0,4,0,4">
                 <Grid>
                     <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="{StaticResource ColW_Icon}"/>
-                        <ColumnDefinition Width="{StaticResource ColW_Icon}"/>
-                        <ColumnDefinition Width="{StaticResource ColW_Datum}"/>
+                        <ColumnDefinition Width="Auto"
+                                      MinWidth="{Binding DataContext.IconSpaltenBreite,
+                                          RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                      MaxWidth="{Binding DataContext.IconSpaltenBreite,
+                                          RelativeSource={RelativeSource AncestorType=UserControl}}"/>
+                        <ColumnDefinition Width="Auto"
+                                      MinWidth="{Binding DataContext.IconSpaltenBreite,
+                                          RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                      MaxWidth="{Binding DataContext.IconSpaltenBreite,
+                                          RelativeSource={RelativeSource AncestorType=UserControl}}"/>
+                        <ColumnDefinition Width="Auto"
+                                      MinWidth="{Binding DataContext.DatumSpaltenBreite,
+                                          RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                      MaxWidth="{Binding DataContext.DatumSpaltenBreite,
+                                          RelativeSource={RelativeSource AncestorType=UserControl}}"/>
                         <ColumnDefinition Width="Auto"
                                       MinWidth="{Binding DataContext.BelegSpaltenBreite,
                                           RelativeSource={RelativeSource AncestorType=UserControl}}"
@@ -267,13 +346,21 @@
                                           RelativeSource={RelativeSource AncestorType=UserControl}}"
                                       MaxWidth="{Binding DataContext.UStBetragSpaltenBreite,
                                           RelativeSource={RelativeSource AncestorType=UserControl}}"/>
-                        <ColumnDefinition Width="{StaticResource ColW_Brutto}"/>
+                        <ColumnDefinition Width="Auto"
+                                      MinWidth="{Binding DataContext.BruttoSpaltenBreite,
+                                          RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                      MaxWidth="{Binding DataContext.BruttoSpaltenBreite,
+                                          RelativeSource={RelativeSource AncestorType=UserControl}}"/>
                         <ColumnDefinition Width="Auto"
                                           MinWidth="{Binding DataContext.SaldoSpaltenBreite,
                                               RelativeSource={RelativeSource AncestorType=UserControl}}"
                                           MaxWidth="{Binding DataContext.SaldoSpaltenBreite,
                                               RelativeSource={RelativeSource AncestorType=UserControl}}"/>
-                        <ColumnDefinition Width="{StaticResource ColW_AfA}"/>
+                        <ColumnDefinition Width="Auto"
+                                      MinWidth="{Binding DataContext.AfaSpaltenBreite,
+                                          RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                      MaxWidth="{Binding DataContext.AfaSpaltenBreite,
+                                          RelativeSource={RelativeSource AncestorType=UserControl}}"/>
                     </Grid.ColumnDefinitions>
 
                     <TextBlock Grid.Column="4" Text="{Binding LinkesLabel}"
@@ -314,7 +401,7 @@
              Eigener Spaltensatz: Icon|Icon|Beschreibung|Ansch.Datum|
              Ansch.kosten|Buchw.Beginn|AfA|Abgänge|Buchw.Ende|AfA-Nr.
              Spaltenbreiten: Icons fest, Datum fest, Beschreibung star,
-             alle Geldspalten ColW_Brutto, AfA-Nr ColW_AfA. -->
+             alle Geldspalten BruttoSpaltenBreite, AfA-Nr AfaSpaltenBreite. -->
         <DataTemplate DataType="{x:Type journal:JournalAnlagenHeaderRow}">
             <Border Background="{StaticResource ColHeaderBg}"
                     BorderThickness="0,0,0,1"
@@ -322,15 +409,47 @@
                     Padding="0,4,0,4">
                 <Grid>
                     <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="{StaticResource ColW_Icon}"/>
+                        <ColumnDefinition Width="Auto"
+                                      MinWidth="{Binding DataContext.IconSpaltenBreite,
+                                          RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                      MaxWidth="{Binding DataContext.IconSpaltenBreite,
+                                          RelativeSource={RelativeSource AncestorType=UserControl}}"/>
                         <ColumnDefinition Width="*" MinWidth="120"/>
-                        <ColumnDefinition Width="{StaticResource ColW_Datum}"/>
-                        <ColumnDefinition Width="{StaticResource ColW_Brutto}"/>
-                        <ColumnDefinition Width="{StaticResource ColW_Brutto}"/>
-                        <ColumnDefinition Width="{StaticResource ColW_Brutto}"/>
-                        <ColumnDefinition Width="{StaticResource ColW_Brutto}"/>
-                        <ColumnDefinition Width="{StaticResource ColW_Brutto}"/>
-                        <ColumnDefinition Width="{StaticResource ColW_AfA}"/>
+                        <ColumnDefinition Width="Auto"
+                                      MinWidth="{Binding DataContext.DatumSpaltenBreite,
+                                          RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                      MaxWidth="{Binding DataContext.DatumSpaltenBreite,
+                                          RelativeSource={RelativeSource AncestorType=UserControl}}"/>
+                        <ColumnDefinition Width="Auto"
+                                      MinWidth="{Binding DataContext.BruttoSpaltenBreite,
+                                          RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                      MaxWidth="{Binding DataContext.BruttoSpaltenBreite,
+                                          RelativeSource={RelativeSource AncestorType=UserControl}}"/>
+                        <ColumnDefinition Width="Auto"
+                                      MinWidth="{Binding DataContext.BruttoSpaltenBreite,
+                                          RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                      MaxWidth="{Binding DataContext.BruttoSpaltenBreite,
+                                          RelativeSource={RelativeSource AncestorType=UserControl}}"/>
+                        <ColumnDefinition Width="Auto"
+                                      MinWidth="{Binding DataContext.BruttoSpaltenBreite,
+                                          RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                      MaxWidth="{Binding DataContext.BruttoSpaltenBreite,
+                                          RelativeSource={RelativeSource AncestorType=UserControl}}"/>
+                        <ColumnDefinition Width="Auto"
+                                      MinWidth="{Binding DataContext.BruttoSpaltenBreite,
+                                          RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                      MaxWidth="{Binding DataContext.BruttoSpaltenBreite,
+                                          RelativeSource={RelativeSource AncestorType=UserControl}}"/>
+                        <ColumnDefinition Width="Auto"
+                                      MinWidth="{Binding DataContext.BruttoSpaltenBreite,
+                                          RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                      MaxWidth="{Binding DataContext.BruttoSpaltenBreite,
+                                          RelativeSource={RelativeSource AncestorType=UserControl}}"/>
+                        <ColumnDefinition Width="Auto"
+                                      MinWidth="{Binding DataContext.AfaSpaltenBreite,
+                                          RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                      MaxWidth="{Binding DataContext.AfaSpaltenBreite,
+                                          RelativeSource={RelativeSource AncestorType=UserControl}}"/>
                     </Grid.ColumnDefinitions>
                     <TextBlock Grid.Column="1" Text="Beschreibung" FontWeight="SemiBold" Margin="4,0"/>
                     <TextBlock Grid.Column="2" Text="Ansch.Datum"  FontWeight="SemiBold" Margin="4,0"/>
@@ -347,21 +466,56 @@
         <DataTemplate DataType="{x:Type journal:JournalAnlagenRow}">
             <Grid Margin="0,2">
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="{StaticResource ColW_Icon}"/>
+                    <ColumnDefinition Width="Auto"
+                                      MinWidth="{Binding DataContext.IconSpaltenBreite,
+                                          RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                      MaxWidth="{Binding DataContext.IconSpaltenBreite,
+                                          RelativeSource={RelativeSource AncestorType=UserControl}}"/>
                     <ColumnDefinition Width="*" MinWidth="120"/>
-                    <ColumnDefinition Width="{StaticResource ColW_Datum}"/>
-                    <ColumnDefinition Width="{StaticResource ColW_Brutto}"/>
-                    <ColumnDefinition Width="{StaticResource ColW_Brutto}"/>
-                    <ColumnDefinition Width="{StaticResource ColW_Brutto}"/>
-                    <ColumnDefinition Width="{StaticResource ColW_Brutto}"/>
-                    <ColumnDefinition Width="{StaticResource ColW_Brutto}"/>
-                    <ColumnDefinition Width="{StaticResource ColW_AfA}"/>
+                    <ColumnDefinition Width="Auto"
+                                      MinWidth="{Binding DataContext.DatumSpaltenBreite,
+                                          RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                      MaxWidth="{Binding DataContext.DatumSpaltenBreite,
+                                          RelativeSource={RelativeSource AncestorType=UserControl}}"/>
+                    <ColumnDefinition Width="Auto"
+                                      MinWidth="{Binding DataContext.BruttoSpaltenBreite,
+                                          RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                      MaxWidth="{Binding DataContext.BruttoSpaltenBreite,
+                                          RelativeSource={RelativeSource AncestorType=UserControl}}"/>
+                    <ColumnDefinition Width="Auto"
+                                      MinWidth="{Binding DataContext.BruttoSpaltenBreite,
+                                          RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                      MaxWidth="{Binding DataContext.BruttoSpaltenBreite,
+                                          RelativeSource={RelativeSource AncestorType=UserControl}}"/>
+                    <ColumnDefinition Width="Auto"
+                                      MinWidth="{Binding DataContext.BruttoSpaltenBreite,
+                                          RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                      MaxWidth="{Binding DataContext.BruttoSpaltenBreite,
+                                          RelativeSource={RelativeSource AncestorType=UserControl}}"/>
+                    <ColumnDefinition Width="Auto"
+                                      MinWidth="{Binding DataContext.BruttoSpaltenBreite,
+                                          RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                      MaxWidth="{Binding DataContext.BruttoSpaltenBreite,
+                                          RelativeSource={RelativeSource AncestorType=UserControl}}"/>
+                    <ColumnDefinition Width="Auto"
+                                      MinWidth="{Binding DataContext.BruttoSpaltenBreite,
+                                          RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                      MaxWidth="{Binding DataContext.BruttoSpaltenBreite,
+                                          RelativeSource={RelativeSource AncestorType=UserControl}}"/>
+                    <ColumnDefinition Width="Auto"
+                                      MinWidth="{Binding DataContext.AfaSpaltenBreite,
+                                          RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                      MaxWidth="{Binding DataContext.AfaSpaltenBreite,
+                                          RelativeSource={RelativeSource AncestorType=UserControl}}"/>
                 </Grid.ColumnDefinitions>
 
                 <Image Grid.Column="0" Source="{Binding BetriebIcon}"
-                       Width="20" Height="20" Stretch="Uniform"
-                       VerticalAlignment="Top" HorizontalAlignment="Center"
-                       Margin="0,2,0,0"/>
+                       Width="{Binding DataContext.IconGroesse,
+                           RelativeSource={RelativeSource AncestorType=UserControl}}"
+                       Height="{Binding DataContext.IconGroesse,
+                           RelativeSource={RelativeSource AncestorType=UserControl}}"
+                       Stretch="Uniform"
+                       VerticalAlignment="Top" HorizontalAlignment="Center"/>
 
                 <TextBlock Grid.Column="1" Text="{Binding BeschreibungText}"
                            Margin="4,0" VerticalAlignment="Top"
@@ -396,15 +550,47 @@
                     Padding="0,4,0,4">
                 <Grid>
                     <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="{StaticResource ColW_Icon}"/>
+                        <ColumnDefinition Width="Auto"
+                                      MinWidth="{Binding DataContext.IconSpaltenBreite,
+                                          RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                      MaxWidth="{Binding DataContext.IconSpaltenBreite,
+                                          RelativeSource={RelativeSource AncestorType=UserControl}}"/>
                         <ColumnDefinition Width="*" MinWidth="120"/>
-                        <ColumnDefinition Width="{StaticResource ColW_Datum}"/>
-                        <ColumnDefinition Width="{StaticResource ColW_Brutto}"/>
-                        <ColumnDefinition Width="{StaticResource ColW_Brutto}"/>
-                        <ColumnDefinition Width="{StaticResource ColW_Brutto}"/>
-                        <ColumnDefinition Width="{StaticResource ColW_Brutto}"/>
-                        <ColumnDefinition Width="{StaticResource ColW_Brutto}"/>
-                        <ColumnDefinition Width="{StaticResource ColW_AfA}"/>
+                        <ColumnDefinition Width="Auto"
+                                      MinWidth="{Binding DataContext.DatumSpaltenBreite,
+                                          RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                      MaxWidth="{Binding DataContext.DatumSpaltenBreite,
+                                          RelativeSource={RelativeSource AncestorType=UserControl}}"/>
+                        <ColumnDefinition Width="Auto"
+                                      MinWidth="{Binding DataContext.BruttoSpaltenBreite,
+                                          RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                      MaxWidth="{Binding DataContext.BruttoSpaltenBreite,
+                                          RelativeSource={RelativeSource AncestorType=UserControl}}"/>
+                        <ColumnDefinition Width="Auto"
+                                      MinWidth="{Binding DataContext.BruttoSpaltenBreite,
+                                          RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                      MaxWidth="{Binding DataContext.BruttoSpaltenBreite,
+                                          RelativeSource={RelativeSource AncestorType=UserControl}}"/>
+                        <ColumnDefinition Width="Auto"
+                                      MinWidth="{Binding DataContext.BruttoSpaltenBreite,
+                                          RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                      MaxWidth="{Binding DataContext.BruttoSpaltenBreite,
+                                          RelativeSource={RelativeSource AncestorType=UserControl}}"/>
+                        <ColumnDefinition Width="Auto"
+                                      MinWidth="{Binding DataContext.BruttoSpaltenBreite,
+                                          RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                      MaxWidth="{Binding DataContext.BruttoSpaltenBreite,
+                                          RelativeSource={RelativeSource AncestorType=UserControl}}"/>
+                        <ColumnDefinition Width="Auto"
+                                      MinWidth="{Binding DataContext.BruttoSpaltenBreite,
+                                          RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                      MaxWidth="{Binding DataContext.BruttoSpaltenBreite,
+                                          RelativeSource={RelativeSource AncestorType=UserControl}}"/>
+                        <ColumnDefinition Width="Auto"
+                                      MinWidth="{Binding DataContext.AfaSpaltenBreite,
+                                          RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                      MaxWidth="{Binding DataContext.AfaSpaltenBreite,
+                                          RelativeSource={RelativeSource AncestorType=UserControl}}"/>
                     </Grid.ColumnDefinitions>
                     <TextBlock Grid.Column="3" Text="{Binding AnschKostenSummeText}"
                                TextAlignment="Right" Margin="4,0"
@@ -476,11 +662,15 @@
                  ItemContainerStyleSelector="{x:Static journal:JournalRowStyleSelector.Instance}"
                  MouseDoubleClick="OnZeilenDoppelklick"
                  PreviewKeyDown="OnListBoxPreviewKeyDown"
+                 PreviewMouseWheel="OnListBoxPreviewMouseWheel"
+                 PreviewMouseLeftButtonUp="OnZeilenMausKlick"
                  SelectionChanged="OnSelectionChanged">
             <ListBox.ContextMenu>
                 <ContextMenu>
                     <MenuItem Header="Ändern" Command="{Binding BearbeitenCommand}"/>
                     <MenuItem Header="Löschen" Command="{Binding LoeschenCommand}"/>
+                    <MenuItem Header="Buchungsgruppe löschen"
+                              Command="{Binding GruppeLoeschenCommand}"/>
                     <Separator/>
                     <MenuItem Header="Kopieren" Command="{Binding KopierenCommand}"/>
                     <MenuItem Header="Kopieren mit neuer Belegnummer"

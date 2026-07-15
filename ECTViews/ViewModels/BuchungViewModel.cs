@@ -34,7 +34,7 @@ namespace ECTViews.ViewModels
     ///   Bestandskonto ComboBox       --> Bestandskonto
     ///   Betrieb ComboBox             --> Betrieb
     /// </summary>
-    public class BuchungViewModel : ViewModelBase
+    public partial class BuchungViewModel : ViewModelBase
     {
         private static readonly CultureInfo DeDE = new CultureInfo("de-DE");
 
@@ -72,8 +72,15 @@ namespace ECTViews.ViewModels
         /// </summary>
         public string OkButtonText => IstBearbeitung ? "Speichern" : "Buchen";
 
-        /// <summary>Das Ergebnis: die fertige Buchung (null wenn abgebrochen).</summary>
+        /// <summary>Das Ergebnis: die fertige Buchung (null wenn abgebrochen).
+        /// Bei einer Buchungsgruppe ist dies die BASIS-Buchung; alle
+        /// Buchungen (inkl. Zusatz-Zeilen) stehen in
+        /// <see cref="ErgebnisBuchungen"/>.</summary>
         public Buchung Ergebnis { get; private set; }
+
+        /// <summary>Alle beim OK erzeugten Buchungen (Basis zuerst).
+        /// Ohne Gruppen-Vorlage genau ein Element. Null wenn abgebrochen.</summary>
+        public IReadOnlyList<Buchung> ErgebnisBuchungen { get; private set; }
 
         /// <summary>True wenn der Dialog mit OK bestätigt wurde.</summary>
         public bool Bestaetigt { get; private set; }
@@ -153,7 +160,7 @@ namespace ECTViews.ViewModels
         // Betrag
         // ----------------------------------------------
 
-        private string _betragText = "0,00";
+        private string _betragText = Waehrungsformat.BetragOhneGruppierung(0m);
         public string BetragText
         {
             get => _betragText;
@@ -165,6 +172,7 @@ namespace ECTViews.ViewModels
                     OnPropertyChanged(nameof(MwstBetragText));
                     BerechneRestwertHeuristisch();
                     ValidiereFeldFallsAktiv(ValidiereBetrag);
+                    AktualisiereZusatzzeilen();
                 }
             }
         }
@@ -176,37 +184,16 @@ namespace ECTViews.ViewModels
         }
 
         /// <summary>
-        /// Parst eine Geldbetrag-Eingabe. Akzeptiert:
-        ///   - Deutsches Format: "1.234,56" (Punkt = Tausender, Komma = Dezimal)
-        ///   - Englisches Format: "1,234.56" oder "119.00" (Punkt = Dezimal)
-        ///   - Einfache Zahlen: "119" oder "119,5"
-        /// Gibt 0 zurück wenn nicht parsbar.
+        /// Parst eine Geldbetrag-Eingabe über den toleranten, locale-freien
+        /// Parser (Waehrungsformat.TryParse): versteht deutsche ("1.234,56"),
+        /// schweizerische ("1'234.56") und englische ("1,234.56")
+        /// Schreibweisen. Gibt 0 zurück wenn nicht parsbar.
         /// </summary>
         private static int ParseBetragInCent(string text)
         {
-            if (string.IsNullOrWhiteSpace(text)) return 0;
-            string s = text.Trim();
-
-            // Heuristik: Wenn ein Komma vorkommt, ist es deutsches Format
-            // (Komma = Dezimal). Punkte werden dann als Tausendertrenner
-            // entfernt. Wenn KEIN Komma vorkommt, ist Punkt der Dezimal-
-            // trenner (Invariant-Culture).
-            decimal d;
-            if (s.Contains(","))
-            {
-                // Deutsches Format: Tausenderpunkte entfernen, dann mit DeDE parsen
-                string s2 = s.Replace(".", "");
-                if (decimal.TryParse(s2, NumberStyles.Number, DeDE, out d))
-                    return (int)decimal.Round(d * 100m, 0, MidpointRounding.AwayFromZero);
-            }
-            else
-            {
-                // Kein Komma: Punkt ist Dezimaltrenner (oder gar nichts)
-                if (decimal.TryParse(s, NumberStyles.Number,
-                        CultureInfo.InvariantCulture, out d))
-                    return (int)decimal.Round(d * 100m, 0, MidpointRounding.AwayFromZero);
-            }
-            return 0;
+            return Waehrungsformat.TryParse(text, out decimal d)
+                ? (int)decimal.Round(d * 100m, 0, MidpointRounding.AwayFromZero)
+                : 0;
         }
 
         public string NettoText
@@ -214,7 +201,7 @@ namespace ECTViews.ViewModels
             get
             {
                 var betrag = Betrag.AusCent(BetragInCent, MwstPromille);
-                return betrag.NettoWert.ToString("N2", DeDE);
+                return Waehrungsformat.Betrag(betrag.NettoWert);
             }
         }
 
@@ -223,7 +210,7 @@ namespace ECTViews.ViewModels
             get
             {
                 var betrag = Betrag.AusCent(BetragInCent, MwstPromille);
-                return betrag.MwstBetrag.ToString("N2", DeDE);
+                return Waehrungsformat.Betrag(betrag.MwstBetrag);
             }
         }
 
@@ -253,6 +240,7 @@ namespace ECTViews.ViewModels
                     OnPropertyChanged(nameof(MwstBetragText));
                     BerechneRestwertHeuristisch();
                     ValidiereFeldFallsAktiv(ValidiereMwst);
+                    AktualisiereZusatzzeilen();
                 }
             }
         }
@@ -261,21 +249,9 @@ namespace ECTViews.ViewModels
         {
             get
             {
-                if (string.IsNullOrWhiteSpace(_mwstText)) return 0;
-                string s = _mwstText.Trim();
-                decimal d;
-                if (s.Contains(","))
-                {
-                    if (decimal.TryParse(s, NumberStyles.Number, DeDE, out d))
-                        return (int)decimal.Round(d * 1000m, 0, MidpointRounding.AwayFromZero);
-                }
-                else
-                {
-                    if (decimal.TryParse(s, NumberStyles.Number,
-                            CultureInfo.InvariantCulture, out d))
-                        return (int)decimal.Round(d * 1000m, 0, MidpointRounding.AwayFromZero);
-                }
-                return 0;
+                return Waehrungsformat.TryParseProzent(_mwstText, out decimal d)
+                    ? (int)decimal.Round(d * 1000m, 0, MidpointRounding.AwayFromZero)
+                    : 0;
             }
         }
 
@@ -346,6 +322,7 @@ namespace ECTViews.ViewModels
                         else
                             AktualisiereVorschlaege(_beschreibung);
                     }
+                    AktualisiereZusatzzeilen();   // $B in Zeilen-Templates
                 }
             }
         }
@@ -385,7 +362,7 @@ namespace ECTViews.ViewModels
                 if (value.Nummer >= 0 && value.Nummer < presets.Count)
                 {
                     var p = presets[value.Nummer];
-                    if (!p.IstLeer) LadePresetInFelder(p);
+                    if (!p.IstLeer) LadePresetInFelder(p, value.Nummer);
                 }
                 VorschlaegeOffen = false;
                 _gewaehlterVorschlag = null;
@@ -429,26 +406,27 @@ namespace ECTViews.ViewModels
                     var p = presets[idx];
                     if (!p.IstLeer && p.Ausgabe == _istAusgabe)
                     {
-                        LadePresetInFelder(p);
+                        LadePresetInFelder(p, idx);
                         return true;
                     }
                 }
             }
 
             // Fall 2: exakter Treffer eines Preset-Texts der aktuellen Buchungsart
-            foreach (var p in presets)
+            for (int i = 0; i < presets.Count; i++)
             {
+                var p = presets[i];
                 if (p.IstLeer || p.Ausgabe != _istAusgabe) continue;
                 if (string.Equals(p.Text, eingabe, System.StringComparison.OrdinalIgnoreCase))
                 {
-                    LadePresetInFelder(p);
+                    LadePresetInFelder(p, i);
                     return true;
                 }
             }
             return false;
         }
 
-        private void LadePresetInFelder(Preset p)
+        private void LadePresetInFelder(Preset p, int presetSlot)
         {
             _presetLaden = true;
             try
@@ -457,7 +435,7 @@ namespace ECTViews.ViewModels
 
                 // MwstText-Setter erzwingt 0, falls das Feld global aus ist.
                 MwstText = p.Mwst > 0
-                    ? (p.Mwst / 1000m).ToString(DeDE)
+                    ? Waehrungsformat.Zahl(p.Mwst / 1000m)
                     : "0";
 
                 if (p.AfaJ > 1)
@@ -494,6 +472,14 @@ namespace ECTViews.ViewModels
 
             if (!string.IsNullOrWhiteSpace(p.Notiz))
                 PresetNotizAnzeigen?.Invoke(p.Notiz);
+
+            // Buchungsgruppen-Vorlage: Zusatz-Zeilen laden bzw. wegräumen.
+            // Im Bearbeiten-Modus bewusst NICHT (der Bearbeiten-Pfad liefert
+            // eine Einzelbuchung; Gruppen entstehen nur beim Neu-Buchen).
+            if (!IstBearbeitung && p.IstMehrzeilig)
+                UebernimmGruppenVorlage(p, presetSlot);
+            else
+                EntferneGruppenVorlage();
         }
 
         /// <summary>
@@ -538,7 +524,11 @@ namespace ECTViews.ViewModels
         public string Belegnummer
         {
             get => _belegnummer;
-            set => SetProperty(ref _belegnummer, value ?? "");
+            set
+            {
+                if (SetProperty(ref _belegnummer, value ?? ""))
+                    AktualisiereZusatzzeilen();   // $beleg in Zeilen-Templates
+            }
         }
 
         // ----------------------------------------------
@@ -647,7 +637,7 @@ namespace ECTViews.ViewModels
         /// </summary>
         public string AfaRestwertText
         {
-            get => (AfaRestwertCent / 100m).ToString("N2", DeDE);
+            get => Waehrungsformat.BetragOhneGruppierung(AfaRestwertCent / 100m);
             set
             {
                 int neuerCent = ParseBetragInCent(value);
@@ -833,7 +823,7 @@ namespace ECTViews.ViewModels
         /// uebergebene Buchung (Einfuegen, Sortieren, Sync, Modified-Flag),
         /// ohne dass der Dialog schliesst.
         /// </summary>
-        public event Action<Buchung> GebuchtUndWeiter;
+        public event Action<IReadOnlyList<Buchung>> GebuchtUndWeiter;
 
         /// <summary>
         /// Bittet die View, nach dem Weiterbuchen den Fokus zu setzen:
@@ -897,13 +887,16 @@ namespace ECTViews.ViewModels
             : this(doc, buchung.Art == Buchungsart.Ausgabe)
         {
             IstBearbeitung = true;
+            _originalBuchung = buchung;   // fuer Erhalt von Erweiterungen/AfaGenauigkeit
 
             // Felder aus der Buchung befüllen
             _datumTag = buchung.Datum.Day;
             _datumMonat = buchung.Datum.Month;
             _datumJahr = buchung.Datum.Year;
-            _betragText = (buchung.BruttoBetrag.InCent / 100m).ToString("N2", DeDE);
-            _mwstText = (buchung.BruttoBetrag.MwstPromille / 1000m).ToString(DeDE);
+            _betragText = Waehrungsformat.BetragOhneGruppierung(
+                buchung.BruttoBetrag.InCent / 100m);
+            _mwstText = Waehrungsformat.Zahl(
+                buchung.BruttoBetrag.MwstPromille / 1000m);
             _beschreibung = buchung.Beschreibung;
             _belegnummer = buchung.Belegnummer;
             _selectedKonto = buchung.Konto;
@@ -1062,7 +1055,7 @@ namespace ECTViews.ViewModels
                 if (nr > 1 && !AfaDegressiv)
                 {
                     restwertHinweis = $"Hinweis: Der Restwert von " +
-                        $"{(AfaRestwertCent / 100m).ToString("N2", DeDE)} " +
+                        $"{Waehrungsformat.Betrag(AfaRestwertCent / 100m)} " +
                         $"wurde unter der Annahme rekonstruiert, dass das " +
                         $"Anlagegut von Anfang an linear abgeschrieben wurde. " +
                         $"Bei früher degressiver AfA ist der reale Restwert " +
@@ -1142,8 +1135,11 @@ namespace ECTViews.ViewModels
 
             if (!ValidiereAlles())
                 return;  // Fenster bleibt offen, Fehler werden angezeigt
+            if (!ValidiereGruppe())
+                return;  // Gruppen-Fehler (Formeln, fehlende Beträge)
 
-            Ergebnis = BaueBuchungAusFeldern();
+            ErgebnisBuchungen = BaueAlleBuchungen();
+            Ergebnis = ErgebnisBuchungen[0];
 
             Bestaetigt = true;
             RequestClose?.Invoke();
@@ -1162,13 +1158,15 @@ namespace ECTViews.ViewModels
 
             if (!ValidiereAlles())
                 return;  // Fenster bleibt offen, Fehler werden angezeigt
+            if (!ValidiereGruppe())
+                return;  // Gruppen-Fehler (Formeln, fehlende Beträge)
 
-            var buchung = BaueBuchungAusFeldern();
+            var buchungen = BaueAlleBuchungen();
 
             // Persistieren ueberlaesst der ViewModel dem nativen Aufrufer
             // (Einfuegen in die Engine, Sync, Modified-Flag). Geschieht
-            // synchron, also ist die Buchung danach im Dokument.
-            GebuchtUndWeiter?.Invoke(buchung);
+            // synchron, also sind die Buchungen danach im Dokument.
+            GebuchtUndWeiter?.Invoke(buchungen);
 
             // Maske fuer die naechste Buchung vorbereiten und Fokus setzen.
             InitFuerNaechsteBuchung();
@@ -1180,6 +1178,13 @@ namespace ECTViews.ViewModels
         /// Erwartet, dass zuvor erfolgreich validiert wurde. Expandiert dabei
         /// ein evtl. 2-stelliges Jahr und macht den expandierten Wert sichtbar.
         /// </summary>
+        // Beim Bearbeiten: die Original-Buchung, damit Felder, die der Dialog
+        // nicht kennt (Plugin-Erweiterungen inkl. Buchungsgruppen-Keys,
+        // AfaGenauigkeit), NICHT verloren gehen. Ohne diesen Erhalt bekam die
+        // Ergebnis-Buchung einen leeren ErweiterungStore -- jedes Bearbeiten
+        // zerlegte damit Split-/Gruppen-Verknuepfungen und Plugin-Daten.
+        private readonly Buchung _originalBuchung;
+
         private Buchung BaueBuchungAusFeldern()
         {
             // Datum zusammenbauen (mit evtl. expandiertem 2-stelligem Jahr)
@@ -1191,6 +1196,10 @@ namespace ECTViews.ViewModels
 
             return new Buchung
             {
+                Erweiterungen = _originalBuchung?.Erweiterungen.Clone()
+                    ?? new ErweiterungStore(),
+                AfaGenauigkeit = _originalBuchung?.AfaGenauigkeit
+                    ?? AfaGenauigkeit.EntsprechendEinstellungen,
                 Art = IstAusgabe ? Buchungsart.Ausgabe : Buchungsart.Einnahme,
                 BruttoBetrag = Betrag.AusCent(BetragInCent, MwstPromille),
                 Datum = datum,
@@ -1237,6 +1246,9 @@ namespace ECTViews.ViewModels
             // roten Fehler aus der eben gebuchten Eingabe zeigen.
             _validierungAktiv = false;
 
+            // Gruppen-Vorlage nicht in die naechste Buchung uebernehmen.
+            EntferneGruppenVorlage();
+
             // AfA zuruecksetzen (AfaAktiviert zuerst -> raeumt Hinweis ab).
             AfaAktiviert = false;
             AfaDegressiv = false;
@@ -1246,7 +1258,7 @@ namespace ECTViews.ViewModels
             AfaRestwertCent = 0;
 
             // Betrag, MWSt, Beschreibung leeren/voreinstellen.
-            BetragText = "0,00";
+            BetragText = Waehrungsformat.BetragOhneGruppierung(0m);
             MwstText = "19";          // Setter erzwingt 0, falls MWSt-Feld aus
             Beschreibung = "";
             VorschlaegeOffen = false;
@@ -1535,15 +1547,8 @@ namespace ECTViews.ViewModels
                 return false;
             }
 
-            // Parse-Versuch wie in CBetrag::SetMWSt -- culture-aware
-            string s = MwstText.Trim();
-            decimal wert;
-            bool parsed = s.Contains(",")
-                ? decimal.TryParse(s, NumberStyles.Number, DeDE, out wert)
-                : decimal.TryParse(s, NumberStyles.Number,
-                        CultureInfo.InvariantCulture, out wert);
-
-            if (!parsed)
+            // toleranter, locale-freier Parse (Waehrungsformat)
+            if (!Waehrungsformat.TryParseProzent(MwstText, out decimal wert))
             {
                 MwstError = "MWSt-Satz ist keine gültige Zahl.";
                 return false;

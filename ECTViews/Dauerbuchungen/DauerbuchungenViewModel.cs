@@ -24,15 +24,13 @@ namespace ECTViews.Dauerbuchungen
     /// Tab-Spalten-ListBox: Beschreibung, Betrag, Intervall, bis-Datum).</summary>
     public sealed class DauerbuchungZeileVM
     {
-        private static readonly CultureInfo DeDE = new CultureInfo("de-DE");
-
         public Dauerbuchung Modell { get; }
 
         public DauerbuchungZeileVM(Dauerbuchung modell) { Modell = modell; }
 
         public string Beschreibung => Modell.Beschreibung;
         public string BetragText =>
-            (Modell.BruttoBetrag.InCent / 100m).ToString("N2", DeDE);
+            Waehrungsformat.Betrag(Modell.BruttoBetrag.InCent / 100m);
         public string IntervallText
         {
             get
@@ -60,7 +58,6 @@ namespace ECTViews.Dauerbuchungen
 
     public class DauerbuchungenViewModel : ViewModelBase
     {
-        private static readonly CultureInfo DeDE = new CultureInfo("de-DE");
 
         private readonly BuchungsDocument _doc;
         private Dauerbuchung _bearbeitet;   // bei Ändern: das Original in der Liste
@@ -170,8 +167,10 @@ namespace ECTViews.Dauerbuchungen
             AktJahrText  = db.AusgefuehrtBis.Year.ToString();
             Beschreibung = db.Beschreibung;
             Belegnummer  = db.Belegnummer;
-            BetragText   = (db.BruttoBetrag.InCent / 100m).ToString("N2", DeDE);
-            MwstText     = (db.BruttoBetrag.MwstPromille / 1000m).ToString(DeDE);
+            BetragText   = Waehrungsformat.BetragOhneGruppierung(
+                db.BruttoBetrag.InCent / 100m);
+            MwstText     = Waehrungsformat.Zahl(
+                db.BruttoBetrag.MwstPromille / 1000m);
             KontoAuswahl         = string.IsNullOrEmpty(db.Konto) ? null : db.Konto;
             BetriebAuswahl       = string.IsNullOrEmpty(db.Betrieb) ? null : db.Betrieb;
             BestandskontoAuswahl = string.IsNullOrEmpty(db.Bestandskonto) ? null : db.Bestandskonto;
@@ -320,7 +319,7 @@ namespace ECTViews.Dauerbuchungen
                     return;
                 var p = value.Preset;
                 Beschreibung = p.Text.Length > 27 ? p.Text.Substring(0, 27) : p.Text;
-                MwstText = (p.Mwst / 1000m).ToString(DeDE);
+                MwstText = Waehrungsformat.Zahl(p.Mwst / 1000m);
                 KontoAuswahl = string.IsNullOrEmpty(p.Konto) ? null : p.Konto;
             }
         }
@@ -524,38 +523,22 @@ namespace ECTViews.Dauerbuchungen
             return jahr;
         }
 
-        /// <summary>Geldbetrag-Eingabe in Cent (Logik wie BuchungViewModel:
-        /// Komma = deutsches Format, sonst Punkt als Dezimaltrenner).</summary>
+        /// <summary>Geldbetrag-Eingabe in Cent (toleranter, locale-freier
+        /// Parser -- versteht deutsche, schweizerische und englische
+        /// Schreibweisen).</summary>
         private static int ParseBetragInCent(string text)
         {
-            if (string.IsNullOrWhiteSpace(text)) return 0;
-            string s = text.Trim();
-            decimal d;
-            if (s.Contains(","))
-            {
-                string s2 = s.Replace(".", "");
-                if (decimal.TryParse(s2, NumberStyles.Number, DeDE, out d))
-                    return (int)decimal.Round(d * 100m, 0, MidpointRounding.AwayFromZero);
-            }
-            else
-            {
-                if (decimal.TryParse(s, NumberStyles.Number,
-                        CultureInfo.InvariantCulture, out d))
-                    return (int)decimal.Round(d * 100m, 0, MidpointRounding.AwayFromZero);
-            }
-            return 0;
+            return Waehrungsformat.TryParse(text, out decimal d)
+                ? (int)decimal.Round(d * 100m, 0, MidpointRounding.AwayFromZero)
+                : 0;
         }
 
         private static bool ParseMwstPromille(string text, out int promille)
         {
             promille = 0;
-            if (string.IsNullOrWhiteSpace(text)) return false;
-            string s = text.Trim().TrimEnd('%').Trim();
-            decimal d;
-            bool ok = s.Contains(",")
-                ? decimal.TryParse(s, NumberStyles.Number, DeDE, out d)
-                : decimal.TryParse(s, NumberStyles.Number, CultureInfo.InvariantCulture, out d);
-            if (!ok || d < 0 || d > 100) return false;
+            if (!Waehrungsformat.TryParseProzent(text, out decimal d)
+                || d < 0 || d > 100)
+                return false;
             // "Promille" im Engine-Sinn: Prozent x1000 (19 % -> 19000),
             // wie Betrag.MwstPromille und Preset.Mwst
             promille = (int)decimal.Round(d * 1000m, 0, MidpointRounding.AwayFromZero);

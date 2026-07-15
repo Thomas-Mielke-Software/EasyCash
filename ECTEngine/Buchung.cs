@@ -158,9 +158,96 @@ namespace ECTEngine
         /// <summary>True wenn die Buchung eine AfA-Buchung ist (Dauer > 1 Jahr).</summary>
         public bool HatAfA => AfaJahre > 1;
 
-        /// <summary>True wenn dies eine Split-Buchung ist.</summary>
-        public bool IstSplitBuchung =>
-            Erweiterungen.Hat("EasyCash", "SplitGegenbuchungOhneVorsteuerabzug");
+        // ----------------------------------------------
+        // Buchungsgruppen (persistente Verknüpfung zusammengehörender
+        // Buchungen über die Erweiterung -- anders als die transiente Uuid)
+        // ----------------------------------------------
+
+        private const string GruppenNs = "EasyCash";
+
+        /// <summary>
+        /// UUID der Buchungsgruppe, zu der diese Buchung gehört, oder null.
+        /// Liest den neuen symmetrischen Key "Buchungsgruppe" UND die drei
+        /// Alt-Keys des Privat-Splits (SplitBasisbuchung,
+        /// SplitGegenbuchungMitVorsteuerabzug/OhneVorsteuerabzug), damit
+        /// Bestandsdateien weiter als Gruppe erkannt werden.
+        /// </summary>
+        public string GruppenUuid
+        {
+            get
+            {
+                var v = Erweiterungen.Hole(GruppenNs, "Buchungsgruppe");
+                if (!string.IsNullOrEmpty(v)) return v;
+                v = Erweiterungen.Hole(GruppenNs, "SplitBasisbuchung");
+                if (!string.IsNullOrEmpty(v)) return v;
+                v = Erweiterungen.Hole(GruppenNs, "SplitGegenbuchungMitVorsteuerabzug");
+                if (!string.IsNullOrEmpty(v)) return v;
+                v = Erweiterungen.Hole(GruppenNs, "SplitGegenbuchungOhneVorsteuerabzug");
+                if (!string.IsNullOrEmpty(v)) return v;
+                return null;
+            }
+        }
+
+        /// <summary>
+        /// Rolle innerhalb der Gruppe: 0 = Basisbuchung, 1.. = Zusatz-Zeile
+        /// (Vorlagen-Zeilenindex). Alt-Split-Buchungen werden gemappt
+        /// (Basis=0, mit VSt-Abzug=1, ohne VSt-Abzug=2). -1 = keine Gruppe.
+        /// </summary>
+        public int GruppenRolle
+        {
+            get
+            {
+                var v = Erweiterungen.Hole(GruppenNs, "BuchungsgruppeRolle");
+                if (int.TryParse(v, out int rolle)) return rolle;
+                if (!string.IsNullOrEmpty(Erweiterungen.Hole(GruppenNs, "SplitBasisbuchung"))) return 0;
+                if (!string.IsNullOrEmpty(Erweiterungen.Hole(GruppenNs, "SplitGegenbuchungMitVorsteuerabzug"))) return 1;
+                if (!string.IsNullOrEmpty(Erweiterungen.Hole(GruppenNs, "SplitGegenbuchungOhneVorsteuerabzug"))) return 2;
+                return -1;
+            }
+        }
+
+        /// <summary>Preset-Slot (0-99) der Vorlage, aus der die Gruppe
+        /// erzeugt wurde; -1 wenn unbekannt (z.B. Alt-Split).</summary>
+        public int GruppenVorlage
+        {
+            get
+            {
+                var v = Erweiterungen.Hole(GruppenNs, "BuchungsgruppeVorlage");
+                return int.TryParse(v, out int slot) ? slot : -1;
+            }
+        }
+
+        /// <summary>Macht die Buchung zum Mitglied einer Buchungsgruppe
+        /// (symmetrische Keys auf allen Mitgliedern).</summary>
+        public void SetzeGruppe(string uuid, int rolle, int vorlagenSlot = -1)
+        {
+            if (string.IsNullOrEmpty(uuid)) return;
+            Erweiterungen.Setze(GruppenNs, "Buchungsgruppe", uuid);
+            Erweiterungen.Setze(GruppenNs, "BuchungsgruppeRolle",
+                rolle.ToString(System.Globalization.CultureInfo.InvariantCulture));
+            if (vorlagenSlot >= 0)
+                Erweiterungen.Setze(GruppenNs, "BuchungsgruppeVorlage",
+                    vorlagenSlot.ToString(System.Globalization.CultureInfo.InvariantCulture));
+        }
+
+        /// <summary>Entfernt alle Gruppen-Verknüpfungen (neue Keys UND
+        /// Alt-Split-Keys) -- z.B. beim Kopieren eines Gruppenmitglieds
+        /// (die Kopie soll NICHT Mitglied werden) oder beim Auflösen einer
+        /// Gruppe während der Bearbeitung.</summary>
+        public void EntferneGruppe()
+        {
+            Erweiterungen.Entferne(GruppenNs, "Buchungsgruppe");
+            Erweiterungen.Entferne(GruppenNs, "BuchungsgruppeRolle");
+            Erweiterungen.Entferne(GruppenNs, "BuchungsgruppeVorlage");
+            Erweiterungen.Entferne(GruppenNs, "SplitBasisbuchung");
+            Erweiterungen.Entferne(GruppenNs, "SplitGegenbuchungMitVorsteuerabzug");
+            Erweiterungen.Entferne(GruppenNs, "SplitGegenbuchungOhneVorsteuerabzug");
+            Erweiterungen.Entferne(GruppenNs, "GewaehlterSplit");   // Alt-Split-Index
+        }
+
+        /// <summary>True wenn die Buchung Teil einer Buchungsgruppe ist
+        /// (neuer Mechanismus ODER Alt-Privat-Split).</summary>
+        public bool IstSplitBuchung => GruppenUuid != null;
 
         /// <summary>Restwert als decimal (Convenience).</summary>
         public decimal AfaRestwert => AfaRestwertCent / 100m;

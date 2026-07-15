@@ -63,9 +63,9 @@ namespace ECTViews.EinstellungenUi.Pages
             EUKonten.Lade();
 
             foreach (var k in EUKonten.EinnahmenKonten)
-                Konten.Add(new EUKontoVM(k, GruppeEinnahmen, PersistiereReihenfolge));
+                Konten.Add(new EUKontoVM(k, GruppeEinnahmen, PersistiereReihenfolge, IstNameVergeben));
             foreach (var k in EUKonten.AusgabenKonten)
-                Konten.Add(new EUKontoVM(k, GruppeAusgaben, PersistiereReihenfolge));
+                Konten.Add(new EUKontoVM(k, GruppeAusgaben, PersistiereReihenfolge, IstNameVergeben));
 
             foreach (var g in EUKonten.FormularGruppen)
                 Formulare.Add(new FormularKategorieVM(
@@ -90,9 +90,9 @@ namespace ECTViews.EinstellungenUi.Pages
 
             Konten.Clear();
             foreach (var k in EUKonten.EinnahmenKonten)
-                Konten.Add(new EUKontoVM(k, GruppeEinnahmen, PersistiereReihenfolge));
+                Konten.Add(new EUKontoVM(k, GruppeEinnahmen, PersistiereReihenfolge, IstNameVergeben));
             foreach (var k in EUKonten.AusgabenKonten)
-                Konten.Add(new EUKontoVM(k, GruppeAusgaben, PersistiereReihenfolge));
+                Konten.Add(new EUKontoVM(k, GruppeAusgaben, PersistiereReihenfolge, IstNameVergeben));
 
             // Selektion (und damit die Feld-Hervorhebung) wiederherstellen.
             SelektiertesKonto = Konten.FirstOrDefault(
@@ -234,15 +234,30 @@ namespace ECTViews.EinstellungenUi.Pages
         // Anlegen / Löschen von Konten
         // -----------------------------------------------------------------
 
+        /// <summary>True wenn in der GLEICHEN Gruppe (Einnahmen bzw. Ausgaben)
+        /// bereits ein anderes Konto diesen Namen trägt. Doppelte Namen wären
+        /// fatal: Buchungen referenzieren das Konto nur über den Namen.</summary>
+        private bool IstNameVergeben(EUKontoVM konto, string name)
+            => Konten.Any(k => !ReferenceEquals(k, konto)
+                && k.Modell.IstEinnahme == konto.Modell.IstEinnahme
+                && string.Equals(k.Name, name, System.StringComparison.OrdinalIgnoreCase));
+
         /// <summary>Legt ein neues Konto am Ende der jeweiligen Gruppe an
-        /// (Default-Name "Neues Konto", ohne Feldzuweisung), persistiert und
+        /// (eindeutiger Default-Name, ohne Feldzuweisung), persistiert und
         /// selektiert es -- der Aufrufer (KontenPage) springt zum Umbenennen in
         /// das Namensfeld.</summary>
         public void KontoAnlegen(bool einnahme)
         {
-            var modell = new EUKonto("Neues Konto", einnahme, 0, "", null);
+            // Default-Name eindeutig machen ("Neues Konto", "Neues Konto 2", ...)
+            string name = "Neues Konto";
+            for (int n = 2; Konten.Any(k => k.Modell.IstEinnahme == einnahme
+                     && string.Equals(k.Name, name, System.StringComparison.OrdinalIgnoreCase)); n++)
+                name = "Neues Konto " + n;
+
+            var modell = new EUKonto(name, einnahme, 0, "", null);
             var vm = new EUKontoVM(modell,
-                einnahme ? GruppeEinnahmen : GruppeAusgaben, PersistiereReihenfolge);
+                einnahme ? GruppeEinnahmen : GruppeAusgaben, PersistiereReihenfolge,
+                IstNameVergeben);
 
             if (einnahme)
                 Konten.Insert(Konten.Count(k => k.Modell.IstEinnahme), vm); // ans Ende der Einnahmen
@@ -296,14 +311,22 @@ namespace ECTViews.EinstellungenUi.Pages
         /// gesetzt, schreibt die ganze Gruppe neu (Index/Namen konsistent).</summary>
         private readonly System.Action _onGeaendert;
 
-        public EUKontoVM(EUKonto modell, string gruppe, System.Action onGeaendert = null)
+        /// <summary>Duplikat-Prüfung des Besitzer-VMs: true wenn der Name in
+        /// der Gruppe schon von einem anderen Konto belegt ist.</summary>
+        private readonly System.Func<EUKontoVM, string, bool> _istNameVergeben;
+
+        public EUKontoVM(EUKonto modell, string gruppe,
+            System.Action onGeaendert = null,
+            System.Func<EUKontoVM, string, bool> istNameVergeben = null)
         {
             Modell = modell;
             Gruppe = gruppe;
             _onGeaendert = onGeaendert;
+            _istNameVergeben = istNameVergeben;
         }
 
-        /// <summary>Konto-Name; editierbar (Umbenennen). Leer wird ignoriert.</summary>
+        /// <summary>Konto-Name; editierbar (Umbenennen). Leer wird ignoriert,
+        /// Duplikate innerhalb der Gruppe werden abgelehnt.</summary>
         public string Name
         {
             get => Modell.Name;
@@ -311,6 +334,15 @@ namespace ECTViews.EinstellungenUi.Pages
             {
                 var neu = (value ?? "").Trim();
                 if (string.IsNullOrEmpty(neu) || Modell.Name == neu) return;
+                if (_istNameVergeben?.Invoke(this, neu) == true)
+                {
+                    // Eingabe zurückweisen: Binding auf den alten Wert
+                    // zurücksetzen und den Grund in der Statuszeile melden.
+                    OnPropertyChanged();
+                    Statusleiste.Melde(
+                        $"Ein Konto \"{neu}\" existiert in dieser Gruppe bereits -- Umbenennen abgelehnt.");
+                    return;
+                }
                 Modell.Name = neu;
                 OnPropertyChanged();
                 _onGeaendert?.Invoke();

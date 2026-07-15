@@ -61,7 +61,7 @@ namespace ECTViews.EinstellungenUi
             Items.Add(Seite(GRUPPE_GLOBAL, "Allgemein",        () => new AllgemeinPage()));
             Items.Add(Seite(GRUPPE_GLOBAL, "Unternehmer*in",   () => new UnternehmerPage()));
             Items.Add(Seite(GRUPPE_GLOBAL, "Finanzamt",        () => new FinanzamtPage()));
-            Items.Add(Seite(GRUPPE_GLOBAL, "Buchungs-Presets", () => new PresetsPage()));
+            Items.Add(Seite(GRUPPE_GLOBAL, "Buchungsvorlagen", () => new PresetsPage()));
             Items.Add(Seite(GRUPPE_GLOBAL, "E/Ü-Konten",       () => new KontenPage()));
             Items.Add(Seite(GRUPPE_GLOBAL, "E/Ü-Einstellungen", () => new EUEinstellungenPage()));
             // Währungen folgt in M3.
