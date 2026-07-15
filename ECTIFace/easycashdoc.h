@@ -314,6 +314,14 @@ extern "C" AFX_EXT_CLASS void HoleFormularnamenAusCSA(long Index, LPCTSTR Filter
 extern "C" AFX_EXT_CLASS LPCSTR IniSektion(LPCSTR id);
 extern "C" AFX_EXT_CLASS char *HoleKontoFuerFeld(char ea, LPCSTR eurech_feld, LPCSTR uva_feld = NULL);
 
+// Generalisierung von HoleKontoFuerFeld: liefert das erstbeste Konto, das mit der angegebenen
+// Kombination von Formularfeldern verknüpft ist -- pro Land ein Block (Kürzel de/at/ch, das in den
+// Einstellungen gewählte Land entscheidet), z.B.
+//   HoleKontoMitFeldern("$de:E/Ü-Rechnung=1103|Umsatzsteuer-Voranmeldung=48||at:Beilage E1a=9040|Umsatzsteuer=1020||")
+// Existiert kein passendes Konto, fragt eine Eingabemaske den Kontonamen ab und legt das Konto
+// samt Feldzuweisungen an. Return: Kontoname oder "" (Abbruch, Fehler oder alle 100 Slots belegt).
+extern "C" AFX_EXT_CLASS char *HoleKontoMitFeldern(LPCSTR spez);
+
 ////////////////////////////////////////////
 // ExtensionDLLTable
 

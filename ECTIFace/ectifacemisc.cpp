@@ -22,6 +22,7 @@
 #include "stdafx.h"
 #include "ECTIFace.h"
 #include "EasyCashDoc.h"
+#include "resource.h"	// IDD_KONTO_ANLEGEN (HoleKontoMitFeldern)
 
 // Wandelt einen Betrag von String in int (= Pfennige/Cents) um
 extern "C" AFX_EXT_CLASS int currency_to_int(char *s)
@@ -598,4 +599,405 @@ extern "C" AFX_EXT_CLASS char *HoleKontoFuerFeld(char ea, LPCSTR eurech_feld, LP
 	if (Kontenliste[n] == "") return NULL;
 	strcpy(kontoReturnBuffer, (LPCTSTR)Kontenliste[n]);
 	return kontoReturnBuffer;
+}
+
+/////////////////////////////////////////////////////////////////////////////
+// HoleKontoMitFeldern -- Plugin-API: Ad-hoc-Kontoselektor über
+// Formularfeld-Verknüpfungen. Generalisierung von HoleKontoFuerFeld:
+// statt fest E/Ü-Rechnung + USt-Voranmeldung nimmt die Funktion eine
+// Feld-Spezifikation mit Land-Blöcken entgegen, z.B.
+//
+//   HoleKontoMitFeldern("$de:E/Ü-Rechnung=1103|Umsatzsteuer-Voranmeldung=48||at:Beilage E1a=9040|Umsatzsteuer=1020||")
+//
+// Aufbau: '$' + Land-Blöcke ("||"-getrennt; Kürzel de/at/ch nach der
+// Land-Einstellung [Persoenliche_Daten]land: 0=de, 1=at, 2=ch); pro Block
+// "Formularname=Feld-Id"-Paare ('|'-getrennt). ALLE Paare des aktiven
+// Landes müssen am Konto verknüpft sein (UND-Kombination); geliefert wird
+// das erstbeste Konto (Slot-Reihenfolge, Einnahmen vor Ausgaben).
+//
+// Existiert kein passendes Konto, fragt eine Eingabemaske (IDD_KONTO_ANLEGEN)
+// den Kontonamen ab (vorbelegt mit den Feldnamen aus den .ecf-Formularen,
+// " / "-getrennt) und legt das Konto samt Feldzuweisungen in der ini an.
+// Return: Kontoname oder "" (Abbruch, Spezifikations-Fehler oder alle
+// 100 Slots belegt -- Fehler jeweils als MessageBox).
+//
+// Die V4-Implementierung (ECTBridge/KontoExports.cpp, managed über
+// ECTEngine.KontoFeldSelektor + ECTViews.KontoAnlegenView) verhält sich
+// identisch, damit die Plugin-API beider Welten kompatibel bleibt.
+
+// benötigte Feld-Verknüpfung: Formularname + Feld-Id
+struct KontoFeldPaar
+{
+	CString formular;
+	CString feldid;
+};
+
+#define MAX_KONTOFELD_PAARE 20
+
+// Land-Kürzel aus der ini ([Persoenliche_Daten]land: 0=de, 1=at, 2=ch)
+static CString KontoFeldLandKuerzel(LPCSTR inifilename)
+{
+	switch (GetPrivateProfileInt("Persoenliche_Daten", "land", 0, inifilename))
+	{
+	case 1:  return "at";
+	case 2:  return "ch";
+	default: return "de";
+	}
+}
+
+// Parst aus der Spezifikation den Block des gewünschten Landes.
+// Return: Anzahl der Paare; 0 = kein Block für das Land; -1 = Syntaxfehler.
+static int ParseKontoFeldSpez(LPCSTR spez, const CString &csLand,
+	KontoFeldPaar *paare, int nMaxPaare, CString &csFehler)
+{
+	csFehler = "";
+	CString s = spez ? spez : "";
+	s.Trim();
+	if (s.GetLength() > 0 && s[0] == '$') s = s.Mid(1);
+	if (s.IsEmpty())
+	{
+		csFehler = "Leere Feld-Spezifikation.";
+		return -1;
+	}
+
+	int nAnzahl = 0;
+	BOOL bLandGefunden = FALSE;
+	int pos = 0;
+	while (pos < s.GetLength())
+	{
+		// Land-Block bis zum nächsten "||"
+		int ende = s.Find("||", pos);
+		CString block = ende >= 0 ? s.Mid(pos, ende - pos) : s.Mid(pos);
+		pos = ende >= 0 ? ende + 2 : s.GetLength();
+		block.Trim();
+		if (block.IsEmpty()) continue;	// abschließendes "||"
+
+		int doppelpunkt = block.Find(':');
+		if (doppelpunkt <= 0)
+		{
+			csFehler.Format("Land-Kürzel fehlt (erwartet z.B. \"de:\") in \"%s\".",
+				(LPCTSTR)block);
+			return -1;
+		}
+		CString land = block.Left(doppelpunkt);
+		land.Trim();
+		land.MakeLower();
+		CString paareRoh = block.Mid(doppelpunkt + 1);
+
+		BOOL bAktiv = land == csLand;
+		if (bAktiv) bLandGefunden = TRUE;
+
+		// Paare "Formularname=Feld-Id", '|'-getrennt
+		int p = 0;
+		while (p < paareRoh.GetLength())
+		{
+			int pipe = paareRoh.Find('|', p);
+			CString paar = pipe >= 0 ? paareRoh.Mid(p, pipe - p) : paareRoh.Mid(p);
+			p = pipe >= 0 ? pipe + 1 : paareRoh.GetLength();
+			paar.Trim();
+			if (paar.IsEmpty()) continue;
+
+			int gleich = paar.Find('=');
+			if (gleich <= 0 || gleich == paar.GetLength() - 1)
+			{
+				csFehler.Format("\"%s\" ist kein gültiges Paar (erwartet Formularname=Feld-Id).",
+					(LPCTSTR)paar);
+				return -1;
+			}
+			if (bAktiv && nAnzahl < nMaxPaare)
+			{
+				paare[nAnzahl].formular = paar.Left(gleich);
+				paare[nAnzahl].formular.Trim();
+				paare[nAnzahl].feldid = paar.Mid(gleich + 1);
+				paare[nAnzahl].feldid.Trim();
+				nAnzahl++;
+			}
+		}
+	}
+
+	if (!bLandGefunden || nAnzahl == 0)
+	{
+		csFehler.Format("Die Vorlage enthält keine Feld-Verknüpfung für das eingestellte Land (\"%s\").",
+			(LPCTSTR)csLand);
+		return 0;
+	}
+	return nAnzahl;
+}
+
+// Sucht in einer Konten-Gruppe das erstbeste Konto, das ALLE geforderten
+// Feld-Verknüpfungen trägt (der Feldzuweisungs-Wert ist '|'-terminiert,
+// vgl. GetErweiterungKey).
+static BOOL SucheKontoMitFeldern(LPCSTR inifilename, BOOL bEinnahmen,
+	const KontoFeldPaar *paare, int nPaare, CString &csKonto)
+{
+	LPCSTR sRech = bEinnahmen ? "EinnahmenRechnungsposten" : "AusgabenRechnungsposten";
+	LPCSTR sFz   = bEinnahmen ? "EinnahmenFeldzuweisungen" : "AusgabenFeldzuweisungen";
+	char key[8], name[512], blob[8192];
+
+	for (int i = 0; i < 100; i++)
+	{
+		sprintf(key, "%02d", i);
+		GetPrivateProfileString(sRech, key, "", name, sizeof(name), inifilename);
+		if (!*name) break;	// Kontenliste endet beim ersten leeren Slot
+		GetPrivateProfileString(sFz, key, "", blob, sizeof(blob), inifilename);
+		if (!*blob) continue;
+
+		CString csBlob(blob);
+		BOOL bPasst = TRUE;
+		for (int p = 0; p < nPaare && bPasst; p++)
+		{
+			char *wert = GetErweiterungKey(csBlob, "ECT", paare[p].formular);
+			CString csWert;
+			while (*wert && *wert != '|')	// Wert ist '|'-terminiert
+				csWert += *wert++;
+			csWert.Trim();
+			if (csWert != paare[p].feldid) bPasst = FALSE;
+		}
+		if (bPasst)
+		{
+			csKonto = name;
+			return TRUE;
+		}
+	}
+	return FALSE;
+}
+
+// Prüft, ob der Name in der Gruppe schon vergeben ist (Buchungen
+// referenzieren Konten nur über den Namen -- Duplikate wären fatal).
+static BOOL KontoNameVergeben(LPCSTR inifilename, BOOL bEinnahmen, LPCSTR sName)
+{
+	LPCSTR sRech = bEinnahmen ? "EinnahmenRechnungsposten" : "AusgabenRechnungsposten";
+	char key[8], name[512];
+	for (int i = 0; i < 100; i++)
+	{
+		sprintf(key, "%02d", i);
+		GetPrivateProfileString(sRech, key, "", name, sizeof(name), inifilename);
+		if (!*name) break;
+		if (!stricmp(name, sName)) return TRUE;
+	}
+	return FALSE;
+}
+
+// Ermittelt Feld-Bezeichnungen + E/A-Typ aus den installierten .ecf-Formularen
+// (alle Varianten/Jahre eines Formularnamens werden durchsucht).
+static BOOL ErmittleKontoFeldInfo(const KontoFeldPaar *paare, int nPaare,
+	CString *feldnamen, BOOL &bEinnahme, CString &csFehler)
+{
+	CStringArray csa;
+	LadeECFormulare(csa);
+
+	int nTyp = -1;	// -1 = unbestimmt, 1 = Einnahmen, 0 = Ausgaben
+	for (int p = 0; p < nPaare; p++)
+	{
+		BOOL bGefunden = FALSE;
+		for (int i = 0; i < csa.GetSize() && !bGefunden; i++)
+		{
+			XDoc xmldoc;
+			xmldoc.LoadFile(csa[i]);
+			LPXNode xml = xmldoc.GetRoot();
+			if (!xml) continue;
+			LPCTSTR attr_name = xml->GetAttrValue("name");
+			if (!attr_name || stricmp(attr_name, paare[p].formular)) continue;
+			LPXNode felder = xml->Find("felder");
+			if (!felder) continue;
+
+			for (int j = 0; j < felder->GetChildCount(); j++)
+			{
+				LPXNode child = felder->GetChild(j);
+				if (!child) continue;
+				LPCTSTR id = child->GetAttrValue("id");
+				if (!id || paare[p].feldid != (CString)id) continue;
+				LPCTSTR typ = child->GetAttrValue("typ");
+				int t = typ && !stricmp(typ, "Einnahmen") ? 1
+					  : typ && !stricmp(typ, "Ausgaben") ? 0 : -1;
+				if (t < 0) continue;	// nur E/A-Felder sind zuweisbar
+				LPCTSTR nm = child->GetChildValue("name");
+				if (nm && *nm)
+					feldnamen[p] = nm;
+				else
+					feldnamen[p] = paare[p].formular + " Feld " + paare[p].feldid;
+				if (nTyp == -1)
+					nTyp = t;
+				else if (nTyp != t)
+				{
+					csFehler = "Die geforderten Felder mischen Einnahmen- und Ausgaben-Typ -- "
+						"ein Konto kann nur einem Typ angehören.";
+					return FALSE;
+				}
+				bGefunden = TRUE;
+				break;
+			}
+		}
+		if (!bGefunden)
+		{
+			csFehler.Format("Das Formular \"%s\" hat kein zuweisbares Feld mit der Id \"%s\" (.ecf-Datei installiert?).",
+				(LPCTSTR)paare[p].formular, (LPCTSTR)paare[p].feldid);
+			return FALSE;
+		}
+	}
+	bEinnahme = nTyp == 1;
+	return TRUE;
+}
+
+// Legt das Konto am ersten freien Slot an und schreibt die Feldzuweisungen
+// im Erweiterungs-Format ("ECT|Formular=Id|...||") in die ini.
+static BOOL LegeKontoMitFeldernAn(LPCSTR inifilename, BOOL bEinnahmen,
+	LPCSTR sName, const KontoFeldPaar *paare, int nPaare)
+{
+	LPCSTR sRech = bEinnahmen ? "EinnahmenRechnungsposten" : "AusgabenRechnungsposten";
+	LPCSTR sFz   = bEinnahmen ? "EinnahmenFeldzuweisungen" : "AusgabenFeldzuweisungen";
+	char key[8], name[512];
+
+	int frei = -1;
+	for (int i = 0; i < 100; i++)
+	{
+		sprintf(key, "%02d", i);
+		GetPrivateProfileString(sRech, key, "", name, sizeof(name), inifilename);
+		if (!*name)	// Kontenliste endet beim ersten leeren Slot
+		{
+			frei = i;
+			break;
+		}
+	}
+	if (frei < 0)
+	{
+		CString csMeldung;
+		csMeldung.Format("Alle 100 Plätze für %s sind bereits belegt.",
+			bEinnahmen ? "Einnahmenkonten" : "Ausgabenkonten");
+		AfxMessageBox(csMeldung, MB_ICONERROR);
+		return FALSE;
+	}
+
+	CString csBlob = "ECT";
+	for (int p = 0; p < nPaare; p++)
+		csBlob += "|" + paare[p].formular + "=" + paare[p].feldid;
+	csBlob += "||";
+
+	sprintf(key, "%02d", frei);
+	WritePrivateProfileString(sRech, key, sName, inifilename);
+	WritePrivateProfileString(sFz, key, csBlob, inifilename);
+	return TRUE;
+}
+
+// Eingabemaske: nur der Kontoname wird abgefragt (IDD_KONTO_ANLEGEN)
+class CKontoAnlegenDlg : public CDialog
+{
+public:
+	CString m_csHinweis;
+	CString m_csName;
+
+	CKontoAnlegenDlg(CWnd *pParent = NULL) : CDialog(IDD_KONTO_ANLEGEN, pParent) {}
+
+protected:
+	virtual BOOL OnInitDialog()
+	{
+		CDialog::OnInitDialog();
+		SetDlgItemText(IDC_KONTO_HINWEIS, m_csHinweis);
+		SetDlgItemText(IDC_KONTO_NAME, m_csName);
+		CEdit *pEdit = (CEdit *)GetDlgItem(IDC_KONTO_NAME);
+		if (pEdit)
+		{
+			pEdit->SetFocus();
+			pEdit->SetSel(0, -1);
+			return FALSE;	// Fokus selbst gesetzt
+		}
+		return TRUE;
+	}
+
+	virtual void OnOK()
+	{
+		GetDlgItemText(IDC_KONTO_NAME, m_csName);
+		m_csName.Trim();
+		if (m_csName.IsEmpty())
+		{
+			AfxMessageBox("Bitte einen Kontonamen eingeben.", MB_ICONINFORMATION);
+			return;
+		}
+		CDialog::OnOK();
+	}
+};
+
+static char kontoMitFeldernBuffer[1000];
+extern "C" AFX_EXT_CLASS char *HoleKontoMitFeldern(LPCSTR spez)
+{
+	kontoMitFeldernBuffer[0] = '\0';
+
+	char inifilename[1000];
+	if (!GetIniFileName(inifilename, sizeof(inifilename)))
+		return kontoMitFeldernBuffer;
+
+	CString csLand = KontoFeldLandKuerzel(inifilename);
+	KontoFeldPaar paare[MAX_KONTOFELD_PAARE];
+	CString csFehler;
+	int nPaare = ParseKontoFeldSpez(spez, csLand, paare, MAX_KONTOFELD_PAARE, csFehler);
+	if (nPaare <= 0)
+	{
+		AfxMessageBox(csFehler, MB_ICONWARNING);
+		return kontoMitFeldernBuffer;
+	}
+
+	// erstbestes verknüpftes Konto (Einnahmen vor Ausgaben)
+	CString csKonto;
+	if (SucheKontoMitFeldern(inifilename, TRUE, paare, nPaare, csKonto) ||
+		SucheKontoMitFeldern(inifilename, FALSE, paare, nPaare, csKonto))
+	{
+		strncpy(kontoMitFeldernBuffer, (LPCTSTR)csKonto, sizeof(kontoMitFeldernBuffer) - 1);
+		kontoMitFeldernBuffer[sizeof(kontoMitFeldernBuffer) - 1] = '\0';
+		return kontoMitFeldernBuffer;
+	}
+
+	// kein Treffer: Anlage anbieten -- Feldnamen + E/A-Typ aus den .ecf
+	CString feldnamen[MAX_KONTOFELD_PAARE];
+	BOOL bEinnahme = TRUE;
+	if (!ErmittleKontoFeldInfo(paare, nPaare, feldnamen, bEinnahme, csFehler))
+	{
+		AfxMessageBox(csFehler, MB_ICONWARNING);
+		return kontoMitFeldernBuffer;
+	}
+
+	// Hinweistext: "Diese Vorlage benötigt ein Konto, das mit dem Feld ... /
+	// den Feldern ..., ... und ... verknüpft ist."
+	CString csHinweis = "Diese Vorlage benötigt ein Konto, das mit ";
+	if (nPaare == 1)
+		csHinweis += "dem Feld \"" + feldnamen[0] + "\"";
+	else
+	{
+		csHinweis += "den Feldern ";
+		for (int p = 0; p < nPaare; p++)
+		{
+			if (p > 0) csHinweis += p == nPaare - 1 ? " und " : ", ";
+			csHinweis += "\"" + feldnamen[p] + "\"";
+		}
+	}
+	csHinweis += " verknüpft ist. Den Kontonamen bitte ggf. geeignet kürzen, "
+		"sodass der Zweck des Kontos aber noch eindeutig zu erkennen ist.";
+
+	CString csVorgabe;	// Feldnamen mit " / " verbunden
+	for (int p = 0; p < nPaare; p++)
+	{
+		if (p > 0) csVorgabe += " / ";
+		csVorgabe += feldnamen[p];
+	}
+
+	CKontoAnlegenDlg dlg;
+	dlg.m_csHinweis = csHinweis;
+	dlg.m_csName = csVorgabe;
+	while (dlg.DoModal() == IDOK)
+	{
+		if (KontoNameVergeben(inifilename, bEinnahme, dlg.m_csName))
+		{
+			CString csMeldung;
+			csMeldung.Format("Ein Konto \"%s\" existiert in dieser Gruppe bereits.",
+				(LPCTSTR)dlg.m_csName);
+			AfxMessageBox(csMeldung, MB_ICONINFORMATION);
+			continue;	// Eingabemaske erneut anzeigen
+		}
+		if (!LegeKontoMitFeldernAn(inifilename, bEinnahme, dlg.m_csName, paare, nPaare))
+			break;	// alle Slots belegt (Meldung kam schon)
+
+		strncpy(kontoMitFeldernBuffer, (LPCTSTR)dlg.m_csName, sizeof(kontoMitFeldernBuffer) - 1);
+		kontoMitFeldernBuffer[sizeof(kontoMitFeldernBuffer) - 1] = '\0';
+		break;
+	}
+	return kontoMitFeldernBuffer;	// "" bei Abbruch/Fehler
 }
