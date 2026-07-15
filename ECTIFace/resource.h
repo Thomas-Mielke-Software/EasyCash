@@ -7,6 +7,7 @@
 #define IDD_BUCHUNGSJAHR_WAEHLEN        700
 #define IDD_KONVERTIERUNG               701
 #define IDD_AFA_GENAUIGKEIT             702
+#define IDD_KONTO_ANLEGEN               703
 #define IDC_TEXT1                       1000
 #define IDC_INTERVALL                   1001
 #define IDC_KEINE2                      1002
@@ -57,6 +58,8 @@
 #define IDC_EXIT                        1161
 #define IDC_LEER2                       1171
 #define ID_FILE_WAEHLE_DATENVERZEICHNIS 32829
+#define IDC_KONTO_HINWEIS               1200
+#define IDC_KONTO_NAME                  1201
 #define ID_FILE_BACKUP                  32833
 #define ID_FILE_BACKUP_EXTERNAL         32883
 #define ID_FILE_BACKUP_SUBFOLDER        32884
