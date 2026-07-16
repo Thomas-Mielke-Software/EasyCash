@@ -1,4 +1,4 @@
-// NewDownloadDialog.cpp : implementation file
+ï»¿// NewDownloadDialog.cpp : implementation file
 //
 
 #include "stdafx.h"
@@ -77,7 +77,7 @@ BOOL CDownloadDialog::OnInitDialog()
 
 void CDownloadDialog::BuildComboBoxList()
 {
-	// ComboBox zurücksetzen:
+	// ComboBox zurÃ¼cksetzen:
 	CComboBox *cb = (CComboBox *)GetDlgItem(IDC_DOWNLOAD_DIRECTORY);
 	cb->ResetContent();
 
@@ -96,7 +96,7 @@ void CDownloadDialog::BuildComboBoxList()
 	{
 		do
 		{
-			if (dir != (CString)temp_path) // WINTEMP nicht doppelt aufführen!
+			if (dir != (CString)temp_path) // WINTEMP nicht doppelt auffÃ¼hren!
 				cb->AddString((LPCSTR)dir);
 			else
 				bWinTempEingetragen = TRUE;
@@ -196,7 +196,7 @@ UINT DownloadControllingFunction( LPVOID pParam )
 		CFtpFileFind find(f);
 		if (find.FindFile(filename_buffer))
 		{
-			find.FindNextFile(); // sucht nach nächstem file - ergebnis ist egal - und stellt die daten des ersten files zur verfügung
+			find.FindNextFile(); // sucht nach nÃ¤chstem file - ergebnis ist egal - und stellt die daten des ersten files zur verfÃ¼gung
 
 			pThreadParam->status_text = "Retrieving file size";
 			pThreadParam->total_bytes = find.GetLength();
@@ -319,7 +319,7 @@ UINT DownloadControllingFunction( LPVOID pParam )
     return 0;	// thread completed successfully
 }
 
-// --- 1. Hilfsfunktion für DownloadControllingFunction ---
+// --- 1. Hilfsfunktion fÃ¼r DownloadControllingFunction ---
 
 static int CheckForUpdate(CThreadParam *pThreadParam)
 {
@@ -372,7 +372,7 @@ static int CheckForUpdate(CThreadParam *pThreadParam)
 		CFtpFileFind find(f);
 		if (find.FindFile(FTP_UPDATE_VERSION_FILENAME, INTERNET_FLAG_RELOAD))
 		{
-			find.FindNextFile(); // sucht nach nächstem file - ergebnis ist egal - und stellt die daten des ersten files zur verfügung
+			find.FindNextFile(); // sucht nach nÃ¤chstem file - ergebnis ist egal - und stellt die daten des ersten files zur verfÃ¼gung
 
 			strcat(pThreadParam->status_text, ".");
 			int version_information_bytes = find.GetLength();
@@ -451,7 +451,7 @@ static int CheckForUpdate(CThreadParam *pThreadParam)
 				if (pThreadParam->bOnlyUpdateCheck) 
 					AfxMessageBox("No application update available.");
 
-				return 0;			// --> hier 'raus wenn kein neues update verfügbar
+				return 0;			// --> hier 'raus wenn kein neues update verfÃ¼gbar
 			}
 			
 			pFtpFile->Close();
@@ -466,7 +466,7 @@ static int CheckForUpdate(CThreadParam *pThreadParam)
 
 			DownloadUpdate(pThreadParam, cp);
 
-			return 1;				// --> hier 'raus wenn neues update verfügbar war
+			return 1;				// --> hier 'raus wenn neues update verfÃ¼gbar war
 
 		}
 		else
@@ -512,7 +512,7 @@ static int CheckForUpdate(CThreadParam *pThreadParam)
 	return 1;
 }
 
-// --- 2. Hilfsfunktion für DownloadControllingFunction ---
+// --- 2. Hilfsfunktion fÃ¼r DownloadControllingFunction ---
 
 static int DownloadUpdate(CThreadParam *pThreadParam, char *filename)
 {
@@ -562,7 +562,7 @@ static int DownloadUpdate(CThreadParam *pThreadParam, char *filename)
 		CFtpFileFind find(f);
 		if (find.FindFile(filename, INTERNET_FLAG_RELOAD))
 		{
-			find.FindNextFile(); // sucht nach nächstem file - ergebnis ist egal - und stellt die daten des ersten files zur verfügung
+			find.FindNextFile(); // sucht nach nÃ¤chstem file - ergebnis ist egal - und stellt die daten des ersten files zur verfÃ¼gung
 
 			strcat(pThreadParam->status_text, ".");
 			pThreadParam->trans_bytes = 0;
@@ -615,7 +615,7 @@ static int DownloadUpdate(CThreadParam *pThreadParam, char *filename)
 				{
 					pThreadParam->status_text = "Clip file and application update were downloaded successfully!";
 					
-					// hier Setup des Updates ausführen
+					// hier Setup des Updates ausfÃ¼hren
 					ShellExecute(NULL, "open", local_Path_plus_Filename, NULL, NULL, SW_SHOW);	
 				}
 				else
@@ -737,7 +737,7 @@ void CDownloadDialog::OnOK()
 
 // --- Cancel Knopf ---
 
-// defaultmäßig diese Funktion zum Verlassen des Dialogs benutzen!
+// defaultmÃ¤ÃŸig diese Funktion zum Verlassen des Dialogs benutzen!
 void CDownloadDialog::OnCancel() 
 {
 	if (bNotYetDownload)
@@ -790,11 +790,11 @@ void CDownloadDialog::OnTimer(UINT nIDEvent)
 				eta_array[ETA_ARRAY_SIZE-1] = m_pThreadParam->trans_bytes;
 			}
 			else
-				eta_array[eta_n++] = m_pThreadParam->trans_bytes; // einfach hinzufügen
+				eta_array[eta_n++] = m_pThreadParam->trans_bytes; // einfach hinzufÃ¼gen
 
 			int data_rate = 0; // Bytes pro 1/10-Sekunde
 			int remaining_time = 0; // Rest-Zeit in Sekunden
-			if (eta_n >= 2) //min. 2 Meßwerte um Differenz zu bestimmen
+			if (eta_n >= 2) //min. 2 MeÃŸwerte um Differenz zu bestimmen
 			{
 				data_rate = (eta_array[eta_n-1] - eta_array[0]) * 10 / (ETA_INTERVALL * (eta_n-1)); 
 				if (data_rate == 0) 
@@ -850,7 +850,7 @@ void CDownloadDialog::UpdatePercent(int nNewPos)
 
 	if (!nDivisor) return;
 	if (nDividend >= 0x01000000)
-		nPercent = nDividend / (nDivisor / 100); // nur wenn die Gefahr eines Überlaufs besteht
+		nPercent = nDividend / (nDivisor / 100); // nur wenn die Gefahr eines Ãœberlaufs besteht
 	else
 		nPercent = nDividend * 100 / nDivisor;
 

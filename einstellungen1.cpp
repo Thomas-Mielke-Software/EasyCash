@@ -1,17 +1,17 @@
-// Einstellungen1.cpp : implementation file
+ï»¿// Einstellungen1.cpp : implementation file
 //
-// Diese Datei ist Bestandteil von EasyCash&Tax, der freien EÜR-Fibu
+// Diese Datei ist Bestandteil von EasyCash&Tax, der freien EÃœR-Fibu
 //
 // Copyleft (GPLv3) 2020  Thomas Mielke
 // 
-// Dies ist freie Software; Sie dürfen sie unter den Bedingungen der 
+// Dies ist freie Software; Sie dÃ¼rfen sie unter den Bedingungen der 
 // GNU General Public License, wie von der Free Software Foundation 
-// veröffentlicht, weiterverteilen und/oder modifizieren; entweder gemäß 
-// Version 3 der Lizenz oder (nach Ihrer Option) jeder späteren Version.
+// verÃ¶ffentlicht, weiterverteilen und/oder modifizieren; entweder gemÃ¤ÃŸ 
+// Version 3 der Lizenz oder (nach Ihrer Option) jeder spÃ¤teren Version.
 //
-// Diese Software wird in der Hoffnung weiterverbreitet, dass sie nützlich 
+// Diese Software wird in der Hoffnung weiterverbreitet, dass sie nÃ¼tzlich 
 // sein wird, jedoch OHNE IRGENDEINE GARANTIE, auch ohne die implizierte 
-// Garantie der MARKTREIFE oder der VERWENDBARKEIT FÜR EINEN BESTIMMTEN ZWECK.
+// Garantie der MARKTREIFE oder der VERWENDBARKEIT FÃœR EINEN BESTIMMTEN ZWECK.
 // Mehr Details finden Sie in der GNU Lesser General Public License.
 //
 // Sie sollten eine Kopie der GNU General Public License Version 3 zusammen mit 
@@ -111,7 +111,7 @@ BOOL CEinstellungen1::OnInitDialog()
 	SetDlgItemText(IDC_AFA, "");
 	SetDlgItemText(IDC_BUCHUNGSPOSTENTEXT, "");
 	
-	// Liste löschen und neu aufbauen
+	// Liste lÃ¶schen und neu aufbauen
 	((CListBox *)GetDlgItem(IDC_LISTE))->ResetContent();
 	int TabStopArray[4] = { 15, 30, 52, 72 };
 	((CListBox *)GetDlgItem(IDC_LISTE))->SetTabStops(4, TabStopArray);
@@ -196,7 +196,7 @@ void CEinstellungen1::OnKillfocusEa()
 				Buchungsposten[i].Ausgaben = TRUE;
 			else
 			{
-				AfxMessageBox("Bitte 'E' für Einnahmen-Buchungsposten oder 'A' für Ausgaben-Buchungsposten eingeben!", MB_ICONEXCLAMATION);
+				AfxMessageBox("Bitte 'E' fÃ¼r Einnahmen-Buchungsposten oder 'A' fÃ¼r Ausgaben-Buchungsposten eingeben!", MB_ICONEXCLAMATION);
 				GetDlgItem(IDC_EA)->SetFocus();
 				return;
 			}
@@ -328,7 +328,7 @@ void CEinstellungen1::UpdateListe()
 	}
 }
 
-// ea: "E" == Einnahmen, "A" == Ausgaben für Einnahmen-Überschußrechnung
+// ea: "E" == Einnahmen, "A" == Ausgaben fÃ¼r Einnahmen-ÃœberschuÃŸrechnung
 void CEinstellungen1::UpdateCombo(CString ea)
 {
 	int i;

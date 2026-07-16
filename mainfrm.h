@@ -1,17 +1,17 @@
-// MainFrm.h : interface of the CMainFrame class
+﻿// MainFrm.h : interface of the CMainFrame class
 //
-// Diese Datei ist Bestandteil von EasyCash&Tax, der freien E�R-Fibu
+// Diese Datei ist Bestandteil von EasyCash&Tax, der freien EÜR-Fibu
 //
 // Copyleft (GPLv3) 2020  Thomas Mielke
 // 
-// Dies ist freie Software; Sie d�rfen sie unter den Bedingungen der 
+// Dies ist freie Software; Sie dürfen sie unter den Bedingungen der 
 // GNU General Public License, wie von der Free Software Foundation 
-// ver�ffentlicht, weiterverteilen und/oder modifizieren; entweder gem�� 
-// Version 3 der Lizenz oder (nach Ihrer Option) jeder sp�teren Version.
+// veröffentlicht, weiterverteilen und/oder modifizieren; entweder gemäß 
+// Version 3 der Lizenz oder (nach Ihrer Option) jeder späteren Version.
 //
-// Diese Software wird in der Hoffnung weiterverbreitet, dass sie n�tzlich 
+// Diese Software wird in der Hoffnung weiterverbreitet, dass sie nützlich 
 // sein wird, jedoch OHNE IRGENDEINE GARANTIE, auch ohne die implizierte 
-// Garantie der MARKTREIFE oder der VERWENDBARKEIT F�R EINEN BESTIMMTEN ZWECK.
+// Garantie der MARKTREIFE oder der VERWENDBARKEIT FÜR EINEN BESTIMMTEN ZWECK.
 // Mehr Details finden Sie in der GNU Lesser General Public License.
 //
 // Sie sollten eine Kopie der GNU General Public License Version 3 zusammen mit 
@@ -61,7 +61,7 @@ private:
 	void PremultiplyBitmapAlpha(HDC hDC, HBITMAP hBmp);
 };
 
-#define ID_CMD_PLUGIN_BASE 38000	// hier fangen die Comand-IDs der Plugin-Kn�pfe an
+#define ID_CMD_PLUGIN_BASE 38000	// hier fangen die Comand-IDs der Plugin-Knöpfe an
 
 class CMainFrame : public CMDIFrameWndEx
 {

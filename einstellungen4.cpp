@@ -1,17 +1,17 @@
-// Einstellungen4.cpp : implementation file
+Ôªø// Einstellungen4.cpp : implementation file
 //
-// Diese Datei ist Bestandteil von EasyCash&Tax, der freien E‹R-Fibu
+// Diese Datei ist Bestandteil von EasyCash&Tax, der freien E√úR-Fibu
 //
 // Copyleft (GPLv3) 2020  Thomas Mielke
 // 
-// Dies ist freie Software; Sie d¸rfen sie unter den Bedingungen der 
+// Dies ist freie Software; Sie d√ºrfen sie unter den Bedingungen der 
 // GNU General Public License, wie von der Free Software Foundation 
-// verˆffentlicht, weiterverteilen und/oder modifizieren; entweder gem‰ﬂ 
-// Version 3 der Lizenz oder (nach Ihrer Option) jeder sp‰teren Version.
+// ver√∂ffentlicht, weiterverteilen und/oder modifizieren; entweder gem√§√ü 
+// Version 3 der Lizenz oder (nach Ihrer Option) jeder sp√§teren Version.
 //
-// Diese Software wird in der Hoffnung weiterverbreitet, dass sie n¸tzlich 
+// Diese Software wird in der Hoffnung weiterverbreitet, dass sie n√ºtzlich 
 // sein wird, jedoch OHNE IRGENDEINE GARANTIE, auch ohne die implizierte 
-// Garantie der MARKTREIFE oder der VERWENDBARKEIT F‹R EINEN BESTIMMTEN ZWECK.
+// Garantie der MARKTREIFE oder der VERWENDBARKEIT F√úR EINEN BESTIMMTEN ZWECK.
 // Mehr Details finden Sie in der GNU Lesser General Public License.
 //
 // Sie sollten eine Kopie der GNU General Public License Version 3 zusammen mit 
@@ -130,7 +130,7 @@ BOOL CEinstellungen4::OnInitDialog()
 	ListView_SetExtendedListViewStyleEx(m_liste.m_hWnd, LVS_EX_SUBITEMIMAGES , LVS_EX_SUBITEMIMAGES );
 	ListView_SetExtendedListViewStyleEx(m_liste.m_hWnd, LVS_EX_CHECKBOXES, LVS_EX_CHECKBOXES );
 #define LISTE_COLUMNWIDTH 250
-	m_liste.InsertColumn(0, "Konten f¸r Betriebseinnahmen", LVCFMT_LEFT, LISTE_COLUMNWIDTH);
+	m_liste.InsertColumn(0, "Konten f√ºr Betriebseinnahmen", LVCFMT_LEFT, LISTE_COLUMNWIDTH);
 	m_liste.InsertColumn(1, "Formularfeld", LVCFMT_LEFT, LISTE_COLUMNWIDTH);
 	m_liste.EnableToolTips(TRUE);
 
@@ -151,14 +151,14 @@ TRACE3("%d: %s  --  %s\n\r", i, attr_name, m_csaFormulare[i].GetBuffer(0));
 			if (attr_name) 
 			{
 				// gleicher Name (= Formularkategorie) schon in der Liste? Dann bisherigen mit der aktuellen 
-				// Formulardatei ersetzen und Eintrag lˆschen bzw. nicht in Combobox aufnehmen
-// bei neuen Feldern in neuen Versionen von Formularen muss sichergestellt werden, dass auch die Mˆglichkeit besteht, das neue Formular auszuw‰hlen
+				// Formulardatei ersetzen und Eintrag l√∂schen bzw. nicht in Combobox aufnehmen
+// bei neuen Feldern in neuen Versionen von Formularen muss sichergestellt werden, dass auch die M√∂glichkeit besteht, das neue Formular auszuw√§hlen
 //				int nPosGefunden;
 //				if ((nPosGefunden = m_formular.FindStringExact(0, attr_name)) != CB_ERR) 
 //				{
 //					m_csaFormulare[nPosGefunden] = m_csaFormulare[i];
 //					m_csaFormulare.RemoveAt(i--);
-//					continue;	// an gleicher Stelle fortfahren, da Element gelˆscht
+//					continue;	// an gleicher Stelle fortfahren, da Element gel√∂scht
 //				}
 	
 				m_formular.AddString((CString)attr_name + " \\ " + (CString)attr_anzeigename);
@@ -167,7 +167,7 @@ TRACE3("%d: %s  --  %s\n\r", i, attr_name, m_csaFormulare[i].GetBuffer(0));
 				m_formular.AddString("kein name-Attribut");
 		}
 		else
-			m_formular.AddString("kein g¸ltiges Formular");
+			m_formular.AddString("kein g√ºltiges Formular");
 	}
 	if (m_formular.GetCount() > 0 && m_formular.GetCurSel() == -1)
 	{
@@ -180,13 +180,13 @@ TRACE3("%d: %s  --  %s\n\r", i, attr_name, m_csaFormulare[i].GetBuffer(0));
 		int nItem = 0;
 		CString csFormularname;
 		if (m_einstellungen2->m_land == 1)
-			csFormularname = "Beilage E1a \\ Einkommensteuererkl‰rung E1a Einzelunternehmer*innen ";
+			csFormularname = "Beilage E1a \\ Einkommensteuererkl√§rung E1a Einzelunternehmer*innen ";
 		else
-			csFormularname = "E/‹-Rechnung \\ E/‹-Rechnung ";
-		if ((nItem = m_formular.FindString(0, csFormularname + csAktuellesJahr)) < 0)			// kein Formular f¸r aktuelles Jahr gefunden?
-			if ((nItem = m_formular.FindString(0, csFormularname + csLetztesJahr)) < 0)		// und auch keines f¸r letzes Jahr gefunden?
-				if ((nItem = m_formular.FindString(0, csFormularname + csVorletztesJahr)) < 0)	// und nicht mal eines f¸r vorletztes Jahr gefunden?
-					nItem = 0;																					// dann aufgeben und stumpf das erste Formular in der Liste ausw‰hlen
+			csFormularname = "E/√ú-Rechnung \\ E/√ú-Rechnung ";
+		if ((nItem = m_formular.FindString(0, csFormularname + csAktuellesJahr)) < 0)			// kein Formular f√ºr aktuelles Jahr gefunden?
+			if ((nItem = m_formular.FindString(0, csFormularname + csLetztesJahr)) < 0)		// und auch keines f√ºr letzes Jahr gefunden?
+				if ((nItem = m_formular.FindString(0, csFormularname + csVorletztesJahr)) < 0)	// und nicht mal eines f√ºr vorletztes Jahr gefunden?
+					nItem = 0;																					// dann aufgeben und stumpf das erste Formular in der Liste ausw√§hlen
 
 		m_formular.SetCurSel(nItem);
 	}
@@ -299,7 +299,7 @@ LRESULT CEinstellungen4::OnGetListItem(WPARAM wParam, LPARAM lParam)
 								break;
 							}
 						}
-						if (i == nCount) data->m_tooltip = "Jetzt doppelklicken, um das Konto mit einem Formularfeld zu verkn¸pfen!";
+						if (i == nCount) data->m_tooltip = "Jetzt doppelklicken, um das Konto mit einem Formularfeld zu verkn√ºpfen!";
 					}
 				}
 			}
@@ -388,9 +388,9 @@ void CEinstellungen4::UpdateList()
 	m_liste.SetItemCount(n);
 	m_liste.DeleteColumn(0);
 	if (m_kontenkategorie == 0)
-		m_liste.InsertColumn(0, "Konten f¸r Betriebseinnahmen", LVCFMT_LEFT, LISTE_COLUMNWIDTH);
+		m_liste.InsertColumn(0, "Konten f√ºr Betriebseinnahmen", LVCFMT_LEFT, LISTE_COLUMNWIDTH);
 	else
-		m_liste.InsertColumn(0, "Konten f¸r Betriebsausgaben", LVCFMT_LEFT, LISTE_COLUMNWIDTH);
+		m_liste.InsertColumn(0, "Konten f√ºr Betriebsausgaben", LVCFMT_LEFT, LISTE_COLUMNWIDTH);
 	m_liste.UnlockWindowUpdate();
 	m_liste.RedrawItems(
 			m_liste.GetTopIndex(),
@@ -470,7 +470,7 @@ void CEinstellungen4::OnPlus()
 			}
 	}
 
-	if (i >= 100) AfxMessageBox("Maximal 100 Konten pro Kategorie mˆglich.");
+	if (i >= 100) AfxMessageBox("Maximal 100 Konten pro Kategorie m√∂glich.");
 }
 
 void CEinstellungen4::OnMinus() 
@@ -481,11 +481,11 @@ void CEinstellungen4::OnMinus()
 		n = m_liste.GetNextSelectedItem(pos);
 	else
 	{
-		AfxMessageBox("Zum Lˆschen bitte erst einen Eintrag ausw‰hlen!");
+		AfxMessageBox("Zum L√∂schen bitte erst einen Eintrag ausw√§hlen!");
 		return;
 	}
 
-	if (AfxMessageBox("Konto wirklich lˆschen?", MB_YESNO|MB_DEFBUTTON2) == IDYES)
+	if (AfxMessageBox("Konto wirklich l√∂schen?", MB_YESNO|MB_DEFBUTTON2) == IDYES)
 	{
 		CString cs;
 		if (m_kontenkategorie == 0)
@@ -528,7 +528,7 @@ void CEinstellungen4::OnUp()
 		n = m_liste.GetNextSelectedItem(pos);
 	else
 	{
-		AfxMessageBox("Zum Verschieben bitte erst einen Eintrag ausw‰hlen!");
+		AfxMessageBox("Zum Verschieben bitte erst einen Eintrag ausw√§hlen!");
 		return;
 	}
 
@@ -575,7 +575,7 @@ void CEinstellungen4::OnDown()
 		n = m_liste.GetNextSelectedItem(pos);
 	else
 	{
-		AfxMessageBox("Zum Verschieben bitte erst einen Eintrag ausw‰hlen!");
+		AfxMessageBox("Zum Verschieben bitte erst einen Eintrag ausw√§hlen!");
 		return;
 	}
 
@@ -622,7 +622,7 @@ void CEinstellungen4::OnAendern()
 		n = m_liste.GetNextSelectedItem(pos);
 	else
 	{
-		AfxMessageBox("Zum ƒndern des Namens bitte erst einen Eintrag ausw‰hlen!");
+		AfxMessageBox("Zum √Ñndern des Namens bitte erst einen Eintrag ausw√§hlen!");
 		return;
 	}
 

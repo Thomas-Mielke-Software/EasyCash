@@ -1,17 +1,17 @@
-// VoranmeldezeitraumDlg.cpp : implementation file
+Ôªø// VoranmeldezeitraumDlg.cpp : implementation file
 //
-// Diese Datei ist Bestandteil von EasyCash&Tax, der freien E‹R-Fibu
+// Diese Datei ist Bestandteil von EasyCash&Tax, der freien E√úR-Fibu
 //
 // Copyleft (GPLv3) 2020  Thomas Mielke
 // 
-// Dies ist freie Software; Sie d¸rfen sie unter den Bedingungen der 
+// Dies ist freie Software; Sie d√ºrfen sie unter den Bedingungen der 
 // GNU General Public License, wie von der Free Software Foundation 
-// verˆffentlicht, weiterverteilen und/oder modifizieren; entweder gem‰ﬂ 
-// Version 3 der Lizenz oder (nach Ihrer Option) jeder sp‰teren Version.
+// ver√∂ffentlicht, weiterverteilen und/oder modifizieren; entweder gem√§√ü 
+// Version 3 der Lizenz oder (nach Ihrer Option) jeder sp√§teren Version.
 //
-// Diese Software wird in der Hoffnung weiterverbreitet, dass sie n¸tzlich 
+// Diese Software wird in der Hoffnung weiterverbreitet, dass sie n√ºtzlich 
 // sein wird, jedoch OHNE IRGENDEINE GARANTIE, auch ohne die implizierte 
-// Garantie der MARKTREIFE oder der VERWENDBARKEIT F‹R EINEN BESTIMMTEN ZWECK.
+// Garantie der MARKTREIFE oder der VERWENDBARKEIT F√úR EINEN BESTIMMTEN ZWECK.
 // Mehr Details finden Sie in der GNU Lesser General Public License.
 //
 // Sie sollten eine Kopie der GNU General Public License Version 3 zusammen mit 
@@ -123,7 +123,7 @@ void VoranmeldezeitraumDlg::OnOK()
 
 	if (ECT_HoleEinstellungInt("monatliche_voranmeldung", 1) == 1)	// Quartal!
 	{
-		// ausf¸hren f¸r welches Quartal
+		// ausf√ºhren f√ºr welches Quartal
 		if (((CButton *)GetDlgItem(IDC_RADIO1))->GetCheck()) mv = 1;
 		else if (((CButton *)GetDlgItem(IDC_RADIO2))->GetCheck()) mv = 4;
 		else if (((CButton *)GetDlgItem(IDC_RADIO3))->GetCheck()) mv = 7;
@@ -139,7 +139,7 @@ void VoranmeldezeitraumDlg::OnOK()
 	}
 	else
 	{
-		// ausf¸hren bis zu welchem datum ?
+		// ausf√ºhren bis zu welchem datum ?
 		GetDlgItemText(IDC_DATUM_BIS_MONAT, buf, sizeof(buf)); mb = atoi(buf);
 		GetDlgItemText(IDC_DATUM_BIS_JAHR, buf, sizeof(buf)); jb = atoi(buf);
 		if (jb < 100 && jb > 37)
@@ -180,7 +180,7 @@ void VoranmeldezeitraumDlg::OnOK()
 	{
 		if (mv != 1 && mv != 4  && mv != 7 && mv != 10)
 		{
-			AfxMessageBox("Bei quartalsm‰ﬂiger Vorauszahlung muﬂ der Anfangsmonat des Quartals angegeben werden!", MB_ICONSTOP);
+			AfxMessageBox("Bei quartalsm√§√üiger Vorauszahlung mu√ü der Anfangsmonat des Quartals angegeben werden!", MB_ICONSTOP);
 			return;
 		}
 	}

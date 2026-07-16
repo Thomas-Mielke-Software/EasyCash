@@ -1,6 +1,6 @@
-// ViewExports.cpp -- C++/CLI-Br�cke zu den WPF-Dialogen in ECTViews
+﻿// ViewExports.cpp -- C++/CLI-Brücke zu den WPF-Dialogen in ECTViews
 //
-// Diese Datei geh�rt ins ECTBridge-Projekt.
+// Diese Datei gehört ins ECTBridge-Projekt.
 // Kompiliert mit /clr (Projektstandard), OHNE Precompiled Header.
 //
 // Dateieigenschaften in ECTBridge.vcxproj:
@@ -13,7 +13,7 @@
 #include "EngineHost.h"
 #include "Marshalling.h"
 #include "AfaAbgangShared.h"   // ECTBridge_FuehreAfaAbgang (geteilt mit JournalExports)
-#include "BuchungenLoeschenShared.h" // gemeinsames L�schen mit Buchungsgruppen-Abfrage
+#include "BuchungenLoeschenShared.h" // gemeinsames Löschen mit Buchungsgruppen-Abfrage
 
 #using "ECTEngine.dll"
 #using "ECTViews.dll"
@@ -54,7 +54,7 @@ namespace ECTBridge
 
             auto engine = GetEngine(bridge);
             // Bei Buchungsgruppen kommen mehrere Buchungen auf einmal
-            // (Basis + Zusatz-Zeilen, per Gruppen-UUID verkn�pft).
+            // (Basis + Zusatz-Zeilen, per Gruppen-UUID verknüpft).
             for each (ECTEngine::Buchung^ buchung in buchungen)
             {
                 engine->Buchungen->Add(buchung);
@@ -64,7 +64,7 @@ namespace ECTBridge
 
             bridge->SyncManagedToNative();
             CString csMeldung = (CString)"Buchung '"
-                + ECTBridge::ToNative(buchungen[0]->Beschreibung) + "' hinzugef�gt";
+                + ECTBridge::ToNative(buchungen[0]->Beschreibung) + "' hinzugefügt";
             if (buchungen->Count > 1)
             {
                 CString csZusatz;
@@ -96,7 +96,7 @@ static BOOL ECTBridge_ShowBuchungDialogIntern(
         auto engine = GetEngine(bridge);
 
         // Vor dem Dialog: Native --> Managed synchronisieren
-        // (falls seit dem letzten Sync native �nderungen passiert sind)
+        // (falls seit dem letzten Sync native Änderungen passiert sind)
         bridge->SyncNativeToManaged();
 
         // WPF-Dialog anzeigen. Der "Buchen & naechste"-Callback
@@ -109,7 +109,7 @@ static BOOL ECTBridge_ShowBuchungDialogIntern(
             weiterHandler, &ECTBridge::BuchenWeiterHandler::OnBuchenUndNaechste);
 
         // Ergebnis ist eine LISTE: bei Buchungsgruppen-Vorlagen Basis +
-        // Zusatz-Zeilen (per Gruppen-UUID verkn�pft), sonst genau eine.
+        // Zusatz-Zeilen (per Gruppen-UUID verknüpft), sonst genau eine.
         System::Collections::Generic::IReadOnlyList<ECTEngine::Buchung^>^ ergebnis =
             ECTViews::ViewHost::ZeigeBuchungDialog(
                 engine, bAusgaben != 0, hwnd, weiterCb, nVorlagenSlot);
@@ -117,7 +117,7 @@ static BOOL ECTBridge_ShowBuchungDialogIntern(
         if (ergebnis == nullptr || ergebnis->Count == 0)
             return FALSE;  // Abgebrochen
 
-        // Buchung(en) in die Engine einf�gen
+        // Buchung(en) in die Engine einfügen
         for each (ECTEngine::Buchung^ b in ergebnis)
         {
             engine->Buchungen->Add(b);
@@ -129,9 +129,9 @@ static BOOL ECTBridge_ShowBuchungDialogIntern(
         // (damit die Views die neuen Buchungen sehen)
         bridge->SyncManagedToNative();
 
-        // Dokument als ge�ndert markieren
+        // Dokument als geändert markieren
         CString csMeldung = (CString)"Buchung '"
-            + ECTBridge::ToNative(ergebnis[0]->Beschreibung) + "' hinzugef�gt";
+            + ECTBridge::ToNative(ergebnis[0]->Beschreibung) + "' hinzugefügt";
         if (ergebnis->Count > 1)
         {
             CString csZusatz;
@@ -174,7 +174,7 @@ BOOL ECT_ShowBuchungDialogMitVorlage(
 // ECT_ShowBuchungBearbeitenDialog
 // ----------------------------------------------------------
 
-// Gemeinsamer Kern der beiden Bearbeiten-Exports: �ffnet den Kombi-Dialog
+// Gemeinsamer Kern der beiden Bearbeiten-Exports: öffnet den Kombi-Dialog
 // (Gruppen-Bearbeitung, wenn die Buchung Mitglied einer Buchungsgruppe mit
 // auffindbarer Vorlage ist; sonst Einzel-Bearbeitung mit "Abgang buchen")
 // und ersetzt die Buchung(en) im Dokument. Bei Gruppen werden die alten
@@ -232,7 +232,7 @@ static BOOL ECTBridge_BearbeiteBuchung(CEasyCashDocBridge* bridge,
     bridge->SyncManagedToNative();
 
     CString csMeldung = (CString)"Buchung '"
-        + ECTBridge::ToNative(erg->Buchungen[0]->Beschreibung) + "' ge�ndert";
+        + ECTBridge::ToNative(erg->Buchungen[0]->Beschreibung) + "' geändert";
     if (erg->WarGruppenBearbeitung)
     {
         CString csZusatz;
@@ -280,10 +280,10 @@ BOOL ECT_ShowBuchungBearbeitenDialog(
 // Pointer-basierte API
 // ----------------------------------------------------------
 //
-// Lookup �ber die Pointer-Map in CEasyCashDocBridge. Die Map wird
-// bei jedem Sync (in beide Richtungen) bef�llt und enth�lt die
-// Zuordnung CBuchung* --> Buchung^. O(1)-Lookup, unabh�ngig von der
-// Reihenfolge der Listen oder Sort-Stabilit�t.
+// Lookup über die Pointer-Map in CEasyCashDocBridge. Die Map wird
+// bei jedem Sync (in beide Richtungen) befüllt und enthält die
+// Zuordnung CBuchung* --> Buchung^. O(1)-Lookup, unabhängig von der
+// Reihenfolge der Listen oder Sort-Stabilität.
 
 // ----------------------------------------------
 // ECT_ShowBuchungBearbeitenDialogFuerPointer
@@ -299,7 +299,7 @@ BOOL ECT_ShowBuchungBearbeitenDialogFuerPointer(
 
         // Direkter Lookup in der Pointer-Map. Die Map ist nach dem
         // letzten Sync aktuell -- solange seitdem keine Buchungen
-        // hinzugef�gt/entfernt wurden, stimmt sie.
+        // hinzugefügt/entfernt wurden, stimmt sie.
         ECTEngine::Buchung^ original = FindManagedFor(bridge, pNative);
         if (original == nullptr)
         {
@@ -337,7 +337,7 @@ BOOL ECT_ShowBuchungKopierenDialog(
 
         auto engine = GetEngine(bridge);
 
-        // Vorlage klonen -- die Original-Buchung bleibt unver�ndert
+        // Vorlage klonen -- die Original-Buchung bleibt unverändert
         ECTEngine::Buchung^ vorlage = originalRef->Clone();
         vorlage->EntferneGruppe();   // Kopie soll NICHT Gruppen-Mitglied werden
 
@@ -355,7 +355,7 @@ BOOL ECT_ShowBuchungKopierenDialog(
 
         if (neu == nullptr) return FALSE;
 
-        // Als NEUE Buchung einf�gen (nicht ersetzen)
+        // Als NEUE Buchung einfügen (nicht ersetzen)
         engine->Buchungen->Add(neu);
         engine->InkrementBuchungszaehler();
 
@@ -405,19 +405,19 @@ BOOL ECT_LoescheBuchungPerPointer(
 
         auto engine = GetEngine(bridge);
 
-        // Beschreibung VOR dem L�schen merken
+        // Beschreibung VOR dem Löschen merken
         CString csBeschreibung = ECTBridge::ToNative(managed->Beschreibung);
 
-        // Aus der Engine entfernen -- Reference-Equality, unabh�ngig vom Index
+        // Aus der Engine entfernen -- Reference-Equality, unabhängig vom Index
         if (!engine->Buchungen->Remove(managed))
             return FALSE;
 
         // Native Linked Lists neu aufbauen.
-        // ACHTUNG: pNative wird dadurch ung�ltig.
+        // ACHTUNG: pNative wird dadurch ungültig.
         bridge->SyncManagedToNative();
 
         bridge->SetModifiedFlag(
-            (CString)"Buchung '" + csBeschreibung + "' gel�scht");
+            (CString)"Buchung '" + csBeschreibung + "' gelöscht");
 
         return TRUE;
     }
@@ -761,20 +761,20 @@ namespace ECTBridge
 {
     /// <summary>
     /// Managed Helfer-Klasse, die Native-Pointer als IntPtr-Felder
-    /// h�lt und Methoden bereitstellt, die als Delegate-Targets
-    /// f�r die JournalViewModel-Events dienen.
+    /// hält und Methoden bereitstellt, die als Delegate-Targets
+    /// für die JournalViewModel-Events dienen.
     ///
-    /// Der Umweg �ber eine ref class ist n�tig, weil C++/CLI keine
+    /// Der Umweg über eine ref class ist nötig, weil C++/CLI keine
     /// Lambdas erlaubt, die managed Variablen capturen, und reine
-    /// native Lambdas k�nnen nicht direkt einem managed Delegate
+    /// native Lambdas können nicht direkt einem managed Delegate
     /// (System::Action&lt;T&gt;) zugewiesen werden.
     /// </summary>
     ref class JournalEventHandler
     {
     public:
         // Native Pointer als IntPtr-Felder. Sicher, weil das Journal-
-        // Fenster sp�testens beim Schlie�en des Dokuments geschlossen
-        // wird und der Bridge-Pointer bis dahin g�ltig ist.
+        // Fenster spätestens beim Schließen des Dokuments geschlossen
+        // wird und der Bridge-Pointer bis dahin gültig ist.
         System::IntPtr m_pBridge;
         System::IntPtr m_hwnd;
 
@@ -792,8 +792,8 @@ namespace ECTBridge
             }
         }
 
-        // L�scht eine ODER mehrere Buchungen; Best�tigung und
-        // Kaskadenl�sch-Abfrage f�r Buchungsgruppen stecken in der
+        // Löscht eine ODER mehrere Buchungen; Bestätigung und
+        // Kaskadenlösch-Abfrage für Buchungsgruppen stecken in der
         // geteilten Funktion (BuchungenLoeschenShared.h, Definition
         // in JournalExports.cpp).
         void OnLoeschenMehrere(System::Collections::Generic::IList<ECTEngine::Buchung^>^ buchungen)
@@ -812,14 +812,14 @@ namespace ECTBridge
 
             // Konfirmation
             CString frage;
-            frage.Format("Buchung '%s' wirklich l�schen?",
+            frage.Format("Buchung '%s' wirklich löschen?",
                 (LPCTSTR)ECTBridge::ToNative(b->Beschreibung));
             if (AfxMessageBox(frage, MB_YESNO | MB_DEFBUTTON2) != IDYES)
                 return;
 
             eng->Buchungen->Remove(b);
             bridge->SyncManagedToNative();
-            bridge->SetModifiedFlag("Buchung �ber Journal gel�scht");
+            bridge->SetModifiedFlag("Buchung über Journal gelöscht");
             ECTViews::Journal::JournalHost::AktualisiereOffenesJournal();
         }
 
@@ -829,8 +829,8 @@ namespace ECTBridge
             HWND hwnd = static_cast<HWND>(m_hwnd.ToPointer());
             if (!bridge) return;
 
-            // Klon in Engine einf�gen, dann Standard-Bearbeitungsdialog
-            // mit dem Index des Klons �ffnen.
+            // Klon in Engine einfügen, dann Standard-Bearbeitungsdialog
+            // mit dem Index des Klons öffnen.
             auto eng = GetEngine(bridge);
             auto klon = b->Clone();
             klon->EntferneGruppe();   // Kopie soll NICHT Gruppen-Mitglied werden
@@ -880,7 +880,7 @@ BOOL ECT_ZeigeJournal(void* pDocBridge, HWND hWndOwner)
         auto vm = ECTViews::Journal::JournalHost::ZeigeJournal(engine, hwnd);
 
         // Eventhandler -- eine einzige managed Helper-Instanz,
-        // die alle Native-Pointer als IntPtr-Felder h�lt.
+        // die alle Native-Pointer als IntPtr-Felder hält.
         auto handler = gcnew ECTBridge::JournalEventHandler();
         handler->m_pBridge = IntPtr(pDocBridge);
         handler->m_hwnd = hwnd;

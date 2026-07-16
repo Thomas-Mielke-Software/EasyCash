@@ -1,25 +1,25 @@
-// KontoExports.cpp -- Plugin-API: HoleKontoMitFeldern (V4/ECTBridge)
+ï»¿// KontoExports.cpp -- Plugin-API: HoleKontoMitFeldern (V4/ECTBridge)
 //
-// Diese Datei gehört ins ECTBridge-Projekt.
+// Diese Datei gehÃ¶rt ins ECTBridge-Projekt.
 // Kompiliert mit /clr (Projektstandard), OHNE Precompiled Header.
 //
 // Generalisierung von HoleKontoFuerFeld (ectifacemisc.cpp): statt fest
-// E/Ü-Rechnung + USt-Voranmeldung nimmt die Funktion eine
-// Feld-Spezifikation mit Land-Blöcken entgegen, z.B.
+// E/Ãœ-Rechnung + USt-Voranmeldung nimmt die Funktion eine
+// Feld-Spezifikation mit Land-BlÃ¶cken entgegen, z.B.
 //
-//   HoleKontoMitFeldern("$de:E/Ü-Rechnung=1103|Umsatzsteuer-Voranmeldung=48||"
+//   HoleKontoMitFeldern("$de:E/Ãœ-Rechnung=1103|Umsatzsteuer-Voranmeldung=48||"
 //                       "at:Beilage E1a=9040|Umsatzsteuer=1020||")
 //
 // und liefert das erstbeste Konto, das (im Block des in den Einstellungen
-// gewählten Landes) mit ALLEN angegebenen Formularfeldern verknüpft ist.
-// Existiert keines, öffnet eine Eingabemaske (KontoAnlegenView) zur
+// gewÃ¤hlten Landes) mit ALLEN angegebenen Formularfeldern verknÃ¼pft ist.
+// Existiert keines, Ã¶ffnet eine Eingabemaske (KontoAnlegenView) zur
 // Anlage; nur der Kontoname ist einzugeben (vorbelegt mit den Feldnamen).
-// Rückgabe: Kontoname oder "" (Abbruch, Spezifikations-Fehler oder alle
+// RÃ¼ckgabe: Kontoname oder "" (Abbruch, Spezifikations-Fehler oder alle
 // 100 Konto-Slots belegt -- Fehler jeweils als MessageBox).
 //
 // Die Logik liegt in ECTEngine::KontoFeldSelektor (Lookup/Anlage) und
 // ECTViews::ViewHost::HoleKontoMitFeldern (Dialog-Fluss); die native
-// V3-Implementierung in ECTIFace/ectifacemisc.cpp verhält sich identisch,
+// V3-Implementierung in ECTIFace/ectifacemisc.cpp verhÃ¤lt sich identisch,
 // damit die Plugin-API beider Welten kompatibel bleibt.
 
 #include "stdafx.h"

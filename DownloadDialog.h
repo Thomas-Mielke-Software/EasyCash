@@ -1,4 +1,4 @@
-// NewDownloadDialog.h : header file
+﻿// NewDownloadDialog.h : header file
 //
 
 //#define FTP_DOWNLOAD_SERVER "168.100.0.2"
@@ -23,7 +23,7 @@ public:
 	int  total_bytes;
 	char *status_text;
 	BOOL cancel;	// Kommando an Thread
-	BOOL canceled;	// Best�tigung von Thread
+	BOOL canceled;	// Bestätigung von Thread
 	BOOL check;		// Check for update?
 };
 

@@ -1,4 +1,4 @@
-// ExtSplitter.cpp : implementation file
+﻿// ExtSplitter.cpp : implementation file
 //
 #include "stdafx.h"
 #include "EasyCash.h"
@@ -391,7 +391,7 @@ void CExtSplitter::StopTracking(BOOL bAccept)
 			GetColumnInfo(0, nLinkeSpalte, nDummy);
 			GetColumnInfo(1, nRechteSpalte, nDummy);
 			int nGesamtbreite = nLinkeSpalte + nRechteSpalte;
-			if (nGesamtbreite == 0) return;  // m�gl. Division durch Null vermeiden 
+			if (nGesamtbreite == 0) return;  // mögl. Division durch Null vermeiden 
 			theApp.WriteProfileInt("Fenster", "NavigationBreitenverhaeltnis", 1000 /* promille */ * nRechteSpalte / nGesamtbreite);
 		}
 	}

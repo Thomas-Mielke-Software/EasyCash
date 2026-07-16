@@ -1,4 +1,4 @@
-// Navigation.cpp : implementation file
+Ôªø// Navigation.cpp : implementation file
 //
 
 #include "stdafx.h"
@@ -63,7 +63,7 @@ void CNavigation::OnNMClick(NMHDR *pNMHDR, LRESULT *pResult)
 {
 	LPNMITEMACTIVATE pNMItemActivate = reinterpret_cast<LPNMITEMACTIVATE>(pNMHDR);
 
-	// l‰uft auf Wine-Emulator, wo es keine ListView-Groups gibt?
+	// l√§uft auf Wine-Emulator, wo es keine ListView-Groups gibt?
 	BOOL bWine;
 	HKEY hKey;
 	bWine = RegOpenKey(HKEY_LOCAL_MACHINE, "Software\\Wine", &hKey) == ERROR_SUCCESS;
@@ -106,12 +106,12 @@ void CNavigation::OnNMClick(NMHDR *pNMHDR, LRESULT *pResult)
 				}
 				// finde Zeile im Journalfenster, in der eine Buchung mit passendem Datum steht, und scrolle da hin
 				{
-					int nBesteAnn‰herungZeile = -1;
+					int nBesteAnn√§herungZeile = -1;
 					int nBesteAnnaeherungMonate = 13;
 					int i;
 					for (i = 0; i < MAX_BUCHUNGEN; i++)
 					{
-						if (m_pViewWnd->ppPosBuchungsliste[i] && (														// keine Leerzeile ˆ.‰.
+						if (m_pViewWnd->ppPosBuchungsliste[i] && (														// keine Leerzeile √∂.√§.
 							(pb == pDoc->Einnahmen && pDoc->BuchungIstEinnahme(*(m_pViewWnd->ppPosBuchungsliste[i]))) ||	// und richtiger Buchungstyp (E/A)
 							(pb == pDoc->Ausgaben && pDoc->BuchungIstAusgabe(*(m_pViewWnd->ppPosBuchungsliste[i])))))
 						{	
@@ -119,9 +119,9 @@ void CNavigation::OnNMClick(NMHDR *pNMHDR, LRESULT *pResult)
 							{
 								break; 
 							}
-							if (nBesteAnn‰herungZeile == -1 || abs((*m_pViewWnd->ppPosBuchungsliste[i])->Datum.GetMonth() - CTime(pDoc->nJahr, monat, 15, 12, 0, 0).GetMonth()) < nBesteAnnaeherungMonate)
+							if (nBesteAnn√§herungZeile == -1 || abs((*m_pViewWnd->ppPosBuchungsliste[i])->Datum.GetMonth() - CTime(pDoc->nJahr, monat, 15, 12, 0, 0).GetMonth()) < nBesteAnnaeherungMonate)
 							{
-								nBesteAnn‰herungZeile = i;
+								nBesteAnn√§herungZeile = i;
 								nBesteAnnaeherungMonate = abs((*m_pViewWnd->ppPosBuchungsliste[i])->Datum.GetMonth() - CTime(pDoc->nJahr, monat, 15, 12, 0, 0).GetMonth());
 							}
 						}
@@ -130,8 +130,8 @@ void CNavigation::OnNMClick(NMHDR *pNMHDR, LRESULT *pResult)
 					csMsg.Format("zu Monat %d in den %s gescrollt", monat, (pNMItemActivate->iItem < 12) ? "Einnahmen" : "Ausgaben");
 					if (i >= MAX_BUCHUNGEN)			// keinen exakten Monats-Treffer gefunden?
 					{
-						i = nBesteAnn‰herungZeile;  // zu zeitlich n‰chster Buchung scrollen
-						csMsg.Format("keine %s-Buchung f¸r Monat %d gefunden; zur zeitlich n‰chsten Buchung gescrollt", (pNMItemActivate->iItem < 12) ? "Einnahmen" : "Ausgaben", monat);
+						i = nBesteAnn√§herungZeile;  // zu zeitlich n√§chster Buchung scrollen
+						csMsg.Format("keine %s-Buchung f√ºr Monat %d gefunden; zur zeitlich n√§chsten Buchung gescrollt", (pNMItemActivate->iItem < 12) ? "Einnahmen" : "Ausgaben", monat);
 					}
 					if (i >= 0 && i < MAX_BUCHUNGEN)
 					{
@@ -154,7 +154,7 @@ void CNavigation::OnNMClick(NMHDR *pNMHDR, LRESULT *pResult)
 					for (i = 0; i < MAX_BUCHUNGEN; i++)
 						if (m_pViewWnd->ppPosBuchungsliste[i])
 						{
-							CString csUrspruenglichesKonto = "";  // AfA-Abgang im Anlagenverzeichnis? Dann nicht das Restbuchwertkonto benutzen, sondern das urspr¸ngliche Konto
+							CString csUrspruenglichesKonto = "";  // AfA-Abgang im Anlagenverzeichnis? Dann nicht das Restbuchwertkonto benutzen, sondern das urspr√ºngliche Konto
 							if (m_pViewWnd->m_nAnzeige == 3 && (*(m_pViewWnd->ppPosBuchungsliste[i]))->AbschreibungJahre <= 1)
 							{
 								CString *pcsUrspruenglichesKonto = GetErweiterungKeyCS((*(m_pViewWnd->ppPosBuchungsliste[i]))->Erweiterung, "EasyCash", "UrspruenglichesKonto");
@@ -173,11 +173,11 @@ void CNavigation::OnNMClick(NMHDR *pNMHDR, LRESULT *pResult)
 							 || ((*(m_pViewWnd->ppPosBuchungsliste[i]))->Konto.IsEmpty() && bSucheUnzugewieseneAusgabenbuchungen && pDoc->BuchungIstAusgabe(*(m_pViewWnd->ppPosBuchungsliste[i])))
 							 || csUrspruenglichesKonto == csKonto)
 							{
-								if (!bWine)  // unter wine l‰sst sich nicht der Buchungstyp von der ListView-Gruppe ableiten
+								if (!bWine)  // unter wine l√§sst sich nicht der Buchungstyp von der ListView-Gruppe ableiten
 								{
 									if (nGroup == 1 && pDoc->BuchungIstEinnahme(*(m_pViewWnd->ppPosBuchungsliste[i])))  // Wenn Kontoname sowohl in Einnahmen als auch in Ausgaben existiert sicherstellen,
-										continue;																		// dass bei einer Ausgaben-Buchung auch das Ausgaben-Konto gew‰hlt wird
-									if (nGroup == 0 && pDoc->BuchungIstAusgabe(*(m_pViewWnd->ppPosBuchungsliste[i])))   // und pro forma auch noch mal f¸r Einnahmen, obwohl das nicht vorkommen sollte...
+										continue;																		// dass bei einer Ausgaben-Buchung auch das Ausgaben-Konto gew√§hlt wird
+									if (nGroup == 0 && pDoc->BuchungIstAusgabe(*(m_pViewWnd->ppPosBuchungsliste[i])))   // und pro forma auch noch mal f√ºr Einnahmen, obwohl das nicht vorkommen sollte...
 										continue;
 								}
 								m_pViewWnd->ScrolleZuBuchung(i);
@@ -245,7 +245,7 @@ void CNavigation::OnSetFocus(CWnd* pOldWnd)
 {
 	CMyListView::OnSetFocus(pOldWnd);
 
-	// ListCtrl soll den Focus nicht bekommen, weil dadurch z.B. das Ribbon-Men¸ f¸r das Dokumentfenster disabled w¸rde
+	// ListCtrl soll den Focus nicht bekommen, weil dadurch z.B. das Ribbon-Men√º f√ºr das Dokumentfenster disabled w√ºrde
 	STATIC_DOWNCAST(CChildFrame, GetParent()->GetParent())->SetActiveView(m_pViewWnd);
 	m_pViewWnd->SetFocus();
 }

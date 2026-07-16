@@ -1,17 +1,17 @@
-// IconAuswahlBetrieb.cpp : implementation file
+ï»¿// IconAuswahlBetrieb.cpp : implementation file
 //
-// Diese Datei ist Bestandteil von EasyCash&Tax, der freien EÜR-Fibu
+// Diese Datei ist Bestandteil von EasyCash&Tax, der freien EÃœR-Fibu
 //
 // Copyleft (GPLv3) 2020  Thomas Mielke
 // 
-// Dies ist freie Software; Sie dürfen sie unter den Bedingungen der 
+// Dies ist freie Software; Sie dÃ¼rfen sie unter den Bedingungen der 
 // GNU General Public License, wie von der Free Software Foundation 
-// veröffentlicht, weiterverteilen und/oder modifizieren; entweder gemäß 
-// Version 3 der Lizenz oder (nach Ihrer Option) jeder späteren Version.
+// verÃ¶ffentlicht, weiterverteilen und/oder modifizieren; entweder gemÃ¤ÃŸ 
+// Version 3 der Lizenz oder (nach Ihrer Option) jeder spÃ¤teren Version.
 //
-// Diese Software wird in der Hoffnung weiterverbreitet, dass sie nützlich 
+// Diese Software wird in der Hoffnung weiterverbreitet, dass sie nÃ¼tzlich 
 // sein wird, jedoch OHNE IRGENDEINE GARANTIE, auch ohne die implizierte 
-// Garantie der MARKTREIFE oder der VERWENDBARKEIT FÜR EINEN BESTIMMTEN ZWECK.
+// Garantie der MARKTREIFE oder der VERWENDBARKEIT FÃœR EINEN BESTIMMTEN ZWECK.
 // Mehr Details finden Sie in der GNU Lesser General Public License.
 //
 // Sie sollten eine Kopie der GNU General Public License Version 3 zusammen mit 
@@ -59,7 +59,7 @@ END_MESSAGE_MAP()
 
 void CIconAuswahlBetrieb::InitDialog()
 {
-	if (m_nModus == 1) // Auswahl-Modus mit der Option zu ändern
+	if (m_nModus == 1) // Auswahl-Modus mit der Option zu Ã¤ndern
 	{
 		SetDlgItemText(IDOK, "Sel. anzeigen");
 		SetDlgItemText(IDCANCEL, "Alle anzeigen");
@@ -77,11 +77,11 @@ void CIconAuswahlBetrieb::InitDialog()
 
 static IconInfo Icons[] = {
 	"Standard",
-	"Einkaufstüte", 
+	"EinkaufstÃ¼te", 
 	"Kiste",
 	"Glas",
 	"Zettel",
-	"Füller",
+	"FÃ¼ller",
 	"Bleistift",
 	"Tresor",
 	"Schreibmaschine",
@@ -95,14 +95,14 @@ static IconInfo Icons[] = {
 	"Wassermann",
 	"Schaf",
 	"Krebs", 
-	"Schütze", 
+	"SchÃ¼tze", 
 	"Skorpion",
 	"Drache",
-	"Möbel",
+	"MÃ¶bel",
 	"Tor",
 	"Obst",
 	"Brot",
-	"Käse",
+	"KÃ¤se",
 	"Kreuz",
 	"Geschenk",
 	"Kranz",
@@ -114,7 +114,7 @@ static IconInfo Icons[] = {
 	"Kerze",
 	"Wecker",
 	"Zauberei",
-	"Bügeleisen",
+	"BÃ¼geleisen",
 	"Video",
 	"Medikament",
 	"Ente",
@@ -124,18 +124,18 @@ static IconInfo Icons[] = {
 	"Trommel",
 	"Lautsprecher",
 	"Hund",
-	"Schädel",
+	"SchÃ¤del",
 	"Vogel",
 	"Fisch",
 	"Internet",
 	"Ausrufungszeichen",
-	"Hütchen",
+	"HÃ¼tchen",
 	"Leuchtturm",
 	"Pinsel",
 	"Ziegel",
 	"Teppichmesser",
-	"Ölkanne",
-	"Träger",
+	"Ã–lkanne",
+	"TrÃ¤ger",
 	"Zange",
 	"Globus",
 	"Qualle",
@@ -143,7 +143,7 @@ static IconInfo Icons[] = {
 	"Mond",
 	"Rakete",
 	"Trepanation",
-	"Bär",
+	"BÃ¤r",
 	"Papierkrieg",
 	"Solar"
 };
@@ -190,7 +190,7 @@ BOOL CIconAuswahlBetrieb::ChooseProperty(CString &csProperty)
 			case 1: dlg.m_Unternehmensart2 = strToken; break;
 			case 2: dlg.m_Steuernummer = strToken;	   break;
 			case 3: dlg.m_wirtschaftsIdNr = strToken;  break;
-			default: strRest += _T("\t") + strToken;   break;  // zukünftige betriebsabhängige Einstellungsdaten beibehalten
+			default: strRest += _T("\t") + strToken;   break;  // zukÃ¼nftige betriebsabhÃ¤ngige Einstellungsdaten beibehalten
 			}
 		}
 	}
@@ -203,13 +203,13 @@ BOOL CIconAuswahlBetrieb::ChooseProperty(CString &csProperty)
 			if (dlg.m_wirtschaftsIdNr.GetLength() != 17)
 				AfxMessageBox("Hinweis: Die Wirtschaftsidentifikationsnummer muss 17 Zeichen lang sein.");
 			else if (!isalpha(dlg.m_wirtschaftsIdNr[0]) || !isalpha(dlg.m_wirtschaftsIdNr[1]))
-				AfxMessageBox("Hinweis: Die Wirtschaftsidentifikationsnummer muss mit zwei Buchstaben für das Landeskürzel beginnen, z.B. 'DE' oder 'AT'.");
+				AfxMessageBox("Hinweis: Die Wirtschaftsidentifikationsnummer muss mit zwei Buchstaben fÃ¼r das LandeskÃ¼rzel beginnen, z.B. 'DE' oder 'AT'.");
 			else if (dlg.m_wirtschaftsIdNr[11] != _T('-'))
 				AfxMessageBox("Hinweis: Die Wirtschaftsidentifikationsnummer muss an der 12. Position einen Bindestrich enthalten.");
 			else 
 				for (int i = 2; i < 17; i++)
 				{
-					if (i == 11) i++;  // '-' überspringen
+					if (i == 11) i++;  // '-' Ã¼berspringen
 					if (!isdigit(dlg.m_wirtschaftsIdNr[i]))
 					{
 						CString msg;
@@ -237,7 +237,7 @@ void CIconAuswahlBetrieb::Loeschen(int nElement)
 
 int CIconAuswahlBetrieb::IconAuswahl()
 {
-	// Icon wählen
+	// Icon wÃ¤hlen
 	CIconAuswahlBetrieb dlgIcon(m_pParent);
 	dlgIcon.DoModal();		
 

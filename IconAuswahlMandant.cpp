@@ -1,17 +1,17 @@
-// IconAuswahlMandant.cpp : implementation file
+Ôªø// IconAuswahlMandant.cpp : implementation file
 //
-// Diese Datei ist Bestandteil von EasyCash&Tax, der freien E‹R-Fibu
+// Diese Datei ist Bestandteil von EasyCash&Tax, der freien E√úR-Fibu
 //
 // Copyleft (GPLv3) 2020  Thomas Mielke
 // 
-// Dies ist freie Software; Sie d¸rfen sie unter den Bedingungen der 
+// Dies ist freie Software; Sie d√ºrfen sie unter den Bedingungen der 
 // GNU General Public License, wie von der Free Software Foundation 
-// verˆffentlicht, weiterverteilen und/oder modifizieren; entweder gem‰ﬂ 
-// Version 3 der Lizenz oder (nach Ihrer Option) jeder sp‰teren Version.
+// ver√∂ffentlicht, weiterverteilen und/oder modifizieren; entweder gem√§√ü 
+// Version 3 der Lizenz oder (nach Ihrer Option) jeder sp√§teren Version.
 //
-// Diese Software wird in der Hoffnung weiterverbreitet, dass sie n¸tzlich 
+// Diese Software wird in der Hoffnung weiterverbreitet, dass sie n√ºtzlich 
 // sein wird, jedoch OHNE IRGENDEINE GARANTIE, auch ohne die implizierte 
-// Garantie der MARKTREIFE oder der VERWENDBARKEIT F‹R EINEN BESTIMMTEN ZWECK.
+// Garantie der MARKTREIFE oder der VERWENDBARKEIT F√úR EINEN BESTIMMTEN ZWECK.
 // Mehr Details finden Sie in der GNU Lesser General Public License.
 //
 // Sie sollten eine Kopie der GNU General Public License Version 3 zusammen mit 
@@ -67,11 +67,11 @@ END_MESSAGE_MAP()
 
 static IconInfo Icons[] = {
 	"Standard",
-	"Einkaufst¸te", 
+	"Einkaufst√ºte", 
 	"Kiste",
 	"Glas",
 	"Zettel",
-	"F¸ller",
+	"F√ºller",
 	"Bleistift",
 	"Tresor",
 	"Schreibmaschine",
@@ -85,14 +85,14 @@ static IconInfo Icons[] = {
 	"Wassermann",
 	"Schaf",
 	"Krebs", 
-	"Sch¸tze", 
+	"Sch√ºtze", 
 	"Skorpion",
 	"Drache",
-	"Mˆbel",
+	"M√∂bel",
 	"Tor",
 	"Obst",
 	"Brot",
-	"K‰se",
+	"K√§se",
 	"Kreuz",
 	"Geschenk",
 	"Kranz",
@@ -104,7 +104,7 @@ static IconInfo Icons[] = {
 	"Kerze",
 	"Wecker",
 	"Zauberei",
-	"B¸geleisen",
+	"B√ºgeleisen",
 	"Video",
 	"Medikament",
 	"Ente",
@@ -114,18 +114,18 @@ static IconInfo Icons[] = {
 	"Trommel",
 	"Lautsprecher",
 	"Hund",
-	"Sch‰del",
+	"Sch√§del",
 	"Vogel",
 	"Fisch",
 	"Internet",
 	"Ausrufungszeichen",
-	"H¸tchen",
+	"H√ºtchen",
 	"Leuchtturm",
 	"Pinsel",
 	"Ziegel",
 	"Teppichmesser",
-	"÷lkanne",
-	"Tr‰ger",
+	"√ñlkanne",
+	"Tr√§ger",
 	"Zange",
 	"Globus",
 	"Qualle",
@@ -133,7 +133,7 @@ static IconInfo Icons[] = {
 	"Mond",
 	"Rakete",
 	"Trepanation",
-	"B‰r",
+	"B√§r",
 	"Papierkrieg",
 	"Solar"
 };
@@ -158,9 +158,9 @@ BOOL CIconAuswahlMandant::ChooseProperty(CString &csProperty)
 	if (csProperty.IsEmpty())
 		if (!SHGetSpecialFolderPath(AfxGetMainWnd()->GetSafeHwnd(), csProperty.GetBuffer(MAX_PATH), CSIDL_PERSONAL, FALSE))
 			csProperty = "C:\\";
-	CString csTitle = (CString)GetProperty() + " ausw‰hlen";	
+	CString csTitle = (CString)GetProperty() + " ausw√§hlen";	
 
-	// Mandantenverzeichnis w‰hlen
+	// Mandantenverzeichnis w√§hlen
 	if (SelectFolder(csProperty.GetBuffer(MAX_PATH), (LPCTSTR)csTitle)) 
 	{
 		csProperty.ReleaseBuffer();
@@ -184,7 +184,7 @@ void CIconAuswahlMandant::Loeschen(int nElement)
 
 int CIconAuswahlMandant::IconAuswahl()
 {
-	// Icon w‰hlen
+	// Icon w√§hlen
 	CIconAuswahlMandant dlgIcon(m_pParent);
 	dlgIcon.DoModal();		
 

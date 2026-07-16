@@ -1,19 +1,19 @@
-#if !defined(AFX_EASYCASHDOC_H__55B7ED18_9D51_4B8C_9F6B_7DAA4BAAB943__INCLUDED_)
+ï»¿#if !defined(AFX_EASYCASHDOC_H__55B7ED18_9D51_4B8C_9F6B_7DAA4BAAB943__INCLUDED_)
 #define AFX_EASYCASHDOC_H__55B7ED18_9D51_4B8C_9F6B_7DAA4BAAB943__INCLUDED_
 // EasyCashDoc.h : interface of the CEasyCashDoc class
 //
-// Diese Datei ist Bestandteil von EasyCash&Tax, der freien EÜR-Fibu
+// Diese Datei ist Bestandteil von EasyCash&Tax, der freien EÃœR-Fibu
 //
 // Copyleft (GPLv3) 2020  Thomas Mielke
 // 
-// Dies ist freie Software; Sie dürfen sie unter den Bedingungen der 
+// Dies ist freie Software; Sie dÃ¼rfen sie unter den Bedingungen der 
 // GNU General Public License, wie von der Free Software Foundation 
-// veröffentlicht, weiterverteilen und/oder modifizieren; entweder gemäß 
-// Version 3 der Lizenz oder (nach Ihrer Option) jeder späteren Version.
+// verÃ¶ffentlicht, weiterverteilen und/oder modifizieren; entweder gemÃ¤ÃŸ 
+// Version 3 der Lizenz oder (nach Ihrer Option) jeder spÃ¤teren Version.
 //
-// Diese Software wird in der Hoffnung weiterverbreitet, dass sie nützlich 
+// Diese Software wird in der Hoffnung weiterverbreitet, dass sie nÃ¼tzlich 
 // sein wird, jedoch OHNE IRGENDEINE GARANTIE, auch ohne die implizierte 
-// Garantie der MARKTREIFE oder der VERWENDBARKEIT FÜR EINEN BESTIMMTEN ZWECK.
+// Garantie der MARKTREIFE oder der VERWENDBARKEIT FÃœR EINEN BESTIMMTEN ZWECK.
 // Mehr Details finden Sie in der GNU Lesser General Public License.
 //
 // Sie sollten eine Kopie der GNU General Public License Version 3 zusammen mit 
@@ -24,7 +24,7 @@
 
 #include "XMLite.h"
 
-// Version für gespeicherte Dokumente
+// Version fÃ¼r gespeicherte Dokumente
 #define VERSION 13
 
 #define GANZJAHRES_AFA 0
@@ -51,7 +51,7 @@ class AFX_EXT_CLASS CBetrag : public CObject
 public:
 	int Betrag;	// brutto, in Cents
 	int MWSt;	// in Prozent*1000
-	// diese Klasse könnte um die Währung erweitert werden, vielleicht...
+	// diese Klasse kÃ¶nnte um die WÃ¤hrung erweitert werden, vielleicht...
 
 	long GetNetto();								// Gesamt-Nettobetrag
 	BOOL SetMWSt(char *s);
@@ -65,20 +65,20 @@ class AFX_EXT_CLASS CBuchung : public CBetrag
 public:
 	DECLARE_SERIAL(CBuchung)
 	int AbschreibungNr;			// Achtung: bei der Abschreibungsprozedur kann sich noch was 
-	int AbschreibungJahre;		//          ändern: Halbjahresregel und degressive Abschreibung
+	int AbschreibungJahre;		//          Ã¤ndern: Halbjahresregel und degressive Abschreibung
 	CString Beschreibung;		// Der Beschreibungstext
 	CTime Datum;				// Buchungsdatum
 	CString Konto;				// virtuelles Konto in Reintext
-	CBuchung *next;				// Zeiger auf die nächste Buchung in der Liste
+	CBuchung *next;				// Zeiger auf die nÃ¤chste Buchung in der Liste
 	// dazugekommen ab v1.16 oder CDoc-VERSION 7 (siehe oben #define VERSION)
 	CString Belegnummer;		// auf vielfachen Wunsch dazugekommen in Version 7 der Doc-Klasse
 	int  AbschreibungRestwert;	// Restbuchwert des Anlagegegenstands
 	BOOL AbschreibungDegressiv;	// TRUE wenn Abschreibungsmodus degressiv ist
-	int  AbschreibungSatz;		// zur Zeit nur bei degressiver Abschreibung benötigt
-	CString Erweiterung;		// member für benutzerdefinierte Daten der Erweiterungs-DLLs
-		// ACHTUNG: dieses member müssen sich ggf. mehrere Erweiterungen teilen, deshalb dieses member nie
-		// komplett löschen, sondern nur selektiv. Ich schlage folgendes Format für Daten vor, die hier 
-		// gespeichert werden: DLL-Erweiterungsname1|Schlüsselname1=Wert1|Schlüsselname2=Wert2||DLL-Erweiterungsname2|...|...||
+	int  AbschreibungSatz;		// zur Zeit nur bei degressiver Abschreibung benÃ¶tigt
+	CString Erweiterung;		// member fÃ¼r benutzerdefinierte Daten der Erweiterungs-DLLs
+		// ACHTUNG: dieses member mÃ¼ssen sich ggf. mehrere Erweiterungen teilen, deshalb dieses member nie
+		// komplett lÃ¶schen, sondern nur selektiv. Ich schlage folgendes Format fÃ¼r Daten vor, die hier 
+		// gespeichert werden: DLL-Erweiterungsname1|SchlÃ¼sselname1=Wert1|SchlÃ¼sselname2=Wert2||DLL-Erweiterungsname2|...|...||
 		// Beispiel: "ECTEOffenePosten|Kundennr=1234|Zahlung1=1000,00|Zahldatum1=12.12.2003||..."
 		// wer ein paar schicke Funktionen zum handling schreibt: ich nehme die gern in die ECTIFace.dll auf...
 	
@@ -86,12 +86,12 @@ public:
 	~CBuchung();
 	virtual void Serialize(CArchive& ar);	
 	CBuchung& operator=(const CBuchung& buchungSrc);
-	long GetBuchungsjahrNetto(CEasyCashDoc *pDoc);	// Nettobetrag des aktuellen Buchungsjahrs entsprechend den Einstellungen fürs Dokument (für AfA!)
-	long GetBuchungsjahrNetto(int angewandte_Abschreibungsgenauigkeit); // Nettobetrag des aktuellen Buchungsjahrs mit diskreter Abschreibungsgenauigkeit (für AfA!)
+	long GetBuchungsjahrNetto(CEasyCashDoc *pDoc);	// Nettobetrag des aktuellen Buchungsjahrs entsprechend den Einstellungen fÃ¼rs Dokument (fÃ¼r AfA!)
+	long GetBuchungsjahrNetto(int angewandte_Abschreibungsgenauigkeit); // Nettobetrag des aktuellen Buchungsjahrs mit diskreter Abschreibungsgenauigkeit (fÃ¼r AfA!)
 	int AbschreibungGenauigkeit;		// dazugekommen ab v1.37 oder CDoc Version 10
 	CString Bestandskonto;				// dazugekommen ab v1.49 oder CDoc Version 11
 	CString Betrieb;					// dazugekommen ab v1.49 oder CDoc Version 11
-	CString Uuid;						// GUID für stabile Selektion (transient, nicht serialisiert)
+	CString Uuid;						// GUID fÃ¼r stabile Selektion (transient, nicht serialisiert)
 
 private:
 	long BuchungsjahrNettoAbschreibungsgenauigkeitBeruecksichtigen(long jaehrliche_rate, int angewandte_Abschreibungsgenauigkeit);
@@ -119,7 +119,7 @@ public:
 	CTime AktualisiertBisDatum;
 	CString Konto;
 	CDauerbuchung *next;
-	CString Belegnummer;	// dazugekommen in Version 7 der Doc-Klasse, zukünftig soll es eine Maske enthalten, nach der Buchungsnummern in CBuchung generiert werden
+	CString Belegnummer;	// dazugekommen in Version 7 der Doc-Klasse, zukÃ¼nftig soll es eine Maske enthalten, nach der Buchungsnummern in CBuchung generiert werden
 	CString Erweiterung;	// siehe CBuchung
 
 	CDauerbuchung();
@@ -130,7 +130,7 @@ public:
 	CString Betrieb;					// dazugekommen ab v1.56 oder CDoc Version 12
 };
 
-// Bem.: nach Änderungen in den Buchungsdaten empfiehlt es sich CEasyCashDoc::Sort() CEasyCashDoc::SetModifiedFlag() und soetwas wie 
+// Bem.: nach Ã„nderungen in den Buchungsdaten empfiehlt es sich CEasyCashDoc::Sort() CEasyCashDoc::SetModifiedFlag() und soetwas wie 
 // ::RedrawWindow(hWndParent, NULL, NULL, RDW_ERASE|RDW_FRAME|RDW_INTERNALPAINT|RDW_INVALIDATE|RDW_UPDATENOW|RDW_ALLCHILDREN) aufzurufen
 
 //#undef  AFX_DATA				// So wird auch das CObject-RuntimeClass member 
@@ -178,18 +178,18 @@ public:
 // weiter Attributes
 public:
 	// dazugekommen ab v1.16 oder CDoc-VERSION 7 (siehe oben #define VERSION)
-	CString Erweiterung;		// member für benutzerdefinierte Daten der Erweiterungs-DLLs
-		// ACHTUNG: dieses member müssen sich ggf. mehrere Erweiterungen teilen, deshalb dieses member nie
-		// komplett löschen, sondern nur selektiv. Ich schlage folgendes Format für Daten vor, die hier 
-		// gespeichert werden: DLL-Erweiterungsname1|Schlüsselname1=Wert1|Schlüsselname2=Wert2||DLL-Erweiterungsname2|...|...||
+	CString Erweiterung;		// member fÃ¼r benutzerdefinierte Daten der Erweiterungs-DLLs
+		// ACHTUNG: dieses member mÃ¼ssen sich ggf. mehrere Erweiterungen teilen, deshalb dieses member nie
+		// komplett lÃ¶schen, sondern nur selektiv. Ich schlage folgendes Format fÃ¼r Daten vor, die hier 
+		// gespeichert werden: DLL-Erweiterungsname1|SchlÃ¼sselname1=Wert1|SchlÃ¼sselname2=Wert2||DLL-Erweiterungsname2|...|...||
 		// Beispiel: "ECTEOffenePosten|Kundennr1=1234|Kundenname1=Meier||..."
-	int	Version;	// hiermit kann man prüfen, welche Verison das CDoc hat
+	int	Version;	// hiermit kann man prÃ¼fen, welche Verison das CDoc hat
 
 	// dazugekommen ab v1.18 oder CDoc-VERSION 8
 	int nLaufendeBuchungsnummerFuerBank;
 	int nLaufendeBuchungsnummerFuerKasse;
 
-// HIER WEITERE MEMBERS ANFÜGEN: public functions und variablen auch gern gemischt...
+// HIER WEITERE MEMBERS ANFÃœGEN: public functions und variablen auch gern gemischt...
 
 // Overrides
 	// ClassWizard generated virtual function overrides
@@ -223,15 +223,15 @@ private:
 	long m_laFeldWerte[10000];
 	BOOL m_bFeldWertGueltig[10000];
 	CString m_csBetriebFuerFormular;
-	// für Formular-ActiveX-Control:
-	CStringArray m_csaFormulare;					// enthält die Dateinamen der verfügbaren Formulare
-	CStringArray m_csaFormularfeldwerte;			// Cache-Speicher für die Formularwerte
+	// fÃ¼r Formular-ActiveX-Control:
+	CStringArray m_csaFormulare;					// enthÃ¤lt die Dateinamen der verfÃ¼gbaren Formulare
+	CStringArray m_csaFormularfeldwerte;			// Cache-Speicher fÃ¼r die Formularwerte
 	CStringArray m_csaFormularfeldbeschreibungen;	// ... und Feldbeschreibungen
 
 // weitere Operations
 public:
 	int GetFormularwertIDByIndex(CString &csFormularname, int nIndex);	// passend zu GetFormularwertByIndex
-	void ReadKontenCache();	// benötigt für GetFormularwertXXX Funktionen
+	void ReadKontenCache();	// benÃ¶tigt fÃ¼r GetFormularwertXXX Funktionen
 	CString GetFormularwertByID(CString &csFormularname, int nID, LPCSTR sFilter = NULL);	// dazugekommen ab v1.30 oder CDoc-VERSION 9
 	CString GetFormularwertByIndex(CString &csFormularname, int nIndex, LPCSTR sFilter = NULL);	// dazugekommen ab v1.30 oder CDoc-VERSION 9
 	CString GetFormularwertByID(XDoc *pFormular, int nID, LPCSTR sFilter = NULL);	// dazugekommen ab v1.30 oder CDoc-VERSION 9
@@ -247,7 +247,7 @@ public:
 	void LoescheWiederherstellungsdatei(LPCTSTR dateipfad);
 	CTime GetFileModifiedTime(LPCTSTR path);
 
-	CStringArray m_csaFeldStatustext;	// Statustexte für Formularfelder im freien Zugriff
+	CStringArray m_csaFeldStatustext;	// Statustexte fÃ¼r Formularfelder im freien Zugriff
 
 // Generated message map functions
 protected:
@@ -257,7 +257,7 @@ protected:
 	//}}AFX_MSG
 	DECLARE_MESSAGE_MAP()
 
-// weiter Attribute für Backup-Nachfrage VERSION 13:
+// weiter Attribute fÃ¼r Backup-Nachfrage VERSION 13:
 public:
 	BOOL Check4Backup();
 	int nNachfrageIntervall;	// in Tagen
@@ -268,7 +268,7 @@ public:
 
 /////////////////////////////////////////////////////////////////////////////
 
-// nützliche Hilfsfunktionen
+// nÃ¼tzliche Hilfsfunktionen
 
 // Wandelt einen Betrag von String in int (= Pfennige/Cents) um
 extern "C" AFX_EXT_CLASS int currency_to_int(char *s);
@@ -280,11 +280,11 @@ extern "C" AFX_EXT_CLASS int currency_to_int(char *s);
 extern "C" AFX_EXT_CLASS void int_to_currency(int i, int n, char *s);
 extern "C" AFX_EXT_CLASS void int_to_currency_tausenderpunkt(int i, int n, char *s);
 
-// gibt den Pfad zur INI-Datei bzw. zum Programmverzeichnis zurück. Mit WritePrivateProfileString & Co.
+// gibt den Pfad zur INI-Datei bzw. zum Programmverzeichnis zurÃ¼ck. Mit WritePrivateProfileString & Co.
 // kann man in der Ini-Datei Einstellungen eintragen. Bitte als Sektionsnamen den Namen der 
-// Erweiterungs-DLL angeben, damit es kein Durcheinander gibt. Mit zukünftiger Mandantenfähigkeit
+// Erweiterungs-DLL angeben, damit es kein Durcheinander gibt. Mit zukÃ¼nftiger MandantenfÃ¤higkeit
 // kann das Verzeichnis der Ini-Datei vom Programmverzeichnis abweichen. Das Programmverzeichnis
-// wird ohne abschließenden '\' geliefert.
+// wird ohne abschlieÃŸenden '\' geliefert.
 // buffer = pointer auf ein char[300] (sollte reichen)
 // size   = sizeof(buffer)
 // return = TRUE wenn kein Fehler auftrat
@@ -295,11 +295,11 @@ extern "C" AFX_EXT_CLASS void SetMandant(int n);
 extern "C" AFX_EXT_CLASS int GetMandant();
 extern "C" AFX_EXT_CLASS void ZeigeStartoptionen();
 
-//--- ab hier Hilfsfunktionen für den Zugriff auf die Plugin-Erweiterungsdaten in der Dokument-Klasse ---
+//--- ab hier Hilfsfunktionen fÃ¼r den Zugriff auf die Plugin-Erweiterungsdaten in der Dokument-Klasse ---
 // ACHTUNG: Das Zeichen '|' darf in Key- bzw. Erweiterungsnamen und in Werten nicht verwendet werden
 //          und '=' nicht in Key-Namen. In Zukunft sollte das Zeichen intern 'escaped' werden.
 
-// Return: Pointer auf den gewünschten Key-Wert der Ereiterung oder "" wenn nicht gefunden wurde
+// Return: Pointer auf den gewÃ¼nschten Key-Wert der Ereiterung oder "" wenn nicht gefunden wurde
 //		   Der Key-Wert ist nicht Null-Terminiert, sondern '|'-Terminiert!!!
 // Die Aufrufende Funktion sollte nach der Verarbeitung einen ReleaseBuffer auf m_pDoc->Erweiterung machen
 extern "C" AFX_EXT_CLASS char *GetErweiterungKey(CString &csSpeicher, LPCTSTR sErweiterung, LPCTSTR sKey);
@@ -312,14 +312,14 @@ extern "C" AFX_EXT_CLASS void LadeECFormulare(CStringArray &csa);
 // Holt den Formularnamen aus einem Array und filtert nach Formularart
 extern "C" AFX_EXT_CLASS void HoleFormularnamenAusCSA(long Index, LPCTSTR Filter, CStringArray &csa, CString *Result);
 
-// berechnet die Ini-Sektion aus dem angeforderten-Einstellungs-Key ('f' voranstellen für Finanzamts-Daten)
+// berechnet die Ini-Sektion aus dem angeforderten-Einstellungs-Key ('f' voranstellen fÃ¼r Finanzamts-Daten)
 extern "C" AFX_EXT_CLASS LPCSTR IniSektion(LPCSTR id);
 extern "C" AFX_EXT_CLASS char *HoleKontoFuerFeld(char ea, LPCSTR eurech_feld, LPCSTR uva_feld = NULL);
 
 // Generalisierung von HoleKontoFuerFeld: liefert das erstbeste Konto, das mit der angegebenen
-// Kombination von Formularfeldern verknüpft ist -- pro Land ein Block (Kürzel de/at/ch, das in den
-// Einstellungen gewählte Land entscheidet), z.B.
-//   HoleKontoMitFeldern("$de:E/Ü-Rechnung=1103|Umsatzsteuer-Voranmeldung=48||at:Beilage E1a=9040|Umsatzsteuer=1020||")
+// Kombination von Formularfeldern verknÃ¼pft ist -- pro Land ein Block (KÃ¼rzel de/at/ch, das in den
+// Einstellungen gewÃ¤hlte Land entscheidet), z.B.
+//   HoleKontoMitFeldern("$de:E/Ãœ-Rechnung=1103|Umsatzsteuer-Voranmeldung=48||at:Beilage E1a=9040|Umsatzsteuer=1020||")
 // Existiert kein passendes Konto, fragt eine Eingabemaske den Kontonamen ab und legt das Konto
 // samt Feldzuweisungen an. Return: Kontoname oder "" (Abbruch, Fehler oder alle 100 Slots belegt).
 extern "C" AFX_EXT_CLASS char *HoleKontoMitFeldern(LPCSTR spez);
@@ -337,7 +337,7 @@ public:
 	ExtensionDLLsClass *next;
 };
 
-// Hilfsfunktion für plugin-hooks
+// Hilfsfunktion fÃ¼r plugin-hooks
 extern "C" AFX_EXT_CLASS void CLoadExtensionDLLs(char *version_string);
 extern "C" AFX_EXT_CLASS void CFreeExtensionDLLs();
 

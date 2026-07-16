@@ -1,17 +1,17 @@
-// RechnDlg.cpp : implementation file
+ï»¿// RechnDlg.cpp : implementation file
 //
-// Diese Datei ist Bestandteil von EasyCash&Tax, der freien EÜR-Fibu
+// Diese Datei ist Bestandteil von EasyCash&Tax, der freien EÃœR-Fibu
 //
 // Copyleft (GPLv3) 2020  Thomas Mielke
 // 
-// Dies ist freie Software; Sie dürfen sie unter den Bedingungen der 
+// Dies ist freie Software; Sie dÃ¼rfen sie unter den Bedingungen der 
 // GNU General Public License, wie von der Free Software Foundation 
-// veröffentlicht, weiterverteilen und/oder modifizieren; entweder gemäß 
-// Version 3 der Lizenz oder (nach Ihrer Option) jeder späteren Version.
+// verÃ¶ffentlicht, weiterverteilen und/oder modifizieren; entweder gemÃ¤ÃŸ 
+// Version 3 der Lizenz oder (nach Ihrer Option) jeder spÃ¤teren Version.
 //
-// Diese Software wird in der Hoffnung weiterverbreitet, dass sie nützlich 
+// Diese Software wird in der Hoffnung weiterverbreitet, dass sie nÃ¼tzlich 
 // sein wird, jedoch OHNE IRGENDEINE GARANTIE, auch ohne die implizierte 
-// Garantie der MARKTREIFE oder der VERWENDBARKEIT FÜR EINEN BESTIMMTEN ZWECK.
+// Garantie der MARKTREIFE oder der VERWENDBARKEIT FÃœR EINEN BESTIMMTEN ZWECK.
 // Mehr Details finden Sie in der GNU Lesser General Public License.
 //
 // Sie sollten eine Kopie der GNU General Public License Version 3 zusammen mit 
@@ -101,7 +101,7 @@ BOOL CRechnDlg::OnInitDialog()
 
 	char buffer[1000], buffer2[1000];
 	char EasyCashIniFilenameBuffer[1000];
-	if (!GetIniFileName(EasyCashIniFilenameBuffer, sizeof(EasyCashIniFilenameBuffer))) { AfxMessageBox("Konnte Konfigurationsdatei EasyCT.ini nicht öffnen"); TRUE; }
+	if (!GetIniFileName(EasyCashIniFilenameBuffer, sizeof(EasyCashIniFilenameBuffer))) { AfxMessageBox("Konnte Konfigurationsdatei EasyCT.ini nicht Ã¶ffnen"); TRUE; }
 
 	GetPrivateProfileString("Formeln", "1", "betrag*(100+mwst)/100", buffer, sizeof(buffer), EasyCashIniFilenameBuffer);
 	strcpy(buffer2, "&1. "); strcat(buffer2, buffer); m_f1.SetWindowText(buffer2);
@@ -320,7 +320,7 @@ void CRechnDlg::OnTimer(UINT nIDEvent)
 	m_eingabe.SetWindowText(strSource);
 	OnBerechnen();
 
-	// wieder alles löschen, nur die Variablen bleiben in der Listbox erhalten
+	// wieder alles lÃ¶schen, nur die Variablen bleiben in der Listbox erhalten
 	m_eingabe.SetWindowText("");
 	m_ergebnis.SetWindowText("");
 	
@@ -354,7 +354,7 @@ void CRechnDlg::OnFormel(int n, CButton *pbutton)
 		pbutton->SetWindowText(strPrefix + strSource);
 
 		char EasyCashIniFilenameBuffer[1000];
-		if (!GetIniFileName(EasyCashIniFilenameBuffer, sizeof(EasyCashIniFilenameBuffer))) { AfxMessageBox("Konnte Konfigurationsdatei EasyCT.ini nicht zum Schreiben der Formel öffnen"); }		
+		if (!GetIniFileName(EasyCashIniFilenameBuffer, sizeof(EasyCashIniFilenameBuffer))) { AfxMessageBox("Konnte Konfigurationsdatei EasyCT.ini nicht zum Schreiben der Formel Ã¶ffnen"); }		
 		strPrefix.Format("%d", n);
 		WritePrivateProfileString("Formeln", (LPCSTR)strPrefix, (LPCSTR)strSource, EasyCashIniFilenameBuffer);
 		

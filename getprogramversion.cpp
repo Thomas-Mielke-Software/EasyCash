@@ -1,17 +1,17 @@
-// getprogramversion.cpp: implementation file
+ï»¿// getprogramversion.cpp: implementation file
 //
-// Diese Datei ist Bestandteil von EasyCash&Tax, der freien EÜR-Fibu
+// Diese Datei ist Bestandteil von EasyCash&Tax, der freien EÃœR-Fibu
 //
 // Copyleft (GPLv3) 2020  Thomas Mielke
 // 
-// Dies ist freie Software; Sie dürfen sie unter den Bedingungen der 
+// Dies ist freie Software; Sie dÃ¼rfen sie unter den Bedingungen der 
 // GNU General Public License, wie von der Free Software Foundation 
-// veröffentlicht, weiterverteilen und/oder modifizieren; entweder gemäß 
-// Version 3 der Lizenz oder (nach Ihrer Option) jeder späteren Version.
+// verÃ¶ffentlicht, weiterverteilen und/oder modifizieren; entweder gemÃ¤ÃŸ 
+// Version 3 der Lizenz oder (nach Ihrer Option) jeder spÃ¤teren Version.
 //
-// Diese Software wird in der Hoffnung weiterverbreitet, dass sie nützlich 
+// Diese Software wird in der Hoffnung weiterverbreitet, dass sie nÃ¼tzlich 
 // sein wird, jedoch OHNE IRGENDEINE GARANTIE, auch ohne die implizierte 
-// Garantie der MARKTREIFE oder der VERWENDBARKEIT FÜR EINEN BESTIMMTEN ZWECK.
+// Garantie der MARKTREIFE oder der VERWENDBARKEIT FÃœR EINEN BESTIMMTEN ZWECK.
 // Mehr Details finden Sie in der GNU Lesser General Public License.
 //
 // Sie sollten eine Kopie der GNU General Public License Version 3 zusammen mit 
@@ -22,9 +22,9 @@
 *
 *	Beschreibung: GetProgramVerion implementation file
 *	
-*	Die erste gültige Versionsnummer aus den Resourcen einer MFC-Applikation holen:
+*	Die erste gÃ¼ltige Versionsnummer aus den Resourcen einer MFC-Applikation holen:
 *	
-*	Beispiel für den Aufruf:
+*	Beispiel fÃ¼r den Aufruf:
 *
 *		...
 *
@@ -35,7 +35,7 @@
 *		{
 *			GetProgramVerion(hExe, &vs_ffi);	
 *			sprintf(version_string, "v%0lu.%0lu", vs_ffi.dwProductVersionMS >> 16, vs_ffi.dwProductVersionMS & 0xffff);
-*			// version_string enthält dann "v2.0" oder so ähnlich
+*			// version_string enthÃ¤lt dann "v2.0" oder so Ã¤hnlich
 *		}
 *		else 
 *			*version_string = '\0';
@@ -48,7 +48,7 @@
 * v1.31
 * 
 *    Rev 1.29   Feb 05 2007 05:05:38   tmielke
-* v1.30 EÜR2006 + UVA2007 + Dauerbuchungen Features + Bugfixes
+* v1.30 EÃœR2006 + UVA2007 + Dauerbuchungen Features + Bugfixes
 * 
 *    Rev 1.28   Feb 03 2006 02:29:18   tmielke
 * v1.29
@@ -57,7 +57,7 @@
 * v1.28 -- Bugfixes
 * 
 *    Rev 1.26   Jan 16 2006 09:52:28   tmielke
-* v1.26 EÜR-Formular, Bugfix
+* v1.26 EÃœR-Formular, Bugfix
 * 
 *    Rev 1.25   Dec 10 2005 12:09:42   tmielke
 * v1.24: neuer Formelrechner und DSA-Messagebox
@@ -74,18 +74,18 @@
 *    Rev 1.21   Jan 20 2005 15:17:26   tmielke
 * v1.18:
 * Die Bemessungsgrundlage bei der Umsatzsteuervoranmeldung wird jetzt vom vollen Euro-Betrag berechnet.
-* Die Textfarbe und entspr. die Fensterhintergrundfarbe werden nun aus den Windows-Einstellungen übernommen.
+* Die Textfarbe und entspr. die Fensterhintergrundfarbe werden nun aus den Windows-Einstellungen Ã¼bernommen.
 * Die Zeilenbreite im Journal wird nun dynamisch an die Fensterbreite angepasst. 
 * MWSt und Belegnummernspalten im Journal werden nur dann angezeigt, wenn entsprechend relevante Buchungen gemacht wurden. 
-* Schon ausgeführte Dauerbuchungen können jetzt nachträglich geändert und nochmal ausgeführt werden, indem das 'Ausgeführt Bis'-Datum zurückgesetzt wird. Die alten Buchungseinträge im Journal müssen allerdings von Hand gelöscht werden. Ich hoffe, damit wird der Mechanismus transparenter.
-* Dauerbuchungen sind jetzt auch in 2-monatlichen Intervallen möglich.
+* Schon ausgefÃ¼hrte Dauerbuchungen kÃ¶nnen jetzt nachtrÃ¤glich geÃ¤ndert und nochmal ausgefÃ¼hrt werden, indem das 'AusgefÃ¼hrt Bis'-Datum zurÃ¼ckgesetzt wird. Die alten BuchungseintrÃ¤ge im Journal mÃ¼ssen allerdings von Hand gelÃ¶scht werden. Ich hoffe, damit wird der Mechanismus transparenter.
+* Dauerbuchungen sind jetzt auch in 2-monatlichen Intervallen mÃ¶glich.
 * Die Eingabe von Buchungspresets mit einer AfA-Dauer von 0 Jahren wird jetzt unterbunden.
-* Einen Fehler beseitigt, der in seltenen Fällen für einen Absturz beim Aufruf der Dauerbuchungen verantwortlich war.
-* Die Anrechnung der festgesetzten Sondervorauszahlung für Dauerfristverlängerung (Feld 39) im deutschen USt-Voranmeldungsformular bzw. Sonstige Berichtigungen (Feld 90) im österreischischen Formular wird jetzt berücksichtigt.
-* Feld 43 Der USt-Voranmeldung (Weitere Steuerfreie Umsätze mit Vorsteuerabzug) wird jetzt unterstützt.
-* Steuerfreie Umsätze ohne Vorsteuerabzug wurden bei der Anlage UR der Einkommensteuererklärung vergessen.
-* Knopf für die Seitenansicht in der Werkzeugleiste.
-* Es gibt zwei weitere Nummernkreise für Buchungsnummern. Aktivierbar durch Drücken von 'B' oder 'K' im Belegnummernfeld.
+* Einen Fehler beseitigt, der in seltenen FÃ¤llen fÃ¼r einen Absturz beim Aufruf der Dauerbuchungen verantwortlich war.
+* Die Anrechnung der festgesetzten Sondervorauszahlung fÃ¼r DauerfristverlÃ¤ngerung (Feld 39) im deutschen USt-Voranmeldungsformular bzw. Sonstige Berichtigungen (Feld 90) im Ã¶sterreischischen Formular wird jetzt berÃ¼cksichtigt.
+* Feld 43 Der USt-Voranmeldung (Weitere Steuerfreie UmsÃ¤tze mit Vorsteuerabzug) wird jetzt unterstÃ¼tzt.
+* Steuerfreie UmsÃ¤tze ohne Vorsteuerabzug wurden bei der Anlage UR der EinkommensteuererklÃ¤rung vergessen.
+* Knopf fÃ¼r die Seitenansicht in der Werkzeugleiste.
+* Es gibt zwei weitere Nummernkreise fÃ¼r Buchungsnummern. Aktivierbar durch DrÃ¼cken von 'B' oder 'K' im Belegnummernfeld.
 * 
 * 
 *    Rev 1.20   Mar 25 2004 02:59:50   tmielke
@@ -103,7 +103,7 @@
 *    Rev 1.16   Jan 07 2002 14:23:56   tmielke
 * v1.13
 * Seitenwechsel zw. Einnahmen und Ausgaben
-* UmSt-Vorauszahlungen werden für UmSt-Erkl. gemerkt
+* UmSt-Vorauszahlungen werden fÃ¼r UmSt-Erkl. gemerkt
 * 
 *    Rev 1.15   Oct 17 2001 19:54:44   tmielke
 * v1.12a
@@ -120,7 +120,7 @@
 *    Rev 1.11   15 Jan 2001 15:28:36   tmielke
 * Bugfix: Einnahmen-Konto wird jetzt mit exportiert
 * Kosmetik im Druckauswahl-Dialog
-* Buchung: Cursor springt jetzt vom Währungsfeld ins Beschrei-
+* Buchung: Cursor springt jetzt vom WÃ¤hrungsfeld ins Beschrei-
 *       bungsfeld,wenn zwei Ziffern nach dem Komma eingegeben wurden
 * Version C. Detjen geschickt
 * 
@@ -141,7 +141,7 @@
 * v1.7
 * 
 *    Rev 1.5   17 Mar 2000 05:36:24   tmielke
-* v1.6 österr./schweitzer Version
+* v1.6 Ã¶sterr./schweitzer Version
 * 
 *    Rev 1.4   28 Jan 2000 03:10:36   tmielke
 * v1.5
@@ -153,7 +153,7 @@
 * v1.4
 * 
 *    Rev 1.1   18 Nov 1999 02:31:44   tmielke
-* v1.3 UmSt-Erklärung und E/Ü-Rechnung
+* v1.3 UmSt-ErklÃ¤rung und E/Ãœ-Rechnung
 * 
 *    Rev 1.0   18 Nov 1999 02:30:08   tmielke
 * Initial Check In
@@ -165,7 +165,7 @@
 * Nachtrag v1.32
 * 
 *    Rev 1.8   05 Apr 1999 08:14:26   tmielke
-* Info-Screen Logo verändert
+* Info-Screen Logo verÃ¤ndert
 * 
 *    Rev 1.7   22 Mar 1999 16:26:28   tmielke
 * v1.31 Letzte-Aufnahme-Button und Logo

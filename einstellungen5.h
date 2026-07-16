@@ -1,4 +1,4 @@
-#if !defined(AFX_EINSTELLUNGEN5_H__41E1A461_92AA_11D5_B421_0000B4336A1A__INCLUDED_)
+ï»¿#if !defined(AFX_EINSTELLUNGEN5_H__41E1A461_92AA_11D5_B421_0000B4336A1A__INCLUDED_)
 #define AFX_EINSTELLUNGEN5_H__41E1A461_92AA_11D5_B421_0000B4336A1A__INCLUDED_
 
 #if _MSC_VER > 1000
@@ -6,18 +6,18 @@
 #endif // _MSC_VER > 1000
 // Einstellungen5.h : header file
 //
-// Diese Datei ist Bestandteil von EasyCash&Tax, der freien EÜR-Fibu
+// Diese Datei ist Bestandteil von EasyCash&Tax, der freien EÃœR-Fibu
 //
 // Copyleft (GPLv3) 2020  Thomas Mielke
 // 
-// Dies ist freie Software; Sie dürfen sie unter den Bedingungen der 
+// Dies ist freie Software; Sie dÃ¼rfen sie unter den Bedingungen der 
 // GNU General Public License, wie von der Free Software Foundation 
-// veröffentlicht, weiterverteilen und/oder modifizieren; entweder gemäß 
-// Version 3 der Lizenz oder (nach Ihrer Option) jeder späteren Version.
+// verÃ¶ffentlicht, weiterverteilen und/oder modifizieren; entweder gemÃ¤ÃŸ 
+// Version 3 der Lizenz oder (nach Ihrer Option) jeder spÃ¤teren Version.
 //
-// Diese Software wird in der Hoffnung weiterverbreitet, dass sie nützlich 
+// Diese Software wird in der Hoffnung weiterverbreitet, dass sie nÃ¼tzlich 
 // sein wird, jedoch OHNE IRGENDEINE GARANTIE, auch ohne die implizierte 
-// Garantie der MARKTREIFE oder der VERWENDBARKEIT FÜR EINEN BESTIMMTEN ZWECK.
+// Garantie der MARKTREIFE oder der VERWENDBARKEIT FÃœR EINEN BESTIMMTEN ZWECK.
 // Mehr Details finden Sie in der GNU Lesser General Public License.
 //
 // Sie sollten eine Kopie der GNU General Public License Version 3 zusammen mit 
@@ -71,7 +71,7 @@ public:
 	CString	m_ustsatz9;
 	//}}AFX_DATA
 
-	// pointer arrays für besseren Zugriff
+	// pointer arrays fÃ¼r besseren Zugriff
 	CString *m_part[10];
 	CString	*m_psatz[10];
 	CString	*m_pustsatz[10];

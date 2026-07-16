@@ -1,18 +1,18 @@
-//////////////////////////////////////////////////////////////////
+ï»¿//////////////////////////////////////////////////////////////////
 // ECTIFaceMisc - Verschiedene Hilfsfunktionen
 //
-// Diese Datei ist Bestandteil von EasyCash&Tax, der freien EÜR-Fibu
+// Diese Datei ist Bestandteil von EasyCash&Tax, der freien EÃœR-Fibu
 //
 // Copyleft (GPLv3) 2020  Thomas Mielke
 // 
-// Dies ist freie Software; Sie dürfen sie unter den Bedingungen der 
+// Dies ist freie Software; Sie dÃ¼rfen sie unter den Bedingungen der 
 // GNU General Public License, wie von der Free Software Foundation 
-// veröffentlicht, weiterverteilen und/oder modifizieren; entweder gemäß 
-// Version 3 der Lizenz oder (nach Ihrer Option) jeder späteren Version.
+// verÃ¶ffentlicht, weiterverteilen und/oder modifizieren; entweder gemÃ¤ÃŸ 
+// Version 3 der Lizenz oder (nach Ihrer Option) jeder spÃ¤teren Version.
 //
-// Diese Software wird in der Hoffnung weiterverbreitet, dass sie nützlich 
+// Diese Software wird in der Hoffnung weiterverbreitet, dass sie nÃ¼tzlich 
 // sein wird, jedoch OHNE IRGENDEINE GARANTIE, auch ohne die implizierte 
-// Garantie der MARKTREIFE oder der VERWENDBARKEIT FÜR EINEN BESTIMMTEN ZWECK.
+// Garantie der MARKTREIFE oder der VERWENDBARKEIT FÃœR EINEN BESTIMMTEN ZWECK.
 // Mehr Details finden Sie in der GNU Lesser General Public License.
 //
 // Sie sollten eine Kopie der GNU General Public License Version 3 zusammen mit 
@@ -186,14 +186,14 @@ extern "C" AFX_EXT_CLASS void ZeigeStartoptionen()
 	}
 }
 
-//--- ab hier Hilfsfunktionen für den Zugriff auf die Plugin-Erweiterungsdaten in der Dokument-Klasse ---
+//--- ab hier Hilfsfunktionen fÃ¼r den Zugriff auf die Plugin-Erweiterungsdaten in der Dokument-Klasse ---
 
 // Diese Funktionen werden mittelfristig in die Dokument-Klasse eingebaut
 
 // ACHTUNG: Das Zeichen '|' darf in Key- bzw. Erweiterungsnamen und in Werten nicht verwendet werden
 //          und '=' nicht in Key-Namen. In Zukunft sollte das Zeichen intern 'escaped' werden.
 
-// Return: Pointer auf den gewünschten Key-Wert der Ereiterung oder "" wenn nicht gefunden wurde
+// Return: Pointer auf den gewÃ¼nschten Key-Wert der Ereiterung oder "" wenn nicht gefunden wurde
 //		   Der Key-Wert ist nicht Null-Terminiert, sondern '|'-Terminiert!!!
 // Die Aufrufende Funktion sollte nach der Verarbeitung einen ReleaseBuffer auf csSpeicher machen
 char *GetErweiterungKey(CString &csSpeicher, LPCTSTR sErweiterung, LPCTSTR sKey)
@@ -208,22 +208,22 @@ char *GetErweiterungKey(CString &csSpeicher, LPCTSTR sErweiterung, LPCTSTR sKey)
 			csSpeicher.ReleaseBuffer();			
 			return ""; // nichts gefunden
 		}
-		cp += 2;	// hinter "||" steht der Name der nächsten Erweiterung
+		cp += 2;	// hinter "||" steht der Name der nÃ¤chsten Erweiterung
 	}
 
 	// wenn Erweiterungsname gefunden: zum ersten key
 	cp += strlen(sErweiterung) + 1;
 
-	// Durchsuchen der zu der Erweiterung gehörenden keys 
+	// Durchsuchen der zu der Erweiterung gehÃ¶renden keys 
 	while (strncmp(sKey, cp, strlen(sKey)) || cp[strlen(sKey)] != '=')
 	{
 		if (!(cp = strchr(cp, '|'))) return ""; // nichts gefunden, sollte hier noch nicht passieren, da mit "||" abgeschlossen werden muss
 		if (cp[1] == '|') 
 		{
 			csSpeicher.ReleaseBuffer();						
-			return "";	// "||" erreicht = Ende des Bereichs für diese Erweiterung
+			return "";	// "||" erreicht = Ende des Bereichs fÃ¼r diese Erweiterung
 		}
-		cp ++;	// hinter "||" steht der Name des nächsten Key
+		cp ++;	// hinter "||" steht der Name des nÃ¤chsten Key
 	}
 
 	cp += strlen(sKey) + 1;
@@ -234,7 +234,7 @@ char *GetErweiterungKey(CString &csSpeicher, LPCTSTR sErweiterung, LPCTSTR sKey)
 }
 
 // CString-Version der vorigen Hilfsfunktion
-// return: Pointer auf einen CString, Aufrufer ist verantwortlich für delete.
+// return: Pointer auf einen CString, Aufrufer ist verantwortlich fÃ¼r delete.
 CString *GetErweiterungKeyCS(CString &csSpeicher, LPCTSTR sErweiterung, LPCTSTR sKey)
 {
 	CString *ret = new CString("");
@@ -253,7 +253,7 @@ CString *GetErweiterungKeyCS(CString &csSpeicher, LPCTSTR sErweiterung, LPCTSTR 
 // einen Wert im Erweiterungs-Bereich der Dokumentklasse schreiben
 void SetErweiterungKey(CString &csSpeicher, LPCTSTR sErweiterung, LPCTSTR sKey, LPCTSTR sValue)
 {
-	// CString fixieren für char-Operationen und noch etwas Luft reservieren
+	// CString fixieren fÃ¼r char-Operationen und noch etwas Luft reservieren
 	// int maximale_groesse = csSpeicher.GetLength()+strlen(sErweiterung)+strlen(sKey)+strlen(sValue)+100;
 	char *start = csSpeicher.GetBuffer(0);
 	char *cp = start;
@@ -261,7 +261,7 @@ void SetErweiterungKey(CString &csSpeicher, LPCTSTR sErweiterung, LPCTSTR sKey, 
 	// Durchsuchen der Erweiterungsnamen (siehe Kommentar in easycashdoc.h unter Erweiterung)
 	while (strncmp(sErweiterung, cp, strlen(sErweiterung)) || cp[strlen(sErweiterung)] != '|')
 	{
-		// Wenn am Ende angekommen, ohne den Namen zu finden: einfach anhängen
+		// Wenn am Ende angekommen, ohne den Namen zu finden: einfach anhÃ¤ngen
 		if (!(cp = strstr(cp, "||"))) 
 		{
 			// 1. Fall: Weder Erweiterung noch Key waren vorhanden
@@ -270,18 +270,18 @@ void SetErweiterungKey(CString &csSpeicher, LPCTSTR sErweiterung, LPCTSTR sKey, 
 			return;
 		}
 
-		cp += 2;	// hinter "||" steht der Name der nächsten Erweiterung
+		cp += 2;	// hinter "||" steht der Name der nÃ¤chsten Erweiterung
 	}
 
 	// wenn Erweiterungsname gefunden: zum ersten key
 	cp += strlen(sErweiterung) + 1;
 
-	// Durchsuchen der zu der Erweiterung gehörenden keys 
+	// Durchsuchen der zu der Erweiterung gehÃ¶renden keys 
 	while (strncmp(sKey, cp, strlen(sKey)) || cp[strlen(sKey)] != '=')
 	{
 		cp = strchr(cp, '|');
 		ASSERT(cp);	 // sollte hier noch nicht abbrechen, da mit "||" abgeschlossen werden muss!
-		if (cp[1] == '|')	// "||" erreicht = Ende des Bereichs für diese Erweiterung
+		if (cp[1] == '|')	// "||" erreicht = Ende des Bereichs fÃ¼r diese Erweiterung
 		{
 			// 2. Fall: Erweiterung war vorhanden, aber Key noch nicht
 			CString vorn, hinten;
@@ -293,10 +293,10 @@ void SetErweiterungKey(CString &csSpeicher, LPCTSTR sErweiterung, LPCTSTR sKey, 
 			csSpeicher = vorn + "|" + sKey + "=" + sValue + hinten;
 			return;
 		}
-		cp ++;	// hinter "||" steht der Name des nächsten Key
+		cp ++;	// hinter "||" steht der Name des nÃ¤chsten Key
 	}
 
-	cp += strlen(sKey) + 1;	// Keynamen + '=' überspringen
+	cp += strlen(sKey) + 1;	// Keynamen + '=' Ã¼berspringen
 
 	{
 		// 3. Fall: Erweiterung und Key waren vorhanden und Wert muss ersetzt werden
@@ -440,7 +440,7 @@ extern "C" void HoleFormularnamenAusCSA(long Index, LPCTSTR Filter, CStringArray
 	}
 }
 
-// berechnet die Ini-Sektion aus dem angeforderten-Einstellungs-Key ('f' voranstellen für Finanzamts-Daten)
+// berechnet die Ini-Sektion aus dem angeforderten-Einstellungs-Key ('f' voranstellen fÃ¼r Finanzamts-Daten)
 extern "C" AFX_EXT_CLASS LPCSTR IniSektion(LPCSTR id)
 {
 	if (!strcmp(id, "monatliche_voranmeldung") ||
@@ -496,9 +496,9 @@ extern "C" AFX_EXT_CLASS LPCSTR IniSektion(LPCSTR id)
 	return "Allgemein";
 }
 
-// Gibt den Kontennamen eines Einnahmenkontos (ea == 'E') oder Ausgabenkontos (ea='A') zurück, das mit bestimmten Formularfeldern verknüpft ist.
-// Bei den _feld-Parametern kann eines NULL sein, wenn lediglich eine Feldzuweisung für nur einen Formulartyp benötigt wird.
-// return: pointer auf einen String-Buffer oder NULL, wenn kein Konto mit der Gewünschten Verknüpfung geliefert werden konnte
+// Gibt den Kontennamen eines Einnahmenkontos (ea == 'E') oder Ausgabenkontos (ea='A') zurÃ¼ck, das mit bestimmten Formularfeldern verknÃ¼pft ist.
+// Bei den _feld-Parametern kann eines NULL sein, wenn lediglich eine Feldzuweisung fÃ¼r nur einen Formulartyp benÃ¶tigt wird.
+// return: pointer auf einen String-Buffer oder NULL, wenn kein Konto mit der GewÃ¼nschten VerknÃ¼pfung geliefert werden konnte
 static char kontoReturnBuffer[1000];
 extern "C" AFX_EXT_CLASS char *HoleKontoFuerFeld(char ea, LPCSTR eurech_feld, LPCSTR uva_feld)
 {
@@ -506,7 +506,7 @@ extern "C" AFX_EXT_CLASS char *HoleKontoFuerFeld(char ea, LPCSTR eurech_feld, LP
 	if (!GetIniFileName(inifilename, sizeof(inifilename)))
 		return NULL;
 
-	if (!eurech_feld && !uva_feld)  // mindestens eine Feldzuweisung benötigt
+	if (!eurech_feld && !uva_feld)  // mindestens eine Feldzuweisung benÃ¶tigt
 		return NULL;
 
 	CString line;
@@ -521,7 +521,7 @@ extern "C" AFX_EXT_CLASS char *HoleKontoFuerFeld(char ea, LPCSTR eurech_feld, LP
 
 	BOOL bInKontensektion = FALSE;
 	BOOL bInFeldzuweisungssektion = FALSE;
-	CString csPassendesKontoNr = "";  // zweistellige Nummer des Kontos, das die gewünschten Feldzuweisungen enthält
+	CString csPassendesKontoNr = "";  // zweistellige Nummer des Kontos, das die gewÃ¼nschten Feldzuweisungen enthÃ¤lt
 	BOOL bKontenlisteEingelesen = FALSE;
 	while(inifile.ReadString(line))
 	{
@@ -544,14 +544,14 @@ extern "C" AFX_EXT_CLASS char *HoleKontoFuerFeld(char ea, LPCSTR eurech_feld, LP
 			if (line == "") continue;	// Leerzeilen ignorieren
 			if (line[0] == '[') 
 			{
-				bInKontensektion = FALSE;  // schon nächste Sektion? Dann Suche beenden.
+				bInKontensektion = FALSE;  // schon nÃ¤chste Sektion? Dann Suche beenden.
 				if (line == csFeldzuweisungssektion) bInFeldzuweisungssektion = TRUE;
 				if (csPassendesKontoNr != "")	// schon eine passende Feldzuweisung gefunden?
-					break;						// dann aufhören die ini-Datei zu parsen
+					break;						// dann aufhÃ¶ren die ini-Datei zu parsen
 				else
 					continue;
 			}
-			if (isdigit(line[0]) && isdigit(line[1]) && line[2] == '=')	// ist gültiger Konteneintrag?
+			if (isdigit(line[0]) && isdigit(line[1]) && line[2] == '=')	// ist gÃ¼ltiger Konteneintrag?
 			{
 				int n = atoi(line);
 				Kontenliste[n] = line.Mid(3);
@@ -565,22 +565,22 @@ extern "C" AFX_EXT_CLASS char *HoleKontoFuerFeld(char ea, LPCSTR eurech_feld, LP
 			if (line == "") continue;	// Leerzeilen ignorieren
 			if (line[0] == '[') 
 			{
-				bInFeldzuweisungssektion = FALSE;  // schon nächste Sektion? Dann Suche beenden.
+				bInFeldzuweisungssektion = FALSE;  // schon nÃ¤chste Sektion? Dann Suche beenden.
 				if (line == csKontensektion) bInKontensektion = TRUE;
 				if (bKontenlisteEingelesen)	// Kontenliste bereits eingelesen?
-					break;					// dann aufhören die ini-Datei zu parsen
+					break;					// dann aufhÃ¶ren die ini-Datei zu parsen
 				else
 					continue;
 			}
-			if (isdigit(line[0]) && isdigit(line[1]) && line[2] == '=')	// ist gültiger Feldzuweisungseintrag?
+			if (isdigit(line[0]) && isdigit(line[1]) && line[2] == '=')	// ist gÃ¼ltiger Feldzuweisungseintrag?
 			{
 				char *posTrennzeichen;
 				CString csSpeicher = line.Mid(3);	// eigentlichen Wert holen			
 				CString csEURechVerknuepfung;	
 				CString csUVAVerknuepfung;
 				
-				// ist EÜR-Verknüpfung vorhanden?
-				char *pEURechVerknuepfung = GetErweiterungKey(csSpeicher, "ECT", "E/Ü-Rechnung");
+				// ist EÃœR-VerknÃ¼pfung vorhanden?
+				char *pEURechVerknuepfung = GetErweiterungKey(csSpeicher, "ECT", "E/Ãœ-Rechnung");
 				if (*pEURechVerknuepfung)
 				{
 					if ((posTrennzeichen = strchr(pEURechVerknuepfung, '|')) >= 0)
@@ -592,7 +592,7 @@ extern "C" AFX_EXT_CLASS char *HoleKontoFuerFeld(char ea, LPCSTR eurech_feld, LP
 					}
 				}
 
-				// ist UVA-Verknüpfung vorhanden?
+				// ist UVA-VerknÃ¼pfung vorhanden?
 				char *pUVAVerknuepfung = GetErweiterungKey(csSpeicher, "ECT", "Umsatzsteuer-Voranmeldung");
 				if (*pUVAVerknuepfung)
 				{
@@ -605,12 +605,12 @@ extern "C" AFX_EXT_CLASS char *HoleKontoFuerFeld(char ea, LPCSTR eurech_feld, LP
 					}
 				}
 
-				if (eurech_feld && uva_feld)  // Konto mit Zuweisungen zu gesuchtem EÜR- *und* UVA-Feld benötigt
+				if (eurech_feld && uva_feld)  // Konto mit Zuweisungen zu gesuchtem EÃœR- *und* UVA-Feld benÃ¶tigt
 				{
 					if (csEURechVerknuepfung == (CString)eurech_feld && csUVAVerknuepfung == (CString)uva_feld)
 						csPassendesKontoNr = line.Left(2);
 				}
-				else if (eurech_feld)  // nur nach EÜR-Feldzuweisung gesucht
+				else if (eurech_feld)  // nur nach EÃœR-Feldzuweisung gesucht
 				{
 					if (csEURechVerknuepfung == (CString)eurech_feld)
 						csPassendesKontoNr = line.Left(2);

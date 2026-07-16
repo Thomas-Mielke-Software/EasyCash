@@ -1,17 +1,17 @@
-// DauerbuchungenDlg.cpp : implementation file
+ï»¿// DauerbuchungenDlg.cpp : implementation file
 //
-// Diese Datei ist Bestandteil von EasyCash&Tax, der freien EÜR-Fibu
+// Diese Datei ist Bestandteil von EasyCash&Tax, der freien EÃœR-Fibu
 //
 // Copyleft (GPLv3) 2020  Thomas Mielke
 // 
-// Dies ist freie Software; Sie dürfen sie unter den Bedingungen der 
+// Dies ist freie Software; Sie dÃ¼rfen sie unter den Bedingungen der 
 // GNU General Public License, wie von der Free Software Foundation 
-// veröffentlicht, weiterverteilen und/oder modifizieren; entweder gemäß 
-// Version 3 der Lizenz oder (nach Ihrer Option) jeder späteren Version.
+// verÃ¶ffentlicht, weiterverteilen und/oder modifizieren; entweder gemÃ¤ÃŸ 
+// Version 3 der Lizenz oder (nach Ihrer Option) jeder spÃ¤teren Version.
 //
-// Diese Software wird in der Hoffnung weiterverbreitet, dass sie nützlich 
+// Diese Software wird in der Hoffnung weiterverbreitet, dass sie nÃ¼tzlich 
 // sein wird, jedoch OHNE IRGENDEINE GARANTIE, auch ohne die implizierte 
-// Garantie der MARKTREIFE oder der VERWENDBARKEIT FÜR EINEN BESTIMMTEN ZWECK.
+// Garantie der MARKTREIFE oder der VERWENDBARKEIT FÃœR EINEN BESTIMMTEN ZWECK.
 // Mehr Details finden Sie in der GNU Lesser General Public License.
 //
 // Sie sollten eine Kopie der GNU General Public License Version 3 zusammen mit 
@@ -92,13 +92,13 @@ BOOL DauerbuchungenDlg::OnInitDialog()
 	
 	((CEdit *)GetDlgItem(IDC_BESCHREIBUNG))->LimitText(27);
 
-	// Combo-Box für E/Ü-Konten
+	// Combo-Box fÃ¼r E/Ãœ-Konten
 	((CComboBox *)GetDlgItem(IDC_MWST))->ResetContent();
 	int i;
 	for (i = 0; *m_pParent->GetVATs(i); i++)
 		((CComboBox *)GetDlgItem(IDC_MWST))->AddString(m_pParent->GetVATs(i));		
 
-	// Combo-Boxen für Betriebe und Bestandskonten aufbauen
+	// Combo-Boxen fÃ¼r Betriebe und Bestandskonten aufbauen
 	for (i = 0; i < 100; i++)
 	{
 		char inifile[1000], buffer[1000]; 
@@ -133,7 +133,7 @@ BOOL DauerbuchungenDlg::OnInitDialog()
 }
 
 
-//--- Listbox-Knöpfe ----------------
+//--- Listbox-KnÃ¶pfe ----------------
 
 void DauerbuchungenDlg::OnNeu() 
 {
@@ -243,7 +243,7 @@ void DauerbuchungenDlg::OnLoeschen()
 				m_pDoc->Dauerbuchungen = dbp->next;
 				dbp->next = NULL;
 				delete dbp;
-				m_pDoc->SetModifiedFlag("Dauerbuchung wurde gelöscht");
+				m_pDoc->SetModifiedFlag("Dauerbuchung wurde gelÃ¶scht");
 				return;
 			}
 
@@ -257,7 +257,7 @@ void DauerbuchungenDlg::OnLoeschen()
 					dbp->next = NULL;
 					delete dbp;
 					(*dbpp)->next = dbp_next;
-					m_pDoc->SetModifiedFlag("Dauerbuchung wurde gelöscht");
+					m_pDoc->SetModifiedFlag("Dauerbuchung wurde gelÃ¶scht");
 					break;
 				}
 			}
@@ -292,7 +292,7 @@ void DauerbuchungenDlg::OnOK()
 		(*p)->next = NULL;
 	}
 	else
-		p = &aktDauerbuchung;	// bei Ändern
+		p = &aktDauerbuchung;	// bei Ã„ndern
 
 	if (((CButton *)GetDlgItem(IDC_EINNAHMEN))->GetCheck())
 		(*p)->Buchungstyp = BUCHUNGSTYP_EINNAHMEN;
@@ -317,7 +317,7 @@ void DauerbuchungenDlg::OnOK()
 	GetDlgItemText(IDC_DATUM_VON_MONAT, buf, sizeof(buf)); mv = atoi(buf);
 	if (mv < 1 || mv > 12)
 	{
-		MessageBox("Eingabefehler: Wert für Monat von 1 bis 12!", NULL, MB_ICONSTOP);
+		MessageBox("Eingabefehler: Wert fÃ¼r Monat von 1 bis 12!", NULL, MB_ICONSTOP);
 		GetDlgItem(IDC_DATUM_VON_MONAT)->SetFocus();
 		goto error_delete_buchung;
 	}
@@ -333,7 +333,7 @@ void DauerbuchungenDlg::OnOK()
 	GetDlgItemText(IDC_DATUM_BIS_MONAT, buf, sizeof(buf)); mb = atoi(buf);
 	if (mb < 1 || mb > 12)
 	{
-		MessageBox("Eingabefehler: Wert für Monat von 1 bis 12!", NULL, MB_ICONSTOP);
+		MessageBox("Eingabefehler: Wert fÃ¼r Monat von 1 bis 12!", NULL, MB_ICONSTOP);
 		GetDlgItem(IDC_DATUM_BIS_MONAT)->SetFocus();
 		goto error_delete_buchung;
 	}
@@ -348,7 +348,7 @@ void DauerbuchungenDlg::OnOK()
 	}
 	if (jv > 3000 || jb > 3000)
 	{
-		MessageBox("Betriebssystem-Beschränkung: Die Jahreszahl darf nicht größer als 3000 sein - sorry!", NULL, MB_ICONSTOP);
+		MessageBox("Betriebssystem-BeschrÃ¤nkung: Die Jahreszahl darf nicht grÃ¶ÃŸer als 3000 sein - sorry!", NULL, MB_ICONSTOP);
 		if (jv > 3000) goto error_delete_buchung;
 		if (jb > 3000) 
 		{
@@ -381,19 +381,19 @@ void DauerbuchungenDlg::OnOK()
 		(*p)->BisDatum = *pdatb;	delete pdatb; 
 		if ((*p)->VonDatum > (*p)->BisDatum)
 		{
-			MessageBox("Von-Datum muß kleiner sein als Bis-Datum!", NULL, MB_ICONSTOP);
+			MessageBox("Von-Datum muÃŸ kleiner sein als Bis-Datum!", NULL, MB_ICONSTOP);
 			GetDlgItem(IDC_DATUM_VON_MONAT)->SetFocus();
 			goto error_delete_buchung;
 		}
 
-		// bei Ändern kann man auch das AktualisiertBis Datum zurücksetzen
+		// bei Ã„ndern kann man auch das AktualisiertBis Datum zurÃ¼cksetzen
 		if (!newFlag)
 		{
 			int ma, ja;
 			GetDlgItemText(IDC_DATUM_AKT_MONAT, buf, sizeof(buf)); ma = atoi(buf);
 			if (ma < 1 || ma > 12)
 			{
-				MessageBox("Eingabefehler: Wert für Monat von 1 bis 12!", NULL, MB_ICONSTOP);
+				MessageBox("Eingabefehler: Wert fÃ¼r Monat von 1 bis 12!", NULL, MB_ICONSTOP);
 				GetDlgItem(IDC_DATUM_AKT_MONAT)->SetFocus();
 				goto error_delete_buchung;
 			}
@@ -413,7 +413,7 @@ void DauerbuchungenDlg::OnOK()
 
 			if ((*p)->AktualisiertBisDatum > (*p)->BisDatum)
 			{
-				MessageBox("Hinweis: Das Aktualisiert-Bis-Datum liegt nach dem Bis-Datum. Diese Dauerbuchung wird deshalb nicht dazu führen, dass reale Buchungen erzeugt werden.", NULL, MB_ICONSTOP);
+				MessageBox("Hinweis: Das Aktualisiert-Bis-Datum liegt nach dem Bis-Datum. Diese Dauerbuchung wird deshalb nicht dazu fÃ¼hren, dass reale Buchungen erzeugt werden.", NULL, MB_ICONSTOP);
 				GetDlgItem(IDC_DATUM_VON_MONAT)->SetFocus();
 				goto error_delete_buchung;
 			}
@@ -445,7 +445,7 @@ void DauerbuchungenDlg::OnOK()
 		GetDlgItemText(IDC_MWST, buf, sizeof(buf)); 
 		if (!strlen(buf) || !(*p)->SetMWSt(buf))
 		{
-			MessageBox("Keinen gültigen MWSt-Satz angegeben!", NULL, MB_ICONSTOP);
+			MessageBox("Keinen gÃ¼ltigen MWSt-Satz angegeben!", NULL, MB_ICONSTOP);
 			goto error_delete_buchung;
 		}
 
@@ -474,7 +474,7 @@ void DauerbuchungenDlg::OnOK()
 		}
 		
 	//normal_exit:
-		m_pDoc->SetModifiedFlag(newFlag ? "Dauerbuchung wurde angelegt" : "Dauerbuchung wurde geändert");
+		m_pDoc->SetModifiedFlag(newFlag ? "Dauerbuchung wurde angelegt" : "Dauerbuchung wurde geÃ¤ndert");
 		
 		aktDauerbuchung = (*p);
 
@@ -497,7 +497,7 @@ error_delete_buchung:
 }
 
 
-//--- Schließen -------------------------
+//--- SchlieÃŸen -------------------------
 void DauerbuchungenDlg::OnCancel() 
 {
 	//m_pParent->dauerbuchungenDlg = NULL;
@@ -564,7 +564,7 @@ void DauerbuchungenDlg::InitCtrls()
 			dbp->Intervall == INTERVALL_MONAT ? "monatlich" : 
 			dbp->Intervall == INTERVALL_2MONATE ? "2-monatlich" : 
 			dbp->Intervall == INTERVALL_QUARTAL ? "pro quartal" : 
-			dbp->Intervall == INTERVALL_HALBJAHR ? "halbjährlich" : "jährlich",
+			dbp->Intervall == INTERVALL_HALBJAHR ? "halbjÃ¤hrlich" : "jÃ¤hrlich",
 			dbp->BisDatum.GetDay(), dbp->BisDatum.GetMonth(), dbp->BisDatum.GetYear());
 		((CListBox *)GetDlgItem(IDC_LIST))->AddString(buf);
 		((CListBox *)GetDlgItem(IDC_LIST))->SetItemData(
@@ -588,7 +588,7 @@ void DauerbuchungenDlg::InitCtrls()
 	((CButton *)GetDlgItem(IDC_JAEHRLICH))->SetCheck(FALSE);
 	((CButton *)GetDlgItem(IDC_2MONATLICH))->SetCheck(FALSE);
 
-	strcpy(buf_window_text, "Dauerbuchungen für ");
+	strcpy(buf_window_text, "Dauerbuchungen fÃ¼r ");
 	strcat(buf_window_text, (LPCTSTR)m_pDoc->GetPathName());
 	SetWindowText(buf_window_text);
 
@@ -649,7 +649,7 @@ void DauerbuchungenDlg::OnKillfocusDatumVonJahr()
 	SetDlgItemText(IDC_DATUM_VON_JAHR, buf);
 }
 
-// ea: "E" == Einnahmen, "A" == Ausgaben für Einnahmen-Überschußrechnung
+// ea: "E" == Einnahmen, "A" == Ausgaben fÃ¼r Einnahmen-ÃœberschuÃŸrechnung
 void DauerbuchungenDlg::UpdateCombo(CString ea)
 {
 	int i;
@@ -675,7 +675,7 @@ void DauerbuchungenDlg::UpdateBeschreibungCombo(CString ea)
 {
 	BOOL bAusgaben = (ea != "E");
 
-	// Combo-Box löschen und neu aufbauen
+	// Combo-Box lÃ¶schen und neu aufbauen
 	((CComboBox *)GetDlgItem(IDC_BESCHREIBUNG))->ResetContent();
 	int i;
 	for (i = 0; i < 100; i++)
@@ -808,44 +808,44 @@ BOOL DauerbuchungenDlg::OnTtnNeedText(UINT id, NMHDR* pNMHDR, LRESULT* pResult)
 		switch (nID)
 		{
 		case IDC_Neu: pTTT->lpszText = _T("neue Dauerbuchung anlegen"); goto finish;
-		case IDC_AENDERN: pTTT->lpszText = _T("bestehende Dauerbuchung ändern -- bitte zuvor oben in der Liste die gewünschte Dauerbuchung auswählen"); goto finish;
-		case IDC_LOESCHEN: pTTT->lpszText = _T("bestehende Dauerbuchung löschen -- bitte zuvor oben in der Liste die gewünschte Dauerbuchung auswählen"); goto finish;
+		case IDC_AENDERN: pTTT->lpszText = _T("bestehende Dauerbuchung Ã¤ndern -- bitte zuvor oben in der Liste die gewÃ¼nschte Dauerbuchung auswÃ¤hlen"); goto finish;
+		case IDC_LOESCHEN: pTTT->lpszText = _T("bestehende Dauerbuchung lÃ¶schen -- bitte zuvor oben in der Liste die gewÃ¼nschte Dauerbuchung auswÃ¤hlen"); goto finish;
 		case IDC_EINNAHMEN: pTTT->lpszText = _T("zu erzeugende Buchungen sollen vom Typ 'Einnahmen' sein"); goto finish;
 		case IDC_AUSGABEN: pTTT->lpszText = _T("zu erzeugende Buchungen sollen vom Typ 'Ausgaben' sein"); goto finish;
 		case IDC_MONATLICH: pTTT->lpszText = _T("die Buchung wird monatlich erzeugt"); goto finish;
-		case IDC_QUARTALSMAESSIG: pTTT->lpszText = _T("die Buchung wird vierteljährlich erzeugt"); goto finish;
-		case IDC_HALBJAEHRLICH: pTTT->lpszText = _T("die Buchung wird halbjährlich erzeugt"); goto finish;
-		case IDC_JAEHRLICH: pTTT->lpszText = _T("die Buchung wird halbjährlich erzeugt"); goto finish;
+		case IDC_QUARTALSMAESSIG: pTTT->lpszText = _T("die Buchung wird vierteljÃ¤hrlich erzeugt"); goto finish;
+		case IDC_HALBJAEHRLICH: pTTT->lpszText = _T("die Buchung wird halbjÃ¤hrlich erzeugt"); goto finish;
+		case IDC_JAEHRLICH: pTTT->lpszText = _T("die Buchung wird halbjÃ¤hrlich erzeugt"); goto finish;
 		case IDC_2MONATLICH: pTTT->lpszText = _T("die Buchung wird alle zwei Monate erzeugt"); goto finish;
 		case IDC_DATUM_VON_STATIC:
-		case IDC_DATUM_VON_MONAT: pTTT->lpszText = _T("Monat der erste Ausführung"); goto finish;
-		case IDC_DATUM_VON_JAHR: pTTT->lpszText = _T("Jahr der erste Ausführung"); goto finish;
+		case IDC_DATUM_VON_MONAT: pTTT->lpszText = _T("Monat der erste AusfÃ¼hrung"); goto finish;
+		case IDC_DATUM_VON_JAHR: pTTT->lpszText = _T("Jahr der erste AusfÃ¼hrung"); goto finish;
 		case IDC_DATUM_BIS_STATIC: 
-		case IDC_DATUM_BIS_MONAT: pTTT->lpszText = _T("Monat der letzten Ausführung"); goto finish;
-		case IDC_DATUM_BIS_JAHR: pTTT->lpszText = _T("Jahr der letzten Ausführung"); goto finish;
+		case IDC_DATUM_BIS_MONAT: pTTT->lpszText = _T("Monat der letzten AusfÃ¼hrung"); goto finish;
+		case IDC_DATUM_BIS_JAHR: pTTT->lpszText = _T("Jahr der letzten AusfÃ¼hrung"); goto finish;
 		case IDC_DATUM_TAG_STATIC:
-		case IDC_DATUM_TAG: pTTT->lpszText = _T("Tag im Monat, die in das Buchungsdatum übernommen wird"); goto finish;
+		case IDC_DATUM_TAG: pTTT->lpszText = _T("Tag im Monat, die in das Buchungsdatum Ã¼bernommen wird"); goto finish;
 		case IDC_DATUM_AKT_STATIC:
 		case IDC_DATUM_AKT_MONAT: 
-		case IDC_DATUM_AKT_JAHR: pTTT->lpszText = _T("hiermit merkt sich das Programm, bis wann die Buchungen schon ausgeführt wurden; sollte anfangs vor dem Von-Datum liegen; durch zurücksetzen lassen sich Dauerbuchungen noch einmal ausführen"); goto finish;
+		case IDC_DATUM_AKT_JAHR: pTTT->lpszText = _T("hiermit merkt sich das Programm, bis wann die Buchungen schon ausgefÃ¼hrt wurden; sollte anfangs vor dem Von-Datum liegen; durch zurÃ¼cksetzen lassen sich Dauerbuchungen noch einmal ausfÃ¼hren"); goto finish;
 		case IDC_BETRAG_STATIC:
 		case IDC_BETRAG: pTTT->lpszText = _T("Geldbetrag, der wiederholt werden soll"); goto finish;
 		case IDC_BESCHREIBUNG_STATIC:
 		case IDC_BESCHREIBUNG: pTTT->lpszText = _T("Buchungs-Beschreibungstext, der wiederholt werden soll"); goto finish;
 		case IDC_BELEGNUMMER2_STATIC:
 		case IDC_BELEGNUMMER2: pTTT->lpszText = _T("Buchungs-Belegnummer, der wiederholt werden soll"); goto finish;
-		case IDC_PLATZHALTER_STATIC: pTTT->lpszText = _T("$J = Jahr vierstellig, $j = Jahr zweistellig, $q = Quartal, $h = Halbjahr, $2 = 2-Monats-Zeitraum, $m = Monat (1-12), $M = Monat (01-12), $+m = nächster Monat, $--M = vorletzter Monat mit führender Null"); goto finish;
+		case IDC_PLATZHALTER_STATIC: pTTT->lpszText = _T("$J = Jahr vierstellig, $j = Jahr zweistellig, $q = Quartal, $h = Halbjahr, $2 = 2-Monats-Zeitraum, $m = Monat (1-12), $M = Monat (01-12), $+m = nÃ¤chster Monat, $--M = vorletzter Monat mit fÃ¼hrender Null"); goto finish;
 		case IDC_EURECHNUNGSPOSTEN_STATIC:
-		case IDC_EURECHNUNGSPOSTEN: pTTT->lpszText = _T("E/Ü-Konto, auf das der Betrag verbucht werden soll"); goto finish;
+		case IDC_EURECHNUNGSPOSTEN: pTTT->lpszText = _T("E/Ãœ-Konto, auf das der Betrag verbucht werden soll"); goto finish;
 		case IDC_MWST_STATIC:
 		case IDC_MWST: pTTT->lpszText = _T("Mehrwertsteuersatz"); goto finish;
 		case IDC_BETRIEB_STATIC:
-		case IDC_BETRIEB: pTTT->lpszText = _T("Betrieb, für den die Buchung angelegt werden soll"); goto finish;
+		case IDC_BETRIEB: pTTT->lpszText = _T("Betrieb, fÃ¼r den die Buchung angelegt werden soll"); goto finish;
 		case IDC_BESTANDSKONTO_STATIC:
 		case IDC_BESTANDSKONTO: pTTT->lpszText = _T("Bestandskonto (z.B. 'Bank' oder 'Kasse'), auf das der Betrag verbucht werden soll"); goto finish;
 		case IDC_VERWERFEN: pTTT->lpszText = _T("eingegebene Werte nicht in einer neuen Dauerbuchung speichern"); goto finish;
 		case IDOK: pTTT->lpszText = _T("eingegebene Werte in einer neuen Dauerbuchung speichern"); goto finish;
-		case IDCANCEL: pTTT->lpszText = _T("Dialogfenster schließen"); goto finish;	
+		case IDCANCEL: pTTT->lpszText = _T("Dialogfenster schlieÃŸen"); goto finish;	
 		finish:
 			pTTT->hinst = AfxGetResourceHandle();
 			bRet = TRUE;

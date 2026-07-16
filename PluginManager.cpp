@@ -1,17 +1,17 @@
-// PluginManager.cpp : implementation file
+Ôªø// PluginManager.cpp : implementation file
 //
-// Diese Datei ist Bestandteil von EasyCash&Tax, der freien E‹R-Fibu
+// Diese Datei ist Bestandteil von EasyCash&Tax, der freien E√úR-Fibu
 //
 // Copyleft (GPLv3) 2020  Thomas Mielke
 // 
-// Dies ist freie Software; Sie d¸rfen sie unter den Bedingungen der 
+// Dies ist freie Software; Sie d√ºrfen sie unter den Bedingungen der 
 // GNU General Public License, wie von der Free Software Foundation 
-// verˆffentlicht, weiterverteilen und/oder modifizieren; entweder gem‰ﬂ 
-// Version 3 der Lizenz oder (nach Ihrer Option) jeder sp‰teren Version.
+// ver√∂ffentlicht, weiterverteilen und/oder modifizieren; entweder gem√§√ü 
+// Version 3 der Lizenz oder (nach Ihrer Option) jeder sp√§teren Version.
 //
-// Diese Software wird in der Hoffnung weiterverbreitet, dass sie n¸tzlich 
+// Diese Software wird in der Hoffnung weiterverbreitet, dass sie n√ºtzlich 
 // sein wird, jedoch OHNE IRGENDEINE GARANTIE, auch ohne die implizierte 
-// Garantie der MARKTREIFE oder der VERWENDBARKEIT F‹R EINEN BESTIMMTEN ZWECK.
+// Garantie der MARKTREIFE oder der VERWENDBARKEIT F√úR EINEN BESTIMMTEN ZWECK.
 // Mehr Details finden Sie in der GNU Lesser General Public License.
 //
 // Sie sollten eine Kopie der GNU General Public License Version 3 zusammen mit 
@@ -104,9 +104,9 @@ BOOL CPluginManager::OnInitDialog()
 	}
 	else
 	{
-		m_ToolTip.AddTool( &m_ButtonReparaturinstallation, _T("forciert das nochmalige Herunterladen und Installieren der angew‰hlen Module, falls es zuvor bei der Installation Probleme gab oder man andere Formulare installieren mˆchte"));
-		m_ToolTip.AddTool( &m_ButtonDownload, _T("nur neu angew‰hlte Plugins herunterladen -- und solche, f¸r die es Updates gibt"));
-		m_ToolTip.AddTool( &m_ButtonSchliessen, _T("Dialogfenster schlieﬂen, ohne etwas zu tun"));
+		m_ToolTip.AddTool( &m_ButtonReparaturinstallation, _T("forciert das nochmalige Herunterladen und Installieren der angew√§hlen Module, falls es zuvor bei der Installation Probleme gab oder man andere Formulare installieren m√∂chte"));
+		m_ToolTip.AddTool( &m_ButtonDownload, _T("nur neu angew√§hlte Plugins herunterladen -- und solche, f√ºr die es Updates gibt"));
+		m_ToolTip.AddTool( &m_ButtonSchliessen, _T("Dialogfenster schlie√üen, ohne etwas zu tun"));
 
 		m_ToolTip.Activate(TRUE);
 	}  
@@ -127,16 +127,16 @@ BOOL CPluginManager::OnInitDialog()
 	generische_bitmap.LoadBitmap(IDB_EASYCASH_32);
 	m_imgList.Create(32, 32, ILC_COLOR24, 0, 100);
 	m_imgList.SetBkColor(RGB(255,255,255));
-	m_imgList.Add(&generische_bitmap, RGB(255,0,255));   //  <-- funktionierte nach Umstellung auf VS9 nicht mehr, weil IDB_EASYCASH nur 26x26 groﬂ war
+	m_imgList.Add(&generische_bitmap, RGB(255,0,255));   //  <-- funktionierte nach Umstellung auf VS9 nicht mehr, weil IDB_EASYCASH nur 26x26 gro√ü war
 	//m_imgList.Add(HICONFromCBitmap(generische_bitmap));	// alter workaround
 	ASSERT(m_imgList.GetImageCount() != 0);
 
 	m_liste.InsertColumn(0, "Plugin installieren/aktualisieren", LVCFMT_LEFT, 400);
-	m_liste.InsertColumn(1, "Grˆﬂe", LVCFMT_LEFT, 70);
+	m_liste.InsertColumn(1, "Gr√∂√üe", LVCFMT_LEFT, 70);
 	m_liste.InsertColumn(2, "Aktion", LVCFMT_CENTER, 120);
 	
 	m_btnManuellerDownload.SetURL(_T("https://www.easyct.de/downloads.php?cat_id=5"));
-	m_btnManuellerDownload.SetTooltip(_T("Manchmal kann es vorkommen, dass der Plugin-Manager Plugins mit 'kein Update nˆtig' anzeigt, obwohl sie ¸berhaupt nicht installiert sind, weil z.B. die Installation abgebrochen wurde. In diesen F‰llen kann das Plugin manuell von der EC&&T-Homepage heruntergeladen und installiert werden."));
+	m_btnManuellerDownload.SetTooltip(_T("Manchmal kann es vorkommen, dass der Plugin-Manager Plugins mit 'kein Update n√∂tig' anzeigt, obwohl sie √ºberhaupt nicht installiert sind, weil z.B. die Installation abgebrochen wurde. In diesen F√§llen kann das Plugin manuell von der EC&&T-Homepage heruntergeladen und installiert werden."));
 	m_btnManuellerDownload.SizeToContent();
 
 #ifdef USEXPTHEMES
@@ -227,7 +227,7 @@ LRESULT CPluginManager::OnGetListItem(WPARAM wParam, LPARAM lParam)
 		data->m_text = m_update.GetAvailableSizeAt(item) + " kB";
 	else if (subItem == 2)
 	{
-		if (m_csaCheckedOriginal[item] == "1" && m_update.GetAvailableActionAt(item) != "kein Update nˆtig")
+		if (m_csaCheckedOriginal[item] == "1" && m_update.GetAvailableActionAt(item) != "kein Update n√∂tig")
 		{
 			data->m_text = "Update";
 			data->m_colors.m_backColor = RGB( 160, 255, 160);
@@ -242,7 +242,7 @@ LRESULT CPluginManager::OnGetListItem(WPARAM wParam, LPARAM lParam)
 		}
 	}
 
-	data->m_tooltip = "Plugin selektieren f¸r Info";
+	data->m_tooltip = "Plugin selektieren f√ºr Info";
 
 	return 0;
 }
@@ -271,13 +271,13 @@ void CPluginManager::Statusmeldung(CString &text)
 	m_status += text;
 	UpdateData(FALSE);
 
-	// ((CEdit*)GetDlgItem(IDC_STATUS))->SetSel(m_status.GetLength(), m_status.GetLength()); <-- hier kam es gelegentlich zu Abst¸rzen
+	// ((CEdit*)GetDlgItem(IDC_STATUS))->SetSel(m_status.GetLength(), m_status.GetLength()); <-- hier kam es gelegentlich zu Abst√ºrzen
 	// ((CEdit*)GetDlgItem(IDC_STATUS))->ReplaceSel((LPCSTR)text, TRUE); -- durch m_status += text; obsolet geworden
 	// Ersatzcode:
 	CWnd* pStatus = GetDlgItem(IDC_STATUS);
 	if (pStatus != NULL && ::IsWindow(pStatus->m_hWnd))	// Update 3/2024: access violation v2.51.0.1-39e4f594-855f-44cc-a0eb-e435c6baee32
 	{
-		int line = ((CEdit*)GetDlgItem(IDC_STATUS))->GetLineCount(); // <-- hier kam es immer noch zu Abst¸rzen, weil das CEdit angeblich kein Fenster war... siehe drei Zeilen zuvor
+		int line = ((CEdit*)GetDlgItem(IDC_STATUS))->GetLineCount(); // <-- hier kam es immer noch zu Abst√ºrzen, weil das CEdit angeblich kein Fenster war... siehe drei Zeilen zuvor
 		line -= 3;
 		if (line < 1) line = 1;
 		((CEdit*)GetDlgItem(IDC_STATUS))->LineScroll(line);
@@ -310,7 +310,7 @@ void CPluginManager::Check()
 		CString csText;
 		if (m_update.GetNumberMissing() && m_update.GetNumberDifferent())
 			csText.Format("Update-Informationen wurden abgerufen.\r\n\
-Es kˆnnen %d Modul(e) neu installiert und %d Modul(e) aktualisiert werden.", 
+Es k√∂nnen %d Modul(e) neu installiert und %d Modul(e) aktualisiert werden.", 
 				m_update.GetNumberMissing(), m_update.GetNumberDifferent());
 		else if (m_update.GetNumberMissing())
 		{
@@ -319,7 +319,7 @@ Es kˆnnen %d Modul(e) neu installiert und %d Modul(e) aktualisiert werden.",
 Es kann 1 Modul neu installiert werden.");
 			else
 				csText.Format("Update-Informationen wurden abgerufen.\r\n\
-Es kˆnnen %d Module neu installiert werden.", 
+Es k√∂nnen %d Module neu installiert werden.", 
 					m_update.GetNumberMissing());
 		}
 		else if (m_update.GetNumberDifferent())
@@ -330,12 +330,12 @@ Es kann 1 Modul aktualisiert werden.",
 					m_update.GetNumberDifferent());
 			else
 				csText.Format("Update-Informationen wurden abgerufen.\r\n\
-Es kˆnnen %d Module aktualisiert werden.", 
+Es k√∂nnen %d Module aktualisiert werden.", 
 					m_update.GetNumberDifferent());
 		}
 		else 
 		{
-			csText.Format("Keine Updates verf¸gbar");
+			csText.Format("Keine Updates verf√ºgbar");
 			GetDlgItem(IDOK)->EnableWindow(FALSE);
 		}
 		Statusmeldung(csText);
@@ -343,7 +343,7 @@ Es kˆnnen %d Module aktualisiert werden.",
 	else
 	{
 		Statusmeldung((CString)"Update-Informationen konnten nicht abgerufen werden.\r\n\
-Entweder stimmt etwas nicht mit der Internet-Verbindung (Firewall checken) oder der Update-Server ist vor¸bergehend \r\n\
+Entweder stimmt etwas nicht mit der Internet-Verbindung (Firewall checken) oder der Update-Server ist vor√ºbergehend \r\n\
 nicht erreichbar.");
 		GetDlgItem(IDCANCEL)->EnableWindow(TRUE);
 		return;
@@ -401,22 +401,22 @@ void CPluginManager::Download(BOOL bForce)
 		return;
 	m_bDownloadLaeuft = TRUE;
 
-	/* alte Updater-Methode mit batch file -- damit auch unter Wine lauff‰hig: eigene exe statt cmd benutzen!
+	/* alte Updater-Methode mit batch file -- damit auch unter Wine lauff√§hig: eigene exe statt cmd benutzen!
 	CTime now = CTime::GetCurrentTime();
 	CString csNow = now.Format("\\install%Y%m%d%H%M%S.bat");
 	CStdioFile batch(m_update.GetLocalDirectory() + csNow, CFile::modeCreate|CFile::modeWrite);
 
-	m_status = "Download der ausgew‰hlten Komponenten. Bitte warten...";	// Statusmeldung lˆschen
+	m_status = "Download der ausgew√§hlten Komponenten. Bitte warten...";	// Statusmeldung l√∂schen
 	UpdateData(FALSE);
 
 	int nZuInstallierendeModule = 0;
-	BOOL bRestart = TRUE;	// wenn Hauptprogramm auch update, dann Restart zum Schluss unterdr¸cken (ist bereits Option im Setup-Script)
+	BOOL bRestart = TRUE;	// wenn Hauptprogramm auch update, dann Restart zum Schluss unterdr√ºcken (ist bereits Option im Setup-Script)
 	GetDlgItem(IDOK)->EnableWindow(FALSE);
 	CWaitCursor wait;
 	int i;
 	for (i = m_update.GetNumberAvailable()-1; i >= 0 ; i--)	// Hauptprogramm ggf. als letztes starten
 	{       
-		if (m_update.GetAvailableActionAt(i) != "kein Update nˆtig" && m_csaCheckedAktuell[i] == "1")
+		if (m_update.GetAvailableActionAt(i) != "kein Update n√∂tig" && m_csaCheckedAktuell[i] == "1")
 		{
 			if (m_update.DownloadAvailable(i))
 			{
@@ -431,7 +431,7 @@ void CPluginManager::Download(BOOL bForce)
 	}
 	GetDlgItem(IDOK)->EnableWindow(TRUE);
 
-	// zum Schluss noch Befehl f¸r Neustart in das Batchfile
+	// zum Schluss noch Befehl f√ºr Neustart in das Batchfile
 	if (bRestart)
 	{
 		char module_filename[MAX_PATH] = "";
@@ -446,17 +446,17 @@ void CPluginManager::Download(BOOL bForce)
 	CString csNow = now.Format("\\install%Y%m%d%H%M%S.txt");
 	CStdioFile batch(m_update.GetLocalDirectory() + csNow, CFile::modeCreate|CFile::modeWrite);
 
-	m_status = "Download der ausgew‰hlten Komponenten. Bitte warten...";	// Statusmeldung lˆschen
+	m_status = "Download der ausgew√§hlten Komponenten. Bitte warten...";	// Statusmeldung l√∂schen
 	UpdateData(FALSE);
 
 	int nZuInstallierendeModule = 0;
-	BOOL bRestart = TRUE;	// wenn Hauptprogramm auch update, dann Restart zum Schluss unterdr¸cken (ist bereits Option im Setup-Script)
+	BOOL bRestart = TRUE;	// wenn Hauptprogramm auch update, dann Restart zum Schluss unterdr√ºcken (ist bereits Option im Setup-Script)
 	GetDlgItem(IDOK)->EnableWindow(FALSE);
 	CWaitCursor wait;
 	int i;
 	for (i = m_update.GetNumberAvailable()-1; i >= 0 ; i--)	// Hauptprogramm ggf. als letztes starten
 	{       
-		if ((m_update.GetAvailableActionAt(i) != "kein Update nˆtig" || bForce) && m_csaCheckedAktuell[i] == "1")
+		if ((m_update.GetAvailableActionAt(i) != "kein Update n√∂tig" || bForce) && m_csaCheckedAktuell[i] == "1")
 		{
 			if (m_update.DownloadAvailable(i))
 			{
@@ -471,7 +471,7 @@ void CPluginManager::Download(BOOL bForce)
 	}
 	GetDlgItem(IDOK)->EnableWindow(TRUE);
 
-	// zum Schluss noch Befehl f¸r Neustart in das Batchfile
+	// zum Schluss noch Befehl f√ºr Neustart in das Batchfile
 	if (bRestart)
 	{
 		char module_filename[MAX_PATH] = "";
@@ -495,16 +495,16 @@ void CPluginManager::Download(BOOL bForce)
 				if (CopyFile((CString)buffer + "\\ECTUpdater.exe", m_update.GetLocalDirectory() + "\\ECTUpdater.exe", FALSE))
 					ShellExecute(NULL, "open", m_update.GetLocalDirectory() + "\\ECTUpdater.exe", m_update.GetLocalDirectory() + csNow, m_update.GetLocalDirectory(), SW_MINIMIZE);
 				else
-					AfxMessageBox("Konnte das Update-Programm nicht in das tempor‰re Verzeichnis '" + m_update.GetLocalDirectory() + "' kopieren. Gehen Sie mit dem Windows-Explorer in dieses Verzeichnis und f¸hren die Setup-Dateien einzeln manuell aus. Hinweis: 'C:\\ProgramData' ist normalerweise ein verstecktes Verzeichnis, in das man nur gelangt, wenn man den Verzeichnisnamen oben in die Navigationszeile des Windows-Explorers eintippt.");
+					AfxMessageBox("Konnte das Update-Programm nicht in das tempor√§re Verzeichnis '" + m_update.GetLocalDirectory() + "' kopieren. Gehen Sie mit dem Windows-Explorer in dieses Verzeichnis und f√ºhren die Setup-Dateien einzeln manuell aus. Hinweis: 'C:\\ProgramData' ist normalerweise ein verstecktes Verzeichnis, in das man nur gelangt, wenn man den Verzeichnisnamen oben in die Navigationszeile des Windows-Explorers eintippt.");
 			}
 		}
 		else
-			AfxMessageBox("Updatevorgang wurde abgebrochen. Die heruntergeladenen Komponenten werden mit 'kein Update nˆtig' angezeigt bis ein weiteres Update der Betroffenenn Komponente(n) zur Verf¸gung steht. Wenn Sie die heruntergeladenen Komponenten sp‰ter doch noch installieren mˆchten, starten Sie '" + m_update.GetLocalDirectory() + csNow + "' oder laden sich die Installationsdateien manuell von www.easyct.de -> Downloads -> Plugins herunter.");
+			AfxMessageBox("Updatevorgang wurde abgebrochen. Die heruntergeladenen Komponenten werden mit 'kein Update n√∂tig' angezeigt bis ein weiteres Update der Betroffenenn Komponente(n) zur Verf√ºgung steht. Wenn Sie die heruntergeladenen Komponenten sp√§ter doch noch installieren m√∂chten, starten Sie '" + m_update.GetLocalDirectory() + csNow + "' oder laden sich die Installationsdateien manuell von www.easyct.de -> Downloads -> Plugins herunter.");
 
 		CDialog::OnOK();
 	}
 	else
-		AfxMessageBox("Keine Module zum Download ausgew‰hlt.");
+		AfxMessageBox("Keine Module zum Download ausgew√§hlt.");
 
 }
 

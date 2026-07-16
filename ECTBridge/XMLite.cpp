@@ -1,19 +1,19 @@
-// XMLite.cpp: implementation of the XMLite class.
+﻿// XMLite.cpp: implementation of the XMLite class.
 //
-// Diese Datei ist Bestandteil von EasyCash&Tax, der freien E�R-Fibu
+// Diese Datei ist Bestandteil von EasyCash&Tax, der freien EÜR-Fibu
 //
 // Public Domain (CPOL) 2020  Thomas Mielke
 // 
-// Urspr�nglich wurde dieser Code von Code Project �bernommen:
+// Ursprünglich wurde dieser Code von Code Project übernommen:
 // Artikel: https://www.codeproject.com/Articles/3426/XMLite-simple-XML-parser
 //
-// Dies ist public domain Software; Sie d�rfen sie unter den Bedingungen der 
+// Dies ist public domain Software; Sie dürfen sie unter den Bedingungen der 
 // Code Project Open License (CPOL) verwenden.
 // CPOL: https://www.codeproject.com/info/cpol10.aspx
 //
-// Diese Software wird in der Hoffnung weiterverbreitet, dass sie n�tzlich 
+// Diese Software wird in der Hoffnung weiterverbreitet, dass sie nützlich 
 // sein wird, jedoch OHNE IRGENDEINE GARANTIE, auch ohne die implizierte 
-// Garantie der MARKTREIFE oder der VERWENDBARKEIT F�R EINEN BESTIMMTEN ZWECK.
+// Garantie der MARKTREIFE oder der VERWENDBARKEIT FÜR EINEN BESTIMMTEN ZWECK.
 //
 // XMLite : XML Lite Parser Library
 // by bro ( Cho,Kyung Min: bro@shinbiro.com ) 2002-10-30
@@ -343,7 +343,7 @@ _tagXMLNode::~_tagXMLNode()
 //#endif
 	Close();
 // vvv
-// bei einem heap check fail hier bitte daf�r sorgen, dass alle Programmkomponenten entweder debug oder release gelinkt sind!
+// bei einem heap check fail hier bitte dafür sorgen, dass alle Programmkomponenten entweder debug oder release gelinkt sind!
 // ^^^
 }
 
@@ -947,7 +947,7 @@ AFX_EXT_API LPTSTR _tagXMLNode::Load( LPCTSTR pszXml, LPPARSEINFO pi /*= &piDefa
 					}
 				}
 				else	// Alone child Tag Loaded
-						// else �ؾ��ϴ��� ���ƾ��ϴ��� �ǽɰ���.
+						// else ÇØ¾ßÇÏ´ÂÁö ¸»¾Æ¾ßÇÏ´ÂÁö ÀÇ½É°£´Ù.
 				{
 					
 					//if( xml && this->value.IsEmpty() && *xml !=chXMLTagOpen )
@@ -1245,13 +1245,13 @@ AFX_EXT_API CString _tagXMLNode::GetXML( LPDISP_OPT opt /*= &optDefault*/ )
 }
 
 //========================================================
-// �Լ��� : GetText
-// ��  �� : ��� �ϳ��� �ؽ�Ʈ ���ڿ��� ��ȯ
-// ��  �� :
-// ���ϰ� : ��ȯ�� ���ڿ�
+// ÇÔ¼ö¸í : GetText
+// ¼³  ¸í : ³ëµå ÇÏ³ª¸¦ ÅØ½ºÆ® ¹®ÀÚ¿­·Î ¹ÝÈ¯
+// ÀÎ  ÀÚ :
+// ¸®ÅÏ°ª : º¯È¯µÈ ¹®ÀÚ¿­
 //--------------------------------------------------------
-// �ۼ���   �ۼ���                 �ۼ�����
-// �����   2004-06-15
+// ÀÛ¼ºÀÚ   ÀÛ¼ºÀÏ                 ÀÛ¼ºÀÌÀ¯
+// Á¶°æ¹Î   2004-06-15
 //========================================================
 AFX_EXT_API CString _tagXMLNode::GetText( LPDISP_OPT opt /*= &optDefault*/ )
 {

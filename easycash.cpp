@@ -1,17 +1,17 @@
-// EasyCash.cpp : Defines the class behaviors for the application.
+ï»¿// EasyCash.cpp : Defines the class behaviors for the application.
 //
-// Diese Datei ist Bestandteil von EasyCash&Tax, der freien EÜR-Fibu
+// Diese Datei ist Bestandteil von EasyCash&Tax, der freien EÃœR-Fibu
 //
 // Copyleft (GPLv3) 2020  Thomas Mielke
 // 
-// Dies ist freie Software; Sie dürfen sie unter den Bedingungen der 
+// Dies ist freie Software; Sie dÃ¼rfen sie unter den Bedingungen der 
 // GNU General Public License, wie von der Free Software Foundation 
-// veröffentlicht, weiterverteilen und/oder modifizieren; entweder gemäß 
-// Version 3 der Lizenz oder (nach Ihrer Option) jeder späteren Version.
+// verÃ¶ffentlicht, weiterverteilen und/oder modifizieren; entweder gemÃ¤ÃŸ 
+// Version 3 der Lizenz oder (nach Ihrer Option) jeder spÃ¤teren Version.
 //
-// Diese Software wird in der Hoffnung weiterverbreitet, dass sie nützlich 
+// Diese Software wird in der Hoffnung weiterverbreitet, dass sie nÃ¼tzlich 
 // sein wird, jedoch OHNE IRGENDEINE GARANTIE, auch ohne die implizierte 
-// Garantie der MARKTREIFE oder der VERWENDBARKEIT FÜR EINEN BESTIMMTEN ZWECK.
+// Garantie der MARKTREIFE oder der VERWENDBARKEIT FÃœR EINEN BESTIMMTEN ZWECK.
 // Mehr Details finden Sie in der GNU Lesser General Public License.
 //
 // Sie sollten eine Kopie der GNU General Public License Version 3 zusammen mit 
@@ -22,11 +22,11 @@
 #include <iostream>
 #include "afxadv.h"
 
-// dafür sorgen, dass eine bewusste Entscheidung getroffen wird zwischen den beiden möglichen ECT-Kernklassenimplementierungen:
+// dafÃ¼r sorgen, dass eine bewusste Entscheidung getroffen wird zwischen den beiden mÃ¶glichen ECT-Kernklassenimplementierungen:
 #if !defined(USE_ECTENGINE) && !defined(USE_ECTIFACE)
 #pragma message("")
 #pragma message("vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv")
-#pragma message("ACHTUNG: Keine ECT-Kernklassenimplementierung ausgewählt.")
+#pragma message("ACHTUNG: Keine ECT-Kernklassenimplementierung ausgewÃ¤hlt.")
 #pragma message("Bitte entweder USE_ECTENGINE oder USE_ECTIFACE definieren,")
 #pragma message("z.B. in einer Datei 'Directory.Build.props' mit dem Inhalt:")
 #pragma message("")
@@ -39,23 +39,23 @@
 #pragma message("</Project>")
 #pragma message("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^")
 #pragma message("")
-#pragma error "Keine ECT-Kernklassenimplementierung ausgewählt. Bitte entweder USE_ECTENGINE oder USE_ECTIFACE definieren."
+#pragma error "Keine ECT-Kernklassenimplementierung ausgewÃ¤hlt. Bitte entweder USE_ECTENGINE oder USE_ECTIFACE definieren."
 #endif
 #if defined(USE_ECTENGINE) && defined(USE_ECTIFACE)
 #pragma message("")
 #pragma message("vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv")
-#pragma message("ACHTUNG: Beide ECT-Kernklassenimplementierung ausgewählt.")
+#pragma message("ACHTUNG: Beide ECT-Kernklassenimplementierung ausgewÃ¤hlt.")
 #pragma message("Bitte entweder USE_ECTENGINE _oder_ USE_ECTIFACE definieren,")
-#pragma message("Evtl sind die Präprozessor-Definitionen definiertin der Datei")
+#pragma message("Evtl sind die PrÃ¤prozessor-Definitionen definiertin der Datei")
 #pragma message("'Directory.Build.props' _und_ in den Projekteinstellungen...?")
 #pragma message("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^")
 #pragma message("")
-#pragma error "Beide ECT-Kernklassenimplementierungen ausgewählt. Bitte zwische USE_ECTENGINE und USE_ECTIFACE entscheden."
+#pragma error "Beide ECT-Kernklassenimplementierungen ausgewÃ¤hlt. Bitte zwische USE_ECTENGINE und USE_ECTIFACE entscheden."
 #endif
 
 #include "EasyCash.h" 
 
-// Wählen: alte ECTIFace unmanaged Klassen oder neue ECTBridge zu ECTEngine mixed-mode Bridge-Klassen
+// WÃ¤hlen: alte ECTIFace unmanaged Klassen oder neue ECTBridge zu ECTEngine mixed-mode Bridge-Klassen
 #ifdef USE_ECTENGINE
 #include "ECTBridge\Exports.h"
 #include "ECTBridge\ViewExports.h"
@@ -154,13 +154,13 @@ int CALLBACK ECTCrashCallback(CR_CRASH_CALLBACK_INFO* pInfo)
 
 #ifdef USE_ECTENGINE
 // ----------------------------------------------------------
-// Mandanten-Auswahl im Startup-Pfad über den WPF-Dialog (ersetzt
+// Mandanten-Auswahl im Startup-Pfad Ã¼ber den WPF-Dialog (ersetzt
 // CIconAuswahlMandant in InitInstance). Gleiches Muster wie
 // CMainFrame::OnFileMandanten: Mandanten aus dem App-Profil einsammeln
-// (Lücken kompaktieren), Dialog zeigen, die (ggf. geänderte) Liste
-// IMMER zurückschreiben -- auch bei Abbruch, damit Verwaltungs-
-// Änderungen erhalten bleiben. Rückgabe: Index des gewählten Mandanten
-// (bezogen auf die zurückgeschriebene Liste) oder -1 bei Abbruch.
+// (LÃ¼cken kompaktieren), Dialog zeigen, die (ggf. geÃ¤nderte) Liste
+// IMMER zurÃ¼ckschreiben -- auch bei Abbruch, damit Verwaltungs-
+// Ã„nderungen erhalten bleiben. RÃ¼ckgabe: Index des gewÃ¤hlten Mandanten
+// (bezogen auf die zurÃ¼ckgeschriebene Liste) oder -1 bei Abbruch.
 // ----------------------------------------------------------
 static int WaehleMandantWpf(HWND hwndOwner)
 {
@@ -186,7 +186,7 @@ static int WaehleMandantWpf(HWND hwndOwner)
 		csKey.Format("Mandant%-02.2dIcon", i);
 		csIcon = theApp.GetProfileString("Mandanten", csKey, "0");
 		if (csName.IsEmpty() && csVerzeichnis.IsEmpty())
-			continue;	// Lücke überspringen
+			continue;	// LÃ¼cke Ã¼berspringen
 		nHoechsterSlot = i;
 		strncpy_s(aNamen[nAnzahl], NAME_LEN, (LPCTSTR)csName, _TRUNCATE);
 		strncpy_s(aVerzeichnisse[nAnzahl], VERZ_LEN, (LPCTSTR)csVerzeichnis, _TRUNCATE);
@@ -222,7 +222,7 @@ static int WaehleMandantWpf(HWND hwndOwner)
 			csKey.Format("Mandant%-02.2dIcon", i);
 			theApp.WriteProfileString("Mandanten", csKey, csIcon);
 		}
-		// Slots gelöschter/kompaktierter Einträge leeren
+		// Slots gelÃ¶schter/kompaktierter EintrÃ¤ge leeren
 		for (i = nAnzahlNeu; i <= nHoechsterSlot; i++)
 		{
 			CString csKey;
@@ -264,9 +264,9 @@ BOOL CEasyCashApp::InitInstance()
 	case S_FALSE:
 		AfxMessageBox("CoInitializeEx(): Die COM-Bibliothek wurde bereits in diesem Thread initialisiert."); break;
 	case RPC_E_CHANGED_MODE:
-		AfxMessageBox("CoInitializeEx(): Ein vorheriger Aufruf von CoInitializeEx hat das Parallelitätsmodell für diesen Thread als Multithread-Apartment (MTA) angegeben."); break;
+		AfxMessageBox("CoInitializeEx(): Ein vorheriger Aufruf von CoInitializeEx hat das ParallelitÃ¤tsmodell fÃ¼r diesen Thread als Multithread-Apartment (MTA) angegeben."); break;
 	case E_INVALIDARG:
-		AfxMessageBox("CoInitializeEx(): ungültiger Parameter"); break;
+		AfxMessageBox("CoInitializeEx(): ungÃ¼ltiger Parameter"); break;
 	case E_OUTOFMEMORY:
 		AfxMessageBox("CoInitializeEx(): Speicher voll"); break;
 	case E_UNEXPECTED:
@@ -277,7 +277,7 @@ BOOL CEasyCashApp::InitInstance()
 		// Die COM-Bibliothek wurde in diesem Thread erfolgreich initialisiert.
 	}
 
-	//if (!AfxOleInit())  // führte mal zu heap corruption, deshalb lieber CoInitialize()
+	//if (!AfxOleInit())  // fÃ¼hrte mal zu heap corruption, deshalb lieber CoInitialize()
 	//	DSAMessageBox(IDS_OLEINIT);
 	// Version abholen
 	HMODULE hExe = GetModuleHandle("EASYCT.EXE");
@@ -326,7 +326,7 @@ BOOL CEasyCashApp::InitInstance()
 		// Provide privacy policy URL
 		//info.pszPrivacyPolicyURL = _T("http://easyct.de/privacy.html");
 		info.dwFlags |= CR_INST_SHOW_ADDITIONAL_INFO_FIELDS;	// EMail und Beschreibung per default einblenden
-		// info.dwFlags |= CR_INST_ALLOW_ATTACH_MORE_FILES;		// weitere Anhänge erlauben
+		// info.dwFlags |= CR_INST_ALLOW_ATTACH_MORE_FILES;		// weitere AnhÃ¤nge erlauben
 
 		int nResult = crInstall(&info);
 		if(nResult!=0)
@@ -367,7 +367,7 @@ BOOL CEasyCashApp::InitInstance()
 		DWORD dw = GetFileAttributes(Windowsverzeichnis);
 		if (dw != 0xFFFFFFFF)
 		{
-			AfxMessageBox("Hinweis: EC&T wird ab v1.58 globale Daten wie die Registriernummer, Mandanten und die Position des Datenverzeichnisses nicht mehr in einer zweiten easyct.ini Datei im Windows-Verzeichnis speichern (zu unterscheinden von der easyct.ini im Datenverzeichnis), sondern in der Windows-Registrierungsdatenbank (Registry). Das hat den Grund darin, dass Windows nicht möchte, dass Programme Daten im Windows-Verzeichnis speichern, und deshalb die ini tatsächlich unter C:\\Benutzer\\<Account-Name>\\AppData\\Local\\VirtualStore\\Windows speichert, wobei es manchmal dazu kommt, dass Windows diese ini-Datei einfach 'vergisst'. Nach der Übertragung in die Registry wird die obsolete easyct.ini im Windows-Verzeichnis gelöscht. Es besteht aber im Datei-Menüpunkt unter 'Registrierungsinformation sichern' die Möglichkeit, die in der Registrierung gespeicherten Informationen als Datei auf ein externes Medium zu speichern.");
+			AfxMessageBox("Hinweis: EC&T wird ab v1.58 globale Daten wie die Registriernummer, Mandanten und die Position des Datenverzeichnisses nicht mehr in einer zweiten easyct.ini Datei im Windows-Verzeichnis speichern (zu unterscheinden von der easyct.ini im Datenverzeichnis), sondern in der Windows-Registrierungsdatenbank (Registry). Das hat den Grund darin, dass Windows nicht mÃ¶chte, dass Programme Daten im Windows-Verzeichnis speichern, und deshalb die ini tatsÃ¤chlich unter C:\\Benutzer\\<Account-Name>\\AppData\\Local\\VirtualStore\\Windows speichert, wobei es manchmal dazu kommt, dass Windows diese ini-Datei einfach 'vergisst'. Nach der Ãœbertragung in die Registry wird die obsolete easyct.ini im Windows-Verzeichnis gelÃ¶scht. Es besteht aber im Datei-MenÃ¼punkt unter 'Registrierungsinformation sichern' die MÃ¶glichkeit, die in der Registrierung gespeicherten Informationen als Datei auf ein externes Medium zu speichern.");
 
 			// ___ Master-Einstellungsdaten aus ini lesen ___
 			//
@@ -452,13 +452,13 @@ BOOL CEasyCashApp::InitInstance()
 			// ___ auf Registry umschalten zum schreiben ___
 			SetRegistryKey("Thomas Mielke Softwareentwicklung");
 			
-			// ___ checken, ob schon mal eine Übernahme in die Registry stattgefunden hat ___
+			// ___ checken, ob schon mal eine Ãœbernahme in die Registry stattgefunden hat ___
 			CString DatenverzeichnisDoppelt = GetProfileString("Allgemein", "Datenverzeichnis");
 			CString RegKeyDoppelt			= GetProfileString("Allgemein", "RegKey");
 			if (!RegKeyDoppelt.IsEmpty()) 
 				RegKeyDoppelt = " und dem Registriercode " + RegKeyDoppelt;
 
-			if (DatenverzeichnisDoppelt.IsEmpty() || AfxMessageBox("Ups! Es gibt bereits übernommene Daten in der Registry mit dem Datenverzeichnis '" + DatenverzeichnisDoppelt + "'" + RegKeyDoppelt + ". Die esayct.ini im Windows-Verzeichnis ist nach einer ersten Übernahme wieder aufgetaucht -- oder wurde gar nicht erst richtig gelöscht. Sollen die Registry-Daten wirklich noch einmal überschrieben werden? (Nicht empfohlen, wenn das schon in der Registry gespeicherte Datenverzeichnis '" + DatenverzeichnisDoppelt + "' gut aussieht gegenüber dem in 'C:\\Windows\\EasyCT.ini' angegebenen '" + Datenverzeichnis + "'.)", MB_YESNO) == IDYES)
+			if (DatenverzeichnisDoppelt.IsEmpty() || AfxMessageBox("Ups! Es gibt bereits Ã¼bernommene Daten in der Registry mit dem Datenverzeichnis '" + DatenverzeichnisDoppelt + "'" + RegKeyDoppelt + ". Die esayct.ini im Windows-Verzeichnis ist nach einer ersten Ãœbernahme wieder aufgetaucht -- oder wurde gar nicht erst richtig gelÃ¶scht. Sollen die Registry-Daten wirklich noch einmal Ã¼berschrieben werden? (Nicht empfohlen, wenn das schon in der Registry gespeicherte Datenverzeichnis '" + DatenverzeichnisDoppelt + "' gut aussieht gegenÃ¼ber dem in 'C:\\Windows\\EasyCT.ini' angegebenen '" + Datenverzeichnis + "'.)", MB_YESNO) == IDYES)
 			{
 				// ___ Master-Einstellungsdaten in Registry schreiben ___
 				//
@@ -493,9 +493,9 @@ BOOL CEasyCashApp::InitInstance()
 					}
 			}
 
-			// zum Schluss c:\Windows\easyct.ini löschen
+			// zum Schluss c:\Windows\easyct.ini lÃ¶schen
 			if (!DeleteFile(Windowsverzeichnis))
-				AfxMessageBox("Das Löschen von '" + Windowsverzeichnis + "' schlug fehl. Bitte diese Datei manuell löschen, da sonst keine Änderungen etwa an Mandanten oder dem Datenverzeichnispfad möglich sind. Ggf. sind dafür Administrator-Privilegien nötig.");
+				AfxMessageBox("Das LÃ¶schen von '" + Windowsverzeichnis + "' schlug fehl. Bitte diese Datei manuell lÃ¶schen, da sonst keine Ã„nderungen etwa an Mandanten oder dem Datenverzeichnispfad mÃ¶glich sind. Ggf. sind dafÃ¼r Administrator-Privilegien nÃ¶tig.");
 
 		}
 		else
@@ -504,7 +504,7 @@ BOOL CEasyCashApp::InitInstance()
 	
 	LoadStdProfileSettings(20);  // Load standard INI file options (including MRU)
 	if (m_pRecentFileList)
-	{	// MRU file list nur mit im Datenverzeichnis befindlichen Dateien füllen
+	{	// MRU file list nur mit im Datenverzeichnis befindlichen Dateien fÃ¼llen
 		CString Datenverzeichnis = GetProfileString("Allgemein", "Datenverzeichnis");
 		if (!Datenverzeichnis.IsEmpty())
 		{
@@ -545,7 +545,7 @@ BOOL CEasyCashApp::InitInstance()
 //		LoadStdProfileSettings(4);  // Load standard INI file options (including MRU)
 //	}
 //	else
-	{	// Mandantenmodus: Spezialbehandlung in CMainFrame und CEasyCashView: Alle .eca-Dateien aus dem Mandantenverzeichnis ins Menü einbauen
+	{	// Mandantenmodus: Spezialbehandlung in CMainFrame und CEasyCashView: Alle .eca-Dateien aus dem Mandantenverzeichnis ins MenÃ¼ einbauen
 //		LoadStdProfileSettings(0);  // Load standard INI file options (including MRU)
 	}
 
@@ -598,8 +598,8 @@ BOOL CEasyCashApp::InitInstance()
 
 	if (m_lpCmdLine[0] == '\0')
 	{
-		// Mandanten auswählen, wenn vorhanden --> Datenverzeichnis setzen
-		// Dies ist nötig, wenn kein Parameter übergeben wurde, aus dem auf das Datenverzeichnis geschlossen werden kann
+		// Mandanten auswÃ¤hlen, wenn vorhanden --> Datenverzeichnis setzen
+		// Dies ist nÃ¶tig, wenn kein Parameter Ã¼bergeben wurde, aus dem auf das Datenverzeichnis geschlossen werden kann
 		CString csKey;
 		if (!Mandant0Existiert.IsEmpty())
 		{
@@ -663,7 +663,7 @@ BOOL CEasyCashApp::InitInstance()
 		CString csKey, csDatenverzeichnis;
 		if (!Mandant0Existiert.IsEmpty())
 		{
-			// weil es einen Dateinamen als Parameter gibt, können wir versuchen das Datenverzeichnis daraus abzuleiten
+			// weil es einen Dateinamen als Parameter gibt, kÃ¶nnen wir versuchen das Datenverzeichnis daraus abzuleiten
 			int nPathsMatching = 0;
 			int nFirstPathMatching = -1;
 			CString csFilePath = cmdInfo.m_strFileName;
@@ -688,10 +688,10 @@ BOOL CEasyCashApp::InitInstance()
 				
 			bool bNichtMandantModus = false;  // true, wenn der letzte Mandant im Dialog geloescht wurde
 			if (nPathsMatching != 1)
-			{	// wenn keiner oder mehrere Mandantenpfade mit dem der Datei übereinstimmten, doch Auswahldialog öffnen
+			{	// wenn keiner oder mehrere Mandantenpfade mit dem der Datei Ã¼bereinstimmten, doch Auswahldialog Ã¶ffnen
 #ifdef USE_ECTENGINE
-				// WPF-Mandantenauswahl; der gewählte Index wird auch für
-				// SetMandant unten übernommen (das Original rief SetMandant
+				// WPF-Mandantenauswahl; der gewÃ¤hlte Index wird auch fÃ¼r
+				// SetMandant unten Ã¼bernommen (das Original rief SetMandant
 				// hier mit nFirstPathMatching == -1 auf)
 				int nGewaehlt = WaehleMandantWpf(m_pMainWnd->GetSafeHwnd());
 				if (nGewaehlt == -1) return FALSE;
@@ -719,7 +719,7 @@ BOOL CEasyCashApp::InitInstance()
 			{
 				csKey.Format("Mandant%-02.2dName", nFirstPathMatching);
 				CString csMandantName = theApp.GetProfileString("Mandanten", csKey, "");
-				csInitalStatusText = "Für Datei " + cmdInfo.m_strFileName + " wurde implizit Mandant '" + csMandantName + "' ausgewählt.";
+				csInitalStatusText = "FÃ¼r Datei " + cmdInfo.m_strFileName + " wurde implizit Mandant '" + csMandantName + "' ausgewÃ¤hlt.";
 				csKey.Format("Mandant%-02.2dDatenverzeichnis", nFirstPathMatching);
 			}
 
@@ -766,14 +766,14 @@ BOOL CEasyCashApp::InitInstance()
 		// AddToRecentFileList-Override, fehlende Datei in der Existenzpruefung oben.
 		e->Delete();
 		CString csHinweis;
-		csHinweis  = "EasyCash & Tax konnte die gewählte Datei bzw. den Mandanten nicht öffnen:\n\n";
+		csHinweis  = "EasyCash & Tax konnte die gewÃ¤hlte Datei bzw. den Mandanten nicht Ã¶ffnen:\n\n";
 		csHinweis += cmdInfo.m_strFileName + "\n\n";
-		csHinweis += "Mögliche Ursachen:\n\n";
-		csHinweis += "- Die Datei wurde verschoben, umbenannt oder gelöscht.\n";
-		csHinweis += "- Das Datenverzeichnis ist derzeit nicht erreichbar (z. B. Netzlaufwerk oder externer Datenträger).\n";
-		csHinweis += "- Die Datei ist beschädigt oder hat ein unerwartetes Format.\n";
-		csHinweis += "- Der Pfad enthält Umlaute oder Sonderzeichen und für EasyCT.exe ist ein Kompatibilitäts-Modus (z. B. \"Modus mit reduzierten Farben\") aktiv.\n\n";
-		csHinweis += "Sie können EasyCash & Tax normal weiter verwenden und die Datei über Menü -> Datei -> Öffnen erneut auswählen.";
+		csHinweis += "MÃ¶gliche Ursachen:\n\n";
+		csHinweis += "- Die Datei wurde verschoben, umbenannt oder gelÃ¶scht.\n";
+		csHinweis += "- Das Datenverzeichnis ist derzeit nicht erreichbar (z. B. Netzlaufwerk oder externer DatentrÃ¤ger).\n";
+		csHinweis += "- Die Datei ist beschÃ¤digt oder hat ein unerwartetes Format.\n";
+		csHinweis += "- Der Pfad enthÃ¤lt Umlaute oder Sonderzeichen und fÃ¼r EasyCT.exe ist ein KompatibilitÃ¤ts-Modus (z. B. \"Modus mit reduzierten Farben\") aktiv.\n\n";
+		csHinweis += "Sie kÃ¶nnen EasyCash & Tax normal weiter verwenden und die Datei Ã¼ber MenÃ¼ -> Datei -> Ã–ffnen erneut auswÃ¤hlen.";
 		AfxMessageBox(csHinweis, MB_ICONEXCLAMATION | MB_OK);
 		cmdInfo.m_strFileName.Empty();
 	}
@@ -839,7 +839,7 @@ void CEasyCashApp::ParseCommandLine(CCommandLineInfo& rCmdInfo)
 		LPCTSTR pszParam = __targv[i];
 		if (!strncmp(pszParam, "/P=", 3))
 		{
-			// bei Programmstart als Parameter angegebenes Plugin öffnen
+			// bei Programmstart als Parameter angegebenes Plugin Ã¶ffnen
 			m_csStartupPlugin = pszParam+3;
 		}
 	}
@@ -858,7 +858,7 @@ int CEasyCashApp::ExitInstance()
 	
 	AtlAxWinTerm();
 
-	CoUninitialize();  // kann bei AfxOleInit() weggelassen werden: wird dann automatisch erledigt. AfxOleInit() führte aber zu heap corruptions
+	CoUninitialize();  // kann bei AfxOleInit() weggelassen werden: wird dann automatisch erledigt. AfxOleInit() fÃ¼hrte aber zu heap corruptions
 
 #if defined(NDEBUG)
 	// Uninstall crash reporting
@@ -879,7 +879,7 @@ void CEasyCashApp::RegistrierungsinformationenSichern(char *DateinameParam)
 		strcpy(Dateiname, DateinameParam);
 	else
 	{
-		if (!GetIniFileName(Dateiname, sizeof(Dateiname))) { AfxMessageBox("Konnte Konfigurationsdatei EasyCT.ini nicht öffnen"); return; }
+		if (!GetIniFileName(Dateiname, sizeof(Dateiname))) { AfxMessageBox("Konnte Konfigurationsdatei EasyCT.ini nicht Ã¶ffnen"); return; }
 		char *cp;
 		if (cp = strrchr(Dateiname, '\\'))
 		{
@@ -1004,7 +1004,7 @@ void CEasyCashApp::RegistrierungsinformationenSichern(char *DateinameParam)
 	if (!DateinameParam)
 	{
 		CString csMsg;
-		csMsg.Format("Es wurden %d Registrierungseinträge in '%s' geschrieben.", nCount, Dateiname);
+		csMsg.Format("Es wurden %d RegistrierungseintrÃ¤ge in '%s' geschrieben.", nCount, Dateiname);
 		AfxMessageBox(csMsg);
 	}
 }
@@ -1086,7 +1086,7 @@ void CAboutDlg::OnErnst()
 
 void CAboutDlg::OnStaticDblClk() 
 {
-	if(AfxMessageBox("ACHTUNG: Du hast jetzt eine versteckte Funktion gefunden, um den Crash-Reporter bewusst auszulösen. Dies ist nur für Testzwecke. Bitte nur auf Anweisung eines Entwicklers auslösen. Möchtest Du das Programm hiermit wirklich bewusst zum Absturz bringen, um den Crash-Reporter auszulösen?", MB_OKCANCEL) == IDOK)
+	if(AfxMessageBox("ACHTUNG: Du hast jetzt eine versteckte Funktion gefunden, um den Crash-Reporter bewusst auszulÃ¶sen. Dies ist nur fÃ¼r Testzwecke. Bitte nur auf Anweisung eines Entwicklers auslÃ¶sen. MÃ¶chtest Du das Programm hiermit wirklich bewusst zum Absturz bringen, um den Crash-Reporter auszulÃ¶sen?", MB_OKCANCEL) == IDOK)
 	{
 		WORD *w = (WORD*)0xBAADF00D;
 		*w = 0xFEED;
@@ -1127,7 +1127,7 @@ void CAboutDlg::OnRegister()
 		}
 
 		char reg_string[200];
-		strcpy(reg_string, "Registriert für ");
+		strcpy(reg_string, "Registriert fÃ¼r ");
 		strcat(reg_string, reg_name);
 		SetDlgItemText(IDC_REG_STRING, reg_string);
 	}
@@ -1155,7 +1155,7 @@ BOOL CAboutDlg::OnInitDialog()
 	else
 		sprintf(buf, "EasyCash&Tax %s.%s.%s build %s", (LPCTSTR)verStrParts[0], (LPCTSTR)verStrParts[1], (LPCTSTR)verStrParts[2], (LPCTSTR)verStrParts[3]);
 	SetDlgItemText(IDC_VERSION, buf);
-	strcpy(s, "Registriert für ");
+	strcpy(s, "Registriert fÃ¼r ");
 	strcat(s, reg_name);
 	SetDlgItemText(IDC_REG_STRING, s);
 	
@@ -1170,7 +1170,7 @@ void CAboutDlg::OnKontaktEmail()
 	if (n <= 32)
 	{
 		AfxMessageBox("Es gab ein kleines Problem mit dem E-Mail Programm auf diesem Rechner. \
-Die Kontakt-Email konnte nicht geöffnet werden. Bitte sende sie manuell.", MB_ICONSTOP);
+Die Kontakt-Email konnte nicht geÃ¶ffnet werden. Bitte sende sie manuell.", MB_ICONSTOP);
 	}
 }
 
@@ -1180,11 +1180,11 @@ void CAboutDlg::OnKontaktRegistriercode()
 	if (n <= 32)
 	{
 		AfxMessageBox("Es gab ein kleines Problem mit dem E-Mail Programm auf diesem Rechner. \
-Die Registriercode-Anforderung konnte nicht geöffnet werden. Bitte sende sie manuell.", MB_ICONSTOP);
+Die Registriercode-Anforderung konnte nicht geÃ¶ffnet werden. Bitte sende sie manuell.", MB_ICONSTOP);
 	}
 	else
 	{
-		AfxMessageBox("Die Registrierung sollte jetzt im E-Mail-Programm geöffnet worden sein. (Wenn nicht, bitte das Mail-Programm manuell starten und eine E-Mail mit Betreff 'EasyCash-Registrierung' an thomas@mielke.software senden.) Nach dem Absenden sollte der Code in wenigen Tagen eintreffen.", MB_ICONINFORMATION);
+		AfxMessageBox("Die Registrierung sollte jetzt im E-Mail-Programm geÃ¶ffnet worden sein. (Wenn nicht, bitte das Mail-Programm manuell starten und eine E-Mail mit Betreff 'EasyCash-Registrierung' an thomas@mielke.software senden.) Nach dem Absenden sollte der Code in wenigen Tagen eintreffen.", MB_ICONINFORMATION);
 
 		GetDlgItem(IDC_KONTAKT_REGISTRIERCODE)->EnableWindow(FALSE);
 	}
@@ -1311,8 +1311,8 @@ void CEasyCashApp::OnFileOpen()
 	char szPathName[500], IniFileName[500];
 	GetIniFileName(IniFileName, sizeof(IniFileName));
 
-	// Immer das Daten- bzw. Mandantenverzeichnis vorauswählen (Verzeichnis
-	// der easyct.ini), NICHT die zuletzt geöffnete Datei -- die kann in
+	// Immer das Daten- bzw. Mandantenverzeichnis vorauswÃ¤hlen (Verzeichnis
+	// der easyct.ini), NICHT die zuletzt geÃ¶ffnete Datei -- die kann in
 	// einem fremden Verzeichnis liegen (z.B. dem eines anderen Mandanten).
 	// Als Namensvorschlag dient die Jahresdatei des aktuellen Jahres.
 	*szPathName = '\0';
@@ -1349,7 +1349,7 @@ void CEasyCashApp::OnFileOpen()
 		{
 			if (nBackslashPos != nBackslashPos2 ||
 				csPathName.Left(nBackslashPos) != csPathName2.Left(nBackslashPos2))
-				AfxMessageBox("Achtung: Die zu öffnende Datei befindet sich nicht im korrekten Datenverzeichnis für den Mandanten. Das kann zu Problemen führen, wenn z.B. der Kontenrahmen ein anderer ist wie der, mit dem die Buchungsdatei ursprünglich entstanden ist.");
+				AfxMessageBox("Achtung: Die zu Ã¶ffnende Datei befindet sich nicht im korrekten Datenverzeichnis fÃ¼r den Mandanten. Das kann zu Problemen fÃ¼hren, wenn z.B. der Kontenrahmen ein anderer ist wie der, mit dem die Buchungsdatei ursprÃ¼nglich entstanden ist.");
 		}
 	}
 }
@@ -1371,20 +1371,20 @@ BOOL CEasyCashApp::ReplaceRecentFileList(CStringArray& csaFileList)
 	CString Mandant0Existiert = theApp.GetProfileString("Mandanten", "Mandant00Datenverzeichnis", "");
 	if (Mandant0Existiert.IsEmpty())
 	{
-		// Überprüfen, ob m_pRecentFileList initialisiert ist
+		// ÃœberprÃ¼fen, ob m_pRecentFileList initialisiert ist
 		if (m_pRecentFileList == nullptr)
 		{
 			return FALSE;
 		}
 
-		// MRU-Liste löschen
+		// MRU-Liste lÃ¶schen
 		int nRFL = m_pRecentFileList->GetSize();
 		while (nRFL > 0)
 		{
 			m_pRecentFileList->Remove(--nRFL);
 		}
 
-		// Neue Dateien zur MRU-Liste hinzufügen
+		// Neue Dateien zur MRU-Liste hinzufÃ¼gen
 		for (int i = 0; i < csaFileList.GetSize(); ++i)
 		{
 			AddToRecentFileList(csaFileList[i]);
@@ -1447,7 +1447,7 @@ HINSTANCE hEasyCTXP_DLL = NULL;
 // to open a folder picker dialogdepending on OS version
 // returns "" if Cancel was pressed or something else went wrong
 // Note: This is just multi-byte code and not yet unicode compatibel!
-BOOL SelectFolder(LPSTR sFolder, LPCTSTR sTitle = "Verzeichnis auswählen")
+BOOL SelectFolder(LPSTR sFolder, LPCTSTR sTitle = "Verzeichnis auswÃ¤hlen")
 {
 	/* TODO: in Zukunft CFolderPickerDialog benutzen:
 	CFolderPickerDialog dlg("C:\\users\\crossover\\Documents", OFN_FILEMUSTEXIST | OFN_ENABLESIZING, AfxGetMainWnd(), sizeof(OPENFILENAME));
@@ -1462,7 +1462,7 @@ BOOL SelectFolder(LPSTR sFolder, LPCTSTR sTitle = "Verzeichnis auswählen")
 	else if (ret != IDCANCEL)
 		{
 			CString csError;
-			csError.Format("Verzeichnisauswahldialog gab unerwarteter Weise '%d' als Status-Wert und '%s' als Verzeichnis zurück.", ret, (LPCTSTR)dlg.GetPathName());
+			csError.Format("Verzeichnisauswahldialog gab unerwarteter Weise '%d' als Status-Wert und '%s' als Verzeichnis zurÃ¼ck.", ret, (LPCTSTR)dlg.GetPathName());
 			AfxMessageBox(csError);
 		}
 	return FALSE;
@@ -1475,7 +1475,7 @@ BOOL SelectFolder(LPSTR sFolder, LPCTSTR sTitle = "Verzeichnis auswählen")
 	{
 		if (!(hEasyCTXP_DLL = LoadLibrary("EasyCTXP.dll")))
 		{
-			AfxMessageBox("Fehler beim Öffnen des Verzeichnisauswahldialogs. EasyCTXP.dll ist evtl. nicht installiert.");
+			AfxMessageBox("Fehler beim Ã–ffnen des Verzeichnisauswahldialogs. EasyCTXP.dll ist evtl. nicht installiert.");
 			return FALSE;
 		}
 		else
@@ -1488,7 +1488,7 @@ BOOL SelectFolder(LPSTR sFolder, LPCTSTR sTitle = "Verzeichnis auswählen")
 			}
 			else
 			{
-				AfxMessageBox("Fehler beim Öffnen des Verzeichnisauswahldialogs. (SelectFolder() Einsprungpunkt nicht gefunden.) EasyCTXP.dll ist evtl. nicht richtig installiert.");
+				AfxMessageBox("Fehler beim Ã–ffnen des Verzeichnisauswahldialogs. (SelectFolder() Einsprungpunkt nicht gefunden.) EasyCTXP.dll ist evtl. nicht richtig installiert.");
 				return FALSE;
 			}
 		}	

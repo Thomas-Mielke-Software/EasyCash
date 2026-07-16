@@ -1,17 +1,17 @@
-// EasyCashDoc.cpp : implementation of the CEasyCashDoc class
+ï»¿// EasyCashDoc.cpp : implementation of the CEasyCashDoc class
 //
-// Diese Datei ist Bestandteil von EasyCash&Tax, der freien EÜR-Fibu
+// Diese Datei ist Bestandteil von EasyCash&Tax, der freien EÃœR-Fibu
 //
 // Copyleft (GPLv3) 2020  Thomas Mielke
 // 
-// Dies ist freie Software; Sie dürfen sie unter den Bedingungen der 
+// Dies ist freie Software; Sie dÃ¼rfen sie unter den Bedingungen der 
 // GNU General Public License, wie von der Free Software Foundation 
-// veröffentlicht, weiterverteilen und/oder modifizieren; entweder gemäß 
-// Version 3 der Lizenz oder (nach Ihrer Option) jeder späteren Version.
+// verÃ¶ffentlicht, weiterverteilen und/oder modifizieren; entweder gemÃ¤ÃŸ 
+// Version 3 der Lizenz oder (nach Ihrer Option) jeder spÃ¤teren Version.
 //
-// Diese Software wird in der Hoffnung weiterverbreitet, dass sie nützlich 
+// Diese Software wird in der Hoffnung weiterverbreitet, dass sie nÃ¼tzlich 
 // sein wird, jedoch OHNE IRGENDEINE GARANTIE, auch ohne die implizierte 
-// Garantie der MARKTREIFE oder der VERWENDBARKEIT FÜR EINEN BESTIMMTEN ZWECK.
+// Garantie der MARKTREIFE oder der VERWENDBARKEIT FÃœR EINEN BESTIMMTEN ZWECK.
 // Mehr Details finden Sie in der GNU Lesser General Public License.
 //
 // Sie sollten eine Kopie der GNU General Public License Version 3 zusammen mit 
@@ -142,7 +142,7 @@ long CBetrag::GetNetto()
 			netto -= 5;
 		netto /= 10;
 	}
-	else // bei zu großen Zahlen lieber double-float rechnen!
+	else // bei zu groÃŸen Zahlen lieber double-float rechnen!
 	{
 		double temp = (double)netto * 100.0;
 		temp /= (100.0 + ((double)MWSt / 1000.0));
@@ -216,7 +216,7 @@ void CBetrag::GetMWSt(char *s)
 		*cp = ',';
 }
 
-// TRUE zurück wenn Währungskürzel gefunden und Konvertierung durchgeführt wurde
+// TRUE zurÃ¼ck wenn WÃ¤hrungskÃ¼rzel gefunden und Konvertierung durchgefÃ¼hrt wurde
 BOOL CBetrag::ConvertToEuro(CString wkz)
 {
 	int i;
@@ -371,7 +371,7 @@ void CBuchung::Serialize(CArchive& ar)
 			Betrieb = "";
 		}
 		
-		// next natürlich in allen Versionen
+		// next natÃ¼rlich in allen Versionen
 		ar >> next;
 	}
 }
@@ -398,7 +398,7 @@ CBuchung& CBuchung::operator=(const CBuchung& buchungSrc)
 	return *this;
 }
 
-// wie CBBetrag::GetNetto, berücksichtigt aber AfAs und gibt lediglich den aktuellen Abschreibungswert für diese zurück
+// wie CBBetrag::GetNetto, berÃ¼cksichtigt aber AfAs und gibt lediglich den aktuellen Abschreibungswert fÃ¼r diese zurÃ¼ck
 long CBuchung::GetBuchungsjahrNetto(CEasyCashDoc *pDoc)
 {
 	int angewandte_Abschreibungsgenauigkeit;
@@ -413,19 +413,19 @@ long CBuchung::GetBuchungsjahrNetto(CEasyCashDoc *pDoc)
 }
 
 
-// gibt die jährliche Abschreibung für das aktuelle Buchungsjahr zurück, berücksichtigt dabei die Abschreibungsgenauigkeit
+// gibt die jÃ¤hrliche Abschreibung fÃ¼r das aktuelle Buchungsjahr zurÃ¼ck, berÃ¼cksichtigt dabei die Abschreibungsgenauigkeit
 long CBuchung::GetBuchungsjahrNetto(int angewandte_Abschreibungsgenauigkeit)
 {
 	// Netto-Betrag berechnen
 	long netto = GetNetto();
 
-	// keine AfA? dann einfach netto zurückgeben
+	// keine AfA? dann einfach netto zurÃ¼ckgeben
 	if (AbschreibungJahre <= 1)
 		return netto;
 	
 	if (AbschreibungDegressiv)
 	{
-		// Spezialfall: 75%ige AfA im Anschaffungsjahr bei Elektroautos bei gleichzeitier ganzjähriger AfA
+		// Spezialfall: 75%ige AfA im Anschaffungsjahr bei Elektroautos bei gleichzeitier ganzjÃ¤hriger AfA
 		if (AbschreibungSatz == 75 && AbschreibungGenauigkeit == GANZJAHRES_AFA)
 		{   
 			static int eautoAfa[] = { 75, 10, 5, 5, 3, 2 };  // diese Raten beziehen sich auf den Netto-Anschaffungswert, nicht auf den Restwert
@@ -436,7 +436,7 @@ long CBuchung::GetBuchungsjahrNetto(int angewandte_Abschreibungsgenauigkeit)
 		}
 		else
 		{
-			// im letzten Jahr den Restwert zurückgeben (ist ein hypothetischer Fall: in der Praxis wäre schon längst auf lineare AfA umgestellt worden)
+			// im letzten Jahr den Restwert zurÃ¼ckgeben (ist ein hypothetischer Fall: in der Praxis wÃ¤re schon lÃ¤ngst auf lineare AfA umgestellt worden)
 			if (AbschreibungNr == AbschreibungJahre)
 			{
 				if (angewandte_Abschreibungsgenauigkeit == GANZJAHRES_AFA ||
@@ -446,18 +446,18 @@ long CBuchung::GetBuchungsjahrNetto(int angewandte_Abschreibungsgenauigkeit)
 					return AbschreibungRestwert;
 				}
 			}
-			else // im ersten ggf. verminderte Jahresrate Jahr berücksichtigen
+			else // im ersten ggf. verminderte Jahresrate Jahr berÃ¼cksichtigen
 				if (AbschreibungNr == 1)
 					return RundenUndDurch10Dividieren(BuchungsjahrNettoAbschreibungsgenauigkeitBeruecksichtigen(10 * AbschreibungRestwert * AbschreibungSatz / 100, angewandte_Abschreibungsgenauigkeit));
-			if (AbschreibungNr > AbschreibungJahre)  // ggf. extra Jahr bei nicht ganzjähriger AfA-Genauigkeit
-				return AbschreibungRestwert;		 // hier in jedem Fall den Restwert zurückgeben
+			if (AbschreibungNr > AbschreibungJahre)  // ggf. extra Jahr bei nicht ganzjÃ¤hriger AfA-Genauigkeit
+				return AbschreibungRestwert;		 // hier in jedem Fall den Restwert zurÃ¼ckgeben
 			// ansonsten in den Jahren dazwischen immer die volle Jahresrate nehmen:
 			return RundenUndDurch10Dividieren(10 * AbschreibungRestwert * AbschreibungSatz / 100);
 		}
 	}
 	else // lineare AfA
 	{	
-		// alte Methode zur Berechnung der linearen AfA -- geht so seit Einführung der degressiven 
+		// alte Methode zur Berechnung der linearen AfA -- geht so seit EinfÃ¼hrung der degressiven 
 		// AfA nicht mehr: jetzt geht nur noch strikt von den Restwerten auszugehen
 		// jaehrliche_rate = netto / AbschreibungJahre
 		//				  + (netto % AbschreibungJahre >= AbschreibungNr ? 1 : 0);	// Rundungsfehler auf die ersten Jahre aufteilen!
@@ -487,8 +487,8 @@ long CBuchung::GetBuchungsjahrNetto(int angewandte_Abschreibungsgenauigkeit)
 			break;
 		}
 
-		if (AbschreibungNr > AbschreibungJahre)  // ggf. extra Jahr bei nicht ganzjähriger AfA-Genauigkeit
-			return AbschreibungRestwert;		 // hier in jedem Fall den Restwert zurückgeben
+		if (AbschreibungNr > AbschreibungJahre)  // ggf. extra Jahr bei nicht ganzjÃ¤hriger AfA-Genauigkeit
+			return AbschreibungRestwert;		 // hier in jedem Fall den Restwert zurÃ¼ckgeben
 		else
 		{	// jetzt verbleibende_monate auf den Restwert herunterbrechen und die Jahresrate bestimmen
 			long jaehrliche_rate = RundenUndDurch10Dividieren(10 * AbschreibungRestwert * 12 / verbleibende_monate);
@@ -499,7 +499,7 @@ long CBuchung::GetBuchungsjahrNetto(int angewandte_Abschreibungsgenauigkeit)
 	}
 }
 
-// hier wird die Abschreibungsgenauigkeit berücksichtigt: im ersten Jahr entsprechend der Einstellungen, im letzten Jahr entsprechend der verbleibenden Monate
+// hier wird die Abschreibungsgenauigkeit berÃ¼cksichtigt: im ersten Jahr entsprechend der Einstellungen, im letzten Jahr entsprechend der verbleibenden Monate
 long CBuchung::BuchungsjahrNettoAbschreibungsgenauigkeitBeruecksichtigen(long jaehrliche_rate, int angewandte_Abschreibungsgenauigkeit)
 {
 	if (AbschreibungNr == 1)
@@ -522,7 +522,7 @@ long CBuchung::BuchungsjahrNettoAbschreibungsgenauigkeitBeruecksichtigen(long ja
 		return jaehrliche_rate;
 	}
 	else // if (AbschreibungNr > AbschreibungJahre)
-	{	 // letztes Jahr (bei nicht ganzjähriger AfA): hier muss die Anzahl der verbleibenden Monate berücksichtigt werden
+	{	 // letztes Jahr (bei nicht ganzjÃ¤hriger AfA): hier muss die Anzahl der verbleibenden Monate berÃ¼cksichtigt werden
 		switch (angewandte_Abschreibungsgenauigkeit)
 		{
 		case GANZJAHRES_AFA:
@@ -539,7 +539,7 @@ long CBuchung::BuchungsjahrNettoAbschreibungsgenauigkeitBeruecksichtigen(long ja
 	}
 }
 
-// führt Festkommarundung aus, braucht einen mit 10 multiplizierten Centbetrag als Parameter
+// fÃ¼hrt Festkommarundung aus, braucht einen mit 10 multiplizierten Centbetrag als Parameter
 long CBuchung::RundenUndDurch10Dividieren(long lBetragInCentMalTausend)
 {
 	if (lBetragInCentMalTausend >= 0) // halber Pfennig zum Runden
@@ -867,7 +867,7 @@ BOOL CEasyCashDoc::OnOpenDocument(LPCTSTR lpszPathName)
 		}
 		return FALSE;
 
-habe ich besser eigene Menüpunkte für gemacht...
+habe ich besser eigene MenÃ¼punkte fÃ¼r gemacht...
 	}
 */
 	CheckWiederherstellungsdatei(lpszDatenverzeichnis);
@@ -899,7 +899,7 @@ habe ich besser eigene Menüpunkte für gemacht...
 		{
 			if (nBackslashPos != nBackslashPos2 ||
 				csPathName.Left(nBackslashPos) != csPathName2.Left(nBackslashPos2))
-				AfxMessageBox("Achtung: Die zu öffnende Datei befindet sich nicht im korrekten Datenverzeichnis für den Mandanten. Das kann zu Problemen führen, wenn z.B. der Kontenrahmen ein anderer ist wie der, mit dem die Buchungsdatei ursprünglich entstanden ist.");
+				AfxMessageBox("Achtung: Die zu Ã¶ffnende Datei befindet sich nicht im korrekten Datenverzeichnis fÃ¼r den Mandanten. Das kann zu Problemen fÃ¼hren, wenn z.B. der Kontenrahmen ein anderer ist wie der, mit dem die Buchungsdatei ursprÃ¼nglich entstanden ist.");
 		}
 	}
 		
@@ -915,7 +915,7 @@ CEasyCashDoc* CEasyCashDoc::Jahreswechsel(int land = 0)
 		pNewDoc = (CEasyCashDoc*)pTemplate->CreateNewDocument();
 	else
 	{
-		pNewDoc = new CEasyCashDoc();  // fallback für unit tests im headless-Betrieb
+		pNewDoc = new CEasyCashDoc();  // fallback fÃ¼r unit tests im headless-Betrieb
 		bHeadlessMode = TRUE;
 	}
 	if (!pNewDoc) return NULL;
@@ -925,15 +925,15 @@ CEasyCashDoc* CEasyCashDoc::Jahreswechsel(int land = 0)
 	pNewDoc->Buchungszaehler = Buchungszaehler;
 	pNewDoc->Einnahmen = NULL;
 	pNewDoc->nJahr = nJahr + 1;
-	// AfA ab 2004 in BRD ändern
+	// AfA ab 2004 in BRD Ã¤ndern
 
 	pNewDoc->csWaehrung = csWaehrung;
 	pNewDoc->csUrspruenglicheWaehrung = csUrspruenglicheWaehrung;
 	pNewDoc->Erweiterung = Erweiterung;
 
-	// Backup-Nachfrage-Felder vom Vorjahr übernehmen, sonst bleibt der
-	// Engine-State auf DateTime.MinValue stehen und ToNativeTime() würde
-	// beim Speichern eine ungültige CTime konstruieren (ATLASSERT atltime.h).
+	// Backup-Nachfrage-Felder vom Vorjahr Ã¼bernehmen, sonst bleibt der
+	// Engine-State auf DateTime.MinValue stehen und ToNativeTime() wÃ¼rde
+	// beim Speichern eine ungÃ¼ltige CTime konstruieren (ATLASSERT atltime.h).
 	pNewDoc->nNachfrageIntervall = nNachfrageIntervall;
 	pNewDoc->ctNachfrageTermin   = ctNachfrageTermin;
 
@@ -946,7 +946,7 @@ CEasyCashDoc* CEasyCashDoc::Jahreswechsel(int land = 0)
 	{
 		if (pB->AbschreibungJahre > 1 && pB->AbschreibungRestwert > pB->GetBuchungsjahrNetto(this))
 		{
-			// Buchung kopieren und für neues Jahr anpassen
+			// Buchung kopieren und fÃ¼r neues Jahr anpassen
 			*ppB = new CBuchung;
 			**ppB = *pB;
 			if ((*ppB)->Belegnummer.GetLength() && (*ppB)->Belegnummer.Mid((*ppB)->Belegnummer.GetLength() - 5, 3) != "/20")
@@ -956,16 +956,16 @@ CEasyCashDoc* CEasyCashDoc::Jahreswechsel(int land = 0)
 			(*ppB)->Datum = CTime((*ppB)->Datum.GetYear() + 1, (*ppB)->Datum.GetMonth(), (*ppB)->Datum.GetDay(), 0, 0, 0);
 			(*ppB)->next = NULL;
 
-			// testen, ob degressive AfA im neuen Jahr noch höher ist als lineare AfA (außer bei Elektroauto-AfAs)
+			// testen, ob degressive AfA im neuen Jahr noch hÃ¶her ist als lineare AfA (auÃŸer bei Elektroauto-AfAs)
 			if ((*ppB)->AbschreibungDegressiv && ((*ppB)->AbschreibungSatz != 75 || (*ppB)->AbschreibungGenauigkeit != GANZJAHRES_AFA))
 			{
 				int afaRateDegressiv = (*ppB)->GetBuchungsjahrNetto(this);
-				(*ppB)->AbschreibungDegressiv = FALSE;  // temporär für den Test auf lineare AfA umschalten
+				(*ppB)->AbschreibungDegressiv = FALSE;  // temporÃ¤r fÃ¼r den Test auf lineare AfA umschalten
 				int afaRateLinear = (*ppB)->GetBuchungsjahrNetto(this);
-				if (afaRateDegressiv < afaRateLinear)		// degressive AfA ist nicht höher als lineare AfA? Dann auf lineare AfA wechseln.					
+				if (afaRateDegressiv < afaRateLinear)		// degressive AfA ist nicht hÃ¶her als lineare AfA? Dann auf lineare AfA wechseln.					
 				{
 					if (!bHeadlessMode)
-						AfxMessageBox("Hinweis: Die degressive Abschreibung der Buchung '" + (*ppB)->Beschreibung + "' ist im neuen Jahr nicht mehr höher als die lineare Abschreibung, daher wird zum 1. Januar automatisch auf lineare Abschreibung gewechselt.");
+						AfxMessageBox("Hinweis: Die degressive Abschreibung der Buchung '" + (*ppB)->Beschreibung + "' ist im neuen Jahr nicht mehr hÃ¶her als die lineare Abschreibung, daher wird zum 1. Januar automatisch auf lineare Abschreibung gewechselt.");
 				}
 				else
 					(*ppB)->AbschreibungDegressiv = TRUE;	// ansonsten: degressive AfA bleibt bestehen
@@ -1086,20 +1086,20 @@ void CEasyCashDoc::Serialize(CArchive& ar)
 	}
 	else
 	{
-		Version = -1; // ungültige Datei
+		Version = -1; // ungÃ¼ltige Datei
 		char buf[5];
 		DWORD file_version;
 
 		ar >> buf[0] >> buf[1] >> buf[2] >> buf[3];
 		if (strncmp(buf, magic, 4))
 		{
-			AfxGetMainWnd()->MessageBox("Fehler beim Öffnen: Kein EasyCash-Dokument!",NULL,MB_ICONSTOP);
+			AfxGetMainWnd()->MessageBox("Fehler beim Ã–ffnen: Kein EasyCash-Dokument!",NULL,MB_ICONSTOP);
 			return;
 		}
 		ar >> (DWORD)file_version;
 		if (file_version > VERSION)
 		{
-			AfxGetMainWnd()->MessageBox("Fehler beim Öffnen: Diese Version des Programms ist zu veraltet um das EasyCash-Dokument einzulesen. Die Installation einer aktuellen Version des Programms ist erforderlich!",NULL,MB_ICONSTOP);
+			AfxGetMainWnd()->MessageBox("Fehler beim Ã–ffnen: Diese Version des Programms ist zu veraltet um das EasyCash-Dokument einzulesen. Die Installation einer aktuellen Version des Programms ist erforderlich!",NULL,MB_ICONSTOP);
 			return;
 		}
 		BOOL e, a, d;
@@ -1133,9 +1133,9 @@ void CEasyCashDoc::Serialize(CArchive& ar)
 				{
 					if (e->IsKindOf(RUNTIME_CLASS(CArchiveException)) && ((CArchiveException*)e)->m_cause == 5)
 					{
-						AfxMessageBox("ACHTUNG: Die Datei wurde beschädigt und konnte nicht wieder korrekt geladen werden. Die Einnahmen-Buchungen waren ok aber die Ausgaben-Buchungen konnten nicht eingelesen werden. Außerdem sind die Dauerbuchungen verloren. Es wäre besser mit einer Version aus einer Datensicherung weiterzuarbeiten. Es folgen ein paar Dialoge zur manuellen Rekonstruktion einzelner verlorener Daten.");
+						AfxMessageBox("ACHTUNG: Die Datei wurde beschÃ¤digt und konnte nicht wieder korrekt geladen werden. Die Einnahmen-Buchungen waren ok aber die Ausgaben-Buchungen konnten nicht eingelesen werden. AuÃŸerdem sind die Dauerbuchungen verloren. Es wÃ¤re besser mit einer Version aus einer Datensicherung weiterzuarbeiten. Es folgen ein paar Dialoge zur manuellen Rekonstruktion einzelner verlorener Daten.");
 						file_version = 3;						
-						SetModifiedFlag("Beschädigte Datei wurde teilweise rekonstruiert.");
+						SetModifiedFlag("BeschÃ¤digte Datei wurde teilweise rekonstruiert.");
 						goto recover;
 					}
 					else
@@ -1177,10 +1177,10 @@ void CEasyCashDoc::Serialize(CArchive& ar)
 			nLaufendeBuchungsnummerFuerAusgaben  = 1;
 
 			AfxMessageBox("Hinweis - Es gibt einige Neuerungen im Programm: \r\n\
-1. Beim Buchen kann durch Eintippen einer Zweistelligen Buchungspostennummer in das Feld 'Beschreibung'  ein vorab vergebener Buchungstext abgerufen werden. Optional kann er auch über den Knopf am rechten Rand des Feldes 'Beschreibung' von einer Liste ausgewählt werden. Die Buchungstexte können unter Menü->Ansicht->Einstellungen geändert werden.\r\n\
-2. Es können im Buchungstextfeld laufende Buchungsnummern eingeblendet werden. Dazu unter Menü->Ansicht->Einstellungen das entsprechende Funktionsfeld ankreuzen.\r\n\
-3. Über das Datei-Menü können jetzt Buchungsdaten im CSV-Format (das z.B. MS-Excel versteht) exportiert werden.\r\n\
-4. Die Konfigurationsdatei EasyCash.ini wird gleich aus dem Windows-Verzeichnis ins Programmverzeichnis von Easy C&T kopiert. Indem Easy C&T in verschiedenen Unterverzeichnissen installiert wird, ist so eine Quasi-Mandantenfähigkeit gegeben.\r\n\
+1. Beim Buchen kann durch Eintippen einer Zweistelligen Buchungspostennummer in das Feld 'Beschreibung'  ein vorab vergebener Buchungstext abgerufen werden. Optional kann er auch Ã¼ber den Knopf am rechten Rand des Feldes 'Beschreibung' von einer Liste ausgewÃ¤hlt werden. Die Buchungstexte kÃ¶nnen unter MenÃ¼->Ansicht->Einstellungen geÃ¤ndert werden.\r\n\
+2. Es kÃ¶nnen im Buchungstextfeld laufende Buchungsnummern eingeblendet werden. Dazu unter MenÃ¼->Ansicht->Einstellungen das entsprechende Funktionsfeld ankreuzen.\r\n\
+3. Ãœber das Datei-MenÃ¼ kÃ¶nnen jetzt Buchungsdaten im CSV-Format (das z.B. MS-Excel versteht) exportiert werden.\r\n\
+4. Die Konfigurationsdatei EasyCash.ini wird gleich aus dem Windows-Verzeichnis ins Programmverzeichnis von Easy C&T kopiert. Indem Easy C&T in verschiedenen Unterverzeichnissen installiert wird, ist so eine Quasi-MandantenfÃ¤higkeit gegeben.\r\n\
 5. Ein Fehler beim Druck des Buchungsjournals ist behoben.", MB_ICONINFORMATION);
 
 			// Windows Verzeichnis herausfinden
@@ -1225,7 +1225,7 @@ void CEasyCashDoc::Serialize(CArchive& ar)
 				}
 			}
 
-			SetModifiedFlag("Änderungen im Buchungsdateiformat durchgeführt");
+			SetModifiedFlag("Ã„nderungen im Buchungsdateiformat durchgefÃ¼hrt");
 		}
 		else
 		{
@@ -1270,7 +1270,7 @@ recover:
 		if (file_version < 6)
 		{
 			csWaehrung = "EUR";
-			AfxMessageBox("Antike .eca-Buchungsdatei: Für die Währung wurde Euro angenommen.");
+			AfxMessageBox("Antike .eca-Buchungsdatei: FÃ¼r die WÃ¤hrung wurde Euro angenommen.");
 		}
 		else
 		{
@@ -1350,7 +1350,7 @@ void CEasyCashDoc::Dump(CDumpContext& dc) const
 /////////////////////////////////////////////////////////////////////////////
 // Wine helper
 
-BOOL DatenverzeichnisCheck(char* pfad1, char* pfad2)  // gibt true zurück, wenn Pfade übereinstimmen
+BOOL DatenverzeichnisCheck(char* pfad1, char* pfad2)  // gibt true zurÃ¼ck, wenn Pfade Ã¼bereinstimmen
 {
 	HKEY hKey;
 	if (RegOpenKey(HKEY_LOCAL_MACHINE, "Software\\Wine", &hKey) == ERROR_SUCCESS)
@@ -1364,7 +1364,7 @@ BOOL DatenverzeichnisCheck(char* pfad1, char* pfad2)  // gibt true zurück, wenn 
 		if (get_unix_fn == NULL)
 			return TRUE;
 
-		// vergleicht reale Wine-Pfade statt möglicherweise verlinktes Userverzeichnis (Y:)
+		// vergleicht reale Wine-Pfade statt mÃ¶glicherweise verlinktes Userverzeichnis (Y:)
 		WCHAR wcPfad1[1000];
 		WCHAR wcPfad2[1000];
 		ZeroMemory(wcPfad1, sizeof(wcPfad1));
@@ -1482,7 +1482,7 @@ void CEasyCashDoc::OnFileSaveAs()
 void CEasyCashDoc::OnFileSave() 
 {
 	char lpszPathName[500], IniFileName[500];	
-	/*nicht länger Speichern im Datenverzeichnis forcieren:
+	/*nicht lÃ¤nger Speichern im Datenverzeichnis forcieren:
 	char lpszDatenverzeichnis[500];
 	GetIniFileName(lpszDatenverzeichnis, 500);
 	char *cp1 = strrchr(lpszDatenverzeichnis, '\\');
@@ -1533,13 +1533,13 @@ void CEasyCashDoc::CheckWiederherstellungsdatei(LPCTSTR dateipfad)
 		CString csMessage;
 		if (wiederherstellungsdateiZuletztModifiziert > dateiZuletztModifiziert)
 		{
-			csMessage.Format("Es wurde eine Wiederherstellungsdatei '%s' gefunden, die neuer ist als die zu öffnende Buchungsdatei '%s'. "
-				"Die Wiederherstellungsdatei enthält normalerweise letzte Änderungen, die noch nicht in der Buchungsdatei gespeichert wurden, "
+			csMessage.Format("Es wurde eine Wiederherstellungsdatei '%s' gefunden, die neuer ist als die zu Ã¶ffnende Buchungsdatei '%s'. "
+				"Die Wiederherstellungsdatei enthÃ¤lt normalerweise letzte Ã„nderungen, die noch nicht in der Buchungsdatei gespeichert wurden, "
 				"weil EC&T unerwartet beendet wurde, z.B. bei einem Stromausfall oder Systemabsturz. "
-				"Soll die ältere Buchungsdatei jetzt mit der neueren Wiederherstellungsdatei ersetzt werden?", pfadWiederherstellungsdatei, dateipfad);
+				"Soll die Ã¤ltere Buchungsdatei jetzt mit der neueren Wiederherstellungsdatei ersetzt werden?", pfadWiederherstellungsdatei, dateipfad);
 			if (AfxMessageBox(csMessage, MB_YESNO) == IDYES)
 			{
-				DeleteFile((CString)dateipfad + "_kann_geloescht_werden");  // ggf. uraltes Backup löschen
+				DeleteFile((CString)dateipfad + "_kann_geloescht_werden");  // ggf. uraltes Backup lÃ¶schen
 				if (MoveFile(dateipfad, (CString)dateipfad + "_kann_geloescht_werden"))
 				{
 					csMessage = "Die Datei '" + (CString)dateipfad + "' wurde in '" + (CString)dateipfad + "_kann_geloescht_werden' umbenannt.\r\n";
@@ -1549,28 +1549,28 @@ void CEasyCashDoc::CheckWiederherstellungsdatei(LPCTSTR dateipfad)
 					{
 						csMessage += "Die Datei '" + (CString)pfadWiederherstellungsdatei + "' konnte nicht umbenannt werden. Bitte versuche die .~eca-Datei manuell im Windows-Explorer in eine .eca-Datei umzubenennen.\r\n";
 						if (MoveFile((CString)dateipfad + "_kann_geloescht_werden", dateipfad))
-							csMessage += "Die Änderung des Dateinamens in '" + (CString)dateipfad + "_kann_geloescht_werden' wurde rückgängig gemacht.\r\n";
+							csMessage += "Die Ã„nderung des Dateinamens in '" + (CString)dateipfad + "_kann_geloescht_werden' wurde rÃ¼ckgÃ¤ngig gemacht.\r\n";
 						else
-							csMessage += "Die Änderung des Dateinamens in '" + (CString)dateipfad + "_kann_geloescht_werden' konnte nicht rückgängig gemacht werden, sorry.\r\n";
+							csMessage += "Die Ã„nderung des Dateinamens in '" + (CString)dateipfad + "_kann_geloescht_werden' konnte nicht rÃ¼ckgÃ¤ngig gemacht werden, sorry.\r\n";
 					}
 				}
 				else
-					csMessage = "Die Datei '" + (CString)dateipfad + "' konnte nicht umbenannt werden, um sie mit der Wiederherstellungs-Version zu ersetzten. Bitte versuche die jetzige .eca-Datei manuell im Windows-Explorer umzubenennen und danach die .~eca-Datei in eine .eca-Datei. Die alte Datei ohne die letzten Änderungen wird jetzt gleich geöffnet.\r\n";
+					csMessage = "Die Datei '" + (CString)dateipfad + "' konnte nicht umbenannt werden, um sie mit der Wiederherstellungs-Version zu ersetzten. Bitte versuche die jetzige .eca-Datei manuell im Windows-Explorer umzubenennen und danach die .~eca-Datei in eine .eca-Datei. Die alte Datei ohne die letzten Ã„nderungen wird jetzt gleich geÃ¶ffnet.\r\n";
 
 				AfxMessageBox(csMessage);
 			}
 			else
-				if (AfxMessageBox("Ok, soll die Wiederherstellungsdatei dann jetzt gelöscht werden, damit diese Meldung beim nächsten Öffnen nicht mehr erscheint?", MB_YESNO) == IDYES)
+				if (AfxMessageBox("Ok, soll die Wiederherstellungsdatei dann jetzt gelÃ¶scht werden, damit diese Meldung beim nÃ¤chsten Ã–ffnen nicht mehr erscheint?", MB_YESNO) == IDYES)
 					DeleteFile(pfadWiederherstellungsdatei);
 		}
-		else if (wiederherstellungsdateiZuletztModifiziert == dateiZuletztModifiziert)  // Dateien sind mutmaßlich identisch
+		else if (wiederherstellungsdateiZuletztModifiziert == dateiZuletztModifiziert)  // Dateien sind mutmaÃŸlich identisch
 			DeleteFile(pfadWiederherstellungsdatei);
 		else // if (wiederherstellungsdateiZuletztModifiziert < dateiZuletztModifiziert)
 		{
-			csMessage.Format("Es wurde eine Wiederherstellungsdatei '%s' gefunden, die älter ist als die zu öffnende Buchungsdatei '%s'. "
-				"(Die Wiederherstellungsdatei enthält normalerweise letzte Änderungen, die noch nicht in der Buchungsdatei gespeichert wurden, "
-				"weil EC&&T unerwartet beendet wurde, z.B. bei einem Stromausfall oder Systemabsturz.) Die mutmaßlich neuere Buchungsdatei wird gleich geöffnet. "
-				"Soll die wahrscheinlich veraltete Wiederherstellungsdatei jetzt gelöscht werden, damit diese Meldung beim nächsten Öffnen nicht mehr erscheint?", pfadWiederherstellungsdatei, dateipfad);
+			csMessage.Format("Es wurde eine Wiederherstellungsdatei '%s' gefunden, die Ã¤lter ist als die zu Ã¶ffnende Buchungsdatei '%s'. "
+				"(Die Wiederherstellungsdatei enthÃ¤lt normalerweise letzte Ã„nderungen, die noch nicht in der Buchungsdatei gespeichert wurden, "
+				"weil EC&&T unerwartet beendet wurde, z.B. bei einem Stromausfall oder Systemabsturz.) Die mutmaÃŸlich neuere Buchungsdatei wird gleich geÃ¶ffnet. "
+				"Soll die wahrscheinlich veraltete Wiederherstellungsdatei jetzt gelÃ¶scht werden, damit diese Meldung beim nÃ¤chsten Ã–ffnen nicht mehr erscheint?", pfadWiederherstellungsdatei, dateipfad);
 			if (AfxMessageBox(csMessage, MB_YESNO) == IDYES)
 				DeleteFile(pfadWiederherstellungsdatei);
 		}
@@ -1687,7 +1687,7 @@ BOOL CDocument::DoSave(LPCTSTR lpszPathName, BOOL bReplace)
 			if (!DatenverzeichnisCheck(lpszDatenverzeichnis, newName.GetBuffer(0)))
 			{
 				newName.ReleaseBuffer();
-				AfxMessageBox((CString)"Hinweis: Die Datei wurde nicht im gewählten Datenverzeichnis '" + lpszDatenverzeichnis + "' gespeichert, wo EasyCash&Tax sie erwartet. So etwas ist ok, wenn man etwas ausprobieren und mit einer Kopie arbeiten möchte, aber die offizielle Buchungsdatei sollte auf jeden Fall im Datenverzeichnis gespeichert werden, z.B. um bei der eingebauten Datensicherung berücksichtigt zu werden. Wenn dies die offiziellen Buchführungsdaten sind, wird dringend empfohlen sie von '" + newName + " nach '" + lpszDatenverzeichnis + "' zu verschieben. Eventuell ist aber auch nur das Datenverzeichnis falsch gesetzt. In diesem Fall kann das mit 'Datenverzeichnis neu wählen' im Appliaktionsmenü (der runde Knopf links oben) nachgeholt werden.");
+				AfxMessageBox((CString)"Hinweis: Die Datei wurde nicht im gewÃ¤hlten Datenverzeichnis '" + lpszDatenverzeichnis + "' gespeichert, wo EasyCash&Tax sie erwartet. So etwas ist ok, wenn man etwas ausprobieren und mit einer Kopie arbeiten mÃ¶chte, aber die offizielle Buchungsdatei sollte auf jeden Fall im Datenverzeichnis gespeichert werden, z.B. um bei der eingebauten Datensicherung berÃ¼cksichtigt zu werden. Wenn dies die offiziellen BuchfÃ¼hrungsdaten sind, wird dringend empfohlen sie von '" + newName + " nach '" + lpszDatenverzeichnis + "' zu verschieben. Eventuell ist aber auch nur das Datenverzeichnis falsch gesetzt. In diesem Fall kann das mit 'Datenverzeichnis neu wÃ¤hlen' im AppliaktionsmenÃ¼ (der runde Knopf links oben) nachgeholt werden.");
 			}
 			else
 			{
@@ -1719,7 +1719,7 @@ void CEasyCashDoc::SortSingle(CBuchung **bpp_base, CBuchung **bpp_einzufuegen)
 	bpp = bpp_base;
 	while (*bpp)
 	{
-		if (*bpp != *bpp_einzufuegen) // wenn sich das Datum des einzufügenden Elements geändert hat, muss es bei der Berechnung der Position ignoriert werden!
+		if (*bpp != *bpp_einzufuegen) // wenn sich das Datum des einzufÃ¼genden Elements geÃ¤ndert hat, muss es bei der Berechnung der Position ignoriert werden!
 		{	
 			if ((*bpp)->Datum == (*bpp_einzufuegen)->Datum)
 			{
@@ -1753,7 +1753,7 @@ void CEasyCashDoc::SortSingle(CBuchung **bpp_base, CBuchung **bpp_einzufuegen)
 		bptemp = *bpp_einzufuegen;	// zwischenspeichern
 		*bpp_einzufuegen = (*bpp_einzufuegen)->next;	// aus der Kette genommen
 		bptemp->next = (*bpp_hier_einfuegen);	// und wieder 
-		*bpp_hier_einfuegen = bptemp;					// einfügen
+		*bpp_hier_einfuegen = bptemp;					// einfÃ¼gen
 	}
 	else
 		SortSpecial(bpp_base);	// irgendwas ist schief gelaufen, machen wir dann doch lieber 'old style'
@@ -1863,7 +1863,7 @@ debugfile.Write(pivot_gesamt, pivot_gesamt.GetLength());*/
 		while (i <= j) // solange i an j nicht vorbeigelaufen ist 
 		{
 
-			// Suche von links ein Element, welches größer als das Pivotelement ist
+			// Suche von links ein Element, welches grÃ¶ÃŸer als das Pivotelement ist
 			while (TRUE)
 			{
 				iVal.Format("%04d-%02d-%02d %s %s", ((CBuchung *)bparray[i])->Datum.GetYear(), ((CBuchung *)bparray[i])->Datum.GetMonth(), ((CBuchung *)bparray[i])->Datum.GetDay(), (LPCTSTR)((CBuchung *)bparray[i])->Belegnummer, (LPCTSTR)((CBuchung *)bparray[i])->Beschreibung);
@@ -1894,7 +1894,7 @@ debugfile.Write(autausch, autausch.GetLength());*/
 			}		
 		}		
 
-		// Tausche Pivotelement (daten[rechts]) mit neuer endgültiger Position (daten[i])
+		// Tausche Pivotelement (daten[rechts]) mit neuer endgÃ¼ltiger Position (daten[i])
 
 /*		if (((CBuchung *)bparray[i])->Datum > pivot || ((CBuchung *)bparray[i])->Datum == pivot && ((CBuchung *)bparray[i])->Belegnummer + (CString)" " + ((CBuchung *)bparray[i])->Beschreibung >= pivot_plus)
 		{
@@ -1953,30 +1953,30 @@ void CEasyCashDoc::InkrementBuchungszaehler()
 		char buf[5000];
 
 		sprintf(buf, 
-"Es sind jetzt schon %d Buchungen mit diesem Programm durchgeführt worden. \
-Um die Weiterentwicklung dieser Software zu fördern besteht die Möglichkeit, sich \
+"Es sind jetzt schon %d Buchungen mit diesem Programm durchgefÃ¼hrt worden. \
+Um die Weiterentwicklung dieser Software zu fÃ¶rdern besteht die MÃ¶glichkeit, sich \
 registrieren zu lassen und einen Registriercode zu erhalten. \
 Das hat zwar erst einmal nur den Effekt, dass nicht bei jeder 20sten Buchung diese \
 Meldung erscheint. Aber langfristig motiviert es den Autor, die Software weiter zu entwickeln und zu pflegen, \
-wenn er weiß, dass sein Programm von vielen Menschen benutzt wird. Außerdem kann er besser schlafen, weil er \
-für den Fall, dass er trotz aller Sorgfalt mal einen gravierenden Fehler einbaut, schnell alle Nutzer darüber \
+wenn er weiÃŸ, dass sein Programm von vielen Menschen benutzt wird. AuÃŸerdem kann er besser schlafen, weil er \
+fÃ¼r den Fall, dass er trotz aller Sorgfalt mal einen gravierenden Fehler einbaut, schnell alle Nutzer darÃ¼ber \
 informieren kann, sich ein Update zu installieren, der den Fehler behebt.\n\n\
-Wer darüber hinaus seine Wertschätzung zum Ausdruck bringen möchte, kann eine Spenden-Registrierung durchführen \
-(Vorschlag: 15€ wer die Software ganz ok findet; eine Rechnung zum Absetzen als Betriebsausgabe ist obligatorisch). \
-Überweisung mit E-Mail-Adresse im Verwendungszweck + Bestätigungs-Mail an thomas@mielke.software (Bankverbindung: \
+Wer darÃ¼ber hinaus seine WertschÃ¤tzung zum Ausdruck bringen mÃ¶chte, kann eine Spenden-Registrierung durchfÃ¼hren \
+(Vorschlag: 15â‚¬ wer die Software ganz ok findet; eine Rechnung zum Absetzen als Betriebsausgabe ist obligatorisch). \
+Ãœberweisung mit E-Mail-Adresse im Verwendungszweck + BestÃ¤tigungs-Mail an thomas@mielke.software (Bankverbindung: \
 DAB, BLZ 70120400, Konto 7406319017, SWIFT-BIC: DABBDEMMXXX, IBAN: DE54701204007406319017 -- \
-drücke einfach einen der Spenden-Knöpfe im Optionen-Bereich des Hauptmenüs). \
-Die Registrierung gilt natürlich auch für alle Folgeversionen. Mehr Informationen zum Registrierungsprozess gibt es unter 'Info'.\n\n\
+drÃ¼cke einfach einen der Spenden-KnÃ¶pfe im Optionen-Bereich des HauptmenÃ¼s). \
+Die Registrierung gilt natÃ¼rlich auch fÃ¼r alle Folgeversionen. Mehr Informationen zum Registrierungsprozess gibt es unter 'Info'.\n\n\
 (Hinweis: Wer bereits einen Registriercode hat und die Software auf einem neuen Computer installiert hat, kann ihn unter 'Info -> \
-Registrierung' eingeben -- oder wer einmal die 'Registrierungsinformationen sichern' Funktion ausgeführt und eine .ectreg-Datei \
+Registrierung' eingeben -- oder wer einmal die 'Registrierungsinformationen sichern' Funktion ausgefÃ¼hrt und eine .ectreg-Datei \
 hat kann mit 'Registrierungsinformationen wiederherstellen' die Software auch ohne Code-Eingabe wieder in den 'Registriert'-Zustand versetzen.)", Buchungszaehler);
 
 		AfxMessageBox(buf, MB_ICONINFORMATION|MB_OK);
 	}
 }
 
-// Es gibt zwei Listen für Buchungen (CBuchung) in CEasyCashDocument:
-// eine für Einnahmen und eine für Ausgaben
+// Es gibt zwei Listen fÃ¼r Buchungen (CBuchung) in CEasyCashDocument:
+// eine fÃ¼r Einnahmen und eine fÃ¼r Ausgaben
 int CEasyCashDoc::EinnahmenSumme(int MonatsFilter, LPCTSTR KontoFilter)
 {
 	int einnahmen_summe = 0;
@@ -1997,7 +1997,7 @@ int CEasyCashDoc::EinnahmenSumme(int MonatsFilter, LPCTSTR KontoFilter)
 			}
 		}
 		if (*KontoFilter && p->Konto == KontoFilter) continue;
-		if (!p->Konto.IsEmpty() && p->Konto[0] == '/') continue;	// keine neutralen Konten mitzählen
+		if (!p->Konto.IsEmpty() && p->Konto[0] == '/') continue;	// keine neutralen Konten mitzÃ¤hlen
 		einnahmen_summe += p->Betrag;
 	}
 
@@ -2024,7 +2024,7 @@ int CEasyCashDoc::AusgabenSumme(int MonatsFilter, LPCTSTR KontoFilter)
 			}
 		}
 		if (*KontoFilter && p->Konto == KontoFilter) continue;
-		if (!p->Konto.IsEmpty() && p->Konto[0] == '/') continue;	// keine neutralen Konten mitzählen
+		if (!p->Konto.IsEmpty() && p->Konto[0] == '/') continue;	// keine neutralen Konten mitzÃ¤hlen
 		if (p->AbschreibungJahre > 1)
 		{
 			// Abschreibung berechnen
@@ -2040,7 +2040,7 @@ int CEasyCashDoc::AusgabenSumme(int MonatsFilter, LPCTSTR KontoFilter)
 			ausgaben_summe += netto + mwst_betrag;
 		}
 		else
-//			if (p->AbschreibungNr == 1) // nur rein monetäre Umsätze berücksichtigen, ohne Anlagevermögen
+//			if (p->AbschreibungNr == 1) // nur rein monetÃ¤re UmsÃ¤tze berÃ¼cksichtigen, ohne AnlagevermÃ¶gen
 			ausgaben_summe += p->Betrag;
 	}
 
@@ -2067,7 +2067,7 @@ int CEasyCashDoc::EinnahmenSummeNetto(int MonatsFilter, LPCTSTR KontoFilter)
 			}
 		}
 		if (*KontoFilter && p->Konto == KontoFilter) continue;
-		if (!p->Konto.IsEmpty() && p->Konto[0] == '/') continue;	// keine neutralen Konten mitzählen
+		if (!p->Konto.IsEmpty() && p->Konto[0] == '/') continue;	// keine neutralen Konten mitzÃ¤hlen
 		einnahmen_summe += p->GetNetto();
 	}
 
@@ -2094,7 +2094,7 @@ int CEasyCashDoc::AusgabenSummeNetto(int MonatsFilter, LPCTSTR KontoFilter)
 			}
 		}
 		if (*KontoFilter && p->Konto == KontoFilter) continue;
-		if (!p->Konto.IsEmpty() && p->Konto[0] == '/') continue;	// keine neutralen Konten mitzählen
+		if (!p->Konto.IsEmpty() && p->Konto[0] == '/') continue;	// keine neutralen Konten mitzÃ¤hlen
 		ausgaben_summe += p->GetBuchungsjahrNetto(this);
 	}
 
@@ -2121,7 +2121,7 @@ XDoc *CEasyCashDoc::GetFormular(CString &csFormularname)
 	return pxmldoc;
 }
 
-// benötigt für GetFormularwertXXX Funktionen
+// benÃ¶tigt fÃ¼r GetFormularwertXXX Funktionen
 void CEasyCashDoc::ReadKontenCache()
 {
 	m_csEinnahmenKonten.RemoveAll();
@@ -2275,10 +2275,10 @@ CString CEasyCashDoc::GetFormularwertByIndex(XDoc *pFormular, int nIndex, LPCSTR
 	child = felder->GetChild(nIndex);
 	int nID = atoi(child->GetAttrValue("id"));	
 
-	m_bFeldWertGueltig[nID] = TRUE; // um deadlocks durch rekursionen zu vermeiden, jetzt schon gültig machen!
+	m_bFeldWertGueltig[nID] = TRUE; // um deadlocks durch rekursionen zu vermeiden, jetzt schon gÃ¼ltig machen!
 	CTime von_datum, bis_datum;
 
-	// m_nZeitraum: 1-12 Monat; 13-16 Quartal, alles andere: jährlich
+	// m_nZeitraum: 1-12 Monat; 13-16 Quartal, alles andere: jÃ¤hrlich
 	if (m_nZeitraum < 1 || m_nZeitraum > 16) bFilterNachVoranmeldungszeitraum = FALSE;	// valider Voranmeldungszeitraum?
 	if (bFilterNachVoranmeldungszeitraum)
 	{
@@ -2316,7 +2316,7 @@ CString CEasyCashDoc::GetFormularwertByIndex(XDoc *pFormular, int nIndex, LPCSTR
 		// entspr. Feldtyp behandeln:				
 		if (!stricmp(child->GetAttrValue("typ"), "Einnahmen"))
 		{
-			// aus der Konten-Oberkategorie alle verknüpften Konten auflisten
+			// aus der Konten-Oberkategorie alle verknÃ¼pften Konten auflisten
 			CStringArray csaVerknuepfteKonten;
 			LPCTSTR attr_name = xml->GetAttrValue("name");
 			int j;
@@ -2328,12 +2328,12 @@ CString CEasyCashDoc::GetFormularwertByIndex(XDoc *pFormular, int nIndex, LPCSTR
 
 			// Statustext erzeugen
 			if (csaVerknuepfteKonten.GetSize() == 0)
-				m_csaFeldStatustext[nID].Format("Es gibt keine Einnahmenkonten, die mit Feld %d (%s) verknüpft sind. Das kann unter Einstellungen->E/Ü-Konten geändert werden.", nID, attr_name);
+				m_csaFeldStatustext[nID].Format("Es gibt keine Einnahmenkonten, die mit Feld %d (%s) verknÃ¼pft sind. Das kann unter Einstellungen->E/Ãœ-Konten geÃ¤ndert werden.", nID, attr_name);
 			else if (csaVerknuepfteKonten.GetSize() == 1)
-				m_csaFeldStatustext[nID].Format("%s Feld %d ist mit dem Konto '%s' verknüpft.", child->GetChildValue("erweiterung"), nID, (LPCTSTR)csaVerknuepfteKonten[0]);
+				m_csaFeldStatustext[nID].Format("%s Feld %d ist mit dem Konto '%s' verknÃ¼pft.", child->GetChildValue("erweiterung"), nID, (LPCTSTR)csaVerknuepfteKonten[0]);
 			else
 			{
-				m_csaFeldStatustext[nID].Format("%s Feld %d ist verknüpft mit den Konten ", child->GetChildValue("erweiterung"), nID);
+				m_csaFeldStatustext[nID].Format("%s Feld %d ist verknÃ¼pft mit den Konten ", child->GetChildValue("erweiterung"), nID);
 				int i;
 				for (i = 0; i < csaVerknuepfteKonten.GetSize(); i++)
 					m_csaFeldStatustext[nID] += "'" + csaVerknuepfteKonten[i] + "'" + (i == csaVerknuepfteKonten.GetSize()-1 ? "" : ", ");
@@ -2378,7 +2378,7 @@ CString CEasyCashDoc::GetFormularwertByIndex(XDoc *pFormular, int nIndex, LPCSTR
 		}
 		else if (!stricmp(child->GetAttrValue("typ"), "Ausgaben"))
 		{
-			// aus der Konten-Oberkategorie alle verknüpften Konten auflisten
+			// aus der Konten-Oberkategorie alle verknÃ¼pften Konten auflisten
 			LPCTSTR attr_name = xml->GetAttrValue("name");
 			CStringArray csaVerknuepfteKonten;
 			int j;
@@ -2390,12 +2390,12 @@ CString CEasyCashDoc::GetFormularwertByIndex(XDoc *pFormular, int nIndex, LPCSTR
 
 			// Statustext erzeugen
 			if (csaVerknuepfteKonten.GetSize() == 0)
-				m_csaFeldStatustext[nID].Format("Es gibt keine Ausgabenkonten, die mit Feld %d (%s) verknüpft sind. Das kann unter Einstellungen->E/Ü-Konten geändert werden.", nID, attr_name);
+				m_csaFeldStatustext[nID].Format("Es gibt keine Ausgabenkonten, die mit Feld %d (%s) verknÃ¼pft sind. Das kann unter Einstellungen->E/Ãœ-Konten geÃ¤ndert werden.", nID, attr_name);
 			else if (csaVerknuepfteKonten.GetSize() == 1)
-				m_csaFeldStatustext[nID].Format("%s Feld %d ist mit dem Konto '%s' verknüpft.", child->GetChildValue("erweiterung"), nID, csaVerknuepfteKonten[0]);
+				m_csaFeldStatustext[nID].Format("%s Feld %d ist mit dem Konto '%s' verknÃ¼pft.", child->GetChildValue("erweiterung"), nID, csaVerknuepfteKonten[0]);
 			else
 			{
-				m_csaFeldStatustext[nID].Format("%s Feld %d ist verknüpft mit den Konten ", child->GetChildValue("erweiterung"), nID);
+				m_csaFeldStatustext[nID].Format("%s Feld %d ist verknÃ¼pft mit den Konten ", child->GetChildValue("erweiterung"), nID);
 				int i;
 				for (i = 0; i < csaVerknuepfteKonten.GetSize(); i++)
 					m_csaFeldStatustext[nID] += "'" + csaVerknuepfteKonten[i] + "'" + (i == csaVerknuepfteKonten.GetSize()-1 ? "" : ", ");
@@ -2451,7 +2451,7 @@ CString CEasyCashDoc::GetFormularwertByIndex(XDoc *pFormular, int nIndex, LPCSTR
 			if (*cp == '+') cp++;
 			else if (*cp == '-') { operation = '-'; cp++; }
 
-			// einzelne Felder über ihre ID zusammenzählen
+			// einzelne Felder Ã¼ber ihre ID zusammenzÃ¤hlen
 			long summe = 0L;
 			while (cp && *cp)
 			{
@@ -2506,7 +2506,7 @@ CString CEasyCashDoc::GetFormularwertByIndex(XDoc *pFormular, int nIndex, LPCSTR
 							cp++;
 					}
 
-					// Klammer-auf für Kontenkategorie-Namen
+					// Klammer-auf fÃ¼r Kontenkategorie-Namen
 					if (*cp != '(') { summe = -99999999; break; }
 					cp++;
 
@@ -2519,7 +2519,7 @@ CString CEasyCashDoc::GetFormularwertByIndex(XDoc *pFormular, int nIndex, LPCSTR
 					if (kontenart != 'e' && kontenart != 'a') { summe = -99999999; break; }
 					if (*cp == ')')	// nur (e) oder (a) ?
 					{
-						nKontenFeldID = -1;	// --> alle Buchungen zusammenzählen
+						nKontenFeldID = -1;	// --> alle Buchungen zusammenzÃ¤hlen
 					}
 					else
 					{
@@ -2535,10 +2535,10 @@ CString CEasyCashDoc::GetFormularwertByIndex(XDoc *pFormular, int nIndex, LPCSTR
 					{	// Einnahmen
 
 						CStringArray csaVerknuepfteKonten;
-						// Keine Feld-ID angegeben? Dann Feldzuweisungen rausfummel unnötig: einfach alle Buchungen aufsummieren
+						// Keine Feld-ID angegeben? Dann Feldzuweisungen rausfummel unnÃ¶tig: einfach alle Buchungen aufsummieren
 						if (nKontenFeldID != -1)
 						{
-							// aus der Konten-Oberkategorie alle verknüpften Konten auflisten
+							// aus der Konten-Oberkategorie alle verknÃ¼pften Konten auflisten
 							LPCTSTR attr_name = xml->GetAttrValue("name");
 							int j;
 							for (j = 0; j < 100 && !m_csEinnahmenKonten[j].IsEmpty(); j++)
@@ -2576,10 +2576,10 @@ CString CEasyCashDoc::GetFormularwertByIndex(XDoc *pFormular, int nIndex, LPCSTR
 					{	// Ausgaben
 
 						CStringArray csaVerknuepfteKonten;
-						// Keine Feld-ID angegeben? Dann Feldzuweisungen rausfummel unnötig: einfach alle Buchungen aufsummieren
+						// Keine Feld-ID angegeben? Dann Feldzuweisungen rausfummel unnÃ¶tig: einfach alle Buchungen aufsummieren
 						if (nKontenFeldID != -1)
 						{
-							// aus der Konten-Oberkategorie alle verknüpften Konten auflisten
+							// aus der Konten-Oberkategorie alle verknÃ¼pften Konten auflisten
 							LPCTSTR attr_name = xml->GetAttrValue("name");
 							int j;
 							for (j = 0; j < 100 && !m_csAusgabenKonten[j].IsEmpty(); j++)
@@ -2617,7 +2617,7 @@ CString CEasyCashDoc::GetFormularwertByIndex(XDoc *pFormular, int nIndex, LPCSTR
 						}
 					}
 
-					// Summe für Kontenart summieren oder abziehen
+					// Summe fÃ¼r Kontenart summieren oder abziehen
 					if (operation == '+')
 						summe += untersumme;
 					else if (operation == '-')
@@ -2662,7 +2662,7 @@ CString CEasyCashDoc::GetFormularwertByIndex(XDoc *pFormular, int nIndex, LPCSTR
 		else if (!stricmp(child->GetAttrValue("typ"), "Einstellungsdaten"))
 		{
 			CString IDs = child->GetChildValue("erweiterung");
-			CString csFeldinhalte = "";  // für Verkettung von mehreren Einstellungsdaten, getrennt durch Leerzeichen
+			CString csFeldinhalte = "";  // fÃ¼r Verkettung von mehreren Einstellungsdaten, getrennt durch Leerzeichen
 
 			do
 			{
@@ -2690,7 +2690,7 @@ CString CEasyCashDoc::GetFormularwertByIndex(XDoc *pFormular, int nIndex, LPCSTR
 						GetPrivateProfileString("Betriebe", csKey, "", betriebe, sizeof(betriebe), inifile);
 						if (!*betriebe) 
 						{ 
-							csFeldinhalt = "<Unternehmensart für Betrieb nicht gefunden>"; 
+							csFeldinhalt = "<Unternehmensart fÃ¼r Betrieb nicht gefunden>"; 
 							break; 
 						}
 						else if (!strcmp(betriebe, sFilter)) 
@@ -2814,7 +2814,7 @@ CString CEasyCashDoc::GetFormularwertByIndex(XDoc *pFormular, int nIndex, LPCSTR
 							}
 						}
 					}
-					else // wenn kein Filter gesetzt, nur erste 11 Zeichen zurückliefern (keine Unterscheidung nach Betrieb)
+					else // wenn kein Filter gesetzt, nur erste 11 Zeichen zurÃ¼ckliefern (keine Unterscheidung nach Betrieb)
 					{
 						char inifile[1000];
 						GetIniFileName(inifile, sizeof(inifile));
@@ -2988,7 +2988,7 @@ void CEasyCashDoc::SetModifiedFlag(LPCTSTR lpszAktion, BOOL bModified, BOOL bSav
 	CDocument::SetModifiedFlag(bModified);
 	if (bModified && bSaveToWiederherstellungsdatei)
 		OnWiederherstellungsdateiSave();
-	//UpdateAllViews(NULL); --> bringt Plugins zum Abstürzen!
+	//UpdateAllViews(NULL); --> bringt Plugins zum AbstÃ¼rzen!
 }
 
 void CEasyCashDoc::BerechneFormularfeldwerte(CString &Formular, CStringArray &csaFormularfeldwerte, int *pFormularfeldIDs, CStringArray *pcsaFormularfeldbeschreibungen, LPCSTR sFilter) // IDs nur von 1 - 9999, also int[10000], NULL -> wird dann ignoriert
@@ -3005,7 +3005,7 @@ void CEasyCashDoc::BerechneFormularfeldwerte(CString &Formular, CStringArray &cs
 	// Feldwerte einblenden
 	if (felder)
 	{
-		ReadKontenCache(); // benötigt für GetFormularwertXXX Funktionen
+		ReadKontenCache(); // benÃ¶tigt fÃ¼r GetFormularwertXXX Funktionen
 
 		LPXNode child;
 

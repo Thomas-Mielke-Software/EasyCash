@@ -1,19 +1,19 @@
-// XMLite.h: interface for the XMLite class.
+ï»¿// XMLite.h: interface for the XMLite class.
 //
-// Diese Datei ist Bestandteil von EasyCash&Tax, der freien EÜR-Fibu
+// Diese Datei ist Bestandteil von EasyCash&Tax, der freien EÃœR-Fibu
 //
 // Public Domain (CPOL) 2020  Thomas Mielke
 // 
-// Ursprünglich wurde dieser Code von Code Project übernommen:
+// UrsprÃ¼nglich wurde dieser Code von Code Project Ã¼bernommen:
 // Artikel: https://www.codeproject.com/Articles/3426/XMLite-simple-XML-parser
 //
-// Dies ist public domain Software; Sie dürfen sie unter den Bedingungen der 
+// Dies ist public domain Software; Sie dÃ¼rfen sie unter den Bedingungen der 
 // Code Project Open License (CPOL) verwenden.
 // CPOL: https://www.codeproject.com/info/cpol10.aspx
 //
-// Diese Software wird in der Hoffnung weiterverbreitet, dass sie nützlich 
+// Diese Software wird in der Hoffnung weiterverbreitet, dass sie nÃ¼tzlich 
 // sein wird, jedoch OHNE IRGENDEINE GARANTIE, auch ohne die implizierte 
-// Garantie der MARKTREIFE oder der VERWENDBARKEIT FÜR EINEN BESTIMMTEN ZWECK.
+// Garantie der MARKTREIFE oder der VERWENDBARKEIT FÃœR EINEN BESTIMMTEN ZWECK.
 //
 // XMLite : XML Lite Parser Library
 // by bro ( Cho,Kyung Min: bro@shinbiro.com ) 2002-10-30

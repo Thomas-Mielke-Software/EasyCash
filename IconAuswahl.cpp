@@ -1,17 +1,17 @@
-// IconAuswahl.cpp : implementation file
+Ôªø// IconAuswahl.cpp : implementation file
 //
-// Diese Datei ist Bestandteil von EasyCash&Tax, der freien E‹R-Fibu
+// Diese Datei ist Bestandteil von EasyCash&Tax, der freien E√úR-Fibu
 //
 // Copyleft (GPLv3) 2020  Thomas Mielke
 // 
-// Dies ist freie Software; Sie d¸rfen sie unter den Bedingungen der 
+// Dies ist freie Software; Sie d√ºrfen sie unter den Bedingungen der 
 // GNU General Public License, wie von der Free Software Foundation 
-// verˆffentlicht, weiterverteilen und/oder modifizieren; entweder gem‰ﬂ 
-// Version 3 der Lizenz oder (nach Ihrer Option) jeder sp‰teren Version.
+// ver√∂ffentlicht, weiterverteilen und/oder modifizieren; entweder gem√§√ü 
+// Version 3 der Lizenz oder (nach Ihrer Option) jeder sp√§teren Version.
 //
-// Diese Software wird in der Hoffnung weiterverbreitet, dass sie n¸tzlich 
+// Diese Software wird in der Hoffnung weiterverbreitet, dass sie n√ºtzlich 
 // sein wird, jedoch OHNE IRGENDEINE GARANTIE, auch ohne die implizierte 
-// Garantie der MARKTREIFE oder der VERWENDBARKEIT F‹R EINEN BESTIMMTEN ZWECK.
+// Garantie der MARKTREIFE oder der VERWENDBARKEIT F√úR EINEN BESTIMMTEN ZWECK.
 // Mehr Details finden Sie in der GNU Lesser General Public License.
 //
 // Sie sollten eine Kopie der GNU General Public License Version 3 zusammen mit 
@@ -73,7 +73,7 @@ BOOL CIconAuswahl::OnInitDialog()
 {
 	CDialog::OnInitDialog();
 
-	// Imagelist f¸llen
+	// Imagelist f√ºllen
 	{
 		CBitmap generische_bitmap;
 		m_imgList.Create(32, 32, ILC_COLOR24, 0, 100);
@@ -98,7 +98,7 @@ void CIconAuswahl::InitDialog()
 	int i;
 	switch (m_nModus)
 	{
-	case 1:	// Auswahl-Modus mit der Option zu ‰ndern
+	case 1:	// Auswahl-Modus mit der Option zu √§ndern
 		{
 			int nItem = 0;
 			for (i = 0; i < 100; i++)
@@ -136,7 +136,7 @@ void CIconAuswahl::InitDialog()
 			}
 
 			CString csWindowText;
-			csWindowText.Format("%s ausw‰hlen", GetKey());
+			csWindowText.Format("%s ausw√§hlen", GetKey());
 			SetWindowText(csWindowText);
 			GetDlgItem(IDC_BITTE)->ShowWindow(SW_HIDE);
 			GetDlgItem(IDC_Neu)->ShowWindow(SW_SHOW);
@@ -204,7 +204,7 @@ void CIconAuswahl::OnNeu()
 	CString csSelected;
 	if (nSelected >= 0)
 	{
-		// Datenverzeichnis w‰hlen
+		// Datenverzeichnis w√§hlen
 		CString csProperty;
 		if (ChooseProperty(csProperty))
 		{
@@ -218,7 +218,7 @@ void CIconAuswahl::OnNeu()
 			}
 
 			if (i >= 100)
-				AfxMessageBox("Oh, sorry: Kann nur 100 Eintr‰ge anlegen!");
+				AfxMessageBox("Oh, sorry: Kann nur 100 Eintr√§ge anlegen!");
 			else
 			{
 				csSelected.Format("%d", nSelected);
@@ -230,7 +230,7 @@ void CIconAuswahl::OnNeu()
 				csKey.Format("%s%-02.2dIcon", GetKey(), i);
 				WriteProfileString(GetSection(), csKey.GetBuffer(0), csSelected.GetBuffer(0));
 
-				CString csMsg = "'" + (CString)GetIconText(i, nSelected) + "' wurde" + (*GetProperty() ? (CString)" mit dem " + (CString)GetProperty() + " '" + csProperty + "'" : "") + " angelegt. (Hinweis: Der Name kann nachtr‰glich im Auswahldialog mit dem Knopf 'Umbenennen' ge‰ndert werden.)";
+				CString csMsg = "'" + (CString)GetIconText(i, nSelected) + "' wurde" + (*GetProperty() ? (CString)" mit dem " + (CString)GetProperty() + " '" + csProperty + "'" : "") + " angelegt. (Hinweis: Der Name kann nachtr√§glich im Auswahldialog mit dem Knopf 'Umbenennen' ge√§ndert werden.)";
 				AfxMessageBox(csMsg);
 			}
 		}
@@ -283,7 +283,7 @@ void CIconAuswahl::OnLoeschen()
 						csIcon = GetProfileString(GetSection(), csKey.GetBuffer(0), "0");
 					}
 
-					// letzten Eintrag an zu lˆschende Position ¸bertragen
+					// letzten Eintrag an zu l√∂schende Position √ºbertragen
 					csKey.Format("%s%-02.2dName", GetKey(), nZuLoeschendesElementNachIndex);
 					WriteProfileString(GetSection(), csKey.GetBuffer(0), csName.GetBuffer(0));
 					csKey.Format("%s%-02.2d%s", GetKey(), nZuLoeschendesElementNachIndex, GetProperty());
@@ -292,7 +292,7 @@ void CIconAuswahl::OnLoeschen()
 					WriteProfileString(GetSection(), csKey.GetBuffer(0), csIcon.GetBuffer(0));
 				}
 
-				// letzte Position physisch lˆschen
+				// letzte Position physisch l√∂schen
 				csKey.Format("%s%-02.2dName", GetKey(), i);
 				WriteProfileString(GetSection(), csKey.GetBuffer(0), "");
 				csKey.Format("%s%-02.2dDatenverzeichnis", GetKey(), i);
@@ -309,7 +309,7 @@ void CIconAuswahl::OnLoeschen()
 		InitDialog();
 	}
 	else
-		AfxMessageBox("Bitte erst einmal ein Element ausw‰hlen");
+		AfxMessageBox("Bitte erst einmal ein Element ausw√§hlen");
 }
 
 void CIconAuswahl::OnUmbenennen() 
@@ -344,7 +344,7 @@ void CIconAuswahl::OnUmbenennen()
 		}
 	}
 	else
-		AfxMessageBox("Bitte erst einmal ein Element ausw‰hlen");
+		AfxMessageBox("Bitte erst einmal ein Element ausw√§hlen");
 }
 
 void CIconAuswahl::OnIconAendern()
@@ -374,7 +374,7 @@ void CIconAuswahl::OnIconAendern()
 		}
 	}
 	else
-		AfxMessageBox("Bitte erst einmal ein Element ausw‰hlen");
+		AfxMessageBox("Bitte erst einmal ein Element ausw√§hlen");
 
 }
 
@@ -404,5 +404,5 @@ void CIconAuswahl::OnProperty()
 		}
 	}
 	else
-		AfxMessageBox("Bitte erst einmal ein Element ausw‰hlen");
+		AfxMessageBox("Bitte erst einmal ein Element ausw√§hlen");
 }

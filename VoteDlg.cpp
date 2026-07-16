@@ -1,4 +1,4 @@
-// VoteDlg.cpp : implementation file
+ï»¿// VoteDlg.cpp : implementation file
 //
 
 #include "stdafx.h"
@@ -44,90 +44,90 @@ END_MESSAGE_MAP()
 // CVoteDlg message handlers
 
 static char *vote[] = {
-	"* Kontennamen sollten sich in den Einstellungen einfacher ändern lassen",
+	"* Kontennamen sollten sich in den Einstellungen einfacher Ã¤ndern lassen",
 	"Bessere Organisation der Spalten im Journal",
 	"Darstellung der Buchungstexte auf dem Bildschirm wird bei langen Buchungstexten zu klein",
-	"*spezielle Konten (z.B. für Einfurumsatzsteuerkonto) mit Berücksichtigung im Formular",
-	"*Split-Buchung bei beschränkt absetzbarer VST (z.B. KFZ-Kosten, Bewirtungskosten) (obsolet nach EU-Urteil)",
-	"Optional eine einzige laufende Nummer für Einnahmen und Ausgaben",
-	"*AFA-Split (für Anlagevermögen, das in der 2. Jahreshälfte gebucht wird)",
+	"*spezielle Konten (z.B. fÃ¼r Einfurumsatzsteuerkonto) mit BerÃ¼cksichtigung im Formular",
+	"*Split-Buchung bei beschrÃ¤nkt absetzbarer VST (z.B. KFZ-Kosten, Bewirtungskosten) (obsolet nach EU-Urteil)",
+	"Optional eine einzige laufende Nummer fÃ¼r Einnahmen und Ausgaben",
+	"*AFA-Split (fÃ¼r AnlagevermÃ¶gen, das in der 2. JahreshÃ¤lfte gebucht wird)",
 	"Beim Ausdrucken des Konten-Journals Wiederholung des Kopfes nach Seitenwechsel",
 	"es sollte mehr als nur je hundert Einnahmen- und Ausgaben-Konten geben",
 	"Einfacher USt-Voranmeldungsdruck ohne Formular",
-	"Rechte Maustaste Funktion 'Buchung in Dauerbuchungen übernehmen'",
+	"Rechte Maustaste Funktion 'Buchung in Dauerbuchungen Ã¼bernehmen'",
 	"Rechte Maustaste Funktion 'Buchung kopieren'",
-	"Im Buchen-Dialog die letzte Buchung über 'hot key' in die Felder holen",
-	"*Erstellungsdatum bei der E/Ü-Liste",
+	"Im Buchen-Dialog die letzte Buchung Ã¼ber 'hot key' in die Felder holen",
+	"*Erstellungsdatum bei der E/Ãœ-Liste",
 	"* Bildlaufleiste rechts sollte weniger grob reagieren",
 	"* Druck des Orginal-Formulars optional ausschaltbar",
-	"* Eine eigene Spalte für die Belegnummer reservieren",
+	"* Eine eigene Spalte fÃ¼r die Belegnummer reservieren",
 	"Fahrtenbuchmodul",
-	"Fahrtenbuchmodul über Palm-Organizer",
+	"Fahrtenbuchmodul Ã¼ber Palm-Organizer",
 	"Reisekostenmodul",
-	"Reisekostenmodul über Palm-Organizer",
-	"'Externer' Buchungsdialog über Palm-Organizer",
-	"Knopf für Druckvorschau in die Werkzeugleiste",
+	"Reisekostenmodul Ã¼ber Palm-Organizer",
+	"'Externer' Buchungsdialog Ã¼ber Palm-Organizer",
+	"Knopf fÃ¼r Druckvorschau in die Werkzeugleiste",
 	"Sortieren der Buchungspresets wie bei E/A-Konten",
-	"Hilfefunktion über F1",
+	"Hilfefunktion Ã¼ber F1",
 	"*Drucken von einzelnen Konten",
-	"Nachrücken des Journales beim Buchen, so das immer die aktuelle Zeile erscheint",
+	"NachrÃ¼cken des Journales beim Buchen, so das immer die aktuelle Zeile erscheint",
 	"Auto-complete bei Buchungs-Beschreibung",
 	"Buchungspresets um einen Buchungsbetrag erweitern",
-	"* &-Zeichen bei den Buchungstexten ermöglichen :-/",
-	"*Per Doppelklick im Journal gleich in den Änderungsmodus gehen",
-	"Ein Filter für das Journal, damit man in der Anzeige auch z.B. nur den lfd. Monat anzeigen kann",
+	"* &-Zeichen bei den Buchungstexten ermÃ¶glichen :-/",
+	"*Per Doppelklick im Journal gleich in den Ã„nderungsmodus gehen",
+	"Ein Filter fÃ¼r das Journal, damit man in der Anzeige auch z.B. nur den lfd. Monat anzeigen kann",
 	"Endsumme Umsatzsteuervoranmeldung auf volle 10 Pfennig runden",
-	"Möglichkeit im Journal schnell zu den Enden der einzelnen Konten zu springen",
-	"Druckdatum für Einnahmen/Überschussliste",
-	"Name etc. bei Einnahmen/Überschussliste für jede Seite wiederholen",
+	"MÃ¶glichkeit im Journal schnell zu den Enden der einzelnen Konten zu springen",
+	"Druckdatum fÃ¼r Einnahmen/Ãœberschussliste",
+	"Name etc. bei Einnahmen/Ãœberschussliste fÃ¼r jede Seite wiederholen",
 	"Funktion 'Sicherungskopie auf Diskette' oben in der Werkzeugleiste",
-	"Eine 'Lern'-Taste im Buchen-Dialog zur schnellen Übernahme in die Preset-Liste",
+	"Eine 'Lern'-Taste im Buchen-Dialog zur schnellen Ãœbernahme in die Preset-Liste",
 	"Historie-Liste zur schnellen Reproduktion der letzten 10 Buchungstexte",
-	"Journal-Filter nach MwSt.-Sätzen",
+	"Journal-Filter nach MwSt.-SÃ¤tzen",
 	"Ein monatlich verdichteter Bericht/Statistik",
-	"Wahlweise Eingabe von Nettobeträgen beim Buchen",
-	"*Schriftgröße veränderbar machen",
-	"Andere Symbole für die Knöpfe im Buchen-Dialog (Vorschläge oder gar fertige Designs sind willkommen)",
-	"Allgemein wären hübschere und farbenfrohere Knöpfe von Vorteil",
-	"Steuernummer auf E/Ü-Rechnung und auch den Journalen",
+	"Wahlweise Eingabe von NettobetrÃ¤gen beim Buchen",
+	"*SchriftgrÃ¶ÃŸe verÃ¤nderbar machen",
+	"Andere Symbole fÃ¼r die KnÃ¶pfe im Buchen-Dialog (VorschlÃ¤ge oder gar fertige Designs sind willkommen)",
+	"Allgemein wÃ¤ren hÃ¼bschere und farbenfrohere KnÃ¶pfe von Vorteil",
+	"Steuernummer auf E/Ãœ-Rechnung und auch den Journalen",
 	"Passwortschutz der ECT-Datei",
-	"Dauerbuchungen 'wöchentlich' ermöglichen",
+	"Dauerbuchungen 'wÃ¶chentlich' ermÃ¶glichen",
 	"Suchfunktion nach Belegnummer, Datum oder im Buchungstext",
-	"editierbare Kopf-/Fußzeile für die Ausdrucke",
+	"editierbare Kopf-/FuÃŸzeile fÃ¼r die Ausdrucke",
 	"Budgetplanung pro Konto inkl. Diagramm",
 	"Verbesserung des Ausdruck-Layouts (z.B. Fettschrift, Grauschattierungen der Zwischensummen",
-	"Aufführung der Gesamtsummen im Buchungsjournal nach Konten, d.h. Summe Einnahmen und Summe Ausgaben",
-	"* Das Datum nach einer Buchung soll optional beibehalten werden für die nächste Buchung",
+	"AuffÃ¼hrung der Gesamtsummen im Buchungsjournal nach Konten, d.h. Summe Einnahmen und Summe Ausgaben",
+	"* Das Datum nach einer Buchung soll optional beibehalten werden fÃ¼r die nÃ¤chste Buchung",
 	"Aufforderung zum Anlegen eines Datenverzeichnisses beim Erststart",
-	"Druck: eine Abschreibungsliste inkl. bereits vorhandene Wirtschaftsgüter + Anschaffungen des Jahres 2000",
-	"Druck: Verzeichnis mit geringwertigen Wirtschaftsgütern",
-	"Druck: Ansparrücklagen",
-	"Druck: Liste der nichtabnutzbaren WG des Anlagevermögens",
-	"Neutrale Konten z.B. für Geldtransit oder Kapitalanlagen",
+	"Druck: eine Abschreibungsliste inkl. bereits vorhandene WirtschaftsgÃ¼ter + Anschaffungen des Jahres 2000",
+	"Druck: Verzeichnis mit geringwertigen WirtschaftsgÃ¼tern",
+	"Druck: AnsparrÃ¼cklagen",
+	"Druck: Liste der nichtabnutzbaren WG des AnlagevermÃ¶gens",
+	"Neutrale Konten z.B. fÃ¼r Geldtransit oder Kapitalanlagen",
 	"Aufteilung des Datums in Belegdatum und Buchungsdatum",
-	"* hot keys (Tastenkürzel) für 'Einnahmen buchen' und 'Ausgaben buchen' (* mit Alt-E/Alt-A!)",
+	"* hot keys (TastenkÃ¼rzel) fÃ¼r 'Einnahmen buchen' und 'Ausgaben buchen' (* mit Alt-E/Alt-A!)",
 	"Offene Posten Liste/Zahlungsmodul",
 	"Zusammenfassung bestimmter Konten zu einer Kontengruppe",
-	"Buchungen in verschiedenen Währungen",
-	"Extrapolation der Einnahmen/Ausgaben für das ganze Jahr in einem Statistik-Modul",
-	"Hinweis auf Ändern/Löschen im Journal mit rechter Maustaste",
+	"Buchungen in verschiedenen WÃ¤hrungen",
+	"Extrapolation der Einnahmen/Ausgaben fÃ¼r das ganze Jahr in einem Statistik-Modul",
+	"Hinweis auf Ã„ndern/LÃ¶schen im Journal mit rechter Maustaste",
 	"Rohgewinn pro Quartal, Monat, Jahr",
-	"* Umsatzsteuervorauszahlungssoll (d.h. USt-Zahlungen an das Finanzamt) beim UmStVor.-Druck berücksichtigen",
-	"Zeile 'Privatentnahmen' unter die E/Ü-Rechnung",
+	"* Umsatzsteuervorauszahlungssoll (d.h. USt-Zahlungen an das Finanzamt) beim UmStVor.-Druck berÃ¼cksichtigen",
+	"Zeile 'Privatentnahmen' unter die E/Ãœ-Rechnung",
 	"Grafische Aufarbeitung der Zahlen.",
 	"Finanzkonten einbauen (zur Kontrolle)",
-	"*Kontenrahmen-Schablonen für verschiedne Berufe (obsolet mit dem EÜR-Formular ab 2004)",
+	"*Kontenrahmen-Schablonen fÃ¼r verschiedne Berufe (obsolet mit dem EÃœR-Formular ab 2004)",
 	"Seite einrichten (bedruckbaren Bereich festlegen)",
-	"Optional persönlichen Daten im Druck-Buchungsjournal einfügen",
+	"Optional persÃ¶nlichen Daten im Druck-Buchungsjournal einfÃ¼gen",
 	"Beim Exportieren der Daten sollte nach einem Verzeichnis und Namen fragen",
-	"Feld 'Telefon' bei den Einstellungen der Persönlichen Daten",
+	"Feld 'Telefon' bei den Einstellungen der PersÃ¶nlichen Daten",
 	"Laufende Buchungsnummern benutzerdefiniert machen (z.B. E01, A00001, 003)",
 	"Verschiedene Belegarten sollen verschiedene Buchungsnummern erzeugen (z.B. Kontoauszug=K05, Rechn.=R14)",
 	"Statistik: Jahresvergleich, Proporz",
-	"Steuersatz für nicht-USt-Abzugsberechtigte im Programm und im Journal-Ausdruck ausblenden",
-	"Internationale Postadressen berücksichtigen",
+	"Steuersatz fÃ¼r nicht-USt-Abzugsberechtigte im Programm und im Journal-Ausdruck ausblenden",
+	"Internationale Postadressen berÃ¼cksichtigen",
 	"Degressive Abschreibung",
-	"Bei Änderungen im Journal könnte ein 'Nächste'- bzw. 'Vorhergehende'-Knopf die entspr. Buchung aufrufen",
+	"Bei Ã„nderungen im Journal kÃ¶nnte ein 'NÃ¤chste'- bzw. 'Vorhergehende'-Knopf die entspr. Buchung aufrufen",
 	"* ELSTER-Interface als Modul einbinden (direkte elektronische Schnittstelle zum Finanzamt)",
 	NULL
 };
@@ -165,7 +165,7 @@ void CVoteDlg::OnOK()
 
 	if (!bOk)
 	{
-		AfxMessageBox("Es sind noch überhaupt keine Pioritäten für die Weiterentwicklung hochgesetzt worden. Dazu bitte die einzelnen Elemente der Liste doppelklicken!");
+		AfxMessageBox("Es sind noch Ã¼berhaupt keine PioritÃ¤ten fÃ¼r die Weiterentwicklung hochgesetzt worden. Dazu bitte die einzelnen Elemente der Liste doppelklicken!");
 		return;
 	}
 
@@ -175,7 +175,7 @@ void CVoteDlg::OnOK()
 	if (n <= 32)
 	{
 		AfxMessageBox("Es gab ein kleines Problem mit dem E-Mail Programm auf diesem Rechner. \
-Die Erweiterungsvorschläge konnten leider nicht verschickt werden.", MB_ICONSTOP);
+Die ErweiterungsvorschlÃ¤ge konnten leider nicht verschickt werden.", MB_ICONSTOP);
 		return;
 	}
 
@@ -186,12 +186,12 @@ Die Erweiterungsvorschläge konnten leider nicht verschickt werden.", MB_ICONSTOP
 	if (n <= 32)
 	{
 		AfxMessageBox("Es gab ein kleines Problem mit dem E-Mail Programm auf diesem Rechner. \
-Die Erweiterungsvorschläge konnten leider nicht verschickt werden.", MB_ICONSTOP);
+Die ErweiterungsvorschlÃ¤ge konnten leider nicht verschickt werden.", MB_ICONSTOP);
 		return;
 	}
 	else
 	{
-		AfxMessageBox("Die Erweiterungsvorschläge wurden verschickt. Im Postausgang (oder unter gesendete E-Mails) des E-Mail Programms müssten sich jetzt zwei Mails an mich befinden. Nach Erhalt werde ich sie zusammen mit denen anderer Nutzer statistisch auswerten. Vielen Dank!", MB_ICONINFORMATION);
+		AfxMessageBox("Die ErweiterungsvorschlÃ¤ge wurden verschickt. Im Postausgang (oder unter gesendete E-Mails) des E-Mail Programms mÃ¼ssten sich jetzt zwei Mails an mich befinden. Nach Erhalt werde ich sie zusammen mit denen anderer Nutzer statistisch auswerten. Vielen Dank!", MB_ICONINFORMATION);
 	}
 
 	CDialog::OnOK();

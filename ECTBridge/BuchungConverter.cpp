@@ -1,4 +1,4 @@
-// BuchungConverter.cpp -- Konvertierung native CBuchung <--> managed Buchung
+ï»¿// BuchungConverter.cpp -- Konvertierung native CBuchung <--> managed Buchung
 //
 // Diese Datei wird MIT /clr kompiliert (Projektstandard).
 // KEIN Precompiled Header (weil #using nicht mit nativem PCH geht).
@@ -53,7 +53,7 @@ ECTEngine::Buchung^ ECTBridge::NativeToManaged(
     b->Bestandskonto      = ToManaged(p->Bestandskonto);
     b->Betrieb            = ToManaged(p->Betrieb);
 
-    // Uuid: aus nativem Feld übernehmen oder neu erzeugen + zurückschreiben
+    // Uuid: aus nativem Feld Ã¼bernehmen oder neu erzeugen + zurÃ¼ckschreiben
     if (p->Uuid.IsEmpty())
     {
         b->Uuid = System::Guid::NewGuid();

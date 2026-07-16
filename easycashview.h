@@ -1,17 +1,17 @@
-// EasyCashView.h : interface of the CEasyCashView class
+﻿// EasyCashView.h : interface of the CEasyCashView class
 //
-// Diese Datei ist Bestandteil von EasyCash&Tax, der freien E�R-Fibu
+// Diese Datei ist Bestandteil von EasyCash&Tax, der freien EÜR-Fibu
 //
 // Copyleft (GPLv3) 2020  Thomas Mielke
 // 
-// Dies ist freie Software; Sie d�rfen sie unter den Bedingungen der 
+// Dies ist freie Software; Sie dürfen sie unter den Bedingungen der 
 // GNU General Public License, wie von der Free Software Foundation 
-// ver�ffentlicht, weiterverteilen und/oder modifizieren; entweder gem�� 
-// Version 3 der Lizenz oder (nach Ihrer Option) jeder sp�teren Version.
+// veröffentlicht, weiterverteilen und/oder modifizieren; entweder gemäß 
+// Version 3 der Lizenz oder (nach Ihrer Option) jeder späteren Version.
 //
-// Diese Software wird in der Hoffnung weiterverbreitet, dass sie n�tzlich 
+// Diese Software wird in der Hoffnung weiterverbreitet, dass sie nützlich 
 // sein wird, jedoch OHNE IRGENDEINE GARANTIE, auch ohne die implizierte 
-// Garantie der MARKTREIFE oder der VERWENDBARKEIT F�R EINEN BESTIMMTEN ZWECK.
+// Garantie der MARKTREIFE oder der VERWENDBARKEIT FÜR EINEN BESTIMMTEN ZWECK.
 // Mehr Details finden Sie in der GNU Lesser General Public License.
 //
 // Sie sollten eine Kopie der GNU General Public License Version 3 zusammen mit 
@@ -61,9 +61,9 @@ public:
 	int spalte_buchwert_ende;
 
 	SIZE printer_gesamtgroesse;
-	int fontsize;	//  fontsize ist die max. erlaubte Fontgr��e in Punkten
+	int fontsize;	//  fontsize ist die max. erlaubte Fontgröße in Punkten
 	float printer_charwidth, printer_charheight;	//  in Pixel
-	int printer_fontsize;	// gleiches f�r Printer-Metrix
+	int printer_fontsize;	// gleiches für Printer-Metrix
 	long brutto_summe, netto_summe;
 	long buchwert_beginn_summe, buchwert_ende_summe, abgaenge_summe;
 	long vst, ust;
@@ -90,7 +90,7 @@ protected: // create from serialization only
 public:
 	CEasyCashDoc* GetDocument();
 	CNavigation *m_pNavigationWnd;
-	//int CALLBACK GroupCompare(int Arg1, int Arg2, void *Arg3);  // callback f�r Navigation
+	//int CALLBACK GroupCompare(int Arg1, int Arg2, void *Arg3);  // callback für Navigation
 
 	// Einstellungsdialogbox
 	CPropertySheet *propdlg;
@@ -106,32 +106,32 @@ public:
 	int m_umstvoranmeldung_v;
 	BOOL m_formular_nicht_mitdrucken;
 
-	// f�r UVA-Druck
+	// für UVA-Druck
 	CString m_umstvoranmeldung_sondervorauszahlung;
 	BOOL bVorauszahlungssollMerken;
 	BOOL m_nJahreswechselAbfrage;
 
-	// Alles f�r die Journal-Anzeige
+	// Alles für die Journal-Anzeige
 	int m_nAnzeige;
-	CString m_KontenFilterPrinter;		// Variablen f�r gefilterten Journaldruck
+	CString m_KontenFilterPrinter;		// Variablen für gefilterten Journaldruck
 	CTime voranmeldung_von_datum;
 	CTime voranmeldung_bis_datum;
-	CString m_BetriebFilterPrinter;		// 1 Variable f�r Freestyle-E�R nach Betrieb und Journals nach Datum/Konto
-	CString m_KontenFilterDisplay;		// 4 Variablen f�r Ansicht->Journal f�r ...
+	CString m_BetriebFilterPrinter;		// 1 Variable für Freestyle-EÜR nach Betrieb und Journals nach Datum/Konto
+	CString m_KontenFilterDisplay;		// 4 Variablen für Ansicht->Journal für ...
 	int		m_MonatsFilterDisplay;
 	CString m_BetriebFilterDisplay;		
 	CString m_BestandskontoFilterDisplay;	
-	CStringArray m_KontenMitBuchungen;		// f�r Men�-Aufbau, gesetzt in DrawToDC...
-	CStringArray m_csaBestandskontenMitBuchungen;	// f�r Navigation
-	OSVERSIONINFOEX m_osvi;				// f�r Win95/98/ME - Scrollbug-Message
+	CStringArray m_KontenMitBuchungen;		// für Menü-Aufbau, gesetzt in DrawToDC...
+	CStringArray m_csaBestandskontenMitBuchungen;	// für Navigation
+	OSVERSIONINFOEX m_osvi;				// für Win95/98/ME - Scrollbug-Message
 
 	// Formularanzeige
-	int m_GewaehltesFormular;			// aktuell gew�hltes Formular, -1 wenn Journal Ansicht aktiv
+	int m_GewaehltesFormular;			// aktuell gewähltes Formular, -1 wenn Journal Ansicht aktiv
 	CStringArray m_csaFormulare;		// Dateipfade zu den Formulardateien
 	CStringArray m_csaFormularnamen;	// Namen der Formulare
 	CStringArray m_csaFormularseitenPfade;	// Dateipfade zu den Grafikdateien der Formularseiten
 	::CImage *m_pFormularseitenImageCache[FORMULARSEITENCACHESIZE];
-	CStringArray m_csaFormularfilter;	// Namen der zum Formular ausgew�hlten Betriebe etwa, wenn filter=betrieb im Formular
+	CStringArray m_csaFormularfilter;	// Namen der zum Formular ausgewählten Betriebe etwa, wenn filter=betrieb im Formular
 	CStringArray m_csaFormularfeldwerte;// mit BerechneFormularfeldwerte() berechnete Inhalte der Formularfelder
 	BOOL m_bFormularfelderAnzeigen;		// Felder mit ID und Rahmen anzeigen (zum Bearbeiten)
 
@@ -186,11 +186,11 @@ public:
 	CPoint ptLetzteMousePosition;
 	CPoint m_ptMittlererMausButtonDown;
 	CPoint m_ptLinkerMausButtonDown;
-	int m_nFeldMove;							// enth�lt die ID beim Bewegen eines Formularfeldes
-	CArray<int> m_ptFeldMoveMultiselect;  // enth�lt die IDs beim Bewegen mehrerer Formularfelder w�hend Multiselect mit mittlerer Maustaste
+	int m_nFeldMove;							// enthält die ID beim Bewegen eines Formularfeldes
+	CArray<int> m_ptFeldMoveMultiselect;  // enthält die IDs beim Bewegen mehrerer Formularfelder wähend Multiselect mit mittlerer Maustaste
 	int querformat_faktor;
 
-	// Men�-Krempel
+	// Menü-Krempel
 	CMenu PopUp;
 	CMenu PopUpFormular;
 	CPoint PopUpPosition;
@@ -199,25 +199,25 @@ public:
 	CBuchung **ppPosBuchungsliste[MAX_BUCHUNGEN];	// zu faul...
 	int nSelected;
 
-	// f�r das Display-Layout
+	// für das Display-Layout
 	SIZE gesamtgroesse;
-	int letzte_zeile, letzte_spalte;	// letzte_spalte f�r variable Fensterbreite
+	int letzte_zeile, letzte_spalte;	// letzte_spalte für variable Fensterbreite
 	int charwidth, charheight;		//  in Pixel
-	int page; // Hilfsvariable f�r DrawToDC: Seitenz�hler
-	int seitenzaehler; // Hilfsvariable f�r DrawToDC: anderer Seitenz�hler
-	int WasWirdGedruckt; // gesetzt in PreparePrint f�r OnPrint
+	int page; // Hilfsvariable für DrawToDC: Seitenzähler
+	int seitenzaehler; // Hilfsvariable für DrawToDC: anderer Seitenzähler
+	int WasWirdGedruckt; // gesetzt in PreparePrint für OnPrint
 	int max_seitenzahl;
 	int m_vt;
 	int m_vm;
 	int m_bt;
 	int m_bm;
 	int m_bAfaKorrketuren;
-	int m_anzahl_formularseiten;  // wird f�r die Navigations-Seitenleiste benutzt (ein bisschen redundant, aber daf�r sicher, dass es keine Nebeneffekte hat)
+	int m_anzahl_formularseiten;  // wird für die Navigations-Seitenleiste benutzt (ein bisschen redundant, aber dafür sicher, dass es keine Nebeneffekte hat)
 
-	// Bitmaps f�rs Men�
+	// Bitmaps fürs Menü
 	CBitmap bmpEinBuch;
 	 
-	// F�r die Anzeige der Betriebe/Bestandskonten-Icons
+	// Für die Anzeige der Betriebe/Bestandskonten-Icons
 	CBitmap m_cbmIcons;
 	CBitmap m_cbmIconsBestandskonten;
 	CMFCToolBarImages m_tbiIcons;
@@ -271,7 +271,7 @@ protected:
 	DWORD m_TextColorAusgaben; 
 	int m_zoomfaktor;		// in prozent
 	int m_wunschzoomfaktor;	// wird in registry gespeichert
-	CTime m_timeLetzteZwangsverkleinerung;  // um automatische Zoomvergr��erung auf den Wunschlevel zu unterbinden
+	CTime m_timeLetzteZwangsverkleinerung;  // um automatische Zoomvergrößerung auf den Wunschlevel zu unterbinden
 
 	BOOL m_bCtrlKeyPressed;	// tracked in OnKeyUp/Down
 
@@ -345,7 +345,7 @@ public:
 	void ScrolleZuBuchung(int b);
 	void ScrolleZuSeite(int s, int vertikal = 0);
 	void AfAAbgang(CBuchung **ppb);
-	CUIntArray m_cuiaScrollPos;	// Array von uints f�r Formular-Abschnittsnavigation
+	CUIntArray m_cuiaScrollPos;	// Array von uints für Formular-Abschnittsnavigation
 
 // Generated message map functions
 protected:
@@ -456,10 +456,10 @@ inline CEasyCashDoc* CEasyCashView::GetDocument()
 //					 bis 19999 -- wird wohl reichen...
 
 #define ID_BETRIEBEFILTER_BASE 20000
-//					   bis max 29999 -- v�llig overdone...
+//					   bis max 29999 -- völlig overdone...
 
 #define ID_BESTANDSKONTENFILTER_BASE 30000
-//							 bis max 39999 -- v�llig overdone...
+//							 bis max 39999 -- völlig overdone...
 
 // Dropdown-Menue-Eintraege der Einnahme-/Ausgabe-Ribbon-Knoepfe
 // (Buchungsvorlagen 0-99). Auswahl -> Buchen-Dialog mit vorgewaehlter Vorlage.

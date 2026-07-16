@@ -1,0 +1,6 @@
+#!/bin/sh
+# EasyCash pre-commit-Hook: Encoding-Waechter fuer Legacy-Quellen.
+# Bricht den Commit ab, wenn eine gestagte Datei U+FFFD-Korruption enthaelt
+# oder von Windows-1252 auf UTF-8 (ohne BOM) gekippt wurde.
+# Reine PowerShell-Loesung (kein Perl). Details: check-encoding.ps1.
+exec powershell.exe -NoProfile -ExecutionPolicy Bypass -File ".githooks/check-encoding.ps1" -Staged

@@ -1,17 +1,17 @@
-// MainFrm.cpp : implementation of the CMainFrame class
+﻿// MainFrm.cpp : implementation of the CMainFrame class
 //
-// Diese Datei ist Bestandteil von EasyCash&Tax, der freien E�R-Fibu
+// Diese Datei ist Bestandteil von EasyCash&Tax, der freien EÜR-Fibu
 //
 // Copyleft (GPLv3) 2020  Thomas Mielke
 // 
-// Dies ist freie Software; Sie d�rfen sie unter den Bedingungen der 
+// Dies ist freie Software; Sie dürfen sie unter den Bedingungen der 
 // GNU General Public License, wie von der Free Software Foundation 
-// ver�ffentlicht, weiterverteilen und/oder modifizieren; entweder gem�� 
-// Version 3 der Lizenz oder (nach Ihrer Option) jeder sp�teren Version.
+// veröffentlicht, weiterverteilen und/oder modifizieren; entweder gemäß 
+// Version 3 der Lizenz oder (nach Ihrer Option) jeder späteren Version.
 //
-// Diese Software wird in der Hoffnung weiterverbreitet, dass sie n�tzlich 
+// Diese Software wird in der Hoffnung weiterverbreitet, dass sie nützlich 
 // sein wird, jedoch OHNE IRGENDEINE GARANTIE, auch ohne die implizierte 
-// Garantie der MARKTREIFE oder der VERWENDBARKEIT F�R EINEN BESTIMMTEN ZWECK.
+// Garantie der MARKTREIFE oder der VERWENDBARKEIT FÜR EINEN BESTIMMTEN ZWECK.
 // Mehr Details finden Sie in der GNU Lesser General Public License.
 //
 // Sie sollten eine Kopie der GNU General Public License Version 3 zusammen mit 
@@ -318,7 +318,7 @@ int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
 
 	OnAppLook(m_nAppLook);
 
-/* Tabs n�tig? st�rzt ab! toxischer Code...
+/* Tabs nötig? stürzt ab! toxischer Code...
 	CMDITabInfo mdiTabParams;
 	mdiTabParams.m_style = CMFCTabCtrl::STYLE_3D_ONENOTE; // other styles available...
 	mdiTabParams.m_bActiveTabCloseButton = TRUE;      // set to FALSE to place close button at right of tab area
@@ -499,7 +499,7 @@ void CMainFrame::Add_MainPanel()
 	CMFCRibbonMainPanel* pMainPanel = m_wndRibbonBar.AddMainCategory (_T("Datei"), IDB_TOOLBAR_16, IDB_TOOLBAR_32);
 	
 	pMainPanel->Add (new CMFCRibbonButton (ID_FILE_NEW, "&Neu\nStrg+N", 0, 0));
-	pMainPanel->Add (new CMFCRibbonButton (ID_FILE_OPEN, "�&ffnen...\nStrg+O", 1, 1));
+	pMainPanel->Add (new CMFCRibbonButton (ID_FILE_OPEN, "Ö&ffnen...\nStrg+O", 1, 1));
 	pMainPanel->Add (new CMFCRibbonButton (ID_FILE_SAVE, "&Speichern\nStrg+S", 2, 2));
 
 	pMainPanel->Add (new CMFCRibbonButton (ID_FILE_SAVE_AS, "Speichern &unter\nStrg+U", 2, 2));
@@ -515,20 +515,20 @@ void CMainFrame::Add_MainPanel()
 	pMainPanel->Add (new CMFCRibbonButton (ID_FILE_REGISTRIERUNGSINFORMATIONEN_WIEDERHERSTELLEN, "Registrierungsinformationen &wiederherstellen...", 28, 28));
 	pMainPanel->Add (new CMFCRibbonButton (ID_FILE_REGISTRIERUNGSINFORMATIONEN_SICHERN, "&Registrierungsinformationen sichern...", 29, 29));
 
-	pMainPanel->Add (new CMFCRibbonButton (ID_FILE_OEFFNE_DATENVERZEICHNIS, "�ffne &Datenverzeichnis mit Explorer", 30, 30));
-	pMainPanel->Add (new CMFCRibbonButton (ID_FILE_WAEHLE_DATENVERZEICHNIS, "&W�hle neues Datenverzeichnis aus", 31, 31));
+	pMainPanel->Add (new CMFCRibbonButton (ID_FILE_OEFFNE_DATENVERZEICHNIS, "Öffne &Datenverzeichnis mit Explorer", 30, 30));
+	pMainPanel->Add (new CMFCRibbonButton (ID_FILE_WAEHLE_DATENVERZEICHNIS, "&Wähle neues Datenverzeichnis aus", 31, 31));
 
 	
 	//pMainPanel->Add (new CMFCRibbonButton (ID_EDIT_EINNAHME_BUCHEN, "&Einnahme buchen\nStrg + E", 5, 5));
 	//pMainPanel->Add (new CMFCRibbonButton (ID_EDIT_AUSGABE_BUCHEN, "&Ausgabe buchen\nStrg + A", 6, 6));
 	//pMainPanel->Add (new CMFCRibbonButton (ID_EDIT_DAUERBUCHUNGEN_EINGEBEN, "&Dauerbuchungen eingeben", 7, 7));
-	//pMainPanel->Add (new CMFCRibbonButton (ID_EDIT_DAUERBUCHUNGEN_AUSFUEHREN, "Dauerbuchungen a&usf�hren\nStrg + D", 8, 8));
+	//pMainPanel->Add (new CMFCRibbonButton (ID_EDIT_DAUERBUCHUNGEN_AUSFUEHREN, "Dauerbuchungen a&usführen\nStrg + D", 8, 8));
 	//pMainPanel->Add (new CMFCRibbonButton (ID_FILE_PRINT, "&Drucken...\nStrg+P", 9, 9));
 	//pMainPanel->Add (new CMFCRibbonButton (ID_FILE_PRINT_PREVIEW, "Sei&tenansicht", 10, 10));
 	//pMainPanel->Add (new CMFCRibbonButton (ID_VIEW_JOURNAL_SWITCH, "Durch &Journalansicht rotieren", 11, 11));
 	//pMainPanel->Add (new CMFCRibbonButton (ID_VIEW_OPTIONS, "&Einstellungen", 12, 12));
 
-	m_pInfoButton = new CMFCRibbonButton(ID_APP_ABOUT, "Inf&o �ber EasyCash...", 13, 13);
+	m_pInfoButton = new CMFCRibbonButton(ID_APP_ABOUT, "Inf&o über EasyCash...", 13, 13);
 	pMainPanel->Add(m_pInfoButton);
 
 /*
@@ -619,7 +619,7 @@ void CMainFrame::Add_Category1()
 	apBtn3->SetAlwaysLargeImage();
 	pPanel1->Add(apBtn3.release());
 
-	std::auto_ptr<CMFCRibbonButton> apBtn4(new CMFCRibbonButton(ID_EDIT_DAUERBUCHUNGEN_AUSFUEHREN, "Dauerbuch. ausf�hren\nn", 8, 8));
+	std::auto_ptr<CMFCRibbonButton> apBtn4(new CMFCRibbonButton(ID_EDIT_DAUERBUCHUNGEN_AUSFUEHREN, "Dauerbuch. ausführen\nn", 8, 8));
 	apBtn4->SetMenu(IDR_DAUERBUCHUNGEN_AUSFUEHREN_MONATE, TRUE);
 	apBtn4->SetAlwaysLargeImage();
 	pPanel1->Add(apBtn4.release());
@@ -687,10 +687,10 @@ void CMainFrame::Add_Category1()
 
 	m_pSucheCombobox = new CMFCRibbonComboBox(ID_VIEW_FINDTOOLBAR, TRUE, 75);
 	pPanel4->Add(m_pSucheCombobox);
-	std::auto_ptr<CMFCRibbonButton> apBtn40(new CMFCRibbonButton(ID_NEXT, "vorw�rts\nv", 19));
+	std::auto_ptr<CMFCRibbonButton> apBtn40(new CMFCRibbonButton(ID_NEXT, "vorwärts\nv", 19));
 	apBtn40->SetDefaultCommand();
 	pPanel4->Add(apBtn40.release());
-	pPanel4->Add(new CMFCRibbonButton(ID_PREV, "r�ckw�rts\nr", 20));
+	pPanel4->Add(new CMFCRibbonButton(ID_PREV, "rückwärts\nr", 20));
 }
 
 void CMainFrame::Add_Category2()
@@ -707,7 +707,7 @@ void CMainFrame::Add_Category2()
 	apBtn2->SetAlwaysLargeImage();
 	pPanel1->Add(apBtn2.release());
 
-	CMFCRibbonPanel* pPanel2 = pCategory->AddPanel(_T("Oberfl�chen-Style\nO"));
+	CMFCRibbonPanel* pPanel2 = pCategory->AddPanel(_T("Oberflächen-Style\nO"));
 
 	pPanel2->Add(new CMFCRibbonCheckBox(ID_VIEW_APPLOOK_2007_1, _T("Onyx")));
 	pPanel2->Add(new CMFCRibbonCheckBox(ID_VIEW_APPLOOK_2007_2, _T("Silber")));
@@ -725,17 +725,17 @@ void CMainFrame::Add_Category2()
 	CMFCRibbonPanel* pPanel4 = pCategory->AddPanel(_T("Hilfe\nH"));
 
 	pPanel4->Add(new CMFCRibbonLinkCtrl(ID_EINSTELLUNGEN_DOKU, _T("Online-Dokumentation"), _T("https://www.easyct.de/articles.php?cat_id=2")));
-	pPanel4->Add(new CMFCRibbonLinkCtrl(ID_EINSTELLUNGEN_FAQ, _T("H�ufig gestellte Fragen"), _T("https://www.easyct.de/faq.php")));
+	pPanel4->Add(new CMFCRibbonLinkCtrl(ID_EINSTELLUNGEN_FAQ, _T("Häufig gestellte Fragen"), _T("https://www.easyct.de/faq.php")));
 	pPanel4->Add(new CMFCRibbonLinkCtrl(ID_EINSTELLUNGEN_BUGTRACKER, _T("Fehler/Anregung melden"), _T("https://www.easyct.de/tracker/login_page.php")));
 
 	CMFCRibbonPanel* pPanel5 = pCategory->AddPanel(_T("Kontakt\nK"));
 
 	pPanel5->Add(new CMFCRibbonLinkCtrl(ID_EINSTELLUNGEN_EMAIL, _T("E-Mail an den Autor"), _T("mailto:thomas@mielke.software?subject=ECT-Kontakt")));
-	pPanel5->Add(new CMFCRibbonLinkCtrl(ID_EINSTELLUNGEN_PGP, _T("PGP-Schl�ssel holen"), _T("https://mielke.software/D8AE2CE41CB1D1A61087165B95DC1917252AD305.php")));
+	pPanel5->Add(new CMFCRibbonLinkCtrl(ID_EINSTELLUNGEN_PGP, _T("PGP-Schlüssel holen"), _T("https://mielke.software/D8AE2CE41CB1D1A61087165B95DC1917252AD305.php")));
 	pPanel5->Add(new CMFCRibbonLinkCtrl(ID_EINSTELLUNGEN_KONTAKT, _T("Kontaktformular"), _T("https://www.easyct.de/contact.php")));
 	
 	CMFCRibbonPanel* pPanel6 = pCategory->AddPanel(_T("Spende via\nS"));
-	pPanel6->Add(new CMFCRibbonButton(ID_EINSTELLUNGEN_SPENDE_BANK, _T("Bank�ber- weisung"), 2, 2));
+	pPanel6->Add(new CMFCRibbonButton(ID_EINSTELLUNGEN_SPENDE_BANK, _T("Banküber- weisung"), 2, 2));
 	pPanel6->Add(new CMFCRibbonButton(ID_EINSTELLUNGEN_SPENDE_PAYPAL, _T("PayPal"), 3, 3));
 	pPanel6->Add(new CMFCRibbonButton(ID_EINSTELLUNGEN_SPENDE_BITCOIN, _T("Bitcoin"), 4, 4));
 }
@@ -791,7 +791,7 @@ void CMainFrame::ShowPlugins(char *szName)
 			int i;
 			for (i = 0; RegEnumKey(hKey, i, subkey, lCb = sizeof(subkey)) == ERROR_SUCCESS; i++)
 			{
-				if (*subkey) ShowPlugins(subkey);	// rekursiver Aufruf f�r alle Subkeys			
+				if (*subkey) ShowPlugins(subkey);	// rekursiver Aufruf für alle Subkeys			
 			}
 
 			RegCloseKey(hKey);
@@ -802,9 +802,9 @@ void CMainFrame::ShowPlugins(char *szName)
 		for (n = 0, pElement = m_pPlugins; pElement; pElement = pElement->next, n++)	// wie viele Elemente sind in der Plugin-Liste?
 			;
 
-		n++;	// Platz f�r Plugin Manager:
-		n++;	// Platz f�r Separator
-		UINT *plugintoolbar_ids = new UINT[n];		// entsprechend gro�es Array anlegen	
+		n++;	// Platz für Plugin Manager:
+		n++;	// Platz für Separator
+		UINT *plugintoolbar_ids = new UINT[n];		// entsprechend großes Array anlegen	
 		
 		plugintoolbar_ids[0] = ID_FILE_PLUGINMANAGER;
 		plugintoolbar_ids[1] = ID_SEPARATOR;
@@ -859,7 +859,7 @@ void CMainFrame::ShowPlugins(char *szName)
 							CPluginElement **ppTemp = &m_pPlugins;
 							while (*ppTemp)	// Ende der Kette und des ID-Bereichs suchen
 							{	
-								if ((*ppTemp)->id >= id_incrementor) id_incrementor++;	// muss immer um 1 gr��er sein als alle bestehenden IDs
+								if ((*ppTemp)->id >= id_incrementor) id_incrementor++;	// muss immer um 1 größer sein als alle bestehenden IDs
 								ppTemp = &((*ppTemp)->next);
 							}
 							*ppTemp = new CPluginElement;
@@ -951,7 +951,7 @@ void CMainFrame::ShowPluginsRibbonMenu(CMFCRibbonButton *pAnsichtPluginsButton, 
 	// kein Name angegeben?
 	if (!szName)
 	{	// alle keys enumerieren
-		pAnsichtPluginsButton->RemoveAllSubItems();	// Dummy von Ribbon-Button Men� entfernen
+		pAnsichtPluginsButton->RemoveAllSubItems();	// Dummy von Ribbon-Button Menü entfernen
 
 		HKEY hKey;
 		char subkey[1000];
@@ -962,7 +962,7 @@ void CMainFrame::ShowPluginsRibbonMenu(CMFCRibbonButton *pAnsichtPluginsButton, 
 			int i;
 			for (i = 0; RegEnumKey(hKey, i, subkey, lCb = sizeof(subkey)) == ERROR_SUCCESS; i++)
 			{
-				if (*subkey) ShowPluginsRibbonMenu(pAnsichtPluginsButton, subkey, i);	// rekursiver Aufruf f�r alle Subkeys			
+				if (*subkey) ShowPluginsRibbonMenu(pAnsichtPluginsButton, subkey, i);	// rekursiver Aufruf für alle Subkeys			
 			}
 
 			RegCloseKey(hKey);
@@ -1014,7 +1014,7 @@ void CMainFrame::ShowPluginsRibbonMenu(CMFCRibbonButton *pAnsichtPluginsButton, 
 							CPluginElement **ppTemp = &m_pPlugins;
 							while (*ppTemp)	// Ende der Kette und des ID-Bereichs suchen
 							{	
-								if ((*ppTemp)->id >= id_incrementor) id_incrementor++;	// muss immer um 1 gr��er sein als alle bestehenden IDs
+								if ((*ppTemp)->id >= id_incrementor) id_incrementor++;	// muss immer um 1 größer sein als alle bestehenden IDs
 								ppTemp = &((*ppTemp)->next);
 							}
 							*ppTemp = new CPluginElement;
@@ -1063,7 +1063,7 @@ void CMainFrame::LoadBitmap(CBitmap **ppcbm, char* filename)
 
 void CMainFrame::SetStatus(LPCTSTR status)
 {
-	if (!strcmp(status, "Bereit")) return; // "Bereit" unterdr�cken
+	if (!strcmp(status, "Bereit")) return; // "Bereit" unterdrücken
 	if (m_wndStatusBar) m_wndStatusBar.SetInformation(status);	// bei WM_COMMAND m_wndStatusBar.SetInformation(NULL) !!!
 	//m_bInformationModeElapsed = FALSE;
 	//this->SetTimer(0, 10000, NULL); 
@@ -1117,16 +1117,16 @@ void CMainFrame::UpdateSaldo(CEasyCashView *pecv)
 	if (nettosaldo == saldo)
 	{
 		if (nMonatsFilterDisplay)
-			cs.Format("Saldo f�r %d%s/%04d: %s", nMonatsFilterDisplay <= 12 ? nMonatsFilterDisplay : (nMonatsFilterDisplay-13)/3+1, nMonatsFilterDisplay <= 12 ? "" : "Q", nJahr, buffer);
+			cs.Format("Saldo für %d%s/%04d: %s", nMonatsFilterDisplay <= 12 ? nMonatsFilterDisplay : (nMonatsFilterDisplay-13)/3+1, nMonatsFilterDisplay <= 12 ? "" : "Q", nJahr, buffer);
 		else
-			cs.Format("Saldo f�r %04d: %s", nJahr, buffer);
+			cs.Format("Saldo für %04d: %s", nJahr, buffer);
 	}
 	else
 	{
 		if (nMonatsFilterDisplay)
-			cs.Format("Saldo f�r %d%s/%04d (ohne Finanzamts-Zahlungen): %s (Netto) / %s (Brutto)", nMonatsFilterDisplay <= 12 ? nMonatsFilterDisplay : nMonatsFilterDisplay-12, nMonatsFilterDisplay <= 12 ? "" : "Q", nJahr, buffer2, buffer);
+			cs.Format("Saldo für %d%s/%04d (ohne Finanzamts-Zahlungen): %s (Netto) / %s (Brutto)", nMonatsFilterDisplay <= 12 ? nMonatsFilterDisplay : nMonatsFilterDisplay-12, nMonatsFilterDisplay <= 12 ? "" : "Q", nJahr, buffer2, buffer);
 		else
-			cs.Format("Saldo f�r %04d (ohne Finanzamts-Zahlungen): %s (Netto) / %s (Brutto)", nJahr, buffer2, buffer);
+			cs.Format("Saldo für %04d (ohne Finanzamts-Zahlungen): %s (Netto) / %s (Brutto)", nJahr, buffer2, buffer);
 	}
 
 	//pCmdUI->SetText((LPCSTR)cs);
@@ -1304,15 +1304,15 @@ void CMainFrame::OnFileMandanten()
 #ifdef USE_ECTENGINE
 	// WPF-Verwaltungs-/Auswahl-Dialog (ersetzt CIconAuswahlMandant, Modus 1).
 	// Die Mandanten liegen im App-Profil (theApp), das die Bridge nicht
-	// erreicht: Liste rein, ge�nderte Liste zur�ck, hier persistieren.
+	// erreicht: Liste rein, geänderte Liste zurück, hier persistieren.
 	CString Mandant0Existiert = theApp.GetProfileString("Mandanten", "Mandant00Datenverzeichnis", "");
 	if (Mandant0Existiert.IsEmpty())
 	{
 		// Mandanten erzeugen, wenn nicht vorhanden (Ablauf + Texte wie im
 		// MFC-Original, nur der Icon-Picker ist jetzt WPF)
-		if (AfxMessageBox("Mit dieser Funktion k�nnen Mandanten angelegt werden, d.h. Datenverzeichnisse f�r verschiedene Steuerpflichtige, die so z.B. auch verschiedene Kontenrahmen nutzen k�nnen. Wenn es darum geht, verschiedene Gesch�ftsbereiche durch separate Einnahme-�berschuss-Rechnungen abzubilden bitte den Men�punkt 'Journal nur f�r Betrieb' im Ansicht-Men� w�hlen (wird enthalten sein ab v1.5X). Zun�chst bitte ein Symbol ausw�hlen, das den bisherigen Datenbestand als 'Mandant 1' repr�sentiert...", MB_OKCANCEL) == IDCANCEL) return;
+		if (AfxMessageBox("Mit dieser Funktion können Mandanten angelegt werden, d.h. Datenverzeichnisse für verschiedene Steuerpflichtige, die so z.B. auch verschiedene Kontenrahmen nutzen können. Wenn es darum geht, verschiedene Geschäftsbereiche durch separate Einnahme-Überschuss-Rechnungen abzubilden bitte den Menüpunkt 'Journal nur für Betrieb' im Ansicht-Menü wählen (wird enthalten sein ab v1.5X). Zunächst bitte ein Symbol auswählen, das den bisherigen Datenbestand als 'Mandant 1' repräsentiert...", MB_OKCANCEL) == IDCANCEL) return;
 
-		// Icon w�hlen (WPF)
+		// Icon wählen (WPF)
 		int nIcon = ECT_ZeigeMandantIconAuswahlDialog(GetSafeHwnd());
 		if (nIcon < 0)
 			return;
@@ -1324,14 +1324,14 @@ void CMainFrame::OnFileMandanten()
 		theApp.WriteProfileString("Mandanten", "Mandant00Icon", csSelected);
 
 		SetMandant(0);
-		if (AfxMessageBox("Sehr gut! Das bisherige Datenverzeichnis wurde mit dem neu erstellten Mandanten 'Mandant 1' verkn�pft. Als n�chstes im Mandanten-Auswahl Dialog bitte mit dem Knopf 'Neuer Mandant' einen oder mehrere weitere Mandanten anlegen und zum Schluss den Mandanten, mit dem Sie aktuell arbeiten wollen mit Doppelklick auf das Icon ausw�hlen. Hinweis: Bitte benutzen Sie ein anderes Verzeichnis als das des ersten Mandanten. Jeder Mandant ben�tigt ein eigenes Verzeichnis.", MB_OKCANCEL) == IDCANCEL) return;
+		if (AfxMessageBox("Sehr gut! Das bisherige Datenverzeichnis wurde mit dem neu erstellten Mandanten 'Mandant 1' verknüpft. Als nächstes im Mandanten-Auswahl Dialog bitte mit dem Knopf 'Neuer Mandant' einen oder mehrere weitere Mandanten anlegen und zum Schluss den Mandanten, mit dem Sie aktuell arbeiten wollen mit Doppelklick auf das Icon auswählen. Hinweis: Bitte benutzen Sie ein anderes Verzeichnis als das des ersten Mandanten. Jeder Mandant benötigt ein eigenes Verzeichnis.", MB_OKCANCEL) == IDCANCEL) return;
 	}
 
 	{
-		// Mandanten aus dem App-Profil einsammeln. L�cken (durch das alte
-		// Tausch-L�schen m�glich) werden kompaktiert -- unkritisch, weil die
-		// Liste nach dem Dialog komplett zur�ckgeschrieben wird und sich der
-		// Auswahl-Index auf die zur�ckgeschriebene Liste bezieht.
+		// Mandanten aus dem App-Profil einsammeln. Lücken (durch das alte
+		// Tausch-Löschen möglich) werden kompaktiert -- unkritisch, weil die
+		// Liste nach dem Dialog komplett zurückgeschrieben wird und sich der
+		// Auswahl-Index auf die zurückgeschriebene Liste bezieht.
 		const int MAX_MANDANTEN = 100;
 		const int NAME_LEN = 256;
 		const int VERZ_LEN = 1000;
@@ -1354,7 +1354,7 @@ void CMainFrame::OnFileMandanten()
 			csKey.Format("Mandant%-02.2dIcon", i);
 			csIcon = theApp.GetProfileString("Mandanten", csKey, "0");
 			if (csName.IsEmpty() && csVerzeichnis.IsEmpty())
-				continue;	// L�cke �berspringen
+				continue;	// Lücke überspringen
 			nHoechsterSlot = i;
 			strncpy_s(aNamen[nAnzahl], NAME_LEN, (LPCTSTR)csName, _TRUNCATE);
 			strncpy_s(aVerzeichnisse[nAnzahl], VERZ_LEN, (LPCTSTR)csVerzeichnis, _TRUNCATE);
@@ -1367,9 +1367,9 @@ void CMainFrame::OnFileMandanten()
 			apVerzeichnisse[i] = aVerzeichnisse[i];
 		}
 
-		// WPF-Dialog: liefert Auswahl-Index und die ge�nderte Liste zur�ck
+		// WPF-Dialog: liefert Auswahl-Index und die geänderte Liste zurück
 		// (in denselben Puffern -- die Bridge kopiert die Eingabe, bevor der
-		// Dialog l�uft, und bef�llt die Out-Puffer erst danach)
+		// Dialog läuft, und befüllt die Out-Puffer erst danach)
 		int nAnzahlNeu = -1;
 		int nGewaehlt = ECT_ZeigeMandantenVerwaltenDialog(
 			apNamen, aIcons, apVerzeichnisse, nAnzahl,
@@ -1380,8 +1380,8 @@ void CMainFrame::OnFileMandanten()
 			MAX_MANDANTEN, &nAnzahlNeu,
 			szNichtMandantVerz, VERZ_LEN);
 
-		// Ge�nderte Liste IMMER zur�ckschreiben (auch bei Abbrechen), damit
-		// Neu/L�schen/Umbenennen/Icon/Datenverzeichnis erhalten bleiben --
+		// Geänderte Liste IMMER zurückschreiben (auch bei Abbrechen), damit
+		// Neu/Löschen/Umbenennen/Icon/Datenverzeichnis erhalten bleiben --
 		// wie im Original, das direkt ins Profil schrieb
 		if (nAnzahlNeu >= 0)
 		{
@@ -1396,7 +1396,7 @@ void CMainFrame::OnFileMandanten()
 				csKey.Format("Mandant%-02.2dIcon", i);
 				theApp.WriteProfileString("Mandanten", csKey, csIcon);
 			}
-			// Slots gel�schter/kompaktierter Eintr�ge leeren
+			// Slots gelöschter/kompaktierter Einträge leeren
 			for (i = nAnzahlNeu; i <= nHoechsterSlot; i++)
 			{
 				CString csKey;
@@ -1439,23 +1439,23 @@ void CMainFrame::OnFileMandanten()
 		char szIniFileName[VERZ_LEN + 20];
 		strcpy(szIniFileName, (LPCTSTR)csDatenverzeichnis);
 		strcat(szIniFileName, "\\easyct.ini");
-		SetIniFileName(szIniFileName);	// l�dt auch den Einstellungs-Cache neu
+		SetIniFileName(szIniFileName);	// lädt auch den Einstellungs-Cache neu
 
 		char last_file[500];
 		GetPrivateProfileString("Allgemein", "LetzteDatei", "", last_file, sizeof(last_file), szIniFileName);
 		if (*last_file != '\0')
 			AfxGetApp()->OpenDocumentFile(last_file);
 		else
-			AfxMessageBox("Hinweis: Unter Men�->Datei->Neu kann jetzt eine neue Buchungsdatei angelegt werden.");
+			AfxMessageBox("Hinweis: Unter Menü->Datei->Neu kann jetzt eine neue Buchungsdatei angelegt werden.");
 	}
 #else
 	CString Mandant0Existiert = theApp.GetProfileString("Mandanten", "Mandant00Datenverzeichnis", "");
 	if (Mandant0Existiert.IsEmpty())
 	{
 		// Mandanten erzeugen, wenn nicht vorhanden
-		if (AfxMessageBox("Mit dieser Funktion k�nnen Mandanten angelegt werden, d.h. Datenverzeichnisse f�r verschiedene Steuerpflichtige, die so z.B. auch verschiedene Kontenrahmen nutzen k�nnen. Wenn es darum geht, verschiedene Gesch�ftsbereiche durch separate Einnahme-�berschuss-Rechnungen abzubilden bitte den Men�punkt 'Journal nur f�r Betrieb' im Ansicht-Men� w�hlen (wird enthalten sein ab v1.5X). Zun�chst bitte ein Symbol ausw�hlen, das den bisherigen Datenbestand als 'Mandant 1' repr�sentiert...", MB_OKCANCEL) == IDCANCEL) return;
+		if (AfxMessageBox("Mit dieser Funktion können Mandanten angelegt werden, d.h. Datenverzeichnisse für verschiedene Steuerpflichtige, die so z.B. auch verschiedene Kontenrahmen nutzen können. Wenn es darum geht, verschiedene Geschäftsbereiche durch separate Einnahme-Überschuss-Rechnungen abzubilden bitte den Menüpunkt 'Journal nur für Betrieb' im Ansicht-Menü wählen (wird enthalten sein ab v1.5X). Zunächst bitte ein Symbol auswählen, das den bisherigen Datenbestand als 'Mandant 1' repräsentiert...", MB_OKCANCEL) == IDCANCEL) return;
 
-		// Icon w�hlen
+		// Icon wählen
 		CIconAuswahlMandant dlg(NULL);
 		dlg.DoModal();		
 		CString csSelected;
@@ -1467,14 +1467,14 @@ void CMainFrame::OnFileMandanten()
 			theApp.WriteProfileString("Mandanten", "Mandant00Icon", csSelected);
 
 			SetMandant(0);
-			if (AfxMessageBox("Sehr gut! Das bisherige Datenverzeichnis wurde mit dem neu erstellten Mandanten 'Mandant 1' verkn�pft. Als n�chstes im Mandanten-Auswahl Dialog bitte mit dem Knopf 'Neuer Mandant' einen oder mehrere weitere Mandanten anlegen und zum Schluss den Mandanten, mit dem Sie aktuell arbeiten wollen mit Doppelklick auf das Icon ausw�hlen. Hinweis: Bitte benutzen Sie ein anderes Verzeichnis als das des ersten Mandanten. Jeder Mandant ben�tigt ein eigenes Verzeichnis.", MB_OKCANCEL) == IDCANCEL) return;
+			if (AfxMessageBox("Sehr gut! Das bisherige Datenverzeichnis wurde mit dem neu erstellten Mandanten 'Mandant 1' verknüpft. Als nächstes im Mandanten-Auswahl Dialog bitte mit dem Knopf 'Neuer Mandant' einen oder mehrere weitere Mandanten anlegen und zum Schluss den Mandanten, mit dem Sie aktuell arbeiten wollen mit Doppelklick auf das Icon auswählen. Hinweis: Bitte benutzen Sie ein anderes Verzeichnis als das des ersten Mandanten. Jeder Mandant benötigt ein eigenes Verzeichnis.", MB_OKCANCEL) == IDCANCEL) return;
 		}
 		else 
 			return;
 	}
 
 	{
-		// Mandanten ausw�hlen, wenn vorhanden
+		// Mandanten auswählen, wenn vorhanden
 		CIconAuswahlMandant dlgIcon(NULL);
 		{
 			dlgIcon.m_nModus = 1;
@@ -1498,7 +1498,7 @@ void CMainFrame::OnFileMandanten()
 		if (*last_file != '\0')
 			AfxGetApp()->OpenDocumentFile(last_file);
 		else
-			AfxMessageBox("Hinweis: Unter Men�->Datei->Neu kann jetzt eine neue Buchungsdatei angelegt werden.");
+			AfxMessageBox("Hinweis: Unter Menü->Datei->Neu kann jetzt eine neue Buchungsdatei angelegt werden.");
 	}
 #endif
 }
@@ -1597,7 +1597,7 @@ void CMainFrame::OnInitMenu(CMenu* pMenu)
 			pMenu->GetMenuString(iMainMenu, sMenuText, sizeof(sMenuText), MF_BYPOSITION);
 			if (!strcmp(sMenuText, "&Datei"))
 			{
-				pSubMenu = pMenu->GetSubMenu(iMainMenu);	// Datei-Men�
+				pSubMenu = pMenu->GetSubMenu(iMainMenu);	// Datei-Menü
 				if (pSubMenu)
 				{
 					int nSubMenuCount = pSubMenu->GetMenuItemCount();
@@ -1654,7 +1654,7 @@ void CMainFrame::OnInitMenu(CMenu* pMenu)
 void CMainFrame::OnTimer(UINT_PTR nIDEvent)
 {
 	//	m_bInformationModeElapsed = TRUE;  Information Mode als Standard, nicht mehr nach n Sekunden ausblenden!
-	if (nIDEvent == 1) // 'Initialisiere ...' l�schen
+	if (nIDEvent == 1) // 'Initialisiere ...' löschen
 	{
 		SetStatus("Bereit");
 		KillTimer(1);
@@ -1667,7 +1667,7 @@ BOOL CMainFrame::OnCmdMsg(UINT nID, int nCode, void* pExtra, AFX_CMDHANDLERINFO*
 {
 	if (nCode == CN_COMMAND && m_bInformationModeElapsed && nID != 57670)
 	{
-		//m_wndStatusBar.SetInformation(NULL);	// Bei WM_COMMAND Information-Mode f�r Status-Bar ausschalten
+		//m_wndStatusBar.SetInformation(NULL);	// Bei WM_COMMAND Information-Mode für Status-Bar ausschalten
 		//TRACE("nID: %d\r\n", nID);
 	}
 
@@ -1834,8 +1834,8 @@ void CMainFrame::OnFileWaehleDatenverzeichnis()
 		csDatenverzeichnis = theApp.GetProfileString("Allgemein", "Datenverzeichnis");	// keine Mandanten? Dann aus der Allgemein Sektion des Windows-Verzeichnisses nehmen!
 	CString csAltesDatenverzeichnis = csDatenverzeichnis;
 
-	// Datenverzeichnis w�hlen
-	if (SelectFolder(csDatenverzeichnis.GetBuffer(MAX_PATH), "Datenverzeichnis ausw�hlen") && csAltesDatenverzeichnis != csDatenverzeichnis) 
+	// Datenverzeichnis wählen
+	if (SelectFolder(csDatenverzeichnis.GetBuffer(MAX_PATH), "Datenverzeichnis auswählen") && csAltesDatenverzeichnis != csDatenverzeichnis) 
 	{
 		csDatenverzeichnis.ReleaseBuffer();
 
@@ -1866,7 +1866,7 @@ void CMainFrame::OnFileWaehleDatenverzeichnis()
 					NULL
 				);
 
-				if (!lpMsgBuf) lpMsgBuf = "keine genauere Fehlerbeschreibung verf�gbar";
+				if (!lpMsgBuf) lpMsgBuf = "keine genauere Fehlerbeschreibung verfügbar";
 				csError.Format("Fehler beim Schreiben des Datenverzeichnisses '%s' in die Registry: %s", (LPCTSTR)csDatenverzeichnis, lpMsgBuf);
 				AfxMessageBox(csError);
 			}
@@ -1876,7 +1876,7 @@ void CMainFrame::OnFileWaehleDatenverzeichnis()
 
 		if (csDatenverzeichnis != csAltesDatenverzeichnis)
 		{
-			AfxMessageBox("Bitte kopieren Sie ggf. die easyct.ini und alle ben�tigten Buchungsdateien (Jahr????.eca) in das neue Datenverzeichnis.");
+			AfxMessageBox("Bitte kopieren Sie ggf. die easyct.ini und alle benötigten Buchungsdateien (Jahr????.eca) in das neue Datenverzeichnis.");
 
 			// MRU-Liste aktualisieren mit allen im neuen Datenverzeichnis vorgefundenen .eca-Dateien
 			CStringArray csaFileList, csaFileListSafe;
@@ -1926,7 +1926,7 @@ void CMainFrame::OnFileWaehleDatenverzeichnis()
 				NULL
 			);
 
-			if (!lpMsgBuf) lpMsgBuf = "keine genauere Fehlerbeschreibung verf�gbar";
+			if (!lpMsgBuf) lpMsgBuf = "keine genauere Fehlerbeschreibung verfügbar";
 			csError.Format("Fehler beim Orndner-Auswahl-Dialog: %s", lpMsgBuf);
 			AfxMessageBox(csError);
 		}
@@ -1975,7 +1975,7 @@ void CMainFrame::OnFileRegistrierungsinformationenWiederherstellen()
 
 	char Dateiname[1000];
 	*Dateiname = '\0';
-	if (!GetIniFileName(Dateiname, sizeof(Dateiname))) { AfxMessageBox("Konnte Konfigurationsdatei EasyCT.ini nicht �ffnen"); return; }
+	if (!GetIniFileName(Dateiname, sizeof(Dateiname))) { AfxMessageBox("Konnte Konfigurationsdatei EasyCT.ini nicht öffnen"); return; }
 	char *cp;
 	if (cp = strrchr(Dateiname, '\\'))
 	{
@@ -2081,7 +2081,7 @@ void CMainFrame::OnFileRegistrierungsinformationenWiederherstellen()
 
 	// ___ Sicherheitsabfrage ___
 	CString csMsg;
-	csMsg.Format("Es wurden %d Registrierungseintr�ge gefunden%s. Sollen die Daten eingelesen werden?", nCount, csDarunter.GetBuffer(0));
+	csMsg.Format("Es wurden %d Registrierungseinträge gefunden%s. Sollen die Daten eingelesen werden?", nCount, csDarunter.GetBuffer(0));
 	if (AfxMessageBox(csMsg, MB_YESNO) != IDYES)
 		return;
 	
@@ -2236,11 +2236,11 @@ void CMainFrame::OnSpendeBank()
 	int n = (int)ShellExecute(m_hWnd, "open", csBodytext, NULL, ".", SW_SHOWNORMAL);
 	if (n <= 32)
 	{
-		AfxMessageBox((CString)"Herzlichen Dank! Es gab aber ein kleines Problem mit dem E-Mail Programm auf diesem Rechner. Bitte das Mail-Programm manuell starten und Eine E-Mail an thomas@mielke.software  mit Betreff 'EasyCash-Registrierung-Spende (Bank)' und Betrag sowie Rechnungsadresse im Mailtext angeben. Nach dem Absenden sollte der Code in wenigen Tagen eintreffen. Die IBAN (" + GLOBAL_IBAN + ") wurde aber in die Zwischenablage kopiert und kann ggf. in Ihr Online-Banking eingef�gt werden. Der Kontoinhaber lautet 'Thomas Mielke' und die BIC, f�r den Fall einer Auslands�berweisung, ist " + (CString)GLOBAL_BIC + ".", MB_ICONSTOP);
+		AfxMessageBox((CString)"Herzlichen Dank! Es gab aber ein kleines Problem mit dem E-Mail Programm auf diesem Rechner. Bitte das Mail-Programm manuell starten und Eine E-Mail an thomas@mielke.software  mit Betreff 'EasyCash-Registrierung-Spende (Bank)' und Betrag sowie Rechnungsadresse im Mailtext angeben. Nach dem Absenden sollte der Code in wenigen Tagen eintreffen. Die IBAN (" + GLOBAL_IBAN + ") wurde aber in die Zwischenablage kopiert und kann ggf. in Ihr Online-Banking eingefügt werden. Der Kontoinhaber lautet 'Thomas Mielke' und die BIC, für den Fall einer Auslandsüberweisung, ist " + (CString)GLOBAL_BIC + ".", MB_ICONSTOP);
 	}
 	else
 	{
-		AfxMessageBox((CString)"Herzlichen Dank! Die Spenden-Registrierung sollte jetzt im E-Mail-Programm ge�ffnet worden sein. (Wenn nicht, bitte das Mail-Programm manuell starten und Eine E-Mail an thomas@mielke.software  mit Betreff 'EasyCash-Registrierung-Spende (Bank)' und Betrag sowie Rechnungsadresse im Mailtext angeben. Nach dem Absenden sollte der Code in wenigen Tagen eintreffen. Die IBAN (" + GLOBAL_IBAN + ") wurde �brigens in die Zwischenablage kopiert und kann ggf. in Ihr Online-Banking eingef�gt werden. Der Kontoinhaber lautet 'Thomas Mielke' und die BIC, f�r den Fall einer Auslands�berweisung, ist " + (CString)GLOBAL_BIC + ".", MB_ICONINFORMATION);
+		AfxMessageBox((CString)"Herzlichen Dank! Die Spenden-Registrierung sollte jetzt im E-Mail-Programm geöffnet worden sein. (Wenn nicht, bitte das Mail-Programm manuell starten und Eine E-Mail an thomas@mielke.software  mit Betreff 'EasyCash-Registrierung-Spende (Bank)' und Betrag sowie Rechnungsadresse im Mailtext angeben. Nach dem Absenden sollte der Code in wenigen Tagen eintreffen. Die IBAN (" + GLOBAL_IBAN + ") wurde übrigens in die Zwischenablage kopiert und kann ggf. in Ihr Online-Banking eingefügt werden. Der Kontoinhaber lautet 'Thomas Mielke' und die BIC, für den Fall einer Auslandsüberweisung, ist " + (CString)GLOBAL_BIC + ".", MB_ICONINFORMATION);
 	}
 }
 
@@ -2256,11 +2256,11 @@ void CMainFrame::OnSpendePayPal()
 	int n = (int)ShellExecute(m_hWnd, "open", "https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=MPGX6R863RLP8", NULL, ".", SW_SHOWNORMAL);
 	if (n <= 32)
 	{
-		AfxMessageBox("Herzlichen Dank! Es gab aber ein kleines Problem mit dem Web-Browser auf diesem Rechner. Bitte starten Sie den Web-Browser manuell und gehen auf www.easyct.de. Dort gleich im Willkommenstext befindet sich ein PayPal-Spenden-Knopf. Als N�chstes wird die Registrierungsmail im E-Mail-Programm ge�ffnet.", MB_ICONSTOP);
+		AfxMessageBox("Herzlichen Dank! Es gab aber ein kleines Problem mit dem Web-Browser auf diesem Rechner. Bitte starten Sie den Web-Browser manuell und gehen auf www.easyct.de. Dort gleich im Willkommenstext befindet sich ein PayPal-Spenden-Knopf. Als Nächstes wird die Registrierungsmail im E-Mail-Programm geöffnet.", MB_ICONSTOP);
 	}
 	else
 	{
-		AfxMessageBox("Herzlichen Dank! Der Web-Browser sollte jetzt mit der PayPal-Spendenseite ge�ffnet worden sein. (Wenn nicht, starten Sie den Web-Browser manuell und gehen auf www.easyct.de. Dort gleich im Willkommenstext befindet sich ein PayPal-Spenden-Knopf.) Als N�chstes wird die Registrierungsmail im E-Mail-Programm ge�ffnet.", MB_ICONINFORMATION);
+		AfxMessageBox("Herzlichen Dank! Der Web-Browser sollte jetzt mit der PayPal-Spendenseite geöffnet worden sein. (Wenn nicht, starten Sie den Web-Browser manuell und gehen auf www.easyct.de. Dort gleich im Willkommenstext befindet sich ein PayPal-Spenden-Knopf.) Als Nächstes wird die Registrierungsmail im E-Mail-Programm geöffnet.", MB_ICONINFORMATION);
 	}
 	
 	n = (int)ShellExecute(m_hWnd, "open", csBodytext, NULL, ".", SW_SHOWNORMAL);
@@ -2270,7 +2270,7 @@ void CMainFrame::OnSpendePayPal()
 	}
 	else
 	{
-		AfxMessageBox("Die Spenden-Registrierung sollte jetzt im E-Mail-Programm ge�ffnet worden sein. (Wenn nicht, bitte das Mail-Programm manuell starten und Eine E-Mail an thomas@mielke.software  mit Betreff 'EasyCash-Registrierung-Spende (PayPal)' und Betrag sowie Rechnungsadresse im Mailtext angeben.) Nach dem Absenden sollte der Code in wenigen Tagen eintreffen.", MB_ICONINFORMATION);
+		AfxMessageBox("Die Spenden-Registrierung sollte jetzt im E-Mail-Programm geöffnet worden sein. (Wenn nicht, bitte das Mail-Programm manuell starten und Eine E-Mail an thomas@mielke.software  mit Betreff 'EasyCash-Registrierung-Spende (PayPal)' und Betrag sowie Rechnungsadresse im Mailtext angeben.) Nach dem Absenden sollte der Code in wenigen Tagen eintreffen.", MB_ICONINFORMATION);
 	}
 }
 
@@ -2307,11 +2307,11 @@ void CMainFrame::OnSpendeBitcoin()
 	int n = (int)ShellExecute(m_hWnd, "open", btcadrs[index], NULL, ".", SW_SHOWNORMAL);
 	if (n <= 32)
 	{
-		AfxMessageBox("Herzlichen Dank! Es gab aber ein kleines Problem mit dem Bitcoin-Client auf diesem Rechner. (Ist tats�chlich einer installiert?) Die Bitcoin-Adresse wurde jedenfalls in die Zwischenablage kopiert. Bitte Starten Sie den Bitcoin-Client manuell und f�gen Sie die Adresse aus der Zwischenablage ein. Als N�chstes wird die Registrierungsmail im E-Mail-Programm ge�ffnet.", MB_ICONSTOP);
+		AfxMessageBox("Herzlichen Dank! Es gab aber ein kleines Problem mit dem Bitcoin-Client auf diesem Rechner. (Ist tatsächlich einer installiert?) Die Bitcoin-Adresse wurde jedenfalls in die Zwischenablage kopiert. Bitte Starten Sie den Bitcoin-Client manuell und fügen Sie die Adresse aus der Zwischenablage ein. Als Nächstes wird die Registrierungsmail im E-Mail-Programm geöffnet.", MB_ICONSTOP);
 	}
 	else
 	{
-		AfxMessageBox("Herzlichen Dank! Der Bitcoin-Client sollte jetzt mit der richtige Bitcoin-Adresse ge�ffnet worden sein. (Wenn nicht, bitte den Bitcoin-Client manuell starten und die Bitcoin-Adresse " + (CString)adrbuf + " aus der Zwischenablage einf�gen.) Als N�chstes wird die Registrierungsmail im E-Mail-Programm ge�ffnet.", MB_ICONINFORMATION);
+		AfxMessageBox("Herzlichen Dank! Der Bitcoin-Client sollte jetzt mit der richtige Bitcoin-Adresse geöffnet worden sein. (Wenn nicht, bitte den Bitcoin-Client manuell starten und die Bitcoin-Adresse " + (CString)adrbuf + " aus der Zwischenablage einfügen.) Als Nächstes wird die Registrierungsmail im E-Mail-Programm geöffnet.", MB_ICONINFORMATION);
 	}
 	
 	CString csBodytext;
@@ -2328,6 +2328,6 @@ void CMainFrame::OnSpendeBitcoin()
 	}
 	else
 	{
-		AfxMessageBox("Die Spenden-Registrierung sollte jetzt im E-Mail-Programm ge�ffnet worden sein. (Wenn nicht, bitte das Mail-Programm manuell starten und Eine E-Mail an thomas@mielke.software  mit Betreff 'EasyCash-Registrierung-Spende' und BTC-Betrag sowie Rechnungsadresse im Mailtext angeben.) Nach dem Absenden sollte der Code in wenigen Tagen eintreffen.", MB_ICONINFORMATION);
+		AfxMessageBox("Die Spenden-Registrierung sollte jetzt im E-Mail-Programm geöffnet worden sein. (Wenn nicht, bitte das Mail-Programm manuell starten und Eine E-Mail an thomas@mielke.software  mit Betreff 'EasyCash-Registrierung-Spende' und BTC-Betrag sowie Rechnungsadresse im Mailtext angeben.) Nach dem Absenden sollte der Code in wenigen Tagen eintreffen.", MB_ICONINFORMATION);
 	}
 }

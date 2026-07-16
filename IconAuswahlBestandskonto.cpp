@@ -1,17 +1,17 @@
-// IconAuswahlBestandskonto.cpp : implementation file
+ï»¿// IconAuswahlBestandskonto.cpp : implementation file
 //
-// Diese Datei ist Bestandteil von EasyCash&Tax, der freien EÜR-Fibu
+// Diese Datei ist Bestandteil von EasyCash&Tax, der freien EÃœR-Fibu
 //
 // Copyleft (GPLv3) 2020  Thomas Mielke
 //
-// Dies ist freie Software; Sie dürfen sie unter den Bedingungen der
+// Dies ist freie Software; Sie dÃ¼rfen sie unter den Bedingungen der
 // GNU General Public License, wie von der Free Software Foundation
-// veröffentlicht, weiterverteilen und/oder modifizieren; entweder gemäß
-// Version 3 der Lizenz oder (nach Ihrer Option) jeder späteren Version.
+// verÃ¶ffentlicht, weiterverteilen und/oder modifizieren; entweder gemÃ¤ÃŸ
+// Version 3 der Lizenz oder (nach Ihrer Option) jeder spÃ¤teren Version.
 //
-// Diese Software wird in der Hoffnung weiterverbreitet, dass sie nützlich
+// Diese Software wird in der Hoffnung weiterverbreitet, dass sie nÃ¼tzlich
 // sein wird, jedoch OHNE IRGENDEINE GARANTIE, auch ohne die implizierte
-// Garantie der MARKTREIFE oder der VERWENDBARKEIT FÜR EINEN BESTIMMTEN ZWECK.
+// Garantie der MARKTREIFE oder der VERWENDBARKEIT FÃœR EINEN BESTIMMTEN ZWECK.
 // Mehr Details finden Sie in der GNU Lesser General Public License.
 //
 // Sie sollten eine Kopie der GNU General Public License Version 3 zusammen mit
@@ -59,7 +59,7 @@ END_MESSAGE_MAP()
 
 void CIconAuswahlBestandskonto::InitDialog()
 {
-	if (m_nModus == 1) // Auswahl-Modus mit der Option zu ändern
+	if (m_nModus == 1) // Auswahl-Modus mit der Option zu Ã¤ndern
 	{
 		SetDlgItemText(IDOK, "Sel. anzeigen");
 		SetDlgItemText(IDCANCEL, "Alle anzeigen");
@@ -101,7 +101,7 @@ static IconInfo Icons[] = {
 	"Santander Consumer Bank",
 	"SEB",
 	"Sparda-Bank (Deutschland)",
-	"Raiffeisen (Österreich)",
+	"Raiffeisen (Ã–sterreich)",
 	"Volksbank",
 	"Sparkasse",
 	"BAWAG P.S.K.",
@@ -115,7 +115,7 @@ static IconInfo Icons[] = {
 	// Paypal
 	"PayPal",
 	"PayPal blau",
-	"PayPal grün",
+	"PayPal grÃ¼n",
 	"PayPal rot",
 	"PayPal orange",
 	"PayPal pink",
@@ -125,7 +125,7 @@ static IconInfo Icons[] = {
 	"Aktenordner",
 	"Schatulle",
 	"Kreditkarte",
-	"Geschäft",
+	"GeschÃ¤ft",
 	"Privat",
 	"Tastatur",
 	"Abacus",
@@ -140,7 +140,7 @@ static IconInfo Icons[] = {
 	"Ethikbank",
 	"DKB",
 	"TARGOBANK",
-	"Wüstenrot",
+	"WÃ¼stenrot",
 	"Deutsche Skatbank",
 	"Ikano Bank",
 	"Fidor (Legacy)",
@@ -188,7 +188,7 @@ static IconInfo Icons[] = {
 	"IKB",
 	"MLP",
 	"American Express",
-	// Bitcoin und Kryptowährungen
+	// Bitcoin und KryptowÃ¤hrungen
 	"Bitcoin",
 	"Lightning",
 	"BTCPay Server",
@@ -196,7 +196,7 @@ static IconInfo Icons[] = {
 	"Lipa",
 	"Opago",
 	"Monero",
-	"Digitalwährung",
+	"DigitalwÃ¤hrung",
 	// FinTechs
 	"Wise",
 	"Revolut",
@@ -222,8 +222,8 @@ static IconInfo Icons[] = {
 	"Maestro",
 	"UnionPay",
 	"V PAY",
-	// Neue Banken Österreich
-	"Österr. Ärzte- u. Apothekerbank",
+	// Neue Banken Ã–sterreich
+	"Ã–sterr. Ã„rzte- u. Apothekerbank",
 	"Addiko Bank",
 	"Alpen Privatbank",
 	"Anadi Bank",
@@ -232,9 +232,9 @@ static IconInfo Icons[] = {
 	"Bank Gutmann",
 	"Bank Winter",
 	"Schelhammer Capital Bank",
-	"Bankhaus Spängler",
+	"Bankhaus SpÃ¤ngler",
 	"BKS Bank",
-	"BTV Vier Länder Bank",
+	"BTV Vier LÃ¤nder Bank",
 	"DADAT Bank",
 	"easybank",
 	"CA Autobank",
@@ -245,12 +245,12 @@ static IconInfo Icons[] = {
 	"OeKB",
 	"Partner Bank",
 	"Renault Bank direkt",
-	"Sparda-Bank (Österreich)",
+	"Sparda-Bank (Ã–sterreich)",
 	"Erste Bank",
 	"VakifBank",
 	"WSK Bank",
 	// Schweizer Banken
-	"Züricher Kantonalbank",
+	"ZÃ¼richer Kantonalbank",
 	"Bank Cler",
 	"Raiffeisen (Schweiz)",
 	// Weitere Banken
@@ -300,7 +300,7 @@ void CIconAuswahlBestandskonto::Loeschen(int nElement)
 
 int CIconAuswahlBestandskonto::IconAuswahl()
 {
-	// Icon wählen
+	// Icon wÃ¤hlen
 	CIconAuswahlBestandskonto dlgIcon(m_pParent);
 	dlgIcon.DoModal();
 

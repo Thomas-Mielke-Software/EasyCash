@@ -1,17 +1,17 @@
-// RegistrierenDlg.cpp : implementation file
+Ôªø// RegistrierenDlg.cpp : implementation file
 //
-// Diese Datei ist Bestandteil von EasyCash&Tax, der freien E‹R-Fibu
+// Diese Datei ist Bestandteil von EasyCash&Tax, der freien E√úR-Fibu
 //
 // Copyleft (GPLv3) 2020  Thomas Mielke
 // 
-// Dies ist freie Software; Sie d¸rfen sie unter den Bedingungen der 
+// Dies ist freie Software; Sie d√ºrfen sie unter den Bedingungen der 
 // GNU General Public License, wie von der Free Software Foundation 
-// verˆffentlicht, weiterverteilen und/oder modifizieren; entweder gem‰ﬂ 
-// Version 3 der Lizenz oder (nach Ihrer Option) jeder sp‰teren Version.
+// ver√∂ffentlicht, weiterverteilen und/oder modifizieren; entweder gem√§√ü 
+// Version 3 der Lizenz oder (nach Ihrer Option) jeder sp√§teren Version.
 //
-// Diese Software wird in der Hoffnung weiterverbreitet, dass sie n¸tzlich 
+// Diese Software wird in der Hoffnung weiterverbreitet, dass sie n√ºtzlich 
 // sein wird, jedoch OHNE IRGENDEINE GARANTIE, auch ohne die implizierte 
-// Garantie der MARKTREIFE oder der VERWENDBARKEIT F‹R EINEN BESTIMMTEN ZWECK.
+// Garantie der MARKTREIFE oder der VERWENDBARKEIT F√úR EINEN BESTIMMTEN ZWECK.
 // Mehr Details finden Sie in der GNU Lesser General Public License.
 //
 // Sie sollten eine Kopie der GNU General Public License Version 3 zusammen mit 
@@ -61,7 +61,7 @@ END_MESSAGE_MAP()
 
 void RegistrierenDlg::OnEmail() 
 {
-	int n = (int)ShellExecute(m_hWnd, "open", "mailto:thomas@mielke.software?subject=EasyCash-Registrierung-Spende&body=Betrag:%20%20EUR%0a%0aGew‰hlte%20Option%20(1-4):%201%0a%0a%0aWenn%20Registriercode%20schon%20vorhanden:%0aNur%20Rechnung%20schicken%20(J/N)?%20N%20%0a%0aRechnungsadresse:%0a%0a%0a", 
+	int n = (int)ShellExecute(m_hWnd, "open", "mailto:thomas@mielke.software?subject=EasyCash-Registrierung-Spende&body=Betrag:%20%20EUR%0a%0aGew√§hlte%20Option%20(1-4):%201%0a%0a%0aWenn%20Registriercode%20schon%20vorhanden:%0aNur%20Rechnung%20schicken%20(J/N)?%20N%20%0a%0aRechnungsadresse:%0a%0a%0a", 
 		NULL, ".", SW_SHOWNORMAL);
 	if (n <= 32)
 	{
@@ -69,7 +69,7 @@ void RegistrierenDlg::OnEmail()
 	}
 	else
 	{
-		AfxMessageBox("Die Spenden-Registrierung sollte jetzt im E-Mail-Programm geˆffnet worden sein. (Wenn nicht, bitte das Mail-Programm manuell starten und Eine E-Mail an thomas@mielke.software mit Betreff 'EasyCash-Registrierung-Spende' und Betrag sowie Rechnungsadresse im Mailtext angeben.) Nach dem Absenden sollte der Code in wenigen Tagen eintreffen.", MB_ICONINFORMATION);
+		AfxMessageBox("Die Spenden-Registrierung sollte jetzt im E-Mail-Programm ge√∂ffnet worden sein. (Wenn nicht, bitte das Mail-Programm manuell starten und Eine E-Mail an thomas@mielke.software mit Betreff 'EasyCash-Registrierung-Spende' und Betrag sowie Rechnungsadresse im Mailtext angeben.) Nach dem Absenden sollte der Code in wenigen Tagen eintreffen.", MB_ICONINFORMATION);
 	}
 }
 

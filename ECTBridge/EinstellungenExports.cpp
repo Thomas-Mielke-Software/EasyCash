@@ -1,4 +1,4 @@
-// EinstellungenExports.cpp -- Bridge-Implementierung des Einstellungs-Caches
+ï»¿// EinstellungenExports.cpp -- Bridge-Implementierung des Einstellungs-Caches
 
 #include "stdafx.h"
 #include "EinstellungenExports.h"
@@ -139,7 +139,7 @@ namespace
 }
 
 // -----------------------------------------------------------------------------
-// Rotations-Buffer (8 Slots) für LPCSTR-Rückgaben
+// Rotations-Buffer (8 Slots) fÃ¼r LPCSTR-RÃ¼ckgaben
 // -----------------------------------------------------------------------------
 constexpr int HOLE_BUFFER_COUNT = 8;
 constexpr int HOLE_BUFFER_SIZE  = 10000;
@@ -232,7 +232,7 @@ void ECT_LadeEinstellungen()
     }
 
     ECTEngine::Einstellungen::LadeAusBridge(dict);
-    TRACE("ECT_LadeEinstellungen: %d Schlüssel aus %s\n", dict->Count, iniBuf);
+    TRACE("ECT_LadeEinstellungen: %d SchlÃ¼ssel aus %s\n", dict->Count, iniBuf);
 }
 
 // -----------------------------------------------------------------------------

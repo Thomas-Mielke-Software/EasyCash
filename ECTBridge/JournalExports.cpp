@@ -1,12 +1,12 @@
-// JournalExports.cpp - Implementierung der Journal-Embed-Exports.
+ï»¿// JournalExports.cpp - Implementierung der Journal-Embed-Exports.
 //
 // Diese Datei muss mit /clr kompiliert werden (gemischter Modus).
 // Sie ruft die managed Klasse ECTViews::Journal::JournalEmbed auf,
-// die wiederum HwndSource-basiertes WPF-Hosting im übergebenen
+// die wiederum HwndSource-basiertes WPF-Hosting im Ã¼bergebenen
 // Parent-HWND macht.
 //
 // Compile-Voraussetzungen:
-//   - /clr Switch für dieses File (NICHT pure native)
+//   - /clr Switch fÃ¼r dieses File (NICHT pure native)
 //   - ECTViews.dll und ECTEngine.dll als Referenzen
 //   - Kein PCH (PrecompiledHeader=NotUsing)
 
@@ -16,17 +16,17 @@
 #include "EasyCashDocBridge.h"      // CEasyCashDocBridge + GetEngine(bridge)
 #include "Marshalling.h"            // ECTBridge::ToNative / ToManaged
 #include "AfaAbgangShared.h"     // ECTBridge_FuehreAfaAbgang (geteilt mit ViewExports)
-#include "BuchungenLoeschenShared.h" // gemeinsames Löschen mit Buchungsgruppen-Abfrage
+#include "BuchungenLoeschenShared.h" // gemeinsames LÃ¶schen mit Buchungsgruppen-Abfrage
 
 #using "ECTEngine.dll"
 #using "ECTViews.dll"
 #using <System.dll>
 #using <WindowsBase.dll>
 
-// Aus ECTBridge/ectifacemisc.cpp (früher ECTIFace): liefert den
+// Aus ECTBridge/ectifacemisc.cpp (frÃ¼her ECTIFace): liefert den
 // Kontonamen, der mit dem angegebenen EUER- bzw. UVA-Formularfeld
-// verknüpft ist, oder NULL, wenn keine Verknuepfung existiert. Wird
-// von OnAfaAbgang benötigt, um das Restwert-Konto zu finden.
+// verknÃ¼pft ist, oder NULL, wenn keine Verknuepfung existiert. Wird
+// von OnAfaAbgang benÃ¶tigt, um das Restwert-Konto zu finden.
 extern "C" AFX_EXT_CLASS char* HoleKontoFuerFeld(
     char ea, LPCSTR eurech_feld, LPCSTR uva_feld);
 
@@ -54,11 +54,11 @@ static System::String^ ToManagedString(LPCSTR psz)
 }
 
 // ----------------------------------------------------------
-// JournalEventHandler - hält Native-Pointer als IntPtr-Felder
-// und liefert die Methoden, die als Delegate-Targets für die
-// ViewModel-Events dienen. C++/CLI-Lambdas können keine managed
+// JournalEventHandler - hÃ¤lt Native-Pointer als IntPtr-Felder
+// und liefert die Methoden, die als Delegate-Targets fÃ¼r die
+// ViewModel-Events dienen. C++/CLI-Lambdas kÃ¶nnen keine managed
 // Variablen capturen und Delegates brauchen managed Method-Pointers,
-// daher dieser Umweg über eine ref class.
+// daher dieser Umweg Ã¼ber eine ref class.
 // ----------------------------------------------------------
 
 // Liefert den Index einer Buchung in der aktuellen Liste, mit Fallback
@@ -92,9 +92,9 @@ public:
         int idx = FindeBuchungIdx(GetEngine(bridge), b);
         if (idx >= 0)
         {
-            // Bei Cancel (Dialog gibt FALSE zurück) wird kein Rebuild nötig --
-            // spart Sortierung. Die nächste Bearbeiten-Anfrage findet den
-            // Index dank Uuid-Fallback in FindeBuchungIdx auch über stale
+            // Bei Cancel (Dialog gibt FALSE zurÃ¼ck) wird kein Rebuild nÃ¶tig --
+            // spart Sortierung. Die nÃ¤chste Bearbeiten-Anfrage findet den
+            // Index dank Uuid-Fallback in FindeBuchungIdx auch Ã¼ber stale
             // Buchung^-Referenzen, die durch das eingangs gerufene
             // SyncNativeToManaged entstanden sind.
             if (ECT_ShowBuchungBearbeitenDialog(bridge, idx, hwnd))
@@ -102,8 +102,8 @@ public:
         }
     }
 
-    // Löscht eine ODER mehrere Buchungen (Mehrfachauswahl im Journal).
-    // Bestätigung und Kaskadenlösch-Abfrage für Buchungsgruppen stecken
+    // LÃ¶scht eine ODER mehrere Buchungen (Mehrfachauswahl im Journal).
+    // BestÃ¤tigung und KaskadenlÃ¶sch-Abfrage fÃ¼r Buchungsgruppen stecken
     // in der geteilten Funktion (BuchungenLoeschenShared.h, Definition
     // weiter unten in dieser Datei).
     void OnLoeschenMehrere(System::Collections::Generic::IList<ECTEngine::Buchung^>^ buchungen)
@@ -122,7 +122,7 @@ public:
 
         auto eng = GetEngine(bridge);
         auto klon = b->Clone();
-        klon->Uuid = System::Guid::NewGuid();   // neue Identitaet für den Klon
+        klon->Uuid = System::Guid::NewGuid();   // neue Identitaet fÃ¼r den Klon
         eng->Buchungen->Add(klon);
         eng->Sort();
         bridge->SyncManagedToNative();
@@ -134,10 +134,10 @@ public:
         }
         else
         {
-            // Cancel: den vorbereiteten Klon wieder zurücknehmen, sonst
-            // bliebe ein leerer/identischer Eintrag im Dokument hängen.
+            // Cancel: den vorbereiteten Klon wieder zurÃ¼cknehmen, sonst
+            // bliebe ein leerer/identischer Eintrag im Dokument hÃ¤ngen.
             // Klon-Referenz ist nach SyncNativeToManaged stale, deshalb
-            // über Uuid suchen.
+            // Ã¼ber Uuid suchen.
             int klonIdx = FindeBuchungIdx(eng, klon);
             if (klonIdx >= 0)
                 eng->Buchungen->RemoveAt(klonIdx);
@@ -153,7 +153,7 @@ public:
 
         auto eng = GetEngine(bridge);
         auto klon = b->Clone();
-        klon->Uuid = System::Guid::NewGuid();   // neue Identitaet für den Klon
+        klon->Uuid = System::Guid::NewGuid();   // neue Identitaet fÃ¼r den Klon
         klon->Belegnummer = (klon->Art == ECTEngine::Buchungsart::Einnahme)
             ? eng->LaufendeBelegnrEinnahmen.ToString()
             : eng->LaufendeBelegnrAusgaben.ToString();
@@ -168,7 +168,7 @@ public:
         }
         else
         {
-            // Cancel: den vorbereiteten Klon wieder zurücknehmen.
+            // Cancel: den vorbereiteten Klon wieder zurÃ¼cknehmen.
             int klonIdx = FindeBuchungIdx(eng, klon);
             if (klonIdx >= 0)
                 eng->Buchungen->RemoveAt(klonIdx);
@@ -461,9 +461,9 @@ bool ECTBridge_FuehreAfaAbgang(CEasyCashDocBridge* bridge, ECTEngine::Buchung^ a
     auto eng = GetEngine(bridge);
 
         CString frage;
-        frage.Format("Anlagengegenstand '%s' aus dem Betriebsvermögen ausscheiden lassen?\n\n"
+        frage.Format("Anlagengegenstand '%s' aus dem BetriebsvermÃ¶gen ausscheiden lassen?\n\n"
                      "Die AfA-Buchung wird dabei in eine einfache Ausgaben-Buchung"
-                     " über den Restwert umgewandelt.",
+                     " Ã¼ber den Restwert umgewandelt.",
                      (LPCTSTR)CString(aktuelle->Beschreibung));
         if (AfxMessageBox(frage, MB_YESNO | MB_ICONQUESTION) != IDYES)
             return false;
@@ -480,13 +480,13 @@ bool ECTBridge_FuehreAfaAbgang(CEasyCashDocBridge* bridge, ECTEngine::Buchung^ a
         }
         else
         {
-            csKonto = "Restbuchwert abgegangener Anlagegüter";
+            csKonto = "Restbuchwert abgegangener AnlagegÃ¼ter";
             CString hinweis;
             hinweis.Format(
-                "Es wurde kein Konto gefunden, das mit dem Formularfeld %s verknüpft ist. "
+                "Es wurde kein Konto gefunden, das mit dem Formularfeld %s verknÃ¼pft ist. "
                 "Deshalb wurde in der Buchung provisorisch das Konto '%s' eingetragen. "
                 "Wenn Sie Formulare benutzen, sollten Sie dieses Ausgabenkonto in den "
-                "Einstellungen -> E/Über-Konten anlegen und dem %s-Formularfeld %s zuweisen.",
+                "Einstellungen -> E/Ãœber-Konten anlegen und dem %s-Formularfeld %s zuweisen.",
                 (LPCTSTR)CString(feldNr), (LPCTSTR)csKonto,
                 (land == 1) ? "E1a" : "EUR",
                 (LPCTSTR)CString(feldNr));
@@ -504,22 +504,22 @@ bool ECTBridge_FuehreAfaAbgang(CEasyCashDocBridge* bridge, ECTEngine::Buchung^ a
             (CString)"Anlagengut '" +
             ECTBridge::ToNative(aktuelle->Erweiterungen->Hole(
                 "EasyCash", "UrspruenglichesKonto", "")) +
-            "' aus dem Betriebsvermögen entnommen");
+            "' aus dem BetriebsvermÃ¶gen entnommen");
         ECTViews::Journal::JournalEmbed::AktualisiereAlle(nullptr);
     return true;
 }
 
 // ----------------------------------------------------------
-// Gemeinsame Lösch-Logik für das Journal-Kontextmenü (beide
-// Journal-Hosts: JournalEmbed und JournalHost). Berücksichtigt
+// Gemeinsame LÃ¶sch-Logik fÃ¼r das Journal-KontextmenÃ¼ (beide
+// Journal-Hosts: JournalEmbed und JournalHost). BerÃ¼cksichtigt
 // Buchungsgruppen: sind Mitglieder einer Gruppe selektiert, deren
-// übrige Mitglieder NICHT selektiert sind, wird per Ja/Nein/Abbrechen
-// gefragt, ob die ganze Gruppe gelöscht werden soll (Kaskadenlöschen).
+// Ã¼brige Mitglieder NICHT selektiert sind, wird per Ja/Nein/Abbrechen
+// gefragt, ob die ganze Gruppe gelÃ¶scht werden soll (KaskadenlÃ¶schen).
 // Deklaration in BuchungenLoeschenShared.h.
 //
 // HINWEIS Encoding: AfxMessageBox ist MBCS (cp1252). Umlaute als
-// UTF-8-Literal würden vermurkst ("loeschen"). Darum in den Strings
-// die ASCII-unabhängigen Oktal-Escapes \366 (=0xF6, kleines oe) und
+// UTF-8-Literal wÃ¼rden vermurkst ("loeschen"). Darum in den Strings
+// die ASCII-unabhÃ¤ngigen Oktal-Escapes \366 (=0xF6, kleines oe) und
 // \344 (=0xE4, kleines ae) verwenden -- erscheint korrekt, egal wie
 // die Datei gespeichert ist.
 // ----------------------------------------------------------
@@ -531,8 +531,8 @@ bool ECTBridge_LoescheBuchungenMitGruppenAbfrage(
         return false;
     auto eng = GetEngine(bridge);
 
-    // 1) Selektion auf aktuelle managed Instanzen auflösen (Referenzen
-    //    können nach Sync-Zyklen stale sein) und Duplikate entfernen.
+    // 1) Selektion auf aktuelle managed Instanzen auflÃ¶sen (Referenzen
+    //    kÃ¶nnen nach Sync-Zyklen stale sein) und Duplikate entfernen.
     auto selUuids    = gcnew System::Collections::Generic::List<System::Guid>();
     auto loeschListe = gcnew System::Collections::Generic::List<ECTEngine::Buchung^>();
     for each (ECTEngine::Buchung^ b in buchungen)
@@ -569,8 +569,8 @@ bool ECTBridge_LoescheBuchungenMitGruppenAbfrage(
     bool bestaetigt = false;
     if (fehlende->Count > 0)
     {
-        // Kaskadenlösch-Angebot: Ja = ganze Gruppe(n), Nein = nur die
-        // Selektion, Abbrechen = nichts (ersetzt die alte bloße Warnung
+        // KaskadenlÃ¶sch-Angebot: Ja = ganze Gruppe(n), Nein = nur die
+        // Selektion, Abbrechen = nichts (ersetzt die alte bloÃŸe Warnung
         // des MFC-Pfads). Default = Abbrechen.
         int gesamt = loeschListe->Count + fehlende->Count;
         CString frage;
@@ -590,13 +590,13 @@ bool ECTBridge_LoescheBuchungenMitGruppenAbfrage(
             MB_YESNOCANCEL | MB_ICONQUESTION | MB_DEFBUTTON3);
         if (antwort == IDCANCEL) return false;
         if (antwort == IDYES) loeschListe->AddRange(fehlende);
-        bestaetigt = true;   // Ja/Nein war bereits die Bestätigung
+        bestaetigt = true;   // Ja/Nein war bereits die BestÃ¤tigung
     }
 
     if (!bestaetigt)
     {
-        // Ist die Selektion exakt eine komplette Gruppe (z.B. über das
-        // Kontextmenü "Buchungsgruppe löschen"), das auch so benennen.
+        // Ist die Selektion exakt eine komplette Gruppe (z.B. Ã¼ber das
+        // KontextmenÃ¼ "Buchungsgruppe lÃ¶schen"), das auch so benennen.
         bool eineKompletteGruppe = (gruppen->Count == 1);
         if (eineKompletteGruppe)
             for each (ECTEngine::Buchung^ cur in loeschListe)

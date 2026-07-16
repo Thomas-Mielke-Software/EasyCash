@@ -1,17 +1,17 @@
-// Formularfeld.cpp : implementation file
+ï»¿// Formularfeld.cpp : implementation file
 //
-// Diese Datei ist Bestandteil von EasyCash&Tax, der freien EÜR-Fibu
+// Diese Datei ist Bestandteil von EasyCash&Tax, der freien EÃœR-Fibu
 //
 // Copyleft (GPLv3) 2020  Thomas Mielke
 // 
-// Dies ist freie Software; Sie dürfen sie unter den Bedingungen der 
+// Dies ist freie Software; Sie dÃ¼rfen sie unter den Bedingungen der 
 // GNU General Public License, wie von der Free Software Foundation 
-// veröffentlicht, weiterverteilen und/oder modifizieren; entweder gemäß 
-// Version 3 der Lizenz oder (nach Ihrer Option) jeder späteren Version.
+// verÃ¶ffentlicht, weiterverteilen und/oder modifizieren; entweder gemÃ¤ÃŸ 
+// Version 3 der Lizenz oder (nach Ihrer Option) jeder spÃ¤teren Version.
 //
-// Diese Software wird in der Hoffnung weiterverbreitet, dass sie nützlich 
+// Diese Software wird in der Hoffnung weiterverbreitet, dass sie nÃ¼tzlich 
 // sein wird, jedoch OHNE IRGENDEINE GARANTIE, auch ohne die implizierte 
-// Garantie der MARKTREIFE oder der VERWENDBARKEIT FÜR EINEN BESTIMMTEN ZWECK.
+// Garantie der MARKTREIFE oder der VERWENDBARKEIT FÃœR EINEN BESTIMMTEN ZWECK.
 // Mehr Details finden Sie in der GNU Lesser General Public License.
 //
 // Sie sollten eine Kopie der GNU General Public License Version 3 zusammen mit 
@@ -138,7 +138,7 @@ void CFormularfeld::OnSpeichern()
 
 	if (m_typ.GetCurSel() < 0)
 	{
-		AfxMessageBox("Bitte Feldtyp auswählen");
+		AfxMessageBox("Bitte Feldtyp auswÃ¤hlen");
 		m_typ.SetFocus();
 		return;
 	}
@@ -168,7 +168,7 @@ void CFormularfeld::OnSpeichern()
 						break;
 					else
 					{
-						if (AfxMessageBox("Ein Feld mit dieser Feld-ID existiert bereits im Formular. Überschreiben?", MB_YESNO) == IDNO)
+						if (AfxMessageBox("Ein Feld mit dieser Feld-ID existiert bereits im Formular. Ãœberschreiben?", MB_YESNO) == IDNO)
 							return;
 						else
 							break;
@@ -177,9 +177,9 @@ void CFormularfeld::OnSpeichern()
 			}
 		}
 		
-		if (i < felder->GetChildCount())	// ändern
+		if (i < felder->GetChildCount())	// Ã¤ndern
 		{
-			// felder->RemoveChild(child);	// Feld-Node erstmal löschen wenn schon existiert
+			// felder->RemoveChild(child);	// Feld-Node erstmal lÃ¶schen wenn schon existiert
 			CString csFromInt;
 			_ultoa((DWORD)m_id, csFromInt.GetBuffer(30), 10);
 			child->GetAttr("id")->value = csFromInt;
@@ -193,11 +193,11 @@ void CFormularfeld::OnSpeichern()
 			child->GetAttr("ausrichtung")->value = m_ausrichtung == 0 ? "linksbuendig" : "rechtsbuendig";
 			child->GetAttr("anteil")->value = m_anteil == 0 ? "brutto" : (m_anteil == 1 ? "netto" : "mwst");
 			child->GetAttr("nachkommaanteil")->value = m_nachkommaanteil == 0 ? "mit" : "ohne";
-			if (!child->GetAttr("nullwertdarstellung"))	// später dazugekommen... eigentlich sollte ich die anderen Werte auch testen...
+			if (!child->GetAttr("nullwertdarstellung"))	// spÃ¤ter dazugekommen... eigentlich sollte ich die anderen Werte auch testen...
 				child->AppendAttr("nullwertdarstellung", m_nNullwertdarstellung == 0 ? "ja" : "nein");
 			else
 				child->GetAttr("nullwertdarstellung")->value = m_nNullwertdarstellung == 0 ? "ja" : "nein";			
-			if (!child->GetAttr("veraltet"))	// später dazugekommen... eigentlich sollte ich die anderen Werte auch testen...
+			if (!child->GetAttr("veraltet"))	// spÃ¤ter dazugekommen... eigentlich sollte ich die anderen Werte auch testen...
 				child->AppendAttr("veraltet", m_veraltet == 1 ? "ja" : "nein");
 			else
 				child->GetAttr("veraltet")->value = m_veraltet == 1 ? "ja" : "nein";			
@@ -214,13 +214,13 @@ void CFormularfeld::OnSpeichern()
 			opt.newline = false; // no new line
 			if (!xmldoc.SaveFile(m_csFormulardatei, &opt))
 			{
-				AfxMessageBox("Konnte die Änderungen nicht in der Formulardatei speichern.");
+				AfxMessageBox("Konnte die Ã„nderungen nicht in der Formulardatei speichern.");
 				return;
 			}
 		}
 		else	// neu
 		{
-			child = felder->AppendChild("feld");	// Feld-Node hinzufügen
+			child = felder->AppendChild("feld");	// Feld-Node hinzufÃ¼gen
 			if (child)
 			{
 				CString csFromInt;
@@ -361,11 +361,11 @@ void CFormularfeld::OnSelchangeTyp()
 
 	if (m_typ.GetCurSel() == 4)		// Dokumentdaten
 	{
-		SetDlgItemText(IDC_HINWEIS, "Hiermit kann auf den 'Erweiterung'-Bereich des Dokument-Objekts zugegriffen werden, in etwa so: [Plugin]Schlüssel. Platzhalter: $J (Jahr 4-stellig), $j (Jahr 2-stellig), $v (Voranmeldungszeitraum)");
+		SetDlgItemText(IDC_HINWEIS, "Hiermit kann auf den 'Erweiterung'-Bereich des Dokument-Objekts zugegriffen werden, in etwa so: [Plugin]SchlÃ¼ssel. Platzhalter: $J (Jahr 4-stellig), $j (Jahr 2-stellig), $v (Voranmeldungszeitraum)");
 	}
 	else if (m_typ.GetCurSel() == 5)	// Freitext
 	{
-		SetDlgItemText(IDC_HINWEIS, "Freitext bedeutet, dass der oben im 'Erweiterung'-Feld stehende Text 1:1 in das Formular geschrieben wird. Mögliche Platzhalter: $J (Jahr 4-stellig), $j (Jahr 2-stellig), $v (Voranmeldungszeitraum)");
+		SetDlgItemText(IDC_HINWEIS, "Freitext bedeutet, dass der oben im 'Erweiterung'-Feld stehende Text 1:1 in das Formular geschrieben wird. MÃ¶gliche Platzhalter: $J (Jahr 4-stellig), $j (Jahr 2-stellig), $v (Voranmeldungszeitraum)");
 	}
 	else
 		SetDlgItemText(IDC_HINWEIS, "");

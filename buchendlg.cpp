@@ -1,17 +1,17 @@
-// BuchenDlg.cpp : implementation file
+ï»¿// BuchenDlg.cpp : implementation file
 //
-// Diese Datei ist Bestandteil von EasyCash&Tax, der freien EÜR-Fibu
+// Diese Datei ist Bestandteil von EasyCash&Tax, der freien EÃœR-Fibu
 //
 // Copyleft (GPLv3) 2020  Thomas Mielke
 // 
-// Dies ist freie Software; Sie dürfen sie unter den Bedingungen der 
+// Dies ist freie Software; Sie dÃ¼rfen sie unter den Bedingungen der 
 // GNU General Public License, wie von der Free Software Foundation 
-// veröffentlicht, weiterverteilen und/oder modifizieren; entweder gemäß 
-// Version 3 der Lizenz oder (nach Ihrer Option) jeder späteren Version.
+// verÃ¶ffentlicht, weiterverteilen und/oder modifizieren; entweder gemÃ¤ÃŸ 
+// Version 3 der Lizenz oder (nach Ihrer Option) jeder spÃ¤teren Version.
 //
-// Diese Software wird in der Hoffnung weiterverbreitet, dass sie nützlich 
+// Diese Software wird in der Hoffnung weiterverbreitet, dass sie nÃ¼tzlich 
 // sein wird, jedoch OHNE IRGENDEINE GARANTIE, auch ohne die implizierte 
-// Garantie der MARKTREIFE oder der VERWENDBARKEIT FÜR EINEN BESTIMMTEN ZWECK.
+// Garantie der MARKTREIFE oder der VERWENDBARKEIT FÃœR EINEN BESTIMMTEN ZWECK.
 // Mehr Details finden Sie in der GNU Lesser General Public License.
 //
 // Sie sollten eine Kopie der GNU General Public License Version 3 zusammen mit 
@@ -57,7 +57,7 @@ BuchenDlg::BuchenDlg(CEasyCashDoc *pDoc, BOOL ausgaben,
 	m_ausgaben = ausgaben;
 	m_pDoc = pDoc;
 	m_pParent = pParent;
-	m_ppb = ppb;	// wenn !=0 wird nur geändert
+	m_ppb = ppb;	// wenn !=0 wird nur geÃ¤ndert
 	m_bKopieren = bKopieren;
 	m_bNeueBelegnummer = bNeueBelegnummer;
 	m_UpdateBeschreibung = TRUE;
@@ -172,7 +172,7 @@ BOOL BuchenDlg::OnInitDialog()
 			((CComboBox *)GetDlgItem(IDC_MWST))->AddString(mwst);
 	}
 
-	// Imagelists für Betriebe und Bestandskonten füllen
+	// Imagelists fÃ¼r Betriebe und Bestandskonten fÃ¼llen
 	{
 		CBitmap generische_bitmap;
 		m_imgListIcons.Create(32, 32, ILC_COLOR24, 0, 100);
@@ -190,7 +190,7 @@ BOOL BuchenDlg::OnInitDialog()
 	}
 	((CListCtrl *)GetDlgItem(IDC_BESTANDSKONTO))->SetImageList(&m_imgListIconsBestandskonten, LVSIL_NORMAL);
 
-	// Listen für Betriebe und Bestandskonten aufbauen
+	// Listen fÃ¼r Betriebe und Bestandskonten aufbauen
 	for (i = 0; i < 100; i++)
 	{
 		char inifile[1000], buffer[1000]; 
@@ -203,7 +203,7 @@ BOOL BuchenDlg::OnInitDialog()
 		if (!*buffer) break;
 		((CListCtrl *)GetDlgItem(IDC_BETRIEB))->InsertItem(i, buffer, nIcon);
 	}
-	if (i > 0)	// bei mehr als zwei Einträgen: kleinere Icons benutzen
+	if (i > 0)	// bei mehr als zwei EintrÃ¤gen: kleinere Icons benutzen
 		((CListCtrl *)GetDlgItem(IDC_BETRIEB))->SetView(LV_VIEW_TILE);
 	for (i = 0; i < 100; i++)
 	{
@@ -217,7 +217,7 @@ BOOL BuchenDlg::OnInitDialog()
 		if (!*buffer) break;
 		((CListCtrl *)GetDlgItem(IDC_BESTANDSKONTO))->InsertItem(i, buffer, nIcon);
 	}
-	if (i > 0)	// bei mehr als zwei Einträgen: kleinere Icons benutzen
+	if (i > 0)	// bei mehr als zwei EintrÃ¤gen: kleinere Icons benutzen
 		((CListCtrl *)GetDlgItem(IDC_BESTANDSKONTO))->SetView(LV_VIEW_TILE);
 
 /*	KONVERTIERUNGSCODE ERSTMAL AUSSCHALTEN!!!
@@ -284,7 +284,7 @@ void BuchenDlg::OnOK()
 //	GetDlgItem(IDC_KONVERTIEREN)->EnableWindow(TRUE);
 
 	if (m_ppb)	
-	{	// Buchung ändern ...
+	{	// Buchung Ã¤ndern ...
 		p = m_ppb;	
 	}
 	else
@@ -300,21 +300,21 @@ void BuchenDlg::OnOK()
 		*p = new CBuchung;
 		(*p)->next = NULL;
 	}
-	CBuchung *pBuchungsmerker = *p; // p ist nicht mehr gültig nach dem Sortieren!
+	CBuchung *pBuchungsmerker = *p; // p ist nicht mehr gÃ¼ltig nach dem Sortieren!
 	
 	char buf[10000];
 	int	t, m, j;
 	GetDlgItemText(IDC_DATUM_TAG, buf, sizeof(buf)); t = atoi(buf);
 	if (t < 1 || t > 31)
 	{
-		MessageBox("Eingabefehler: Wert für Tag von 1 bis 31!", NULL, MB_ICONSTOP);
+		MessageBox("Eingabefehler: Wert fÃ¼r Tag von 1 bis 31!", NULL, MB_ICONSTOP);
 		GetDlgItem(IDC_DATUM_TAG)->SetFocus();
 		goto error_delete_buchung;
 	}
 	GetDlgItemText(IDC_DATUM_MONAT, buf, sizeof(buf)); m = atoi(buf);
 	if (m < 1 || m > 12)
 	{
-		MessageBox("Eingabefehler: Wert für Monat von 1 bis 12!", NULL, MB_ICONSTOP);
+		MessageBox("Eingabefehler: Wert fÃ¼r Monat von 1 bis 12!", NULL, MB_ICONSTOP);
 		GetDlgItem(IDC_DATUM_MONAT)->SetFocus();
 		goto error_delete_buchung;
 	}
@@ -329,7 +329,7 @@ void BuchenDlg::OnOK()
 	}
 	if (j < 1990 || j > 3000)
 	{
-		MessageBox("Eingabefehler: Wert für Jahr von 1990 bis 3000!", NULL, MB_ICONSTOP);
+		MessageBox("Eingabefehler: Wert fÃ¼r Jahr von 1990 bis 3000!", NULL, MB_ICONSTOP);
 		GetDlgItem(IDC_DATUM_JAHR)->SetFocus();
 		goto error_delete_buchung;
 	}
@@ -360,7 +360,7 @@ void BuchenDlg::OnOK()
 		GetDlgItemText(IDC_MWST, buf, sizeof(buf)); 
 		if (!strlen(buf) || !(*p)->SetMWSt(buf))
 		{
-			MessageBox("Keinen gültigen MWSt-Satz angegeben!", NULL, MB_ICONSTOP);
+			MessageBox("Keinen gÃ¼ltigen MWSt-Satz angegeben!", NULL, MB_ICONSTOP);
 			goto error_delete_buchung;
 		}
 
@@ -381,7 +381,7 @@ void BuchenDlg::OnOK()
 		}	
 		if ((*p)->AbschreibungNr > (*p)->AbschreibungJahre + 1)
 		{
-			MessageBox("Das aktuelle Abschreibungsjahr übersteigt den Abschreibungszeitzaum um mehr als 1! (Hinweis: Für den Fall, dass im ersten Jahr keine ganze Jahresrate abgeschrieben wurde, kann das Abschreibungsjahr die Abschreibungsdauer um eins übersteigen.)", NULL, MB_ICONSTOP);
+			MessageBox("Das aktuelle Abschreibungsjahr Ã¼bersteigt den Abschreibungszeitzaum um mehr als 1! (Hinweis: FÃ¼r den Fall, dass im ersten Jahr keine ganze Jahresrate abgeschrieben wurde, kann das Abschreibungsjahr die Abschreibungsdauer um eins Ã¼bersteigen.)", NULL, MB_ICONSTOP);
 			goto error_delete_buchung;
 		}
 
@@ -392,7 +392,7 @@ void BuchenDlg::OnOK()
 		{
 			if (!strlen(buf))
 			{
-				MessageBox("Keinen Abschreibungssatz angegeben, obwohl degressiv ausgewählt wurde!", NULL, MB_ICONSTOP);
+				MessageBox("Keinen Abschreibungssatz angegeben, obwohl degressiv ausgewÃ¤hlt wurde!", NULL, MB_ICONSTOP);
 				GetDlgItem(IDC_ABSCHREIBUNGSATZ)->SetFocus();
 				goto error_delete_buchung;
 			}
@@ -401,7 +401,7 @@ void BuchenDlg::OnOK()
 
 			if ((*p)->AbschreibungJahre <= 1)
 			{
-				MessageBox("Gesamt-Abschreibungsdauer muss bei degressiven Abschreibungen größer als 1 sein!", NULL, MB_ICONSTOP);
+				MessageBox("Gesamt-Abschreibungsdauer muss bei degressiven Abschreibungen grÃ¶ÃŸer als 1 sein!", NULL, MB_ICONSTOP);
 				GetDlgItem(IDC_ABSCHREIBUNGJAHRE)->SetFocus();
 				goto error_delete_buchung;
 			}
@@ -421,7 +421,7 @@ void BuchenDlg::OnOK()
 
 		if ((*p)->AbschreibungNr-1 > (*p)->AbschreibungJahre)
 		{
-			MessageBox("Laufende Abschreibungsnummer ist größer als die Gesamt-Abschreibungsdauer!", NULL, MB_ICONSTOP);
+			MessageBox("Laufende Abschreibungsnummer ist grÃ¶ÃŸer als die Gesamt-Abschreibungsdauer!", NULL, MB_ICONSTOP);
 			goto error_delete_buchung;
 		}
 
@@ -441,16 +441,16 @@ void BuchenDlg::OnOK()
 		{
 			if ((*p)->AbschreibungGenauigkeit != GANZJAHRES_AFA)
 			{
-				if (AfxMessageBox("Wenn es sich bei der Buchung um eine spezielle Abschreibung für Elektroautos handelt, muss ganzjährige AfA ausgewählt sein. Soll ich die AfA-Genauigkeit für diese Buchung auf 'Jahres-AfA' umstellen?", MB_YESNO) == IDYES)
+				if (AfxMessageBox("Wenn es sich bei der Buchung um eine spezielle Abschreibung fÃ¼r Elektroautos handelt, muss ganzjÃ¤hrige AfA ausgewÃ¤hlt sein. Soll ich die AfA-Genauigkeit fÃ¼r diese Buchung auf 'Jahres-AfA' umstellen?", MB_YESNO) == IDYES)
 					(*p)->AbschreibungGenauigkeit = GANZJAHRES_AFA;
 			}
 			else if((*p)->AbschreibungJahre != 6)
 			{
-				if (AfxMessageBox("Wenn es sich bei der Buchung um eine spezielle Abschreibung für Elektroautos handelt, muss als Abschreibungsdauer sechse Jahre ausgewählt sein. Soll ich die Abschreibungsdauer für diese Buchung entsprechend ändern?", MB_YESNO) == IDYES)
+				if (AfxMessageBox("Wenn es sich bei der Buchung um eine spezielle Abschreibung fÃ¼r Elektroautos handelt, muss als Abschreibungsdauer sechse Jahre ausgewÃ¤hlt sein. Soll ich die Abschreibungsdauer fÃ¼r diese Buchung entsprechend Ã¤ndern?", MB_YESNO) == IDYES)
 					(*p)->AbschreibungJahre = 6;
 			}
 			else
-				AfxMessageBox("Hinweis: Da die Buchung mit einer degressiven Abschreibungsrate von 75% und ganzjähriger AfA-Genauigkeit angelegt wurde, wird sie als spezielle Abschreibung für Elektroautos behandelt. Dabei werden in den Folgejahren jeweils 10, 5, 5, 3 und 2 Prozent vom Netto-Anschaffungspreis abgeschrieben.");
+				AfxMessageBox("Hinweis: Da die Buchung mit einer degressiven Abschreibungsrate von 75% und ganzjÃ¤hriger AfA-Genauigkeit angelegt wurde, wird sie als spezielle Abschreibung fÃ¼r Elektroautos behandelt. Dabei werden in den Folgejahren jeweils 10, 5, 5, 3 und 2 Prozent vom Netto-Anschaffungspreis abgeschrieben.");
 		}
 
 		int m = ((CComboBox *)GetDlgItem(IDC_EURECHNUNGSPOSTEN))->GetCurSel();
@@ -468,7 +468,7 @@ void BuchenDlg::OnOK()
 			char buffer[100];
 			sprintf(buffer, "A%04d", m_pDoc->nLaufendeBuchungsnummerFuerAusgaben);
 			if (!strcmp((*p)->Belegnummer.GetBuffer(0), buffer))
-				m_pDoc->nLaufendeBuchungsnummerFuerAusgaben++;	// erhöhen nur wenn Belegnummer unverändert geblieben
+				m_pDoc->nLaufendeBuchungsnummerFuerAusgaben++;	// erhÃ¶hen nur wenn Belegnummer unverÃ¤ndert geblieben
 		}
 
 		if (!m_ausgaben && ECT_HoleEinstellungInt("ErzeugeLaufendeBuchungsnummernFuerEinnahmen", 0) && !m_ppb)
@@ -476,23 +476,23 @@ void BuchenDlg::OnOK()
 			char buffer[100];
 			sprintf(buffer, "E%04d", m_pDoc->nLaufendeBuchungsnummerFuerEinnahmen);
 			if (!strcmp((*p)->Belegnummer.GetBuffer(0), buffer))
-				m_pDoc->nLaufendeBuchungsnummerFuerEinnahmen++;	// erhöhen nur wenn Belegnummer unverändert geblieben
+				m_pDoc->nLaufendeBuchungsnummerFuerEinnahmen++;	// erhÃ¶hen nur wenn Belegnummer unverÃ¤ndert geblieben
 		}
 
-		// Belegnummer erhöhen für Bank
+		// Belegnummer erhÃ¶hen fÃ¼r Bank
 		{
 			char buffer[100];
 			sprintf(buffer, "B%04d", m_pDoc->nLaufendeBuchungsnummerFuerBank);
 			if (!strcmp((*p)->Belegnummer.GetBuffer(0), buffer))
-				m_pDoc->nLaufendeBuchungsnummerFuerBank++;	// erhöhen nur wenn Belegnummer unverändert geblieben
+				m_pDoc->nLaufendeBuchungsnummerFuerBank++;	// erhÃ¶hen nur wenn Belegnummer unverÃ¤ndert geblieben
 		}
 
-		// Belegnummer erhöhen für Kasse
+		// Belegnummer erhÃ¶hen fÃ¼r Kasse
 		{
 			char buffer[100];
 			sprintf(buffer, "K%04d", m_pDoc->nLaufendeBuchungsnummerFuerKasse);
 			if (!strcmp((*p)->Belegnummer.GetBuffer(0), buffer))
-				m_pDoc->nLaufendeBuchungsnummerFuerKasse++;	// erhöhen nur wenn Belegnummer unverändert geblieben
+				m_pDoc->nLaufendeBuchungsnummerFuerKasse++;	// erhÃ¶hen nur wenn Belegnummer unverÃ¤ndert geblieben
 		}
 
 		// Betrieb und Bestandskonto speichern
@@ -520,7 +520,7 @@ void BuchenDlg::OnOK()
 				csGewaehlterSplit.Format("%d", m_nGewaehlterSplit);
 				SetErweiterungKey((*p)->Erweiterung, "EasyCash", "GewaehlterSplit", csGewaehlterSplit.GetBuffer(100));
 				
-				// UUID erzeugen für Identifikation von korrespondierenden Split-Buchungen in Einnahmen
+				// UUID erzeugen fÃ¼r Identifikation von korrespondierenden Split-Buchungen in Einnahmen
 				CString csUUID;
 				char *pUUID = GetErweiterungKey((*p)->Erweiterung, "EasyCash", "SplitBasisbuchung");
 				if (!*pUUID)
@@ -548,7 +548,7 @@ void BuchenDlg::OnOK()
 				CString csBeschreibungSplit = (CString)"Privatanteil " + (*p)->Beschreibung + " (" + csSplitSatzText + "%)";
 				CString csSplitSatzKonto = *(m_pParent->einstellungen5->m_part[m_nGewaehlterSplit]);
 				
-				// existiert schon eine Buchung mit Vorsteuerabzug und Verdacht auf Doppelgänger?
+				// existiert schon eine Buchung mit Vorsteuerabzug und Verdacht auf DoppelgÃ¤nger?
 				CBuchung *pGegenbuchung = m_pDoc->Einnahmen;
 				while (pGegenbuchung)
 				{
@@ -556,7 +556,7 @@ void BuchenDlg::OnOK()
 					{
 						if (nSplitUSTSatzWert > 0)
 						{
-							if (AfxMessageBox((CString)"Es existiert für diese Buchung unter Betriebseinahmen bereits eine 'Gegenbuchung' mit Vorsteuerabzug. Ersetzen?", MB_YESNO) == IDYES)
+							if (AfxMessageBox((CString)"Es existiert fÃ¼r diese Buchung unter Betriebseinahmen bereits eine 'Gegenbuchung' mit Vorsteuerabzug. Ersetzen?", MB_YESNO) == IDYES)
 								break;
 							else
 							{
@@ -566,19 +566,19 @@ void BuchenDlg::OnOK()
 						}
 						else
 						{
-							if (AfxMessageBox((CString)"Es existiert für diese Buchung unter Betriebseinahmen bereits eine 'Gegenbuchung' mit Vorsteuerabzug. Löschen?", MB_YESNO) == IDYES)
+							if (AfxMessageBox((CString)"Es existiert fÃ¼r diese Buchung unter Betriebseinahmen bereits eine 'Gegenbuchung' mit Vorsteuerabzug. LÃ¶schen?", MB_YESNO) == IDYES)
 							{
 								CBuchung **ppb = &m_pDoc->Einnahmen;
 								CBuchung *pb = pGegenbuchung;
 
-								// Einnahmen nach zu löschender Buchung durchsuchen
+								// Einnahmen nach zu lÃ¶schender Buchung durchsuchen
 								BOOL bFound = FALSE;
 								while (*ppb)
 								{
 									if (*ppb == pb)
 									{
 										pb = (*ppb)->next;
-										(*ppb)->next = NULL;	// ganz wichtig wegen Kettenlöschung
+										(*ppb)->next = NULL;	// ganz wichtig wegen KettenlÃ¶schung
 										delete *ppb;
 										*ppb = pb;
 
@@ -606,7 +606,7 @@ void BuchenDlg::OnOK()
 					{
 						pGegenbuchung = new CBuchung;
 						*pGegenbuchung = **p;
-						pGegenbuchung->next = m_pDoc->Einnahmen;	// einfügen
+						pGegenbuchung->next = m_pDoc->Einnahmen;	// einfÃ¼gen
 						m_pDoc->Einnahmen = pGegenbuchung;		
 					}
 					pGegenbuchung->Beschreibung = csBeschreibungSplit;
@@ -625,7 +625,7 @@ void BuchenDlg::OnOK()
 					SetErweiterungKey(pGegenbuchung->Erweiterung, "EasyCash", "SplitGegenbuchungMitVorsteuerabzug", csUUID);
 				}
 
-				// existiert schon eine Buchung ohne Vorsteuerabzug und Verdacht auf Doppelgänger?
+				// existiert schon eine Buchung ohne Vorsteuerabzug und Verdacht auf DoppelgÃ¤nger?
 				pGegenbuchung = m_pDoc->Einnahmen;
 				while (pGegenbuchung)
 				{
@@ -633,7 +633,7 @@ void BuchenDlg::OnOK()
 					{
 						if (nSplitUSTSatzWert < 10000)
 						{
-							if (AfxMessageBox((CString)"Es existiert für diese Buchung unter Betriebseinahmen bereits eine 'Gegenbuchung' ohne Vorsteuerabzug. Ersetzen?", MB_YESNO) == IDYES)
+							if (AfxMessageBox((CString)"Es existiert fÃ¼r diese Buchung unter Betriebseinahmen bereits eine 'Gegenbuchung' ohne Vorsteuerabzug. Ersetzen?", MB_YESNO) == IDYES)
 								break;
 							else
 							{
@@ -643,19 +643,19 @@ void BuchenDlg::OnOK()
 						}
 						else
 						{
-							if (AfxMessageBox((CString)"Es existiert für diese Buchung unter Betriebseinahmen bereits eine 'Gegenbuchung' ohne Vorsteuerabzug. Löschen?", MB_YESNO) == IDYES)
+							if (AfxMessageBox((CString)"Es existiert fÃ¼r diese Buchung unter Betriebseinahmen bereits eine 'Gegenbuchung' ohne Vorsteuerabzug. LÃ¶schen?", MB_YESNO) == IDYES)
 							{
 								CBuchung **ppb = &m_pDoc->Einnahmen;
 								CBuchung *pb = pGegenbuchung;
 
-								// Einnahmen nach zu löschender Buchung durchsuchen
+								// Einnahmen nach zu lÃ¶schender Buchung durchsuchen
 								BOOL bFound = FALSE;
 								while (*ppb)
 								{
 									if (*ppb == pb)
 									{
 										pb = (*ppb)->next;
-										(*ppb)->next = NULL;	// ganz wichtig wegen Kettenlöschung
+										(*ppb)->next = NULL;	// ganz wichtig wegen KettenlÃ¶schung
 										delete *ppb;
 										*ppb = pb;
 
@@ -677,13 +677,13 @@ void BuchenDlg::OnOK()
 				}
 
 				// Split Gegenbuchung ohne Vorsteuerabzug
-				if (nSplitUSTSatzWert < 10000)	// bei vollen VST ist kein Anteil ohne VST nötig
+				if (nSplitUSTSatzWert < 10000)	// bei vollen VST ist kein Anteil ohne VST nÃ¶tig
 				{
 					if (!pGegenbuchung)
 					{
 						pGegenbuchung = new CBuchung;
 						*pGegenbuchung = **p;
-						pGegenbuchung->next = m_pDoc->Einnahmen;	// einfügen
+						pGegenbuchung->next = m_pDoc->Einnahmen;	// einfÃ¼gen
 						m_pDoc->Einnahmen = pGegenbuchung;		
 					}
 					pGegenbuchung->Beschreibung = csBeschreibungSplit;
@@ -707,7 +707,7 @@ void BuchenDlg::OnOK()
 					ll *= (LONGLONG)(10000 - nSplitUSTSatzWert);
 //csTemp.Format("4: %lld", ll);
 //AfxMessageBox(csTemp);
-					ll /= (LONGLONG)10000;				// schließlich entspr. VST-Anteilen reduzieren	
+					ll /= (LONGLONG)10000;				// schlieÃŸlich entspr. VST-Anteilen reduzieren	
 //csTemp.Format("5: %lld", ll);
 //AfxMessageBox(csTemp);
 					pGegenbuchung->Betrag = (int)ll;				
@@ -725,7 +725,7 @@ void BuchenDlg::OnOK()
 
 		}
 
-		m_pDoc->SetModifiedFlag(m_ppb ? "Buchung wurde geändert" : "Neue Buchung wurde hinzugefügt");
+		m_pDoc->SetModifiedFlag(m_ppb ? "Buchung wurde geÃ¤ndert" : "Neue Buchung wurde hinzugefÃ¼gt");
 		m_pDoc->InkrementBuchungszaehler();
 
 		// dauerte zu lange bei sehr vielen Buchungen, deshalb nur noch bei Split-Buchungen:
@@ -741,9 +741,9 @@ void BuchenDlg::OnOK()
 
 
 		if (m_ppb || m_bKopieren)
-			CDialog::OnOK();	// bei Ändern: Dialog schließen
+			CDialog::OnOK();	// bei Ã„ndern: Dialog schlieÃŸen
 		else
-			InitDlg();			// sonst nächste Buchung
+			InitDlg();			// sonst nÃ¤chste Buchung
 
 		if (ECT_HoleEinstellungInt("taeglich_buchen", 0))
 			GetDlgItem(IDC_BETRAG)->SetFocus();
@@ -801,7 +801,7 @@ void BuchenDlg::InitDlg(BOOL bBelasseEinigeFelder)
 	if (*IniFileName) GetPrivateProfileString("Betriebe", "Betrieb00", "", szPathName, sizeof(szPathName), IniFileName);
 */
 
-	// Combo-Box löschen und neu aufbauen
+	// Combo-Box lÃ¶schen und neu aufbauen
 	if (bBelasseEinigeFelder) GetDlgItemText(IDC_BESCHREIBUNG, csWiederherstellen);
 	((CComboBox *)GetDlgItem(IDC_BESCHREIBUNG))->ResetContent();
 	int i;
@@ -908,12 +908,12 @@ void BuchenDlg::InitDlg(BOOL bBelasseEinigeFelder)
 	if (m_ppb && *m_ppb)
 	{
 		if (m_bKopieren)
-			strcpy(buf_window_text, "Buchungskopie für ");
+			strcpy(buf_window_text, "Buchungskopie fÃ¼r ");
 		else
-			strcpy(buf_window_text, "Buchungsänderung für ");
+			strcpy(buf_window_text, "BuchungsÃ¤nderung fÃ¼r ");
 	}
 	else
-		strcpy(buf_window_text, "Buchen für ");
+		strcpy(buf_window_text, "Buchen fÃ¼r ");
 	strcat(buf_window_text, (LPCTSTR)m_pDoc->GetPathName());
 	SetWindowText(buf_window_text);
 
@@ -927,7 +927,7 @@ void BuchenDlg::InitDlg(BOOL bBelasseEinigeFelder)
 	}
 	if (bBelasseEinigeFelder) SetDlgItemText(IDC_MWST, csWiederherstellen);
 
-	if (m_ppb && *m_ppb)	// ändern
+	if (m_ppb && *m_ppb)	// Ã¤ndern
 	{
 		GetDlgItem(IDC_AUSGABEN)->EnableWindow(FALSE);
 		GetDlgItem(IDC_EINNAHMEN)->EnableWindow(FALSE);
@@ -1089,11 +1089,11 @@ void BuchenDlg::InitRestwert()
 	}
 	GetDlgItemText(IDC_ABSCHREIBUNGRESTWERT, buf, sizeof(buf));
 	int nAbschreibungRestwert = atoi(buf);
-	// "Abgang buchen" nur bei einer echten mehrjährigen AfA anbieten
+	// "Abgang buchen" nur bei einer echten mehrjÃ¤hrigen AfA anbieten
 	// (n = Abschreibungsjahr > 1, dann ist auch das Restwert-Feld sichtbar).
 	// Bei einer normalen Ausgaben-Buchung wird das Restwert-Feld mit dem vollen
-	// Netto-Betrag vorbelegt; ohne die n>1-Prüfung erschien der Button dann
-	// fälschlich auch dort (Issue #32).
+	// Netto-Betrag vorbelegt; ohne die n>1-PrÃ¼fung erschien der Button dann
+	// fÃ¤lschlich auch dort (Issue #32).
 	if (m_ppb && n > 1 && nAbschreibungRestwert)
 		GetDlgItem(IDC_ABGANG_BUCHEN)->ShowWindow(SW_SHOW);
 	else
@@ -1139,10 +1139,10 @@ void BuchenDlg::OnCbnSelchangeEurechnungsposten()
 		{
 			CString itemText;
 			((CComboBox *)GetDlgItem(IDC_EURECHNUNGSPOSTEN))->GetLBText(n, itemText);
-			if (itemText[0] != ' ')  // nur die Auswahl mit Tab-Zeichen eingerückter Einträge als Konto akzeptieren
+			if (itemText[0] != ' ')  // nur die Auswahl mit Tab-Zeichen eingerÃ¼ckter EintrÃ¤ge als Konto akzeptieren
 			{
 				((CComboBox *)GetDlgItem(IDC_EURECHNUNGSPOSTEN))->SetCurSel(-1);
-				AfxMessageBox("Die Auswahl einer Unterkategorie als Konto ist nicht möglich. Es können nur die eingerückten Elemente der Liste ausgewählt werden.");
+				AfxMessageBox("Die Auswahl einer Unterkategorie als Konto ist nicht mÃ¶glich. Es kÃ¶nnen nur die eingerÃ¼ckten Elemente der Liste ausgewÃ¤hlt werden.");
 			}
 		}
 	}
@@ -1247,7 +1247,7 @@ void BuchenDlg::OnTimer(UINT nIDEvent)
 				GetDlgItem(IDC_BETRIEB)->ShowWindow(SW_HIDE);
 				GetDlgItem(IDC_BETRIEB)->GetWindowRect(&r);				// Bestandskonto ListCtrl verschieben
 				// GetDlgItem(IDC_BESTANDSKONTO)->GetWindowRect(&r2);
-				// r.right = r2.right;									// Bestandskonto ListCtrl vergrößern
+				// r.right = r2.right;									// Bestandskonto ListCtrl vergrÃ¶ÃŸern
 				ScreenToClient(r);
 				GetDlgItem(IDC_BESTANDSKONTO)->MoveWindow(r);
 				
@@ -1271,7 +1271,7 @@ void BuchenDlg::OnTimer(UINT nIDEvent)
 			{
 				GetDlgItem(IDC_BESTANDSKONTO_STATIC)->ShowWindow(SW_HIDE);
 				GetDlgItem(IDC_BESTANDSKONTO)->ShowWindow(SW_HIDE);
-				//GetDlgItem(IDC_BETRIEB)->GetWindowRect(&r);			// Betrieb ListCtrl vergrößern
+				//GetDlgItem(IDC_BETRIEB)->GetWindowRect(&r);			// Betrieb ListCtrl vergrÃ¶ÃŸern
 				//ScreenToClient(r);
 				//GetDlgItem(IDC_BESTANDSKONTO)->MoveWindow(r);
 				GetDlgItem(IDC_ALT4)->ShowWindow(SW_HIDE);
@@ -1315,7 +1315,7 @@ void BuchenDlg::OnTimer(UINT nIDEvent)
 		GetDlgItemText(IDC_ABSCHREIBUNGJAHRE, buf, sizeof(buf));
 		int n = atoi(buf);
 
-		// wenn Konto noch nicht gewählt, ein gängiges AfA-Konto voreinstellen
+		// wenn Konto noch nicht gewÃ¤hlt, ein gÃ¤ngiges AfA-Konto voreinstellen
 		if (n > 1 && ((CComboBox *)GetDlgItem(IDC_EURECHNUNGSPOSTEN))->GetCurSel() == -1)
 		{
 			int m;
@@ -1323,9 +1323,9 @@ void BuchenDlg::OnTimer(UINT nIDEvent)
 				((CComboBox *)GetDlgItem(IDC_EURECHNUNGSPOSTEN))->SetCurSel(m);
 			else if ((m = ((CComboBox *)GetDlgItem(IDC_EURECHNUNGSPOSTEN))->FindString(0, "AfA")) != CB_ERR)
 				((CComboBox *)GetDlgItem(IDC_EURECHNUNGSPOSTEN))->SetCurSel(m);
-			else if ((m = ((CComboBox *)GetDlgItem(IDC_EURECHNUNGSPOSTEN))->FindString(0, "AfA auf bewegliche Wirtschaftsgüter")) != CB_ERR)
+			else if ((m = ((CComboBox *)GetDlgItem(IDC_EURECHNUNGSPOSTEN))->FindString(0, "AfA auf bewegliche WirtschaftsgÃ¼ter")) != CB_ERR)
 				((CComboBox *)GetDlgItem(IDC_EURECHNUNGSPOSTEN))->SetCurSel(m);
-			else if ((m = ((CComboBox *)GetDlgItem(IDC_EURECHNUNGSPOSTEN))->FindString(0, "Abschreibung auf das Anlagevermögen (Afa, GWG)")) != CB_ERR)
+			else if ((m = ((CComboBox *)GetDlgItem(IDC_EURECHNUNGSPOSTEN))->FindString(0, "Abschreibung auf das AnlagevermÃ¶gen (Afa, GWG)")) != CB_ERR)
 				((CComboBox *)GetDlgItem(IDC_EURECHNUNGSPOSTEN))->SetCurSel(m);			
 		}			
 
@@ -1383,7 +1383,7 @@ void BuchenDlg::OnTimer(UINT nIDEvent)
 
 		KillTimer(nIDEvent);
 	}
-	else if (nIDEvent == 103)	// Verzögerte Ausführung in der Folge von OnBnClickedAbschreibungdegressiv()
+	else if (nIDEvent == 103)	// VerzÃ¶gerte AusfÃ¼hrung in der Folge von OnBnClickedAbschreibungdegressiv()
 	{
 		KillTimer(nIDEvent);
 
@@ -1397,7 +1397,7 @@ void BuchenDlg::OnTimer(UINT nIDEvent)
 			{
 				if (!bAbschreibungDegressiv)
 				{
-					if (AfxMessageBox("EC&T stellt den Abschreibungsmodus in der Jahreswechsel-Funktion zum optimalen Zeitpunkt automatisch von degressiv auf linear um. Es ist nicht nötig dies manuell zu tun. Wirklich auf lineare AfA ändern?", MB_OKCANCEL) == IDCANCEL)
+					if (AfxMessageBox("EC&T stellt den Abschreibungsmodus in der Jahreswechsel-Funktion zum optimalen Zeitpunkt automatisch von degressiv auf linear um. Es ist nicht nÃ¶tig dies manuell zu tun. Wirklich auf lineare AfA Ã¤ndern?", MB_OKCANCEL) == IDCANCEL)
 					{
 						((CButton*)GetDlgItem(IDC_ABSCHREIBUNGDEGRESSIV))->SetCheck(TRUE);
 						return;
@@ -1413,7 +1413,7 @@ void BuchenDlg::OnTimer(UINT nIDEvent)
 					int nAbschreibungSatz = atoi(buf);
 					if (nAbschreibungSatz <= 0 && nAbschreibungJahre < 99)
 					{
-						AfxMessageBox("Bitte prüfen, ob wirklich beabsichtigt ist, dass der Abschreibungssatz 0 ist. Das ist nur sinnvoll, wenn das Anlagengut nicht abgeschrieben wird, wie z.B. bei Grundstücken. In dem Fall bitte eine Abschreibungsdauer von 99 Jahren angeben.");
+						AfxMessageBox("Bitte prÃ¼fen, ob wirklich beabsichtigt ist, dass der Abschreibungssatz 0 ist. Das ist nur sinnvoll, wenn das Anlagengut nicht abgeschrieben wird, wie z.B. bei GrundstÃ¼cken. In dem Fall bitte eine Abschreibungsdauer von 99 Jahren angeben.");
 						GetDlgItem(IDC_ABSCHREIBUNGSATZ)->SetFocus();
 					}
 				}
@@ -1588,7 +1588,7 @@ void BuchenDlg::OnSetfocusBeschreibung()
 		((CComboBox *)GetDlgItem(IDC_BESCHREIBUNG))->SetEditSel(0, 0);	*/
 }
 
-// ea: "E" == Einnahmen, "A" == Ausgaben für Einnahmen-Überschußrechnung
+// ea: "E" == Einnahmen, "A" == Ausgaben fÃ¼r Einnahmen-ÃœberschuÃŸrechnung
 void BuchenDlg::UpdateCombo(CString ea)
 {
 	int i;
@@ -1764,7 +1764,7 @@ void BuchenDlg::OnSplit()
 {
 	CRect r;
 
-	// erstmal Menü löschen
+	// erstmal MenÃ¼ lÃ¶schen
 	while (PopUp.GetMenuItemCount() > 0)
 		PopUp.DeleteMenu(0, MF_BYPOSITION);
 
@@ -1791,7 +1791,7 @@ void BuchenDlg::OnSplit()
 	PopUp.TrackPopupMenu(TPM_LEFTALIGN|TPM_RIGHTBUTTON, r.left, r.bottom, m_pParent);
 }
 
-// Privat-Split-Menüaktion ausführen
+// Privat-Split-MenÃ¼aktion ausfÃ¼hren
 void BuchenDlg::PrivatSplit(int n)
 {
 	if (n >= m_pParent->einstellungen5->m_privat_split_size) 
@@ -1853,7 +1853,7 @@ void BuchenDlg::OnBnClickedWaehrungsrechner()
 {
 	CRect r;
 
-	// erstmal Menü löschen
+	// erstmal MenÃ¼ lÃ¶schen
 	while (PopUp.GetMenuItemCount() > 0)
 		PopUp.DeleteMenu(0, MF_BYPOSITION);
 
@@ -1875,14 +1875,14 @@ void BuchenDlg::OnBnClickedWaehrungsrechner()
 	}
 	PopUp.AppendMenu(MF_STRING, POPUP_SPLIT + i, "<kein Privat-Split>");
 	*/
-	PopUp.AppendMenu(MF_STRING, POPUP_WAEHRUNGSRECHNER, "USD -> €");
-	PopUp.AppendMenu(MF_STRING, POPUP_WAEHRUNGSRECHNER + 1, "Bitcoin -> €");
+	PopUp.AppendMenu(MF_STRING, POPUP_WAEHRUNGSRECHNER, "USD -> â‚¬");
+	PopUp.AppendMenu(MF_STRING, POPUP_WAEHRUNGSRECHNER + 1, "Bitcoin -> â‚¬");
 	
 	GetDlgItem(IDC_WAEHRUNGSRECHNER)->GetWindowRect(&r);
 	PopUp.TrackPopupMenu(TPM_LEFTALIGN | TPM_RIGHTBUTTON, r.left, r.bottom, m_pParent);
 }
 
-// Währungsrechner-Menüaktion ausführen
+// WÃ¤hrungsrechner-MenÃ¼aktion ausfÃ¼hren
 void BuchenDlg::Waehrungsrechner(int n)
 {
 	char betrag[100];
@@ -1906,13 +1906,13 @@ void BuchenDlg::Waehrungsrechner(int n)
 
 	if (t < 1 || t > 31)
 	{
-		MessageBox("Bitte zunächst einen Wert für Tag von 1 bis 31 angeben, um einen historisch korrekten Kurs zu erhalten.", NULL, MB_ICONSTOP);
+		MessageBox("Bitte zunÃ¤chst einen Wert fÃ¼r Tag von 1 bis 31 angeben, um einen historisch korrekten Kurs zu erhalten.", NULL, MB_ICONSTOP);
 		GetDlgItem(IDC_DATUM_TAG)->SetFocus();
 		return;
 	}
 	if (m < 1 || m > 12)
 	{
-		MessageBox("Bitte zunächst einen Wert für Monat von 1 bis 12 angeben, um einen historisch korrekten Kurs zu erhalten.", NULL, MB_ICONSTOP);
+		MessageBox("Bitte zunÃ¤chst einen Wert fÃ¼r Monat von 1 bis 12 angeben, um einen historisch korrekten Kurs zu erhalten.", NULL, MB_ICONSTOP);
 		GetDlgItem(IDC_DATUM_MONAT)->SetFocus();
 		return;
 	}
@@ -1926,7 +1926,7 @@ void BuchenDlg::Waehrungsrechner(int n)
 	}
 	if (j < 1990 || j > 3000)
 	{
-		MessageBox("Bitte zunächst einen Wert für Jahr von 2025 bis 3000 angeben, um einen historisch korrekten Kurs zu erhalten.", NULL, MB_ICONSTOP);
+		MessageBox("Bitte zunÃ¤chst einen Wert fÃ¼r Jahr von 2025 bis 3000 angeben, um einen historisch korrekten Kurs zu erhalten.", NULL, MB_ICONSTOP);
 		GetDlgItem(IDC_DATUM_JAHR)->SetFocus();
 		return;
 	}
@@ -1934,7 +1934,7 @@ void BuchenDlg::Waehrungsrechner(int n)
 	{
 		if (m < 3)
 		{
-			MessageBox("Tut mir Leid, der Währungsticker-Server hat nur die Kurse ab 1.3.2025 gespeichert. Bitte den historischen Kurs manuell recherchieren.", NULL, MB_ICONSTOP);
+			MessageBox("Tut mir Leid, der WÃ¤hrungsticker-Server hat nur die Kurse ab 1.3.2025 gespeichert. Bitte den historischen Kurs manuell recherchieren.", NULL, MB_ICONSTOP);
 			GetDlgItem(IDC_BETRAG)->SetFocus();
 			return;
 		}
@@ -1968,7 +1968,7 @@ void BuchenDlg::Waehrungsrechner(int n)
 			goto exit_restore_cursor;
 		}
 
-		// HTTP-Status überprüfen
+		// HTTP-Status Ã¼berprÃ¼fen
 		DWORD dwStatusCode;
 		pFile->QueryInfoStatusCode(dwStatusCode);
 		if (dwStatusCode != HTTP_STATUS_OK)
@@ -1997,7 +1997,7 @@ void BuchenDlg::Waehrungsrechner(int n)
 		int end = response.ReverseFind(_T('"'));
 		if (start == -1 || end == -1)
 		{
-			AfxMessageBox(_T("Ungültige Antwort vom Währungsticker-Server. Eventuell hat sich die Schnittstelle geändert. Versuchen Sie EC&T zu aktualisieren."));
+			AfxMessageBox(_T("UngÃ¼ltige Antwort vom WÃ¤hrungsticker-Server. Eventuell hat sich die Schnittstelle geÃ¤ndert. Versuchen Sie EC&T zu aktualisieren."));
 			goto exit_restore_cursor;
 		}
 		CString convertedAmount = response.Mid(start + 1, end - start - 1);
@@ -2087,7 +2087,7 @@ void BuchenDlg::OnCbnKillfocusAbschreibungsatz()
 	if (atoi(buf) > 0 || !strcmp(buf, "0"))
 	{
 		if (!strcmp(buf, "0"))
-			AfxMessageBox("Eine degressive Abschreibung mit einem Satz von 0% wird dazu führen, dass diese Buchung nicht jährlich abgeschrieben wird und keine Auswirkung auf den Gewinn hat. Dies ist sinnvoll, wenn man Vermögensgegenstände ohne Abnutzung, wie z.B. Grundstücke, im Anlagenverzeichnis führen möchte.");
+			AfxMessageBox("Eine degressive Abschreibung mit einem Satz von 0% wird dazu fÃ¼hren, dass diese Buchung nicht jÃ¤hrlich abgeschrieben wird und keine Auswirkung auf den Gewinn hat. Dies ist sinnvoll, wenn man VermÃ¶gensgegenstÃ¤nde ohne Abnutzung, wie z.B. GrundstÃ¼cke, im Anlagenverzeichnis fÃ¼hren mÃ¶chte.");
 		((CButton*)GetDlgItem(IDC_ABSCHREIBUNGDEGRESSIV))->SetCheck(TRUE);
 	}
 	else

@@ -1,17 +1,17 @@
-// NeuesKonto.cpp : implementation file
+ï»¿// NeuesKonto.cpp : implementation file
 //
-// Diese Datei ist Bestandteil von EasyCash&Tax, der freien EÜR-Fibu
+// Diese Datei ist Bestandteil von EasyCash&Tax, der freien EÃœR-Fibu
 //
 // Copyleft (GPLv3) 2020  Thomas Mielke
 // 
-// Dies ist freie Software; Sie dürfen sie unter den Bedingungen der 
+// Dies ist freie Software; Sie dÃ¼rfen sie unter den Bedingungen der 
 // GNU General Public License, wie von der Free Software Foundation 
-// veröffentlicht, weiterverteilen und/oder modifizieren; entweder gemäß 
-// Version 3 der Lizenz oder (nach Ihrer Option) jeder späteren Version.
+// verÃ¶ffentlicht, weiterverteilen und/oder modifizieren; entweder gemÃ¤ÃŸ 
+// Version 3 der Lizenz oder (nach Ihrer Option) jeder spÃ¤teren Version.
 //
-// Diese Software wird in der Hoffnung weiterverbreitet, dass sie nützlich 
+// Diese Software wird in der Hoffnung weiterverbreitet, dass sie nÃ¼tzlich 
 // sein wird, jedoch OHNE IRGENDEINE GARANTIE, auch ohne die implizierte 
-// Garantie der MARKTREIFE oder der VERWENDBARKEIT FÜR EINEN BESTIMMTEN ZWECK.
+// Garantie der MARKTREIFE oder der VERWENDBARKEIT FÃœR EINEN BESTIMMTEN ZWECK.
 // Mehr Details finden Sie in der GNU Lesser General Public License.
 //
 // Sie sollten eine Kopie der GNU General Public License Version 3 zusammen mit 
@@ -77,8 +77,8 @@ BOOL CNeuesKonto::OnInitDialog()
 	
 	if (m_aendern)
 	{
-		SetWindowText("E/Ü-Kontoname ändern");
-		SetDlgItemText(IDC_HINWEIS, "Hinweis: die Änderung des Kontonamens hat keinen Effekt auf die Kontennamen in den einzelnen Buchungen. Diese müssen ggf. manuell geändert werden.");
+		SetWindowText("E/Ãœ-Kontoname Ã¤ndern");
+		SetDlgItemText(IDC_HINWEIS, "Hinweis: die Ã„nderung des Kontonamens hat keinen Effekt auf die Kontennamen in den einzelnen Buchungen. Diese mÃ¼ssen ggf. manuell geÃ¤ndert werden.");
 	}
 
 	// ComboBox aus Formulardatei aufbauen
@@ -125,8 +125,8 @@ void CNeuesKonto::OnOK()
 	else
 		m_feldID = atoi(buffer+5);
 
-	if (m_feldID == 66 && strstr(buffer, "Vorsteuerbeträge"))
-		if (AfxMessageBox("Diejenigen Ausgaben, bei denen ein MWSt.-Satz angegeben wurde, werden automatisch in Feld 66 berücksichtigt. Es sollte lediglich ein Konto 'VST-Beträge separat' dem Feld zugewiesen sein für Sonderfälle, wo reine Vorsteuer verbucht werden muss. Soll das Feld wirklich verknüpft werden?", MB_YESNO) != IDYES)
+	if (m_feldID == 66 && strstr(buffer, "VorsteuerbetrÃ¤ge"))
+		if (AfxMessageBox("Diejenigen Ausgaben, bei denen ein MWSt.-Satz angegeben wurde, werden automatisch in Feld 66 berÃ¼cksichtigt. Es sollte lediglich ein Konto 'VST-BetrÃ¤ge separat' dem Feld zugewiesen sein fÃ¼r SonderfÃ¤lle, wo reine Vorsteuer verbucht werden muss. Soll das Feld wirklich verknÃ¼pft werden?", MB_YESNO) != IDYES)
 			return;
 	
 	CDialog::OnOK();
