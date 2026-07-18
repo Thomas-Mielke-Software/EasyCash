@@ -1,5 +1,7 @@
 using System;
 using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Input;
 using System.Windows.Threading;
 using ECTViews.ViewModels;
 
@@ -84,6 +86,28 @@ namespace ECTViews.Views
                 box.Focus();
                 box.SelectAll();
             }), DispatcherPriority.Background);
+        }
+
+        /// <summary>Selektiert beim Fokus-Erhalt den vorhandenen Feldinhalt
+        /// (Datum, Betrag, Beschreibung, Beleg), damit Tippen ihn direkt
+        /// ersetzt. Greift nur bei nicht-leerem Feld.</summary>
+        private void OnFeldGotKeyboardFocus(object sender, KeyboardFocusChangedEventArgs e)
+        {
+            if (sender is TextBox box && box.Text.Length > 0)
+                box.SelectAll();
+        }
+
+        /// <summary>Sorgt dafuer, dass die Vorselektion auch beim Fokussieren
+        /// per Mausklick greift: der erste Klick setzt nur den Fokus (WPF
+        /// wuerde sonst sofort den Cursor platzieren und die Selektion
+        /// aufheben); ein weiterer Klick positioniert dann normal.</summary>
+        private void OnFeldPreviewMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            if (sender is TextBox box && !box.IsKeyboardFocusWithin)
+            {
+                box.Focus();
+                e.Handled = true;
+            }
         }
 
         /// <summary>Schliesst die Vorschlagsliste, wenn das Beschreibungsfeld

@@ -99,6 +99,13 @@ namespace ECTViews.ViewModels
                 {
                     OnPropertyChanged(nameof(IstEinnahme));
                     OnPropertyChanged(nameof(BuchungsartText));
+                    OnPropertyChanged(nameof(AfaFeldHinweis));
+                    // Abschreibungen gibt es nur bei Ausgaben (das Original
+                    // versteckt die AfA-Controls bei Einnahmen komplett):
+                    // beim Umschalten auf Einnahme AfA abwaehlen -- der
+                    // AfA-Bereich ist dann per IsEnabled-Bindung gesperrt.
+                    if (!value)
+                        AfaAktiviert = false;
                     LadeKonten();
                     LadePresets();   // Vorschlagsliste auf neue Buchungsart filtern
                 }
@@ -113,6 +120,14 @@ namespace ECTViews.ViewModels
 
         public string BuchungsartText =>
             _istAusgabe ? "Ausgabe" : "Einnahme";
+
+        /// <summary>
+        /// Tooltip fuer den bei Einnahmen gesperrten AfA-Bereich
+        /// (null wenn aktiv, dann wird kein Tooltip angezeigt).
+        /// </summary>
+        public string AfaFeldHinweis =>
+            _istAusgabe ? null
+            : "Abschreibungen sind nur bei Ausgaben möglich.";
 
         // ----------------------------------------------
         // Datum (drei Felder wie im Original)
@@ -218,11 +233,29 @@ namespace ECTViews.ViewModels
         // Mehrwertsteuer
         // ----------------------------------------------
 
-        public ObservableCollection<string> MwstOptionen { get; } =
-            new ObservableCollection<string>
+        public ObservableCollection<string> MwstOptionen { get; }
+            = new ObservableCollection<string>();
+
+        private string _defaultMwst = "19";
+
+        /// <summary>MWSt-Vorschläge aus den Einstellungen (vat1..vat4 in
+        /// [Persoenliche_Daten]), wie BuchenDlg::OnInitDialog via GetVATs --
+        /// nur die dort gepflegten Sätze, in dieser Reihenfolge, ohne
+        /// Duplikate. vat1 ist der Default-Satz (GetDefaultVAT).</summary>
+        private void LadeMwstOptionen()
+        {
+            MwstOptionen.Clear();
+            for (int i = 1; i <= 4; i++)
             {
-                "0", "7", "19", "5", "16", "10,7"
-            };
+                var v = Einstellungen.Hole("[Persoenliche_Daten]vat" + i);
+                if (!string.IsNullOrWhiteSpace(v) && !MwstOptionen.Contains(v))
+                    MwstOptionen.Add(v);
+            }
+            if (MwstOptionen.Count == 0)
+                foreach (var v in new[] { "0", "7", "19" })
+                    MwstOptionen.Add(v);
+            _defaultMwst = MwstOptionen[0];
+        }
 
         private string _mwstText = "19";
         public string MwstText
@@ -889,6 +922,11 @@ namespace ECTViews.ViewModels
 
             IstAusgabe = ausgaben;
 
+            // MWSt-Dropdown aus den Einstellungen befuellen; der erste Satz
+            // (vat1) ist die Vorbelegung fuer eine neue Buchung.
+            LadeMwstOptionen();
+            _mwstText = _defaultMwst;
+
             // Startdatum beim Oeffnen: Tagesdatum nur, wenn "Tagesdatum
             // einfügen" an ist, sonst leere Tag/Monat-Felder mit vorbelegtem
             // Buchungsjahr. "Datum belassen" greift erst beim Weiterbuchen.
@@ -1290,7 +1328,7 @@ namespace ECTViews.ViewModels
 
             // Betrag, MWSt, Beschreibung leeren/voreinstellen.
             BetragText = Waehrungsformat.BetragOhneGruppierung(0m);
-            MwstText = "19";          // Setter erzwingt 0, falls MWSt-Feld aus
+            MwstText = _defaultMwst;  // vat1; Setter erzwingt 0, falls MWSt-Feld aus
             Beschreibung = "";
             VorschlaegeOffen = false;
 

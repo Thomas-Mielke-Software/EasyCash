@@ -132,18 +132,24 @@
                     <TextBlock Text="Tag:" Style="{StaticResource LabelStyle}"/>
                     <TextBox x:Name="TagBox"
                              Text="{Binding DatumTag, UpdateSourceTrigger=PropertyChanged, Converter={StaticResource LeereZahl}}"
-                             Width="40" MaxLength="2" TextAlignment="Center"/>
+                             Width="40" MaxLength="2" TextAlignment="Center"
+                             GotKeyboardFocus="OnFeldGotKeyboardFocus"
+                             PreviewMouseLeftButtonDown="OnFeldPreviewMouseLeftButtonDown"/>
                     <TextBlock Text="." VerticalAlignment="Center" Margin="2,0"/>
                     <TextBlock Text="Monat:" Style="{StaticResource LabelStyle}" Margin="8,0,8,0"/>
                     <TextBox Text="{Binding DatumMonat, UpdateSourceTrigger=PropertyChanged, Converter={StaticResource LeereZahl}}"
-                             Width="40" MaxLength="2" TextAlignment="Center"/>
+                             Width="40" MaxLength="2" TextAlignment="Center"
+                             GotKeyboardFocus="OnFeldGotKeyboardFocus"
+                             PreviewMouseLeftButtonDown="OnFeldPreviewMouseLeftButtonDown"/>
                     <TextBlock Text="." VerticalAlignment="Center" Margin="2,0"/>
                     <TextBlock Text="Jahr:" Style="{StaticResource LabelStyle}" Margin="8,0,8,0"/>
                     <TextBox Text="{Binding DatumJahr, UpdateSourceTrigger=PropertyChanged}"
                              Width="60" MaxLength="4" TextAlignment="Center"
                              IsEnabled="{Binding BuchungsjahrFeldAktiviert}"
                              ToolTip="{Binding BuchungsjahrFeldHinweis}"
-                             ToolTipService.ShowOnDisabled="True"/>
+                             ToolTipService.ShowOnDisabled="True"
+                             GotKeyboardFocus="OnFeldGotKeyboardFocus"
+                             PreviewMouseLeftButtonDown="OnFeldPreviewMouseLeftButtonDown"/>
                 </StackPanel>
                 <TextBlock Style="{StaticResource ErrorStyle}"
                            Text="{Binding DatumError}"/>
@@ -172,7 +178,9 @@
                            Text="Brutto (€):" Style="{StaticResource LabelStyle}"/>
                 <TextBox Grid.Row="0" Grid.Column="1" x:Name="BetragBox"
                          Text="{Binding BetragText, UpdateSourceTrigger=PropertyChanged}"
-                         TextAlignment="Right" FontWeight="SemiBold" FontSize="15"/>
+                         TextAlignment="Right" FontWeight="SemiBold" FontSize="15"
+                         GotKeyboardFocus="OnFeldGotKeyboardFocus"
+                         PreviewMouseLeftButtonDown="OnFeldPreviewMouseLeftButtonDown"/>
 
                 <!-- MWSt -->
                 <TextBlock Grid.Row="0" Grid.Column="2"
@@ -217,7 +225,9 @@
                      Vorschlagsliste das Editierfeld/den Cursor NICHT. -->
                 <TextBox x:Name="BeschreibungBox"
                          Text="{Binding Beschreibung, UpdateSourceTrigger=PropertyChanged}"
-                         LostFocus="OnBeschreibungLostFocus"/>
+                         LostFocus="OnBeschreibungLostFocus"
+                         GotKeyboardFocus="OnFeldGotKeyboardFocus"
+                         PreviewMouseLeftButtonDown="OnFeldPreviewMouseLeftButtonDown"/>
 
                 <!-- Vorschlags-Liste (Auto-Complete) als Popup unter dem Feld.
                      Filtert nach Nummer ODER Beschreibungstext. -->
@@ -275,7 +285,9 @@
                 <TextBlock Grid.Column="0" Text="Beleg-Nr.:"
                            Style="{StaticResource LabelStyle}"/>
                 <TextBox Grid.Column="1"
-                         Text="{Binding Belegnummer, UpdateSourceTrigger=PropertyChanged}"/>
+                         Text="{Binding Belegnummer, UpdateSourceTrigger=PropertyChanged}"
+                         GotKeyboardFocus="OnFeldGotKeyboardFocus"
+                         PreviewMouseLeftButtonDown="OnFeldPreviewMouseLeftButtonDown"/>
                 <TextBlock Grid.Column="2" Text="Konto:"
                            Style="{StaticResource LabelStyle}" Margin="12,0,8,0"/>
                 <ComboBox Grid.Column="3"
@@ -323,7 +335,12 @@
         </Grid>
 
         <!-- ═══ Zeile 6: Abschreibung ═══ -->
-        <GroupBox Grid.Row="6" Header="Abschreibung (AfA)">
+        <!-- Nur bei Ausgaben bedienbar (Einnahmen kennen keine AfA; das
+             MFC-Original versteckt die Controls dort komplett). -->
+        <GroupBox Grid.Row="6" Header="Abschreibung (AfA)"
+                  IsEnabled="{Binding IstAusgabe}"
+                  ToolTip="{Binding AfaFeldHinweis}"
+                  ToolTipService.ShowOnDisabled="True">
             <StackPanel>
                 <CheckBox Content="Abschreibung aktivieren"
                           IsChecked="{Binding AfaAktiviert}"
