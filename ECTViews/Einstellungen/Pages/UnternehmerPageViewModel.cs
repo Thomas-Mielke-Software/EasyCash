@@ -44,6 +44,30 @@ namespace ECTViews.EinstellungenUi.Pages
         public string Satz3 { get => GlobaleEinstellungen.Vat3; set { GlobaleEinstellungen.Vat3 = value; OnPropertyChanged(); } }
         public string Satz4 { get => GlobaleEinstellungen.Vat4; set { GlobaleEinstellungen.Vat4 = value; OnPropertyChanged(); } }
 
+        /// <summary>Umsatzsteuerpflicht (Default an). Ausschalten setzt alle
+        /// vier Sätze auf 0 und sperrt die Felder (das MWSt-Feld des
+        /// Buchen-Dialogs ist dann ebenfalls gesperrt). Beim Wiedereinschalten
+        /// werden -- da die eigenen Sätze beim Ausschalten genullt wurden --
+        /// die gesetzlichen Vorgaben des gewählten Landes vorbelegt.</summary>
+        public bool Umsatzsteuerpflichtig
+        {
+            get => GlobaleEinstellungen.Umsatzsteuerpflichtig;
+            set
+            {
+                if (GlobaleEinstellungen.Umsatzsteuerpflichtig == value) { return; }
+                GlobaleEinstellungen.Umsatzsteuerpflichtig = value;
+                OnPropertyChanged();
+                if (!value)
+                {
+                    Satz1 = "0"; Satz2 = "0"; Satz3 = "0"; Satz4 = "0";
+                }
+                else
+                {
+                    SetzeMwStVorgaben(Land);
+                }
+            }
+        }
+
         // -----------------------------------------------------------------
         // Voranmeldungszeitraum (Radio Monat=0 / Quartal=1 im alten
         // CEinstellungen1). Bestimmt, ob die USt-Voranmeldung monatlich oder

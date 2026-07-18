@@ -52,6 +52,12 @@ namespace ECTEngine
         // MwSt-Sätze (konfigurierbare Steuersätze) -- als Strings, weil das
         // Format "7,5" o.ä. erlaubt ist (deutsches Dezimalkomma).
         public static string Vat1 { get => Get(PD + "vat1"); set => Set(PD + "vat1", value); }
+
+        /// <summary>Besteht Umsatzsteuerpflicht? (Default an). Ist sie aus,
+        /// setzt die Einstellungs-Seite alle vier Sätze auf 0 und sperrt sie;
+        /// der Buchen-Dialog sperrt dann sein MWSt-Feld (Buchungen ohne
+        /// Steueranteil, z.B. Kleinunternehmer nach §19 UStG).</summary>
+        public static bool Umsatzsteuerpflichtig { get => GetBool(PD + "Umsatzsteuerpflichtig", true); set => SetBool(PD + "Umsatzsteuerpflichtig", value); }
         public static string Vat2 { get => Get(PD + "vat2"); set => Set(PD + "vat2", value); }
         public static string Vat3 { get => Get(PD + "vat3"); set => Set(PD + "vat3", value); }
         public static string Vat4 { get => Get(PD + "vat4"); set => Set(PD + "vat4", value); }

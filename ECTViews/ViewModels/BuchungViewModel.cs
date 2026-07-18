@@ -304,8 +304,12 @@ namespace ECTViews.ViewModels
         public bool BuchungsjahrFeldAktiviert { get; }
 
         /// <summary>True wenn das MWSt-Feld benutzt werden darf
-        /// (Einstellung "MWSt.-Feld anzeigen").</summary>
+        /// (Einstellung "MWSt.-Feld anzeigen" UND Umsatzsteuerpflicht).</summary>
         public bool MwstFeldAktiviert { get; }
+
+        /// <summary>Einstellung "Umsatzsteuerpflichtig" (Unternehmer-Seite) --
+        /// nur fuer die Wahl des passenden Hinweistexts gemerkt.</summary>
+        private readonly bool _umsatzsteuerpflichtig;
 
         /// <summary>
         /// Tooltip fuer das deaktivierte Buchungsjahr-Feld (null wenn aktiv,
@@ -321,6 +325,9 @@ namespace ECTViews.ViewModels
         /// </summary>
         public string MwstFeldHinweis =>
             MwstFeldAktiviert ? null
+            : !_umsatzsteuerpflichtig
+            ? "Laut Einstellungen -> Unternehmer*in besteht keine Umsatzsteuerpflicht -- "
+              + "es wird ohne Steueranteil gebucht."
             : "Das MWSt.-Feld ist in den Einstellungen -> Allgemein ausgeblendet. "
               + "Dort kann es bei Bedarf wieder eingeschaltet werden.";
 
@@ -917,8 +924,12 @@ namespace ECTViews.ViewModels
             // Globale Feld-Einstellungen lesen (Sektion [Allgemein] der easyct.ini).
             BuchungsjahrFeldAktiviert =
                 Einstellungen.HoleBool("[Allgemein]JahresfeldAktiviert", false);
+            // Das MWSt-Feld ist nur benutzbar, wenn es nicht ausgeblendet ist
+            // UND Umsatzsteuerpflicht besteht (sonst buchen ohne Steueranteil).
+            _umsatzsteuerpflichtig = GlobaleEinstellungen.Umsatzsteuerpflichtig;
             MwstFeldAktiviert =
-                Einstellungen.HoleBool("[Allgemein]MwstFeldAktiviert", true);
+                Einstellungen.HoleBool("[Allgemein]MwstFeldAktiviert", true)
+                && _umsatzsteuerpflichtig;
 
             IstAusgabe = ausgaben;
 

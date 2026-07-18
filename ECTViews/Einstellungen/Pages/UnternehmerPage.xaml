@@ -67,9 +67,9 @@
 
             <TextBlock Text="Mehrwertsteuersätze" Style="{StaticResource Abschnitt}"/>
             <TextBlock Style="{StaticResource Hinweis}" Margin="0,0,0,8"
-                       Text="Bis zu vier häufig verwendete Sätze, die im Pull-Down-Menü des MWSt.-Feldes des Buchen-Dialogs zur Auswahl stehen; weitere MWSt.-Sätze können dort in jedem Fall auch manuell in das Feld eingetippt werden. Angabe in Prozent (z.B. 19 oder 7,5). Nicht USt.-Pflichtige tragen bei allen Sätzen 0 ein."/>
+                       Text="Bis zu vier häufig verwendete Sätze, die im Pull-Down-Menü des MWSt.-Feldes des Buchen-Dialogs zur Auswahl stehen; weitere MWSt.-Sätze können dort in jedem Fall auch manuell in das Feld eingetippt werden. Angabe in Prozent (z.B. 19 oder 7,5)."/>
 
-            <Grid>
+            <Grid IsEnabled="{Binding Umsatzsteuerpflichtig}">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="150"/>
                     <ColumnDefinition Width="*"/>
@@ -93,6 +93,10 @@
                 <TextBlock Grid.Row="3" Grid.Column="0" Text="Satz 4" Style="{StaticResource FeldLabel}"/>
                 <TextBox  Grid.Row="3" Grid.Column="1" Text="{Binding Satz4, UpdateSourceTrigger=PropertyChanged}" MaxLength="12" HorizontalAlignment="Left" Width="120"/>
             </Grid>
+
+            <CheckBox Content="Umsatzsteuerpflichtig" Margin="150,8,0,0"
+                      IsChecked="{Binding Umsatzsteuerpflichtig}"
+                      ToolTip="Ausschalten, wenn keine Umsatzsteuerpflicht besteht (z.B. Kleinunternehmer nach §19 UStG): alle Sätze werden auf 0 gesetzt und das MWSt.-Feld des Buchen-Dialogs wird gesperrt."/>
 
             <!-- [Optische Trennung zwischen Steuersätzen und Voranmeldungszeitraum] -->
             <Border BorderBrush="#DDDDDD" BorderThickness="0,1,0,0" Margin="0,18,0,0"/>
