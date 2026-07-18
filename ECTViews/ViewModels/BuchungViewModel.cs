@@ -569,6 +569,26 @@ namespace ECTViews.ViewModels
             VorschlaegeOffen = oeffnen && f.Length > 0 && PresetVorschlaege.Count > 0;
         }
 
+        /// <summary>Tooltip des Dropdown-Knopfs neben dem Beschreibungsfeld:
+        /// weist darauf hin, wenn es fuer die aktuelle Buchungsart gar keine
+        /// Vorlagen gibt (der Knopf haette dann nichts aufzuklappen).</summary>
+        public string VorschlaegeKnopfTooltip =>
+            _allePresetVorschlaege.Count > 0
+            ? "Alle Buchungsvorlagen anzeigen"
+            : "Keine Buchungsvorlagen für " + BuchungsartText + "n vorhanden -- "
+              + "bitte ggf. in den Einstellungen welche anlegen.";
+
+        /// <summary>Öffnet die Vorschlagsliste UNGEFILTERT (alle Vorlagen der
+        /// aktuellen Buchungsart) -- für den Dropdown-Knopf neben dem
+        /// Beschreibungsfeld, das Pendant zum ComboBox-Pfeil des Originals.</summary>
+        public void OeffneAlleVorschlaege()
+        {
+            PresetVorschlaege.Clear();
+            foreach (var v in _allePresetVorschlaege)
+                PresetVorschlaege.Add(v);
+            VorschlaegeOffen = PresetVorschlaege.Count > 0;
+        }
+
         private static bool PasstAufFilter(PresetVorschlag v, string f)
         {
             if (f.Length == 0) return true;
@@ -1812,6 +1832,7 @@ namespace ECTViews.ViewModels
             }
             // Sichtbare Liste (ungefiltert) aufbauen, ohne aufzuklappen.
             AktualisiereVorschlaege(_beschreibung, oeffnen: false);
+            OnPropertyChanged(nameof(VorschlaegeKnopfTooltip));
         }
 
         /// <summary>

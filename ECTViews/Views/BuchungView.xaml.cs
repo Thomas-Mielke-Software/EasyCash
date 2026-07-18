@@ -110,6 +110,26 @@ namespace ECTViews.Views
             }
         }
 
+        /// <summary>Dropdown-Knopf neben dem Beschreibungsfeld: klappt die
+        /// ungefilterte Vorlagen-Liste auf bzw. wieder zu (Pendant zum
+        /// ComboBox-Pfeil des MFC-Originals). Der Knopf ist Focusable=False,
+        /// darum bleibt der Fokus im Beschreibungsfeld bzw. wird dorthin
+        /// gesetzt -- so schliesst das Popup wie gewohnt ueber dessen
+        /// LostFocus, wenn der Anwender woanders hinklickt.</summary>
+        private void OnVorschlaegeKnopf(object sender, RoutedEventArgs e)
+        {
+            if (!(DataContext is BuchungViewModel vm)) return;
+            if (vm.VorschlaegeOffen)
+            {
+                vm.VorschlaegeOffen = false;
+            }
+            else
+            {
+                vm.OeffneAlleVorschlaege();
+                BeschreibungBox.Focus();
+            }
+        }
+
         /// <summary>Schliesst die Vorschlagsliste, wenn das Beschreibungsfeld
         /// den Fokus verliert. Verzoegert, damit ein Klick auf einen Vorschlag
         /// noch verarbeitet wird (Selection -> Preset laden), bevor das Popup

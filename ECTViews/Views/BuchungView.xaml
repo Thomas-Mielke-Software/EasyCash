@@ -115,9 +115,11 @@
 
         <!-- ═══ Zeile 0: Buchungsart ═══ -->
         <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="0,0,0,8">
+            <!-- Farben wie die Abschnittstitel im Journal (ColEinnahme /
+                 ColAusgabe in JournalView.xaml): Einnahmen blau, Ausgaben rot. -->
             <RadioButton Content="Einnahme" FontWeight="SemiBold"
                          IsChecked="{Binding IstEinnahme}"
-                         Foreground="#2E7D32" Margin="0,0,16,0"
+                         Foreground="#1030D0" Margin="0,0,16,0"
                          VerticalContentAlignment="Center"/>
             <RadioButton Content="Ausgabe" FontWeight="SemiBold"
                          IsChecked="{Binding IstAusgabe}"
@@ -222,12 +224,30 @@
         <GroupBox Grid.Row="3" Header="Beschreibung">
             <StackPanel>
                 <!-- Echtes TextBox (kein ComboBox): so stoert das Filtern der
-                     Vorschlagsliste das Editierfeld/den Cursor NICHT. -->
-                <TextBox x:Name="BeschreibungBox"
-                         Text="{Binding Beschreibung, UpdateSourceTrigger=PropertyChanged}"
-                         LostFocus="OnBeschreibungLostFocus"
-                         GotKeyboardFocus="OnFeldGotKeyboardFocus"
-                         PreviewMouseLeftButtonDown="OnFeldPreviewMouseLeftButtonDown"/>
+                     Vorschlagsliste das Editierfeld/den Cursor NICHT. Der
+                     Dropdown-Knopf rechts ersetzt den ComboBox-Pfeil des
+                     Originals: er klappt die UNGEFILTERTE Vorlagen-Liste auf. -->
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+                    <TextBox Grid.Column="0" x:Name="BeschreibungBox"
+                             Text="{Binding Beschreibung, UpdateSourceTrigger=PropertyChanged}"
+                             LostFocus="OnBeschreibungLostFocus"
+                             GotKeyboardFocus="OnFeldGotKeyboardFocus"
+                             PreviewMouseLeftButtonDown="OnFeldPreviewMouseLeftButtonDown"/>
+                    <!-- Focusable=False: der Klick darf dem Beschreibungsfeld
+                         nicht den Fokus stehlen, sonst schoesse dessen
+                         LostFocus-Handler das frisch geoeffnete Popup zu. -->
+                    <Button Grid.Column="1" Width="22" Margin="2,2,0,2"
+                            Focusable="False"
+                            Click="OnVorschlaegeKnopf"
+                            ToolTip="{Binding VorschlaegeKnopfTooltip}">
+                        <Path Data="M 0 0 L 8 0 L 4 5 Z" Fill="#555"
+                              HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                    </Button>
+                </Grid>
 
                 <!-- Vorschlags-Liste (Auto-Complete) als Popup unter dem Feld.
                      Filtert nach Nummer ODER Beschreibungstext. -->
