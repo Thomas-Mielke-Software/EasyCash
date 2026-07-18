@@ -38,15 +38,18 @@ namespace ECTViews.EinstellungenUi
         /// null (steuert die "Aktuelles Dokument"-Gruppe in der Navigation).</param>
         /// <param name="onDokumentGeaendert">Callback, der bei jeder Änderung
         /// eines Dokumentwerts gerufen wird (setzt nativ das Modified-Flag).</param>
+        /// <param name="startSeite">Titel der beim Öffnen vorzuselektierenden
+        /// Seite (z.B. "Buchungsvorlagen"); null/leer -> erste Seite.</param>
         public static IntPtr Einbetten(
             IntPtr parentHwnd, int x, int y, int width, int height,
-            BuchungsDocument dokument, Action onDokumentGeaendert)
+            BuchungsDocument dokument, Action onDokumentGeaendert,
+            string startSeite = null)
         {
             if (parentHwnd == IntPtr.Zero) return IntPtr.Zero;
 
             EnsureWpfApplication();
 
-            var vm = new EinstellungenViewModel(dokument, onDokumentGeaendert);
+            var vm = new EinstellungenViewModel(dokument, onDokumentGeaendert, startSeite);
             var view = new EinstellungenView { DataContext = vm };
 
             var hwndParams = new HwndSourceParameters("ECT_Einstellungen")

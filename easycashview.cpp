@@ -8837,7 +8837,7 @@ void CEasyCashView::GroessenAnpassungJournalWpf()
 	}
 }
 
-void CEasyCashView::ZeigeEinstellungenWpf()
+void CEasyCashView::ZeigeEinstellungenWpf(LPCTSTR szStartSeite)
 {
 	// Schon offen? Nur nach vorne holen.
 	if (m_hwndEinstellungenWpf)
@@ -8859,7 +8859,8 @@ void CEasyCashView::ZeigeEinstellungenWpf()
 	m_hwndEinstellungenWpf = ECT_EinstellungenEinbetten(
 		pSplitter->m_hWnd,
 		rcAll.left, rcAll.top, rcAll.Width(), rcAll.Height(),
-		GetDocument());
+		GetDocument(),
+		szStartSeite);
 
 	if (!m_hwndEinstellungenWpf)
 	{
@@ -10031,6 +10032,21 @@ BOOL CEasyCashView::OnCmdMsg(UINT nID, int nCode, void* pExtra, AFX_CMDHANDLERIN
 		if (nCode == CN_COMMAND)
 		{
 			BucheMitVorlage(TRUE, nID - ID_CMD_VORLAGE_AUSGABE_BASE);
+			return TRUE;
+		}
+		else if (nCode == CN_UPDATE_COMMAND_UI)
+		{
+			((CCmdUI*)pExtra)->Enable(TRUE);
+			return TRUE;
+		}
+	}
+	// "<Vorlage erstellen>" (leeres Vorlagen-Dropdown): Einstellungen direkt
+	// auf der Buchungsvorlagen-Seite oeffnen.
+	else if (nID == ID_CMD_VORLAGE_ERSTELLEN)
+	{
+		if (nCode == CN_COMMAND)
+		{
+			ZeigeEinstellungenWpf(_T("Buchungsvorlagen"));
 			return TRUE;
 		}
 		else if (nCode == CN_UPDATE_COMMAND_UI)

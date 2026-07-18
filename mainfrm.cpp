@@ -936,11 +936,14 @@ void CMainFrame::UpdateBuchungsvorlagenMenu()
 		}
 	}
 
-	// Leeres Dropdown vermeiden: dezenter Hinweis statt Nichts.
+	// Leeres Dropdown vermeiden: statt eines toten Hinweises ein anklickbarer
+	// Eintrag, der direkt zur Buchungsvorlagen-Seite der Einstellungen fuehrt.
 	if (m_pEinnahmeButton && nEinnahmen == 0)
-		m_pEinnahmeButton->AddSubItem(new CMFCRibbonLabel(_T("(keine Vorlagen)")));
+		m_pEinnahmeButton->AddSubItem(new CMFCRibbonButton(
+			ID_CMD_VORLAGE_ERSTELLEN, _T("<Vorlage erstellen>")));
 	if (m_pAusgabeButton && nAusgaben == 0)
-		m_pAusgabeButton->AddSubItem(new CMFCRibbonLabel(_T("(keine Vorlagen)")));
+		m_pAusgabeButton->AddSubItem(new CMFCRibbonButton(
+			ID_CMD_VORLAGE_ERSTELLEN, _T("<Vorlage erstellen>")));
 }
 #endif
 

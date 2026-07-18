@@ -152,7 +152,7 @@ private:
 	void ZeigeJournalWpf(int nAnzeigeModus);   // 0=Datum, 1=Konten, 2=BK, 3=AfA
 	void VerstecktJournalWpf();
 	void GroessenAnpassungJournalWpf();
-	void ZeigeEinstellungenWpf();
+	void ZeigeEinstellungenWpf(LPCTSTR szStartSeite = _T("Allgemein"));
 	void VerstecktEinstellungenWpf();
 	void GroessenAnpassungEinstellungenWpf();
 	void AktualisiereJournalFilter();          // bei Filter-Aenderung
@@ -467,6 +467,10 @@ inline CEasyCashDoc* CEasyCashView::GetDocument()
 //							        bis 41099
 #define ID_CMD_VORLAGE_AUSGABE_BASE 41100
 //							       bis 41199
+
+// "<Vorlage erstellen>" im leeren Dropdown der Einnahme-/Ausgabe-Knoepfe:
+// oeffnet die Einstellungen direkt auf der Buchungsvorlagen-Seite.
+#define ID_CMD_VORLAGE_ERSTELLEN 41200
 
 #define HCHARS 80
 #define VCHARS 68

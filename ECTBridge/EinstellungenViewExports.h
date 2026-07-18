@@ -44,10 +44,13 @@ extern "C" {
 /// (in der Praxis GetDocument()) oder NULL. Bei != NULL erscheint die
 /// "Aktuelles Dokument"-Gruppe (Buchungsjahr, laufende Belegnummern), die
 /// direkt in die managed Engine dieses Dokuments schreibt.</param>
+/// <param name="szStartSeite">Titel der beim Oeffnen vorzuselektierenden Seite
+/// (z.B. "Buchungsvorlagen"). NULL/leer -> erste Seite ("Allgemein").</param>
 ECTBRIDGE_API HWND ECT_EinstellungenEinbetten(
     HWND hwndParent,
     int x, int y, int width, int height,
-    void* pDocBridge);
+    void* pDocBridge,
+    LPCSTR szStartSeite = NULL);
 
 /// <summary>Loest ein einzelnes eingebettetes Einstellungs-Fenster ab.</summary>
 ECTBRIDGE_API void ECT_EinstellungenViewAbloesen(HWND hwndEinstellungen);

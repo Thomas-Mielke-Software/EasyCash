@@ -46,7 +46,8 @@ public:
 HWND ECT_EinstellungenEinbetten(
     HWND hwndParent,
     int x, int y, int width, int height,
-    void* pDocBridge)
+    void* pDocBridge,
+    LPCSTR szStartSeite)
 {
     try
     {
@@ -67,9 +68,12 @@ HWND ECT_EinstellungenEinbetten(
                 handler, &EinstellungenDokumentHandler::OnGeaendert);
         }
 
+        System::String^ startSeite = (szStartSeite && *szStartSeite)
+            ? gcnew System::String(szStartSeite) : nullptr;
+
         IntPtr hParent(hwndParent);
         IntPtr hKind = ECTViews::EinstellungenUi::EinstellungenEmbed::Einbetten(
-            hParent, x, y, width, height, dokument, onGeaendert);
+            hParent, x, y, width, height, dokument, onGeaendert, startSeite);
 
         if (hKind == IntPtr::Zero) return NULL;
         return (HWND)hKind.ToPointer();

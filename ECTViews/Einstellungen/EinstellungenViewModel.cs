@@ -52,7 +52,11 @@ namespace ECTViews.EinstellungenUi
         /// Dokument"-Gruppe (Buchungsjahr, laufende Belegnummern).</param>
         /// <param name="onDokumentGeaendert">Callback, der bei jeder Änderung
         /// eines Dokumentwerts gerufen wird (setzt nativ das Modified-Flag).</param>
-        public EinstellungenViewModel(BuchungsDocument dokument, System.Action onDokumentGeaendert = null)
+        /// <param name="startSeite">Titel der Seite, die beim Öffnen vorselektiert
+        /// werden soll (z.B. "Buchungsvorlagen"). Ist null/leer oder unbekannt,
+        /// wird die erste Seite ("Allgemein") gewählt.</param>
+        public EinstellungenViewModel(BuchungsDocument dokument, System.Action onDokumentGeaendert = null,
+            string startSeite = null)
         {
             // Seiten als Fabriken registrieren -- gebaut wird erst beim Anklicken
             // (siehe EinstellungenNavItem.Seite). So ist das Öffnen sofort da,
@@ -72,8 +76,11 @@ namespace ECTViews.EinstellungenUi
                     () => new DokumentPage(dokument, onDokumentGeaendert)));
             }
 
-            // Erste Seite vorselektieren.
-            AusgewaehltesItem = Items.FirstOrDefault();
+            // Gewünschte Start-Seite vorselektieren (Default: erste Seite).
+            EinstellungenNavItem start = null;
+            if (!string.IsNullOrEmpty(startSeite))
+                start = Items.FirstOrDefault(i => i.Titel == startSeite);
+            AusgewaehltesItem = start ?? Items.FirstOrDefault();
         }
 
         private static EinstellungenNavItem Seite(string gruppe, string titel, Func<UserControl> fabrik)
