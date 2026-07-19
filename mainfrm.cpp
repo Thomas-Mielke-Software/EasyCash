@@ -641,6 +641,17 @@ void CMainFrame::Add_Category1()
 	m_pAnsichtFormulareButton->SetAlwaysLargeImage();
 	pPanel2->Add(m_pAnsichtFormulareButton);
 
+#ifdef USE_ECTENGINE
+	// Formlos-Split-Button: Klick auf die Knopf-Fläche zeigt die
+	// Freestyle-EÜR als Ansicht, das Pulldown bietet alle vier formlosen
+	// Berichte (E/Ü-Rechnung, USt-Erklärung, Kontenplan mit/ohne Felder).
+	// Gedruckt wird über den normalen Druck-Knopf -- WYSIWYG.
+	std::auto_ptr<CMFCRibbonButton> apBtnFormlos(new CMFCRibbonButton(ID_ANSICHT_FORMLOS, "Formlos\nl", 21, 21));
+	apBtnFormlos->SetMenu(IDR_ANSICHT_FORMLOS, TRUE);
+	apBtnFormlos->SetAlwaysLargeImage();
+	pPanel2->Add(apBtnFormlos.release());
+#endif
+
 	std::auto_ptr<CMFCRibbonButton> apBtn22(new CMFCRibbonButton(ID_VIEW_ZOOM_SWITCH, "Zoom\nz", 34, 34));
 	apBtn22->SetMenu(IDR_ZOOMFAKTOR, TRUE);
 	apBtn22->SetAlwaysLargeImage();

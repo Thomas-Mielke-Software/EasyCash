@@ -63,6 +63,9 @@ static char THIS_FILE[] = __FILE__;
 #include "ECTBridge\Exports.h"
 #include "ECTBridge\ViewExports.h"
 #include "ECTBridge\JournalExports.h"
+#include "ECTBridge\BerichtExports.h"
+#include <exdisp.h>   // IWebBrowser2 (Druck-Kaskade fuer HTML-Plugins)
+#include <docobj.h>   // IOleCommandTarget, IPrint, OLECMDID_PRINT*
 #include "ECTBridge\EinstellungenViewExports.h"
 #include "ECTBridge\EasyCashDocBridge.h"
 #endif
@@ -113,8 +116,23 @@ BEGIN_MESSAGE_MAP(CEasyCashView, CScrollView)
 	//}}AFX_MSG_MAP
 	// Standard printing commands
 	ON_COMMAND(ID_FILE_PRINT2, OnFilePrint2)
+#ifdef USE_ECTENGINE
+	ON_COMMAND(ID_ANSICHT_FORMLOS, OnAnsichtFormlos)
+	ON_COMMAND(ID_FORMLOS_EUER, OnFormlosEuer)
+	ON_COMMAND(ID_FORMLOS_UST, OnFormlosUst)
+	ON_COMMAND(ID_FORMLOS_KONTENPLAN, OnFormlosKontenplan)
+	ON_COMMAND(ID_FORMLOS_KONTENPLAN_FELDER, OnFormlosKontenplanFelder)
+#endif
+#ifdef USE_ECTENGINE
+	// Strg+P (Accelerator auf ID_FILE_PRINT) soll denselben Weg nehmen
+	// wie der Ribbon-Druckknopf: bei aktivem WPF-Journal WYSIWYG-Druck,
+	// sonst Fallthrough auf CScrollView::OnFilePrint (Formulare).
+	ON_COMMAND(ID_FILE_PRINT, OnFilePrint2)
+	ON_COMMAND(ID_FILE_PRINT_DIRECT, OnFilePrint2)
+#else
 	ON_COMMAND(ID_FILE_PRINT, CScrollView::OnFilePrint)
 	ON_COMMAND(ID_FILE_PRINT_DIRECT, CScrollView::OnFilePrint)
+#endif
 	//ON_COMMAND(ID_FILE_PRINT_PREVIEW, CScrollView::OnFilePrintPreview)
 	ON_COMMAND(ID_BUCHEN_DAUAUS_JANUAR, &CEasyCashView::OnBuchenDauausJanuar)
 	ON_COMMAND(ID_BUCHEN_DAUAUS_FEBRUAR, &CEasyCashView::OnBuchenDauausFebruar)
@@ -172,6 +190,8 @@ CEasyCashView::CEasyCashView()
 	m_hwndNavigationWpf = NULL;
 	m_hwndEinstellungenWpf = NULL;
 	m_einstellungenUeberJournal = false;
+	m_hwndBerichtWpf = NULL;
+	m_nBerichtTyp = -1;
 #endif
 	m_vt = 1;
 	m_vm = 1;
@@ -217,6 +237,11 @@ CEasyCashView::CEasyCashView()
 CEasyCashView::~CEasyCashView()
 {
 #ifdef USE_ECTENGINE
+	if (m_hwndBerichtWpf)
+	{
+		ECT_BerichtAbloesen(m_hwndBerichtWpf);
+		m_hwndBerichtWpf = NULL;
+	}
 	if (m_hwndJournalWpf || m_hwndNavigationWpf)
 	{
 		VerstecktJournalWpf();
@@ -1094,7 +1119,7 @@ void CEasyCashView::OnUpdate(CView* pSender, LPARAM lHint, CObject* pHint)
 #endif
 
 #ifdef USE_ECTENGINE
-	if (IstJournalWpfAktiv())
+	if (IstJournalWpfAktiv() || IstBerichtWpfAktiv())
 	{
 		// WPF-Navigation kuemmert sich selbst um ihren Inhalt -
 		// hier muessen wir nur die WPF-Daten refreshen
@@ -1525,6 +1550,15 @@ void CEasyCashView::OnSize(UINT nType, int cx, int cy)
 		GroessenAnpassungEinstellungenWpf();
 		return;
 	}
+	if (IstBerichtWpfAktiv())
+	{
+		// Formlos-Ansicht ist Vollflaeche wie die Einstellungen; das
+		// darunterliegende (versteckte) WPF-Journal ebenfalls nachfuehren,
+		// damit es beim Schliessen des Berichts die richtige Groesse hat.
+		GroessenAnpassungBerichtWpf();
+		GroessenAnpassungJournalWpf();
+		return;
+	}
 	if (IstJournalWpfAktiv())
 	{
 		// Bei aktivem WPF-Journal ist die native CScrollView nur ein
@@ -1636,7 +1670,7 @@ void CEasyCashView::OnVScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar)
 void CEasyCashView::OnDraw(CDC* pDC_par)
 {
 #ifdef USE_ECTENGINE
-	if (IstJournalWpfAktiv())
+	if (IstJournalWpfAktiv() || IstBerichtWpfAktiv())
 	{
 		// Hintergrund weiss machen - dann sieht man nichts vom alten
 		// Layout durchscheinen, falls das WPF-HWND einen Pixel kleiner
@@ -5588,17 +5622,252 @@ void CEasyCashView::Icon(DrawInfo *pDrawInfo, int left, int top, /*int right,*/ 
 /////////////////////////////////////////////////////////////////////////////
 // CEasyCashView printing
 
-void CEasyCashView::OnFilePrint2() 
+// Unter Wine/CrossOver ist das Drucken gesperrt (PrintDlgA crasht ohne
+// konfigurierten Drucker). Liefert TRUE und zeigt die Meldung, wenn wir
+// unter Wine laufen. Wird vom alten MFC-Druckpfad (OnPreparePrinting)
+// und vom neuen WPF-Druckpfad (OnFilePrint2/OnFilePrintPreview) benutzt.
+static BOOL DruckenUnterWineGesperrt()
 {
+	HKEY hKey;
+	if (RegOpenKeyEx(HKEY_LOCAL_MACHINE, _T("Software\\Wine"), 0, KEY_READ, &hKey) == ERROR_SUCCESS)
+	{
+		RegCloseKey(hKey);
+		AfxMessageBox(_T("EasyCash läuft unter Wine/CrossOver.\n\nDas Drucken steht in dieser Umgebung nicht zur Verfügung, da kein Drucker im Wine-Prefix konfiguriert ist.\n\nBitte richten Sie einen Drucker in Ihrem Wine-/CrossOver-Prefix ein."), MB_OK | MB_ICONINFORMATION);
+		return TRUE;
+	}
+	return FALSE;
+}
+
+#ifdef USE_ECTENGINE
+// ----------------------------------------------------------
+// Druck-Kaskade fuer den Plugin-Modus (WYSIWYG: gedruckt wird, was das
+// Plugin gerade anzeigt). Stufen:
+//   1. IWebBrowser2::ExecWB       - HTML-Plugins (AtlAxWin hostet fuer
+//      URL-Aufrufe das IE-WebBrowser-Control): voller IE-Druckpfad mit
+//      eigenem Dialog und Pagination; bVorschau -> IE-Seitenansicht.
+//      Entspricht dem "Drucken" im IE-Kontextmenue.
+//   2. IOleCommandTarget::Exec(OLECMDID_PRINT) - Controls, die den
+//      OLE-Standard-Druckbefehl unterstuetzen (vorher per QueryStatus
+//      abgefragt).
+//   3. IPrint (docobj.h)          - paginierende Dokumentobjekte;
+//      PRINTFLAG_PROMPTUSER laesst das Objekt seinen Dialog zeigen.
+//   4. IViewObject2::Draw          - Einseiten-Fallback: der aktuelle
+//      Sichtzustand des Controls wird seitenfuellend (Seitenverhaeltnis
+//      erhalten) auf den Drucker-DC gezeichnet. Erst DVASPECT_DOCPRINT
+//      versuchen, dann DVASPECT_CONTENT.
+// Die Stufen 3+4 haben keine Seitenansicht -- bei bVorschau werden nur
+// 1+2 versucht, der Aufrufer zeigt sonst einen Hinweis.
+// Rueckgabe TRUE, wenn eine Stufe den Druck uebernommen hat (auch bei
+// bewusstem Abbruch durch den Anwender im Druckdialog).
+// ----------------------------------------------------------
+BOOL CEasyCashView::DruckePlugin(BOOL bVorschau)
+{
+	if (!pPluginWnd || !pPluginWnd->m_hWnd) return FALSE;
+
+	CComPtr<IUnknown> spUnk;
+	if (FAILED(pPluginWnd->QueryControl(&spUnk)) || !spUnk)
+		return FALSE;
+
+	// ---- Stufe 1: HTML-Plugin, IE druckt selbst -------------------
+	CComQIPtr<IWebBrowser2> spBrowser(spUnk);
+	if (spBrowser)
+	{
+		HRESULT hr = spBrowser->ExecWB(
+			bVorschau ? OLECMDID_PRINTPREVIEW : OLECMDID_PRINT,
+			OLECMDEXECOPT_PROMPTUSER, NULL, NULL);
+		if (SUCCEEDED(hr) || hr == OLECMDERR_E_CANCELED)
+			return TRUE;
+		// nicht unterstuetzt -> weiter mit den generischen Stufen
+	}
+
+	// ---- Stufe 2: OLE-Standardbefehl ------------------------------
+	CComQIPtr<IOleCommandTarget> spCmdTarget(spUnk);
+	if (spCmdTarget)
+	{
+		OLECMD cmd;
+		cmd.cmdID = bVorschau ? OLECMDID_PRINTPREVIEW : OLECMDID_PRINT;
+		cmd.cmdf = 0;
+		if (SUCCEEDED(spCmdTarget->QueryStatus(NULL, 1, &cmd, NULL))
+			&& (cmd.cmdf & OLECMDF_SUPPORTED)
+			&& (cmd.cmdf & OLECMDF_ENABLED))
+		{
+			HRESULT hr = spCmdTarget->Exec(NULL, cmd.cmdID,
+				OLECMDEXECOPT_PROMPTUSER, NULL, NULL);
+			if (SUCCEEDED(hr) || hr == OLECMDERR_E_CANCELED)
+				return TRUE;
+		}
+	}
+
+	// Seitenansicht gibt es ab hier nicht mehr
+	if (bVorschau) return FALSE;
+
+	// ---- Stufe 3: IPrint (paginierende Dokumentobjekte) -----------
+	CComQIPtr<IPrint> spPrint(spUnk);
+	if (spPrint)
+	{
+		DVTARGETDEVICE* ptd = NULL;
+		PAGESET* pps = NULL;
+		LONG cGedruckt = 0, nLetzte = 0;
+		HRESULT hr = spPrint->Print(
+			PRINTFLAG_MAYBOTHERUSER | PRINTFLAG_PROMPTUSER
+			| PRINTFLAG_RECOMPOSETODEVICE,
+			&ptd, &pps, NULL, NULL, 1, &cGedruckt, &nLetzte);
+		if (ptd) CoTaskMemFree(ptd);
+		if (pps) CoTaskMemFree(pps);
+		if (SUCCEEDED(hr))
+			return TRUE;
+	}
+
+	// ---- Stufe 4: IViewObject2::Draw (Einseiten-Fallback) ---------
+	CComQIPtr<IViewObject2> spView(spUnk);
+	if (!spView) return FALSE;
+
+	CPrintDialog dlg(FALSE,
+		PD_ALLPAGES | PD_RETURNDC | PD_NOPAGENUMS | PD_NOSELECTION
+		| PD_USEDEVMODECOPIESANDCOLLATE, this);
+	if (dlg.DoModal() != IDOK)
+		return TRUE;   // Abbruch durch den Anwender = behandelt
+
+	HDC hdc = dlg.GetPrinterDC();
+	if (!hdc) return FALSE;
+
+	// Ausdehnung des Controls in HIMETRIC (fuer das Seitenverhaeltnis);
+	// Fallback: Fenstergroesse mit Bildschirm-DPI umrechnen.
+	SIZEL szExtent = { 0, 0 };
+	if (FAILED(spView->GetExtent(DVASPECT_CONTENT, -1, NULL, &szExtent))
+		|| szExtent.cx <= 0 || szExtent.cy <= 0)
+	{
+		CRect rcWnd;
+		::GetClientRect(pPluginWnd->m_hWnd, &rcWnd);
+		HDC hdcScreen = ::GetDC(NULL);
+		int dpiScrX = GetDeviceCaps(hdcScreen, LOGPIXELSX);
+		int dpiScrY = GetDeviceCaps(hdcScreen, LOGPIXELSY);
+		::ReleaseDC(NULL, hdcScreen);
+		szExtent.cx = MulDiv(max(rcWnd.Width(), 1), 2540, max(dpiScrX, 1));
+		szExtent.cy = MulDiv(max(rcWnd.Height(), 1), 2540, max(dpiScrY, 1));
+	}
+
+	// Zielrechteck in Geraetepixeln: Seitenbreite minus ca. 1,5 cm Rand,
+	// Seitenverhaeltnis des Controls beibehalten.
+	int cxSeite = GetDeviceCaps(hdc, HORZRES);
+	int cySeite = GetDeviceCaps(hdc, VERTRES);
+	int randX = MulDiv(1500, GetDeviceCaps(hdc, LOGPIXELSX), 2540);
+	int randY = MulDiv(1500, GetDeviceCaps(hdc, LOGPIXELSY), 2540);
+	int zielBreite = max(cxSeite - 2 * randX, 1);
+	int zielHoehe = MulDiv(zielBreite, (int)szExtent.cy, max((int)szExtent.cx, 1));
+	if (zielHoehe > cySeite - 2 * randY)
+	{
+		zielHoehe = max(cySeite - 2 * randY, 1);
+		zielBreite = MulDiv(zielHoehe, (int)szExtent.cx, max((int)szExtent.cy, 1));
+	}
+
+	DOCINFO di;
+	memset(&di, 0, sizeof(di));
+	di.cbSize = sizeof(di);
+	di.lpszDocName = _T("EasyCash&Tax - Plugin");
+
+	BOOL bOk = FALSE;
+	if (StartDoc(hdc, &di) > 0)
+	{
+		if (StartPage(hdc) > 0)
+		{
+			RECTL rcl = { randX, randY, randX + zielBreite, randY + zielHoehe };
+			// DOCPRINT = "wie gedruckt" (unterstuetzen wenige Controls),
+			// sonst CONTENT = Bildschirmdarstellung.
+			HRESULT hr = spView->Draw(DVASPECT_DOCPRINT, -1, NULL, NULL,
+				NULL, hdc, &rcl, NULL, NULL, 0);
+			if (FAILED(hr))
+				hr = spView->Draw(DVASPECT_CONTENT, -1, NULL, NULL,
+					NULL, hdc, &rcl, NULL, NULL, 0);
+			bOk = SUCCEEDED(hr);
+			EndPage(hdc);
+		}
+		if (bOk)
+			EndDoc(hdc);
+		else
+			AbortDoc(hdc);
+	}
+	DeleteDC(hdc);
+	return bOk;
+}
+#endif // USE_ECTENGINE
+
+void CEasyCashView::OnFilePrint2()
+{
+#ifdef USE_ECTENGINE
+	// WYSIWYG-Druck: Ist die Formlos-Ansicht oder das WPF-Journal aktiv,
+	// druckt die WPF-Seite exakt die aktuelle Ansicht (mit den aktiven
+	// Ribbon-Filtern) -- der alte Druckauswahl-Dialog und der DrawToDC-
+	// Druckpfad werden dafür nicht mehr benutzt. Formular-Ansichten
+	// (m_GewaehltesFormular >= 0) drucken weiter über den alten MFC-Pfad.
+	if (IstBerichtWpfAktiv())
+	{
+		if (DruckenUnterWineGesperrt()) return;
+		ECT_BerichtDrucken(FALSE);
+		return;
+	}
+	if (IstJournalWpfAktiv())
+	{
+		if (DruckenUnterWineGesperrt()) return;
+		ECT_JournalDrucken(FALSE);
+		return;
+	}
+	if (m_GewaehltesFormular == -1)
+	{
+		// Plugin-Ansicht: Druck-Kaskade (IE-ExecWB / OLE-Befehl / IPrint /
+		// IViewObject-Einseitendruck) -- WYSIWYG: gedruckt wird, was das
+		// Plugin anzeigt.
+		if (pPluginWnd)
+		{
+			if (DruckenUnterWineGesperrt()) return;
+			if (DruckePlugin(FALSE)) return;
+			AfxMessageBox(_T("Dieses Plugin unterstützt das Drucken nicht."), MB_ICONINFORMATION);
+			return;
+		}
+		// Keine druckbare Ansicht aktiv. Der alte Druckauswahl-Dialog ist
+		// abgeklemmt -- gedruckt wird, was angezeigt ist.
+		AfxMessageBox(_T("Bitte zuerst eine druckbare Ansicht wählen: Journal, Formular oder Formlos (Ribbon-Bereich 'Ansicht')."), MB_ICONINFORMATION);
+		return;
+	}
+#endif
 	WasWirdGedruckt = 0;
 	if (m_GewaehltesFormular > 0 && ECT_HoleEinstellungInt("land", 0) == 0)
 		DSAMessageBox(IDS_FORMULARDRUCK_DE, MB_OK);
 
-	CScrollView::OnFilePrint();	
+	CScrollView::OnFilePrint();
 }
 
-void CEasyCashView::OnFilePrintPreview() 
+void CEasyCashView::OnFilePrintPreview()
 {
+#ifdef USE_ECTENGINE
+	// Seitenansicht der WPF-Ansichten (DocumentViewer mit Druck-Knopf).
+	if (IstBerichtWpfAktiv())
+	{
+		if (DruckenUnterWineGesperrt()) return;
+		ECT_BerichtDrucken(TRUE);
+		return;
+	}
+	if (IstJournalWpfAktiv())
+	{
+		if (DruckenUnterWineGesperrt()) return;
+		ECT_JournalDrucken(TRUE);
+		return;
+	}
+	if (m_GewaehltesFormular == -1)
+	{
+		// Plugin-Ansicht: Seitenansicht kann nur der IE-Pfad (HTML-Plugins)
+		// bzw. ein Control mit OLECMDID_PRINTPREVIEW liefern.
+		if (pPluginWnd)
+		{
+			if (DruckenUnterWineGesperrt()) return;
+			if (DruckePlugin(TRUE)) return;
+			AfxMessageBox(_T("Für dieses Plugin gibt es keine Seitenansicht. Das direkte Drucken über den Druck-Knopf ist ggf. möglich."), MB_ICONINFORMATION);
+			return;
+		}
+		AfxMessageBox(_T("Bitte zuerst eine druckbare Ansicht wählen: Journal, Formular oder Formlos (Ribbon-Bereich 'Ansicht')."), MB_ICONINFORMATION);
+		return;
+	}
+#endif
 	WasWirdGedruckt = 0;
 	if (m_GewaehltesFormular > 0 && ECT_HoleEinstellungInt("land", 0) == 0)
 		DSAMessageBox(IDS_FORMULARDRUCK_DE, MB_OK);
@@ -5630,20 +5899,21 @@ void CEasyCashView::OnPrepareDC(CDC* pDC, CPrintInfo* pInfo)
 BOOL CEasyCashView::OnPreparePrinting(CPrintInfo* pInfo)
 {
 	// Unter Wine/CrossOver: Drucken abfangen (PrintDlgA crasht ohne konfigurierten Drucker)
-	{
-		HKEY hKey;
-		if (RegOpenKeyEx(HKEY_LOCAL_MACHINE, _T("Software\\Wine"), 0, KEY_READ, &hKey) == ERROR_SUCCESS)
-		{
-			RegCloseKey(hKey);
-			AfxMessageBox(_T("EasyCash läuft unter Wine/CrossOver.\n\nDas Drucken steht in dieser Umgebung nicht zur Verfügung, da kein Drucker im Wine-Prefix konfiguriert ist.\n\nBitte richten Sie einen Drucker in Ihrem Wine-/CrossOver-Prefix ein."), MB_OK | MB_ICONINFORMATION);
-			return FALSE;
-		}
-	}
+	if (DruckenUnterWineGesperrt())
+		return FALSE;
 	CEasyCashDoc* pDoc = GetDocument();
 
 	// neue Formulare:
 	if (m_GewaehltesFormular == -1)
 	{
+#ifdef USE_ECTENGINE
+		// WYSIWYG-Druck: Journal und formlose Berichte drucken direkt aus
+		// ihren WPF-Ansichten (OnFilePrint2 -> ECT_JournalDrucken bzw.
+		// ECT_BerichtDrucken), der Druckauswahl-Dialog mit seiner
+		// Parallel-Filterwelt ist abgeklemmt. Hierher kommt man nur noch
+		// ueber Restpfade ohne druckbare Ansicht -> nichts zu drucken.
+		return FALSE;
+#else
 		if (!WasWirdGedruckt)	// bei Druckvorschau nicht nochmal Dialog zeigen
 		{
 			DruckauswahlDlg dlg(this);
@@ -5739,6 +6009,7 @@ BOOL CEasyCashView::OnPreparePrinting(CPrintInfo* pInfo)
 		default:
 			return 0;
 		}
+#endif // !USE_ECTENGINE
 	}
 	else	// .ecf Formular
 	{
@@ -5893,7 +6164,7 @@ void CEasyCashView::OnEditEinnahmeBuchen()
 	// sofort aktualisieren, damit die neue Buchung ohne Ansichtswechsel erscheint.
 	if (ECT_ShowBuchungDialog(GetDocument(), FALSE, AfxGetMainWnd()->GetSafeHwnd()))
 	{
-		if (IstJournalWpfAktiv())
+		if (IstJournalWpfAktiv() || IstBerichtWpfAktiv())
 			AktualisiereJournalFilter();
 	}
 #else
@@ -5916,7 +6187,7 @@ void CEasyCashView::OnEditAusgabeBuchen()
 	// sofort aktualisieren, damit die neue Buchung ohne Ansichtswechsel erscheint.
 	if (ECT_ShowBuchungDialog(GetDocument(), TRUE, AfxGetMainWnd()->GetSafeHwnd()))
 	{
-		if (IstJournalWpfAktiv())
+		if (IstJournalWpfAktiv() || IstBerichtWpfAktiv())
 			AktualisiereJournalFilter();
 	}
 #else
@@ -5941,7 +6212,7 @@ void CEasyCashView::BucheMitVorlage(BOOL bAusgaben, int nVorlagenSlot)
 	if (ECT_ShowBuchungDialogMitVorlage(GetDocument(), bAusgaben,
 		AfxGetMainWnd()->GetSafeHwnd(), nVorlagenSlot))
 	{
-		if (IstJournalWpfAktiv())
+		if (IstJournalWpfAktiv() || IstBerichtWpfAktiv())
 			AktualisiereJournalFilter();
 	}
 }
@@ -6336,6 +6607,8 @@ void CEasyCashView::DauerbuchungenAusfuehren(int jb, int mb)
 	{
 		CEasyCashDocBridge* bridge = (CEasyCashDocBridge*)pDoc;
 		bridge->SyncNativeToManaged();
+		if (IstBerichtWpfAktiv() && !IstJournalWpfAktiv())
+			AktualisiereJournalFilter();   // nur den Bericht nachfuehren
 		if (IstJournalWpfAktiv())
 		{
 			AktualisiereJournalFilter();
@@ -8495,6 +8768,29 @@ void CEasyCashView::JournalWpfZoomAenderung(int deltaProzent)
 	pView->m_zoomfaktor += deltaProzent;
 	pView->SetzeZoomfaktor();
 }
+
+// Druckwunsch aus dem WPF-Journal (Strg+P). Statischer Callback
+// (registriert in ZeigeJournalWpf): ermittelt die aktive View wie beim
+// Zoom-Callback und leitet auf den normalen Druckbefehl um.
+void CEasyCashView::JournalWpfDruckAnforderung()
+{
+	CMDIFrameWnd* pFrame = DYNAMIC_DOWNCAST(CMDIFrameWnd, AfxGetMainWnd());
+	if (!pFrame) return;
+	CMDIChildWnd* pChild = pFrame->MDIGetActive();
+	if (!pChild) return;
+	CEasyCashView* pView = DYNAMIC_DOWNCAST(CEasyCashView, pChild->GetActiveView());
+	if (!pView)
+	{
+		// Fallback: erste CEasyCashView des aktiven Dokuments (wenn der
+		// Fokus im WPF-HWND liegt, ist u.U. keine CView "aktiv").
+		CDocument* pDoc = pChild->GetActiveDocument();
+		POSITION pos = pDoc ? pDoc->GetFirstViewPosition() : NULL;
+		while (pos && !pView)
+			pView = DYNAMIC_DOWNCAST(CEasyCashView, pDoc->GetNextView(pos));
+	}
+	if (!pView) return;
+	pView->OnFilePrint2();
+}
 #endif
 
 // Filter auf nächstes Konto
@@ -8726,6 +9022,12 @@ void CEasyCashView::ZeigeJournalWpf(int nAnzeigeModus)
 {
 	SetzeListenFuerBuchungsdialog();
 
+	// Eine offene Formlos-Ansicht (liegt als Vollflaeche ueber dem
+	// Journal) zuerst schliessen -- sie zeigt das Journal wieder an,
+	// falls es darunter eingebettet war.
+	if (m_hwndBerichtWpf)
+		VerstecktBerichtWpf();
+
 	if (m_hwndJournalWpf)
 	{
 		AktualisiereJournalFilter();
@@ -8754,6 +9056,9 @@ void CEasyCashView::ZeigeJournalWpf(int nAnzeigeModus)
 	// Zoom-Tasten aus dem WPF-Journal (Strg-'+'/'-') zurueck in den
 	// nativen Zoom-Mechanismus routen.
 	ECT_JournalRegistriereZoomAenderung(&CEasyCashView::JournalWpfZoomAenderung);
+
+	// Strg+P aus dem WPF-Journal auf den normalen Druckbefehl umleiten.
+	ECT_JournalRegistriereDruckAnforderung(&CEasyCashView::JournalWpfDruckAnforderung);
 
 	if (!m_hwndJournalWpf)
 	{
@@ -8845,6 +9150,11 @@ void CEasyCashView::ZeigeEinstellungenWpf(LPCTSTR szStartSeite)
 		::BringWindowToTop(m_hwndEinstellungenWpf);
 		return;
 	}
+
+	// Eine offene Formlos-Ansicht zuerst schliessen (beide sind
+	// Vollflaechen-Overlays; uebereinander stapeln waere Chaos).
+	if (m_hwndBerichtWpf)
+		VerstecktBerichtWpf();
 
 	CWnd* pSplitter = GetParent();
 	if (!pSplitter) return;
@@ -8949,6 +9259,150 @@ void CEasyCashView::AktualisiereJournalFilter()
 		m_BetriebFilterDisplay,
 		m_BestandskontoFilterDisplay,
 		JournalSchriftgroesse(m_zoomfaktor));
+
+	// Eine aktive Formlos-Ansicht folgt denselben Ribbon-Filtern
+	// (WYSIWYG: Monat/Quartal + Betrieb wirken auch auf den Bericht).
+	if (IstBerichtWpfAktiv())
+		ECT_BerichtAktualisiere(
+			m_MonatsFilterDisplay,
+			m_BetriebFilterDisplay,
+			JournalSchriftgroesse(m_zoomfaktor));
+}
+
+// ----------------------------------------------------------
+// Formlos-Ansicht (Freestyle-EUER, formlose USt-Erklaerung, Kontenplan)
+// ----------------------------------------------------------
+// Vollflaechen-Overlay wie die Einstellungen: ueberdeckt Journal +
+// Navigation (WPF oder nativ), wird von den Journal-/Formular-/Plugin-
+// Moduswechseln ueber VerstecktBerichtWpf wieder abgeraeumt.
+
+void CEasyCashView::ZeigeBerichtWpf(int nBerichtTyp)
+{
+	// Schon offen? Nur den Berichtstyp wechseln.
+	if (m_hwndBerichtWpf)
+	{
+		m_nBerichtTyp = nBerichtTyp;
+		ECT_BerichtWechsleTyp(nBerichtTyp);
+		::BringWindowToTop(m_hwndBerichtWpf);
+		return;
+	}
+
+	CWnd* pSplitter = GetParent();
+	if (!pSplitter) return;
+
+	// Offene Einstellungen zuerst schliessen (beide sind Vollflaechen).
+	if (IstEinstellungenWpfAktiv())
+		VerstecktEinstellungenWpf();
+
+	// Engine-Berichte rechnen auf den Einstellungs-Listen -- sicherstellen,
+	// dass Betriebe/Bestandskonten-Sprites etc. gesetzt sind (wie Journal).
+	SetzeListenFuerBuchungsdialog();
+
+	CRect rcAll;
+	pSplitter->GetClientRect(&rcAll);
+
+	m_hwndBerichtWpf = ECT_BerichtEinbetten(
+		pSplitter->m_hWnd,
+		rcAll.left, rcAll.top, rcAll.Width(), rcAll.Height(),
+		GetDocument(),
+		nBerichtTyp,
+		m_MonatsFilterDisplay,
+		m_BetriebFilterDisplay,
+		JournalSchriftgroesse(m_zoomfaktor));
+
+	if (!m_hwndBerichtWpf)
+	{
+		AfxMessageBox(_T("Konnte WPF-Berichtsfenster nicht erzeugen."));
+		return;
+	}
+	m_nBerichtTyp = nBerichtTyp;
+
+	// Zoom-Tasten + Strg+P der Formlos-Ansicht auf dieselben nativen
+	// Mechanismen routen wie beim Journal.
+	ECT_BerichtRegistriereCallbacks(
+		&CEasyCashView::JournalWpfZoomAenderung,
+		&CEasyCashView::JournalWpfDruckAnforderung);
+
+	::ShowWindow(m_hwndBerichtWpf, SW_SHOW);
+	::BringWindowToTop(m_hwndBerichtWpf);
+
+	// Darunterliegende Fenster verstecken (Vollflaeche).
+	if (m_hwndJournalWpf)    ::ShowWindow(m_hwndJournalWpf, SW_HIDE);
+	if (m_hwndNavigationWpf) ::ShowWindow(m_hwndNavigationWpf, SW_HIDE);
+	ShowWindow(SW_HIDE);
+	if (m_pNavigationWnd) m_pNavigationWnd->ShowWindow(SW_HIDE);
+}
+
+void CEasyCashView::VerstecktBerichtWpf()
+{
+	if (!m_hwndBerichtWpf) return;
+
+	ECT_BerichtAbloesen(m_hwndBerichtWpf);
+	m_hwndBerichtWpf = NULL;
+	m_nBerichtTyp = -1;
+
+	if (m_hwndJournalWpf)
+	{
+		// Darunter lag das WPF-Journal: wieder zeigen und nachfuehren.
+		::ShowWindow(m_hwndJournalWpf, SW_SHOW);
+		::BringWindowToTop(m_hwndJournalWpf);
+		if (m_hwndNavigationWpf)
+		{
+			::ShowWindow(m_hwndNavigationWpf, SW_SHOW);
+			::BringWindowToTop(m_hwndNavigationWpf);
+		}
+		GroessenAnpassungJournalWpf();
+	}
+	else
+	{
+		// Darunter lag die native View (Formular-/Plugin-Modus).
+		ShowWindow(SW_SHOW);
+		if (m_pNavigationWnd) m_pNavigationWnd->ShowWindow(SW_SHOW);
+		SetupScroll();
+		Invalidate();
+	}
+}
+
+void CEasyCashView::GroessenAnpassungBerichtWpf()
+{
+	CWnd* pSplitter = GetParent();
+	if (!pSplitter || !m_hwndBerichtWpf) return;
+
+	CRect rcAll;
+	pSplitter->GetClientRect(&rcAll);
+	::SetWindowPos(m_hwndBerichtWpf, NULL,
+		rcAll.left, rcAll.top, rcAll.Width(), rcAll.Height(),
+		SWP_NOZORDER | SWP_NOACTIVATE);
+}
+
+// ----------------------------------------------------------
+// Ribbon-Handler des Formlos-Knopfs. Der Default-Klick (Knopf-Flaeche)
+// oeffnet die Freestyle-EUER; das Pulldown bietet alle vier Berichte.
+// ----------------------------------------------------------
+
+void CEasyCashView::OnAnsichtFormlos()
+{
+	ZeigeBerichtWpf(0);   // Freestyle-EUER
+}
+
+void CEasyCashView::OnFormlosEuer()
+{
+	ZeigeBerichtWpf(0);
+}
+
+void CEasyCashView::OnFormlosUst()
+{
+	ZeigeBerichtWpf(1);
+}
+
+void CEasyCashView::OnFormlosKontenplan()
+{
+	ZeigeBerichtWpf(2);
+}
+
+void CEasyCashView::OnFormlosKontenplanFelder()
+{
+	ZeigeBerichtWpf(3);
 }
 
 #endif // USE_ECTENGINE
@@ -9794,6 +10248,13 @@ char *CEasyCashView::GetWaehrungskuerzel()
 void CEasyCashView::DestroyPlugin()
 {
 #ifdef USE_ECTENGINE
+	// Falls Formlos-Ansicht aktiv ist, zuerst schliessen (liegt ueber
+	// dem Journal; VerstecktBerichtWpf wuerde sonst das Journal wieder
+	// einblenden)
+	if (m_hwndBerichtWpf)
+	{
+		VerstecktBerichtWpf();
+	}
 	// Falls WPF-Journal aktiv ist, ebenfalls schliessen
 	if (m_hwndJournalWpf || m_hwndNavigationWpf)
 	{
@@ -10731,6 +11192,8 @@ void CEasyCashView::SetzeZoomfaktor()
 #ifdef USE_ECTENGINE
 	// WPF-Journal mit-zoomen. Mapping: 100% -> Basis (s. JournalSchriftgroesse)
 	ECT_JournalSetzeZoom(JournalSchriftgroesse(m_zoomfaktor));
+	// Formlos-Ansicht ebenfalls (gleiches Mapping)
+	ECT_BerichtSetzeZoom(JournalSchriftgroesse(m_zoomfaktor));
 #endif
 }
 

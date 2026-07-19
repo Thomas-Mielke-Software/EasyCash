@@ -100,6 +100,7 @@
 #define IDR_DAUERBUCHUNGEN_AUSFUEHREN_MONATE 421
 #define IDR_JOURNALANSICHT              423
 #define IDR_FILTER_MONAT                424
+#define IDR_ANSICHT_FORMLOS             443
 #define IDR_FILTER_KONTO                425
 #define IDR_JOURNALDRUCK                426
 #define IDR_FILTER_KONTO1               427
@@ -533,6 +534,11 @@
 #define ID_FORMULARE_                   32916
 #define ID_FORMULAR_MENUUPDATE          32917
 #define ID_VIEW_JOURNAL_DATUM_WPF       32918
+#define ID_ANSICHT_FORMLOS              32919
+#define ID_FORMLOS_EUER                 32920
+#define ID_FORMLOS_UST                  32921
+#define ID_FORMLOS_KONTENPLAN           32922
+#define ID_FORMLOS_KONTENPLAN_FELDER    32923
 #define ID_CMD_CUSTOM_MRU               48000
 #define ID_STATUS                       61445
 #define ID_SALDO                        61446
@@ -544,8 +550,8 @@
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_3D_CONTROLS                     1
-#define _APS_NEXT_RESOURCE_VALUE        443
-#define _APS_NEXT_COMMAND_VALUE         32919
+#define _APS_NEXT_RESOURCE_VALUE        444
+#define _APS_NEXT_COMMAND_VALUE         32924
 #define _APS_NEXT_CONTROL_VALUE         1172
 #define _APS_NEXT_SYMED_VALUE           115
 #endif

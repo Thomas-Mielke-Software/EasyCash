@@ -177,6 +177,29 @@ namespace ECTViews.Journal
         }
 
         /// <summary>
+        /// Druckt das aktive (erste) eingebettete Journal im aktuellen
+        /// Filter-Zustand (WYSIWYG). vorschau=true öffnet die Seitenansicht
+        /// (DocumentViewer mit eingebautem Druck-Knopf), sonst direkt den
+        /// System-Druckdialog. Liefert false, wenn kein Journal aktiv ist.
+        /// </summary>
+        public static bool DruckeAktives(bool vorschau)
+        {
+            if (_aktiveHosts.Count == 0) return false;
+            var eintrag = _aktiveHosts[0];
+
+            var dokument = Druck.JournalDruckBauer.Baue(
+                eintrag.ViewModel, out string titel);
+            if (dokument == null) return false;
+
+            if (vorschau)
+                Druck.DruckDokument.ZeigeVorschau(
+                    dokument, titel, eintrag.HwndParent);
+            else
+                Druck.DruckDokument.Drucke(dokument, titel);
+            return true;
+        }
+
+        /// <summary>
         /// Setzt nur die Schriftgroesse (Zoom) auf allen aktiven Journals,
         /// ohne die Filter zu berühren.
         /// </summary>

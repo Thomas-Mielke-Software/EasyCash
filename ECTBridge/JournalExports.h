@@ -173,6 +173,33 @@ typedef void (*ECT_JournalZoomAenderungCallback)(int deltaProzent);
 ECTBRIDGE_API void ECT_JournalRegistriereZoomAenderung(
     ECT_JournalZoomAenderungCallback pfn);
 
+// ----------------------------------------------------------
+// WYSIWYG-Druck des Journals (WPF, FixedDocument)
+// ----------------------------------------------------------
+
+/// <summary>
+/// Druckt das aktive WPF-Journal im aktuellen Filter-Zustand (WYSIWYG:
+/// gedruckt wird exakt, was die Ansicht zeigt). bVorschau=TRUE oeffnet
+/// die Seitenansicht (DocumentViewer mit Druck-Knopf), sonst direkt den
+/// System-Druckdialog. Rueckgabe FALSE, wenn kein Journal aktiv ist.
+/// </summary>
+ECTBRIDGE_API BOOL ECT_JournalDrucken(BOOL bVorschau);
+
+/// <summary>
+/// Callback-Typ fuer den Druckwunsch aus dem WPF-Journal (Strg+P).
+/// </summary>
+typedef void (*ECT_JournalDruckAnforderungCallback)();
+
+/// <summary>
+/// Registriert den Callback, der bei Strg+P im WPF-Journal gerufen wird.
+/// Der Aufrufer (easycashview.cpp) leitet darin auf seinen normalen
+/// Druckbefehl (OnFilePrint2) um, damit alle Druckpfade an einer Stelle
+/// starten (Wine-Guard etc.). NULL deregistriert; ohne Registrierung
+/// ist Strg+P im Journal wirkungslos (z.B. OCX-Kontext).
+/// </summary>
+ECTBRIDGE_API void ECT_JournalRegistriereDruckAnforderung(
+    ECT_JournalDruckAnforderungCallback pfn);
+
 #ifdef __cplusplus
 }
 #endif

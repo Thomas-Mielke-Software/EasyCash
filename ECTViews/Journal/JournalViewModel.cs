@@ -462,6 +462,14 @@ namespace ECTViews.Journal
         public event Action<int> ZoomAendern;
         public void MeldeZoomAenderung(int deltaProzent) => ZoomAendern?.Invoke(deltaProzent);
 
+        /// <summary>
+        /// Druckwunsch aus der View (Strg+P im Journal). Wird von der Bridge
+        /// an den nativen Druckbefehl (OnFilePrint2) weitergereicht, damit
+        /// alle Druckpfade an einer Stelle starten (Wine-Guard etc.).
+        /// </summary>
+        public event Action DruckAnfordern;
+        public void MeldeDruckAnforderung() => DruckAnfordern?.Invoke();
+
         public event Action<Buchung> BuchungBearbeiten;
         /// <summary>Loescht alle uebergebenen Buchungen (eine oder mehrere).</summary>
         public event Action<System.Collections.Generic.IList<Buchung>> BuchungenLoeschen;

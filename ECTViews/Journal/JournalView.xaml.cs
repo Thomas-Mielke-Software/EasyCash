@@ -242,6 +242,19 @@ namespace ECTViews.Journal
                     (DataContext as JournalViewModel)?.MeldeZoomAenderung(-25);
                     e.Handled = true;
                     break;
+
+                // Strg+P druckt das Journal. Wie beim Zoom erreicht der
+                // MFC-Accelerator die native View nicht mehr, sobald die
+                // WPF-Liste den Fokus hat -- deshalb hier abfangen und
+                // ueber das ViewModel-Event an den nativen Druckbefehl
+                // melden.
+                case Key.P:
+                    if ((Keyboard.Modifiers & ModifierKeys.Control) != 0)
+                    {
+                        (DataContext as JournalViewModel)?.MeldeDruckAnforderung();
+                        e.Handled = true;
+                    }
+                    break;
             }
         }
 

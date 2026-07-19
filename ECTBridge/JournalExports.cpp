@@ -45,6 +45,18 @@ void ECT_JournalRegistriereZoomAenderung(ECT_JournalZoomAenderungCallback pfn)
 }
 
 // ----------------------------------------------------------
+// Druck-Anforderungs-Callback (Strg+P im WPF-Journal). Analog zum
+// Zoom-Callback: easycashview.cpp registriert seinen OnFilePrint2-
+// Umleiter; im OCX-Kontext bleibt er NULL.
+// ----------------------------------------------------------
+static ECT_JournalDruckAnforderungCallback g_pfnDruckAnforderung = NULL;
+
+void ECT_JournalRegistriereDruckAnforderung(ECT_JournalDruckAnforderungCallback pfn)
+{
+    g_pfnDruckAnforderung = pfn;
+}
+
+// ----------------------------------------------------------
 // Helper: native LPCSTR -> managed String^
 // ----------------------------------------------------------
 static System::String^ ToManagedString(LPCSTR psz)
@@ -196,6 +208,14 @@ public:
         if (g_pfnZoomAenderung)
             g_pfnZoomAenderung(deltaProzent);
     }
+
+    // Reicht den Druckwunsch (Strg+P im Journal) an den nativen
+    // Druckbefehl weiter (OnFilePrint2 -> Wine-Guard -> ECT_JournalDrucken).
+    void OnDruckAnforderung()
+    {
+        if (g_pfnDruckAnforderung)
+            g_pfnDruckAnforderung();
+    }
 };
 
 // ----------------------------------------------------------
@@ -251,6 +271,8 @@ HWND ECT_JournalEinbetten(
                 handler, &JournalEventHandler::OnAfaAbgang);
             vm->ZoomAendern += gcnew System::Action<int>(
                 handler, &JournalEventHandler::OnZoomAenderung);
+            vm->DruckAnfordern += gcnew System::Action(
+                handler, &JournalEventHandler::OnDruckAnforderung);
         }
 
         return (HWND)hKind.ToPointer();
@@ -346,6 +368,25 @@ void ECT_JournalSetzeZoom(double dSchriftgroesse)
         CString msg = L"Fehler in ECT_JournalSetzeZoom: ";
         msg += CString(ex->Message);
         AfxMessageBox(msg, MB_ICONERROR);
+    }
+}
+
+// ----------------------------------------------------------
+// ECT_JournalDrucken - WYSIWYG-Druck des aktiven Journals
+// ----------------------------------------------------------
+BOOL ECT_JournalDrucken(BOOL bVorschau)
+{
+    try
+    {
+        return ECTViews::Journal::JournalEmbed::DruckeAktives(
+            bVorschau != FALSE) ? TRUE : FALSE;
+    }
+    catch (Exception^ ex)
+    {
+        CString msg = L"Fehler in ECT_JournalDrucken: ";
+        msg += CString(ex->Message);
+        AfxMessageBox(msg, MB_ICONERROR);
+        return FALSE;
     }
 }
 

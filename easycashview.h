@@ -147,6 +147,12 @@ private:
 	// true, wenn die Einstellungen ueber einem aktiven WPF-Journal liegen
 	// (dann beim Schliessen das Journal wieder zeigen, nicht die native View).
 	bool m_einstellungenUeberJournal;
+	// HWND der eingebetteten Formlos-Ansicht (Freestyle-EUER, formlose
+	// USt-Erklaerung, Kontenplan; NULL wenn nicht aktiv). Ueberlagert wie
+	// die Einstellungen die ganze Splitter-Flaeche.
+	HWND m_hwndBerichtWpf;
+	// Aktiver Berichtstyp (0-3, siehe BerichtExports.h), -1 wenn keiner.
+	int m_nBerichtTyp;
 
 	// Hilfsfunktionen
 	void ZeigeJournalWpf(int nAnzeigeModus);   // 0=Datum, 1=Konten, 2=BK, 3=AfA
@@ -155,6 +161,12 @@ private:
 	void ZeigeEinstellungenWpf(LPCTSTR szStartSeite = _T("Allgemein"));
 	void VerstecktEinstellungenWpf();
 	void GroessenAnpassungEinstellungenWpf();
+	void ZeigeBerichtWpf(int nBerichtTyp);     // Formlos-Ansicht (0-3)
+	void VerstecktBerichtWpf();
+	void GroessenAnpassungBerichtWpf();
+	// Druck-Kaskade fuer den Plugin-Modus (IE/OLE/IViewObject), siehe
+	// Implementierung. TRUE = eine Stufe hat den Druck uebernommen.
+	BOOL DruckePlugin(BOOL bVorschau);
 	void AktualisiereJournalFilter();          // bei Filter-Aenderung
 
 	// Oeffnet den Buchen-Dialog mit einer vorgewaehlten Buchungsvorlage
@@ -166,11 +178,17 @@ private:
 	// registriert wird (ECT_JournalRegistriereZoomAenderung).
 	static void JournalWpfZoomAenderung(int deltaProzent);
 
+	// Callback fuer den Druckwunsch aus dem WPF-Journal (Strg+P).
+	// Leitet auf OnFilePrint2 der aktiven View um, damit alle
+	// Druckpfade an einer Stelle starten (Wine-Guard etc.).
+	static void JournalWpfDruckAnforderung();
+
 	// True solange ein WPF-Journal aktiv ist - dann sollten alle
 	// alten DrawToDC-Pfade und Navigations-Updates uebersprungen
 	// werden, damit nichts ueber das WPF gemalt wird.
 	bool IstJournalWpfAktiv() const { return m_hwndJournalWpf != NULL; }
 	bool IstEinstellungenWpfAktiv() const { return m_hwndEinstellungenWpf != NULL; }
+	bool IstBerichtWpfAktiv() const { return m_hwndBerichtWpf != NULL; }
 #endif
 
 // Operations
@@ -405,6 +423,14 @@ public:
 	afx_msg void OnBuchenDauausDezember();
 	afx_msg void OnViewJournalMonat();
 	afx_msg void OnViewJournalKonto();
+#ifdef USE_ECTENGINE
+	// Formlos-Ribbon-Knopf (Default = Freestyle-EUER) + Pulldown-Menue
+	afx_msg void OnAnsichtFormlos();
+	afx_msg void OnFormlosEuer();
+	afx_msg void OnFormlosUst();
+	afx_msg void OnFormlosKontenplan();
+	afx_msg void OnFormlosKontenplanFelder();
+#endif
 	virtual BOOL PreTranslateMessage(MSG* pMsg);
 	afx_msg void OnTimer(UINT_PTR nIDEvent);
 	afx_msg void OnViewZoomSwitch();

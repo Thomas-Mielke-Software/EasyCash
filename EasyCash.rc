@@ -413,6 +413,14 @@ BEGIN
     MENUITEM "Druckerein&richtung...",      ID_FILE_PRINT_SETUP
 END
 
+IDR_ANSICHT_FORMLOS MENU
+BEGIN
+    MENUITEM "Formlose E/Ü-Rechnung (Freestyle-EÜR)", ID_FORMLOS_EUER
+    MENUITEM "Formlose USt-Erklärung",   ID_FORMLOS_UST
+    MENUITEM "Kontenplan",                  ID_FORMLOS_KONTENPLAN
+    MENUITEM "Kontenplan mit Formularfeldern", ID_FORMLOS_KONTENPLAN_FELDER
+END
+
 IDR_ANSICHT_FORMULARE MENU
 BEGIN
     MENUITEM "Dummy",                       ID_DUMMY
@@ -1272,8 +1280,8 @@ END
 //
 
 VS_VERSION_INFO VERSIONINFO
- FILEVERSION 4,0,16,361
- PRODUCTVERSION 4,0,16,361
+ FILEVERSION 4,0,17,366
+ PRODUCTVERSION 4,0,17,366
  FILEFLAGSMASK 0x3fL
 #ifdef _DEBUG
  FILEFLAGS 0x1L
@@ -1290,12 +1298,12 @@ BEGIN
         BEGIN
             VALUE "CompanyName", "Thomas Mielke Softwareentwicklung"
             VALUE "FileDescription", "EASYCASH_AND_TAX MFC Application"
-            VALUE "FileVersion", "4.0.16.361"
+            VALUE "FileVersion", "4.0.17.366"
             VALUE "InternalName", "EASYCASH_AND_TAX"
             VALUE "LegalCopyright", "© 1998-2026 Thomas Mielke Softwareentwicklung"
             VALUE "OriginalFilename", "EASYCT.EXE"
             VALUE "ProductName", "EASYCASH_AND_TAX Application"
-            VALUE "ProductVersion", "4.0.16.361"
+            VALUE "ProductVersion", "4.0.17.366"
         END
     END
     BLOCK "VarFileInfo"
@@ -2162,6 +2170,7 @@ STRINGTABLE
 BEGIN
     ID_FORMULAR_NEU         "Diese Funktion ist für die normale Verwendung von EC&&T nicht nötig. Die üblichen Formulare werden rechtzeitig vai Update verfügbar gemacht.\nNeues Formular erzeugen"
     ID_FILE_PRINT2          "Druckt das Journal oder auch eine formlose E/Ü-Rechnung bzw. USt-Erklärung.\nDrucken"
+    ID_ANSICHT_FORMLOS      "Zeigt die formlosen Berichte als Ansicht: Freestyle-EÜR, USt-Erklärung, Kontenplan. Gedruckt wird über den Druck-Knopf genau das, was angezeigt ist.\nFormlos"
     ID_NEXT                 "Nächstes Vorkommen des Suchbegriffs suchen (auch F3-Taste).\nVorwärts suchen"
     ID_PREV                 "Zurück zum letzten Vorkommen des Suchbegriffs (auch Shift-F3).\nRückwärts suchen"
     ID_FILE_MANDANTEN       "Auswählen und Managen von Mandanten (bitte zuerst alle Dokumente schließen)\nMandanten"

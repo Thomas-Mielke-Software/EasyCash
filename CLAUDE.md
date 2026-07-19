@@ -1,8 +1,7 @@
 # EasyCash&Tax — Migration MFC/C++ → C#/WPF
 
-Benutze zum Speichern das Windows-1252 Encoding für alle legacy .cpp- und .h-Dateien.
-Ansonsten UTF-8 für die C#- und XAML-Dateien. Benutze normale deutsche Umlaute und ß
-statt ASCII-Ersatz wie "oe" für ein "ö", außer für Funktions- und Variablennamen natürlich.
+## Zeichensatznutzung in-code
+
 Verzichte nach Möglichkeit auf exotische Sonderzeichen wie das Pfeil-Symbol "→" und 
 benutze eher aus ASCII-Zeichen zusammengesetzte Pendants wie "-->".
 Oder in Kommentaren, um Code optisch zu trennen, benutze einfach eine Zeile mit vielen 
@@ -45,7 +44,8 @@ EasyCTX.ocx (ActiveX, MFC)            — alter Plugin-Container
 ECTBridge.lib                         — ja, dieselbe lib
 ```
 
-Das ECTIFace-Subprojekt ist deprecated und soll in diesem Branch nicht angerührt, sondern durch ECTBridge ersetzt werden. 
+Das ECTIFace-Subprojekt ist deprecated und soll in diesem Branch i.d.R. nicht angerührt, sondern durch ECTBridge ersetzt werden.
+Nur wenn es nicht anders geht, um Kompatibilität zu erhalten, darf ECTIFace noch geändert werden.
 
 ### Interop-Mechanik
 
@@ -93,6 +93,16 @@ EasyCash/
       IconKatalog.cs             — Icon-Namen (Spiegel von IconAuswahl*.cpp)
       UnternehmensartView.xaml   — Betriebsdaten (Tab-getrennter ini-Wert)
       AnfangssaldoView.xaml      — Anfangssaldo (SaldoJJJJ des Vorjahres)
+    Druck/                       — WYSIWYG-Druck (WPF, FixedDocument)
+      DruckDokument.cs           — Pagination, Kopf-/Fußzeile, PrintDialog,
+                                   Seitenansicht-Aufruf
+      JournalDruckBauer.cs       — druckt die JournalRow-Listen des VM
+      BerichtDruckBauer.cs       — druckt die Formlos-Berichte
+      DruckVorschauFenster.xaml  — DocumentViewer-Seitenansicht
+    Berichte/                    — Formlos-Ansicht (EÜR/USt/Kontenplan)
+      BerichtView.xaml(.cs)      — Vollflächen-Ansicht + Zoom/Strg+P
+      BerichtViewModel.cs        — projiziert ECTEngine.Bericht auf Zeilen-VMs
+      BerichtEmbed.cs            — HwndSource-Hosting (Muster JournalEmbed)
     Resources/
       icons.bmp                  — Sprite mit Betrieb-Icons (32x32 horiz.)
       icons_bestandskonten.bmp   — Sprite mit Bestandskonto-Icons
@@ -106,7 +116,10 @@ EasyCash/
     ViewExports.h(.cpp)          — ECT_ShowBuchungBearbeitenDialog,
                                    ECT_SetzeBetriebeUndBestandskonten, …
     JournalExports.h(.cpp)       — ECT_JournalEinbetten, ECT_NavigationEinbetten,
-                                   ECT_JournalAktualisiere, ECT_JournalSetzeZoom
+                                   ECT_JournalAktualisiere, ECT_JournalSetzeZoom,
+                                   ECT_JournalDrucken + Druck-Callback (Strg+P)
+    BerichtExports.h(.cpp)       — ECT_BerichtEinbetten/-Aktualisiere/-Drucken
+                                   (Formlos-Ansicht)
     EasyCashDocBridge.h          — CEasyCashDocBridge + GetEngine(bridge)
 ```
 
@@ -376,6 +389,42 @@ robuster in hosted-WPF-Szenarien.
   Rückgabe: Kontoname oder "" (Abbruch, Spezifikations-Fehler oder alle
   100 Slots belegt — Fehler als MessageBox). Beide Welten müssen sich
   identisch verhalten (Plugin-Kompatibilität V3/V4).
+
+### WYSIWYG-Druck + Formlos-Berichte (komplett, Stand 2026-07-19)
+- **Prinzip**: Gedruckt wird exakt die aktuelle Ansicht mit den aktiven
+  Ribbon-Filtern. Der alte `DruckauswahlDlg` (Parallel-Filterwelt
+  `m_*FilterPrinter` + tagesgenauer von/bis-Bereich) ist im
+  USE_ECTENGINE-Pfad abgeklemmt; tagesgenauer Zeitraum entfällt
+  ersatzlos. `.ecf`-Formulardruck bleibt nativ (`DrawFormularToDC`).
+- **Druck-Infrastruktur** (`ECTViews/Druck/`): `DruckDokument` baut aus
+  `DruckBlock`-Listen ein A4-FixedDocument (Kopfzeile Titel+Filter+Datum,
+  Seitennummern, Keep-with-next für Abschnittstitel, Spaltenkopf-
+  Wiederholung nach Seitenumbruch). Journal: `JournalDruckBauer` rendert
+  die JournalRow-Listen des ViewModels mit fester Druckschrift 10
+  (zoom-unabhängig; Spaltenlayout wie am Bildschirm, Icon-Spalten nur
+  wenn belegt). Seitenansicht = `DruckVorschauFenster` (DocumentViewer).
+- **Formlos-Ribbon-Split-Button** ("Formlos\l", Ansicht-Panel, Default =
+  Freestyle-EÜR; Menü `IDR_ANSICHT_FORMLOS`): vier Berichte als ANSICHT
+  (Vollflächen-Overlay wie die Einstellungen, `ZeigeBerichtWpf(typ)` /
+  `VerstecktBerichtWpf` in easycashview.cpp; Moduswechsel Journal/
+  Formular/Plugin/Einstellungen räumen den Bericht ab). Engine-Logik
+  decimal-basiert + getestet: `EuerBericht` (Port von DrawEURechungToDC),
+  `UstErklaerungBericht` (Port von DrawUmStErklaerungToDC inkl.
+  Elster-Vorauszahlungen), `KontenplanBericht` (neu, aus `EUKonten`),
+  Modell `Berichte.cs` (`Bericht`/`BerichtZeile`/`BerichtZeitraum`).
+- **Verdrahtung**: Strg+P im WPF-Journal/Bericht → Callback →
+  `OnFilePrint2` (ein Einstiegspunkt, Wine-Guard
+  `DruckenUnterWineGesperrt()`); `ID_FILE_PRINT`-Accelerator im
+  USE_ECTENGINE-Pfad auf `OnFilePrint2`; Filter-Änderungen →
+  `AktualisiereJournalFilter` → auch `ECT_BerichtAktualisiere`;
+  Zoom → `ECT_BerichtSetzeZoom`. Buchen-Handler-Guards um
+  `IstBerichtWpfAktiv()` erweitert.
+- **Plugin-Druck**: `DruckePlugin(bVorschau)` (easycashview.cpp) —
+  COM-Kaskade im Plugin-Modus: IE-`ExecWB` (HTML-Plugins, auch
+  Seitenansicht) → `IOleCommandTarget` → `IPrint` →
+  `IViewObject2::Draw` auf Drucker-DC (Einseiten-Fallback). Plugins
+  laufen in-process, HDC-Übergabe wäre daher auch für eine spätere
+  kooperative Plugin-Methode (`DruckeSeite(hdc, n)`) möglich.
 
 ### Persistenz
 - `NavigationBreitenverhaeltnis` (Promille) wird vom existierenden
