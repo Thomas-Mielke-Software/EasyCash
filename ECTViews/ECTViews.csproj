@@ -22,6 +22,14 @@
     <Reference Include="System.Windows.Forms" />
   </ItemGroup>
 
+  <!-- XPS-Roundtrip der Seitenansicht (die DocumentViewer-Suche braucht
+       Glyphs-Inhalte): XpsDocument liegt in ReachFramework,
+       XpsDocumentWriter in System.Printing. -->
+  <ItemGroup>
+    <Reference Include="ReachFramework" />
+    <Reference Include="System.Printing" />
+  </ItemGroup>
+
   <!-- Sprite-Bitmaps für Betrieb/Bestandskonto-Icons als WPF-Ressourcen.
        Werden zur Laufzeit über pack://-URI geladen. Die Dateien müssen
        im Projektverzeichnis unter Resources/ liegen — am einfachsten

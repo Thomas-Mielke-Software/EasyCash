@@ -1,0 +1,17 @@
+<Window x:Class="ECTViews.Druck.DruckVorschauFenster"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:druck="clr-namespace:ECTViews.Druck"
+        Title="Seitenansicht"
+        Width="900" Height="1000"
+        WindowStartupLocation="CenterOwner"
+        ShowInTaskbar="False">
+    <!-- [Seitenansicht]
+         Der DocumentViewer bringt Zoom, Seitenblättern, Suche und einen
+         eingebauten Druck-Knopf (Strg+P) mit. DruckVorschauViewer leitet
+         das Druck-Kommando um, damit der Druckjob einen sprechenden Namen
+         bekommt (Dateinamens-Vorschlag bei "Microsoft Print to PDF").
+         Das FixedDocument wird vom Code-Behind über SetzeDokument()
+         gesetzt (als XPS-Roundtrip, sonst findet die Suche nichts). -->
+    <druck:DruckVorschauViewer x:Name="viewer"/>
+</Window>

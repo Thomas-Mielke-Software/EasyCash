@@ -5651,10 +5651,16 @@ static BOOL DruckenUnterWineGesperrt()
 //      abgefragt).
 //   3. IPrint (docobj.h)          - paginierende Dokumentobjekte;
 //      PRINTFLAG_PROMPTUSER laesst das Objekt seinen Dialog zeigen.
-//   4. IViewObject2::Draw          - Einseiten-Fallback: der aktuelle
-//      Sichtzustand des Controls wird seitenfuellend (Seitenverhaeltnis
-//      erhalten) auf den Drucker-DC gezeichnet. Erst DVASPECT_DOCPRINT
-//      versuchen, dann DVASPECT_CONTENT.
+//   4. Fenster-Abbild per WM_PRINT - Einseiten-Fallback: das Control-
+//      Fenster rendert sich samt Kindfenstern (PRF_CHILDREN) in eine
+//      Bildschirm-Bitmap, die seitenfuellend (Seitenverhaeltnis
+//      erhalten) auf den Drucker-DC gestreckt wird. Noetig, weil
+//      IViewObject2::Draw bei fensterbasierten MFC-Controls
+//      (ECTElster, Fahrtenbuch: COleControl mit Dialog-Kindfenstern)
+//      nur deren OnDraw ruft und die Kindfenster NICHT zeichnet --
+//      Ergebnis waere eine leere Seite. IViewObject2::Draw bleibt
+//      als letzte Reserve fuer fensterlose Controls (erst
+//      DVASPECT_DOCPRINT, dann DVASPECT_CONTENT).
 // Die Stufen 3+4 haben keine Seitenansicht -- bei bVorschau werden nur
 // 1+2 versucht, der Aufrufer zeigt sonst einen Hinweis.
 // Rueckgabe TRUE, wenn eine Stufe den Druck uebernommen hat (auch bei
@@ -5718,37 +5724,80 @@ BOOL CEasyCashView::DruckePlugin(BOOL bVorschau)
 			return TRUE;
 	}
 
-	// ---- Stufe 4: IViewObject2::Draw (Einseiten-Fallback) ---------
+	// ---- Stufe 4: Fenster-Abbild (WM_PRINT) -----------------------
 	CComQIPtr<IViewObject2> spView(spUnk);
-	if (!spView) return FALSE;
+
+	// Control-Fenster samt Kindfenstern in eine Bildschirm-Bitmap
+	// rendern lassen. Passiert VOR dem Druckdialog, damit wir bei
+	// "geht gar nicht" (kein Abbild UND kein IViewObject) den Anwender
+	// nicht erst einen Drucker waehlen lassen.
+	CRect rcWnd;
+	::GetClientRect(pPluginWnd->m_hWnd, &rcWnd);
+	int quellBreite = rcWnd.Width();
+	int quellHoehe = rcWnd.Height();
+	HDC hdcAbbild = NULL;
+	HBITMAP hbmAbbild = NULL;
+	HGDIOBJ hbmAlt = NULL;
+	if (quellBreite > 0 && quellHoehe > 0)
+	{
+		HDC hdcScreen = ::GetDC(NULL);
+		hdcAbbild = CreateCompatibleDC(hdcScreen);
+		hbmAbbild = CreateCompatibleBitmap(hdcScreen, quellBreite, quellHoehe);
+		::ReleaseDC(NULL, hdcScreen);
+		if (hdcAbbild && hbmAbbild)
+		{
+			hbmAlt = SelectObject(hdcAbbild, hbmAbbild);
+			RECT rcFuell = { 0, 0, quellBreite, quellHoehe };
+			FillRect(hdcAbbild, &rcFuell, (HBRUSH)GetStockObject(WHITE_BRUSH));
+			::SendMessage(pPluginWnd->m_hWnd, WM_PRINT, (WPARAM)hdcAbbild,
+				PRF_CLIENT | PRF_CHILDREN | PRF_ERASEBKGND);
+		}
+		else
+		{
+			if (hbmAbbild) { DeleteObject(hbmAbbild); hbmAbbild = NULL; }
+			if (hdcAbbild) { DeleteDC(hdcAbbild); hdcAbbild = NULL; }
+		}
+	}
+	if (!hdcAbbild && !spView)
+		return FALSE;
 
 	CPrintDialog dlg(FALSE,
 		PD_ALLPAGES | PD_RETURNDC | PD_NOPAGENUMS | PD_NOSELECTION
 		| PD_USEDEVMODECOPIESANDCOLLATE, this);
 	if (dlg.DoModal() != IDOK)
+	{
+		if (hdcAbbild) { SelectObject(hdcAbbild, hbmAlt); DeleteObject(hbmAbbild); DeleteDC(hdcAbbild); }
 		return TRUE;   // Abbruch durch den Anwender = behandelt
+	}
 
 	HDC hdc = dlg.GetPrinterDC();
-	if (!hdc) return FALSE;
-
-	// Ausdehnung des Controls in HIMETRIC (fuer das Seitenverhaeltnis);
-	// Fallback: Fenstergroesse mit Bildschirm-DPI umrechnen.
-	SIZEL szExtent = { 0, 0 };
-	if (FAILED(spView->GetExtent(DVASPECT_CONTENT, -1, NULL, &szExtent))
-		|| szExtent.cx <= 0 || szExtent.cy <= 0)
+	if (!hdc)
 	{
-		CRect rcWnd;
-		::GetClientRect(pPluginWnd->m_hWnd, &rcWnd);
+		if (hdcAbbild) { SelectObject(hdcAbbild, hbmAlt); DeleteObject(hbmAbbild); DeleteDC(hdcAbbild); }
+		return FALSE;
+	}
+
+	// Seitenverhaeltnis der Quelle in HIMETRIC: beim Abbild aus den
+	// Fenster-Pixeln (mit Bildschirm-DPI), sonst IViewObject-Extent.
+	SIZEL szExtent = { 0, 0 };
+	if (hdcAbbild)
+	{
 		HDC hdcScreen = ::GetDC(NULL);
 		int dpiScrX = GetDeviceCaps(hdcScreen, LOGPIXELSX);
 		int dpiScrY = GetDeviceCaps(hdcScreen, LOGPIXELSY);
 		::ReleaseDC(NULL, hdcScreen);
-		szExtent.cx = MulDiv(max(rcWnd.Width(), 1), 2540, max(dpiScrX, 1));
-		szExtent.cy = MulDiv(max(rcWnd.Height(), 1), 2540, max(dpiScrY, 1));
+		szExtent.cx = MulDiv(quellBreite, 2540, max(dpiScrX, 1));
+		szExtent.cy = MulDiv(quellHoehe, 2540, max(dpiScrY, 1));
+	}
+	else if (FAILED(spView->GetExtent(DVASPECT_CONTENT, -1, NULL, &szExtent))
+		|| szExtent.cx <= 0 || szExtent.cy <= 0)
+	{
+		szExtent.cx = 2100;   // Notnagel: A4-Seitenverhaeltnis
+		szExtent.cy = 2970;
 	}
 
 	// Zielrechteck in Geraetepixeln: Seitenbreite minus ca. 1,5 cm Rand,
-	// Seitenverhaeltnis des Controls beibehalten.
+	// Seitenverhaeltnis der Quelle beibehalten.
 	int cxSeite = GetDeviceCaps(hdc, HORZRES);
 	int cySeite = GetDeviceCaps(hdc, VERTRES);
 	int randX = MulDiv(1500, GetDeviceCaps(hdc, LOGPIXELSX), 2540);
@@ -5771,15 +5820,25 @@ BOOL CEasyCashView::DruckePlugin(BOOL bVorschau)
 	{
 		if (StartPage(hdc) > 0)
 		{
-			RECTL rcl = { randX, randY, randX + zielBreite, randY + zielHoehe };
-			// DOCPRINT = "wie gedruckt" (unterstuetzen wenige Controls),
-			// sonst CONTENT = Bildschirmdarstellung.
-			HRESULT hr = spView->Draw(DVASPECT_DOCPRINT, -1, NULL, NULL,
-				NULL, hdc, &rcl, NULL, NULL, 0);
-			if (FAILED(hr))
-				hr = spView->Draw(DVASPECT_CONTENT, -1, NULL, NULL,
+			if (hdcAbbild)
+			{
+				SetStretchBltMode(hdc, HALFTONE);
+				SetBrushOrgEx(hdc, 0, 0, NULL);
+				bOk = StretchBlt(hdc, randX, randY, zielBreite, zielHoehe,
+					hdcAbbild, 0, 0, quellBreite, quellHoehe, SRCCOPY);
+			}
+			else
+			{
+				RECTL rcl = { randX, randY, randX + zielBreite, randY + zielHoehe };
+				// DOCPRINT = "wie gedruckt" (unterstuetzen wenige Controls),
+				// sonst CONTENT = Bildschirmdarstellung.
+				HRESULT hr = spView->Draw(DVASPECT_DOCPRINT, -1, NULL, NULL,
 					NULL, hdc, &rcl, NULL, NULL, 0);
-			bOk = SUCCEEDED(hr);
+				if (FAILED(hr))
+					hr = spView->Draw(DVASPECT_CONTENT, -1, NULL, NULL,
+						NULL, hdc, &rcl, NULL, NULL, 0);
+				bOk = SUCCEEDED(hr);
+			}
 			EndPage(hdc);
 		}
 		if (bOk)
@@ -5787,6 +5846,7 @@ BOOL CEasyCashView::DruckePlugin(BOOL bVorschau)
 		else
 			AbortDoc(hdc);
 	}
+	if (hdcAbbild) { SelectObject(hdcAbbild, hbmAlt); DeleteObject(hbmAbbild); DeleteDC(hdcAbbild); }
 	DeleteDC(hdc);
 	return bOk;
 }

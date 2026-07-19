@@ -99,6 +99,18 @@ EasyCash/
       JournalDruckBauer.cs       — druckt die JournalRow-Listen des VM
       BerichtDruckBauer.cs       — druckt die Formlos-Berichte
       DruckVorschauFenster.xaml  — DocumentViewer-Seitenansicht
+                                   (In-Memory-XPS-Roundtrip, sonst findet
+                                   das Such-Feld nichts; Druck-Kommando
+                                   umgeleitet auf DruckDokument.Drucke)
+      DateiPromptVorbelegung.cs  — belegt das Dateinamen-Feld des
+                                   "Druckausgabe speichern unter"-Prompts
+                                   (Microsoft Print to PDF) per WM_SETTEXT
+                                   mit dem Jobnamen vor. Windows übernimmt
+                                   den Jobnamen dort NICHT selbst (getestet
+                                   Win11 26200); der Prompt läuft aber
+                                   in-process (32+64bit verifiziert),
+                                   darum kann ein Watcher-Thread das
+                                   Edit-Feld (#32770/ID 1001) setzen
     Berichte/                    — Formlos-Ansicht (EÜR/USt/Kontenplan)
       BerichtView.xaml(.cs)      — Vollflächen-Ansicht + Zoom/Strg+P
       BerichtViewModel.cs        — projiziert ECTEngine.Bericht auf Zeilen-VMs
@@ -421,8 +433,12 @@ robuster in hosted-WPF-Szenarien.
   `IstBerichtWpfAktiv()` erweitert.
 - **Plugin-Druck**: `DruckePlugin(bVorschau)` (easycashview.cpp) —
   COM-Kaskade im Plugin-Modus: IE-`ExecWB` (HTML-Plugins, auch
-  Seitenansicht) → `IOleCommandTarget` → `IPrint` →
-  `IViewObject2::Draw` auf Drucker-DC (Einseiten-Fallback). Plugins
+  Seitenansicht) → `IOleCommandTarget` → `IPrint` → Fenster-Abbild
+  per `WM_PRINT`+`PRF_CHILDREN` auf Bitmap, gestreckt auf Drucker-DC
+  (Einseiten-Fallback; `IViewObject2::Draw` zeichnet bei
+  fensterbasierten MFC-Controls wie ECTElster/Fahrtenbuch die
+  Kindfenster NICHT — leere Seite — und ist nur noch Reserve für
+  fensterlose Controls). Plugins
   laufen in-process, HDC-Übergabe wäre daher auch für eine spätere
   kooperative Plugin-Methode (`DruckeSeite(hdc, n)`) möglich.
 

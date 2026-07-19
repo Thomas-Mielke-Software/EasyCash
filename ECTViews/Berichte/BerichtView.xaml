@@ -1,0 +1,119 @@
+<UserControl x:Class="ECTViews.Berichte.BerichtView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:berichte="clr-namespace:ECTViews.Berichte"
+             FontFamily="{Binding Schriftart}"
+             Background="White"
+             Focusable="True"
+             PreviewKeyDown="OnPreviewKeyDown"
+             PreviewMouseWheel="OnPreviewMouseWheel">
+
+    <!-- [Formlos-Ansicht]
+         Zeigt einen ECTEngine-Bericht (Freestyle-EÜR, USt-Erklärung,
+         Kontenplan) als scrollbare Seite. Layout pro Zeile: eingerückter
+         Text (Star-Spalte) + bis zu drei rechtsbündige Wertspalten mit
+         fester, mitzoomender Breite. Strg+P druckt, (Strg-)'+'/'-' und
+         Strg-Mausrad zoomen (Code-Behind, Muster JournalView). -->
+
+    <ScrollViewer VerticalScrollBarVisibility="Auto"
+                  HorizontalScrollBarVisibility="Disabled"
+                  Padding="24,16,24,24">
+        <StackPanel MaxWidth="900" HorizontalAlignment="Left">
+
+            <!-- Titel + Untertitel -->
+            <TextBlock Text="{Binding Titel}"
+                       FontSize="{Binding TitelSchriftgroesse}"
+                       FontWeight="Bold"
+                       TextWrapping="Wrap"/>
+            <TextBlock Text="{Binding Untertitel}"
+                       FontSize="{Binding Schriftgroesse}"
+                       Foreground="Gray"
+                       TextWrapping="Wrap"
+                       Margin="0,2,0,0">
+                <TextBlock.Style>
+                    <Style TargetType="TextBlock">
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding HatUntertitel}" Value="False">
+                                <Setter Property="Visibility" Value="Collapsed"/>
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </TextBlock.Style>
+            </TextBlock>
+            <Border BorderBrush="Black" BorderThickness="0,0,0,1"
+                    Margin="0,6,0,10"/>
+
+            <!-- Adresskopf: links Anschrift, rechts z.B. Steuernummer -->
+            <Grid Margin="0,0,0,14">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+                <TextBlock Text="{Binding KopfLinks}"
+                           FontSize="{Binding Schriftgroesse}"/>
+                <TextBlock Grid.Column="1" Text="{Binding KopfRechts}"
+                           FontSize="{Binding Schriftgroesse}"
+                           TextAlignment="Right"
+                           VerticalAlignment="Top"/>
+            </Grid>
+
+            <!-- Berichtszeilen -->
+            <ItemsControl ItemsSource="{Binding Zeilen}">
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate DataType="{x:Type berichte:BerichtZeileVm}">
+                        <Border BorderBrush="Black"
+                                BorderThickness="{Binding BorderThickness}"
+                                Padding="0,1,0,1">
+                            <Grid Margin="{Binding Margin}">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="Auto"
+                                        MinWidth="{Binding DataContext.WertSpaltenBreite,
+                                            RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                        MaxWidth="{Binding DataContext.WertSpaltenBreite,
+                                            RelativeSource={RelativeSource AncestorType=UserControl}}"/>
+                                    <ColumnDefinition Width="Auto"
+                                        MinWidth="{Binding DataContext.WertSpaltenBreite,
+                                            RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                        MaxWidth="{Binding DataContext.WertSpaltenBreite,
+                                            RelativeSource={RelativeSource AncestorType=UserControl}}"/>
+                                    <ColumnDefinition Width="Auto"
+                                        MinWidth="{Binding DataContext.WertSpaltenBreite,
+                                            RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                        MaxWidth="{Binding DataContext.WertSpaltenBreite,
+                                            RelativeSource={RelativeSource AncestorType=UserControl}}"/>
+                                </Grid.ColumnDefinitions>
+
+                                <TextBlock Text="{Binding Text}"
+                                           FontSize="{Binding FontSize}"
+                                           FontWeight="{Binding FontWeight}"
+                                           FontStyle="{Binding FontStyle}"
+                                           Foreground="{Binding Foreground}"
+                                           TextWrapping="Wrap"/>
+                                <TextBlock Grid.Column="1" Text="{Binding Wert1}"
+                                           FontSize="{Binding FontSize}"
+                                           FontWeight="{Binding FontWeight}"
+                                           Foreground="{Binding Foreground}"
+                                           FontFamily="Consolas"
+                                           TextAlignment="Right"/>
+                                <TextBlock Grid.Column="2" Text="{Binding Wert2}"
+                                           FontSize="{Binding FontSize}"
+                                           FontWeight="{Binding FontWeight}"
+                                           Foreground="{Binding Foreground}"
+                                           FontFamily="Consolas"
+                                           TextAlignment="Right"/>
+                                <TextBlock Grid.Column="3" Text="{Binding Wert3}"
+                                           FontSize="{Binding FontSize}"
+                                           FontWeight="{Binding FontWeight}"
+                                           Foreground="{Binding Foreground}"
+                                           FontFamily="Consolas"
+                                           TextAlignment="Right"/>
+                            </Grid>
+                        </Border>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+
+        </StackPanel>
+    </ScrollViewer>
+</UserControl>
