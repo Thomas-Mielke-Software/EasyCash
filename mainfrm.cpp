@@ -646,7 +646,9 @@ void CMainFrame::Add_Category1()
 	// Freestyle-EÜR als Ansicht, das Pulldown bietet alle vier formlosen
 	// Berichte (E/Ü-Rechnung, USt-Erklärung, Kontenplan mit/ohne Felder).
 	// Gedruckt wird über den normalen Druck-Knopf -- WYSIWYG.
-	std::auto_ptr<CMFCRibbonButton> apBtnFormlos(new CMFCRibbonButton(ID_ANSICHT_FORMLOS, "Formlos\nl", 21, 21));
+	// Bildindex 35: Formular-Icon verkleinert mit Verbotsschild-Overlay
+	// (ans Ende von toolbar_hicolor_16/_32.bmp angehaengt)
+	std::auto_ptr<CMFCRibbonButton> apBtnFormlos(new CMFCRibbonButton(ID_ANSICHT_FORMLOS, "Formlos\nl", 35, 35));
 	apBtnFormlos->SetMenu(IDR_ANSICHT_FORMLOS, TRUE);
 	apBtnFormlos->SetAlwaysLargeImage();
 	pPanel2->Add(apBtnFormlos.release());
