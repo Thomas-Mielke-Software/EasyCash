@@ -1,5 +1,12 @@
 ﻿// VoranmeldezeitraumDlg.cpp : implementation file
 //
+// HINWEIS (Stand 2026-07): TOTER CODE -- die Klasse wird nirgends mehr
+// instanziiert (gehoerte zum alten USt-Sollstellungs-/Druckpfad). Die
+// Voranmeldungszeitraum-Einstellung liegt in den WPF-Einstellungen
+// (Unternehmer-Seite); der Zeitraum der UVA-Formulare kommt aus dem
+// voranmeldungszeitraum-Attribut der .ecf. Datei bleibt fuer den
+// USE_ECTIFACE-Pfad im Projekt, entfaellt mit der Voll-Migration.
+//
 // Diese Datei ist Bestandteil von EasyCash&Tax, der freien EÜR-Fibu
 //
 // Copyleft (GPLv3) 2020  Thomas Mielke

@@ -371,6 +371,28 @@ namespace ECTViews
         }
 
         /// <summary>
+        /// Zeigt den USt-Vorauszahlungen-Dialog (WPF-Ersatz fuer
+        /// CUstVorauszahlungenDlg). Schreibt bei OK in den Dokument-
+        /// ErweiterungStore der Engine; der Bridge-Aufrufer synchronisiert
+        /// zurueck und setzt das Modified-Flag.
+        /// </summary>
+        /// <returns>true wenn OK gedrueckt UND sich Werte geaendert haben.</returns>
+        public static bool ZeigeUstVorauszahlungenDialog(
+            ECTEngine.BuchungsDocument doc, IntPtr ownerHwnd)
+        {
+            EnsureWpfInitialized();
+
+            var vm = new ViewModels.UstVorauszahlungenViewModel(doc);
+            var view = new Views.UstVorauszahlungenView(vm);
+            if (ownerHwnd != IntPtr.Zero)
+                new WindowInteropHelper(view) { Owner = ownerHwnd };
+
+            view.ShowDialog();
+            if (!view.Bestaetigt) return false;
+            return vm.Uebernehme();
+        }
+
+        /// <summary>
         /// Zeigt den Verwaltungs-/Auswahl-Dialog für Betriebe (WPF-Ersatz für
         /// CIconAuswahlBetrieb im Modus 1). Änderungen werden sofort über den
         /// Einstellungs-Cache in die ini geschrieben.

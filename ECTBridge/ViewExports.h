@@ -176,6 +176,18 @@ ECTBRIDGE_API BOOL ECT_ZeigeDauerbuchungenDialog(
 ECTBRIDGE_API BOOL ECT_ZeigeDauerbuchungenAusfuehrenDialog(
     int nBuchungsjahr, HWND hWndOwner, int* pnMonatOut, int* pnJahrOut);
 
+/// <summary>
+/// Zeigt den USt-Vorauszahlungen-Dialog (ersetzt CUstVorauszahlungenDlg):
+/// 12 Monats- + 4 Quartals-Zahlbetraege plus Sondervorauszahlung der
+/// Dauerfristverlaengerung, gespeichert im Dokument-ErweiterungStore
+/// (Sektionen "Elster" bzw. "Dauerfristverlängerung").
+///
+/// Rueckgabe: TRUE wenn OK gedrueckt wurde UND sich Werte geaendert haben
+/// (dann wurde bereits zurueck-synchronisiert und das Modified-Flag gesetzt).
+/// </summary>
+ECTBRIDGE_API BOOL ECT_ZeigeUstVorauszahlungenDialog(
+    void* pDocBridge, HWND hWndOwner);
+
 // ──────────────────────────────────────────────
 // Stammdaten-Verwaltung (Betriebe + Bestandskonten)
 // ──────────────────────────────────────────────

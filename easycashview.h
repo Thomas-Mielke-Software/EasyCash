@@ -153,17 +153,29 @@ private:
 	HWND m_hwndBerichtWpf;
 	// Aktiver Berichtstyp (0-3, siehe BerichtExports.h), -1 wenn keiner.
 	int m_nBerichtTyp;
+	// HWND der eingebetteten WPF-Formular-Ansicht (.ecf-Formulare;
+	// NULL wenn nicht aktiv). Vollflaechen-Overlay wie die Formlos-
+	// Ansicht; das gewaehlte Formular steht weiter in
+	// m_GewaehltesFormular (Menue-Haekchen + ELSTER-Kontext).
+	HWND m_hwndFormularWpf;
 
 	// Hilfsfunktionen
 	void ZeigeJournalWpf(int nAnzeigeModus);   // 0=Datum, 1=Konten, 2=BK, 3=AfA
 	void VerstecktJournalWpf();
 	void GroessenAnpassungJournalWpf();
 	void ZeigeEinstellungenWpf(LPCTSTR szStartSeite = _T("Allgemein"));
-	void VerstecktEinstellungenWpf();
+	// bFormularWiederherstellen=FALSE beim Abriss ueber DestroyPlugin --
+	// dort soll eine zuvor unter den Einstellungen liegende WPF-Formular-
+	// Ansicht NICHT wieder geoeffnet werden (es folgt ein anderer Modus).
+	void VerstecktEinstellungenWpf(BOOL bFormularWiederherstellen = TRUE);
 	void GroessenAnpassungEinstellungenWpf();
 	void ZeigeBerichtWpf(int nBerichtTyp);     // Formlos-Ansicht (0-3)
 	void VerstecktBerichtWpf();
 	void GroessenAnpassungBerichtWpf();
+	void ZeigeFormularWpf(int nFormularIndex); // WPF-Formular-Ansicht (.ecf)
+	void VerstecktFormularWpf();
+	void GroessenAnpassungFormularWpf();
+	void VergleicheFormularwerteDebug();       // Golden-Master nativ/managed (_DEBUG)
 	// Druck-Kaskade fuer den Plugin-Modus (IE/OLE/IViewObject), siehe
 	// Implementierung. TRUE = eine Stufe hat den Druck uebernommen.
 	BOOL DruckePlugin(BOOL bVorschau);
@@ -189,6 +201,7 @@ private:
 	bool IstJournalWpfAktiv() const { return m_hwndJournalWpf != NULL; }
 	bool IstEinstellungenWpfAktiv() const { return m_hwndEinstellungenWpf != NULL; }
 	bool IstBerichtWpfAktiv() const { return m_hwndBerichtWpf != NULL; }
+	bool IstFormularWpfAktiv() const { return m_hwndFormularWpf != NULL; }
 #endif
 
 // Operations

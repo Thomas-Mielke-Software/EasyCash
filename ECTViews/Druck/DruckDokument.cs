@@ -172,9 +172,13 @@ namespace ECTViews.Druck
         /// <summary>
         /// Zeigt den System-Druckdialog und druckt das Dokument.
         /// Liefert false, wenn der Anwender abbricht.
+        /// querformat=true erzwingt die Querformat-Ausrichtung im Druckticket
+        /// (Pendant zum nativen OnPreparePrinting-Zweig für .ecf-Formulare
+        /// mit querformat-Attribut, easycashview.cpp:6099).
         /// </summary>
-        public static bool Drucke(FixedDocument dokument, string beschreibung)
-            => Drucke(dokument.DocumentPaginator, beschreibung);
+        public static bool Drucke(FixedDocument dokument, string beschreibung,
+            bool querformat = false)
+            => Drucke(dokument.DocumentPaginator, beschreibung, querformat);
 
         /// <summary>
         /// Wie oben, aber für einen fertigen Paginator (Seitenansicht
@@ -182,10 +186,14 @@ namespace ECTViews.Druck
         /// Datei-Druckern (Microsoft Print to PDF) zusätzlich als
         /// Dateiname in den Speichern-Prompt vorbelegt.
         /// </summary>
-        public static bool Drucke(DocumentPaginator paginator, string beschreibung)
+        public static bool Drucke(DocumentPaginator paginator, string beschreibung,
+            bool querformat = false)
         {
             var dlg = new PrintDialog();
             if (dlg.ShowDialog() != true) return false;
+            if (querformat && dlg.PrintTicket != null)
+                dlg.PrintTicket.PageOrientation =
+                    System.Printing.PageOrientation.Landscape;
             string jobName = DruckJobName(beschreibung);
             using (DateiPromptVorbelegung.Starte(jobName))
             {

@@ -533,6 +533,40 @@ BOOL ECT_ZeigeDauerbuchungenDialog(void* pDocBridge, HWND hWndOwner)
     }
 }
 
+BOOL ECT_ZeigeUstVorauszahlungenDialog(void* pDocBridge, HWND hWndOwner)
+{
+    try
+    {
+        auto* bridge = static_cast<CEasyCashDocBridge*>(pDocBridge);
+        if (!bridge) return FALSE;
+
+        // Engine-Stand garantieren (der Dialog liest die Zahlbetraege aus
+        // dem managed Dokument-ErweiterungStore)
+        bridge->SyncNativeToManaged();
+
+        auto engine = GetEngine(bridge);
+        IntPtr hwnd = IntPtr((void*)hWndOwner);
+
+        bool geaendert = ECTViews::ViewHost::ZeigeUstVorauszahlungenDialog(
+            engine, hwnd);
+
+        if (geaendert)
+        {
+            // geaenderte Erweiterungen zurueck ins native Dokument
+            bridge->SyncManagedToNative();
+            bridge->SetModifiedFlag("Umsatzsteuervorauszahlungen geaendert");
+        }
+        return geaendert ? TRUE : FALSE;
+    }
+    catch (Exception^ ex)
+    {
+        CString msg;
+        msg = "Fehler im USt-Vorauszahlungen-Dialog: "; msg += CString(ex->Message);
+        AfxMessageBox(msg, MB_ICONERROR);
+        return FALSE;
+    }
+}
+
 BOOL ECT_ZeigeDauerbuchungenAusfuehrenDialog(
     int nBuchungsjahr, HWND hWndOwner, int* pnMonatOut, int* pnJahrOut)
 {

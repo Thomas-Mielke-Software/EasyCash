@@ -64,6 +64,7 @@ static char THIS_FILE[] = __FILE__;
 #include "ECTBridge\ViewExports.h"
 #include "ECTBridge\JournalExports.h"
 #include "ECTBridge\BerichtExports.h"
+#include "ECTBridge\FormularExports.h"
 #include <exdisp.h>   // IWebBrowser2 (Druck-Kaskade fuer HTML-Plugins)
 #include <docobj.h>   // IOleCommandTarget, IPrint, OLECMDID_PRINT*
 #include "ECTBridge\EinstellungenViewExports.h"
@@ -192,6 +193,7 @@ CEasyCashView::CEasyCashView()
 	m_einstellungenUeberJournal = false;
 	m_hwndBerichtWpf = NULL;
 	m_nBerichtTyp = -1;
+	m_hwndFormularWpf = NULL;
 #endif
 	m_vt = 1;
 	m_vm = 1;
@@ -241,6 +243,11 @@ CEasyCashView::~CEasyCashView()
 	{
 		ECT_BerichtAbloesen(m_hwndBerichtWpf);
 		m_hwndBerichtWpf = NULL;
+	}
+	if (m_hwndFormularWpf)
+	{
+		ECT_FormularAbloesen(m_hwndFormularWpf);
+		m_hwndFormularWpf = NULL;
 	}
 	if (m_hwndJournalWpf || m_hwndNavigationWpf)
 	{
@@ -905,8 +912,16 @@ void CEasyCashView::OnUpdate(CView* pSender, LPARAM lHint, CObject* pHint)
 
 	SetupScroll();
 
+#ifdef USE_ECTENGINE
+	// Im WPF-Formularmodus rechnet der managed FormularRechner (via
+	// AktualisiereJournalFilter -> ECT_FormularAktualisiere weiter unten);
+	// die native Berechnung wuerde nur doppelt laufen.
+	if (m_GewaehltesFormular >= 0 && !IstFormularWpfAktiv())
+		BerechneFormularfeldwerte();
+#else
 	if (m_GewaehltesFormular >= 0)
 		BerechneFormularfeldwerte();
+#endif
 
 	// Hook Erweiterungs-DLLs
 	CIterateExtensionDLLs("ECTE_UpdateDocument", (void *)GetDocument());
@@ -1119,7 +1134,7 @@ void CEasyCashView::OnUpdate(CView* pSender, LPARAM lHint, CObject* pHint)
 #endif
 
 #ifdef USE_ECTENGINE
-	if (IstJournalWpfAktiv() || IstBerichtWpfAktiv())
+	if (IstJournalWpfAktiv() || IstBerichtWpfAktiv() || IstFormularWpfAktiv())
 	{
 		// WPF-Navigation kuemmert sich selbst um ihren Inhalt -
 		// hier muessen wir nur die WPF-Daten refreshen
@@ -1559,6 +1574,13 @@ void CEasyCashView::OnSize(UINT nType, int cx, int cy)
 		GroessenAnpassungJournalWpf();
 		return;
 	}
+	if (IstFormularWpfAktiv())
+	{
+		// WPF-Formular-Ansicht: gleiches Vollflaechen-Muster.
+		GroessenAnpassungFormularWpf();
+		GroessenAnpassungJournalWpf();
+		return;
+	}
 	if (IstJournalWpfAktiv())
 	{
 		// Bei aktivem WPF-Journal ist die native CScrollView nur ein
@@ -1670,7 +1692,7 @@ void CEasyCashView::OnVScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar)
 void CEasyCashView::OnDraw(CDC* pDC_par)
 {
 #ifdef USE_ECTENGINE
-	if (IstJournalWpfAktiv() || IstBerichtWpfAktiv())
+	if (IstJournalWpfAktiv() || IstBerichtWpfAktiv() || IstFormularWpfAktiv())
 	{
 		// Hintergrund weiss machen - dann sieht man nichts vom alten
 		// Layout durchscheinen, falls das WPF-HWND einen Pixel kleiner
@@ -5866,6 +5888,14 @@ void CEasyCashView::OnFilePrint2()
 		ECT_BerichtDrucken(FALSE);
 		return;
 	}
+	if (IstFormularWpfAktiv())
+	{
+		if (DruckenUnterWineGesperrt()) return;
+		if (m_GewaehltesFormular > 0 && ECT_HoleEinstellungInt("land", 0) == 0)
+			DSAMessageBox(IDS_FORMULARDRUCK_DE, MB_OK);
+		ECT_FormularDrucken(FALSE);
+		return;
+	}
 	if (IstJournalWpfAktiv())
 	{
 		if (DruckenUnterWineGesperrt()) return;
@@ -5905,6 +5935,12 @@ void CEasyCashView::OnFilePrintPreview()
 	{
 		if (DruckenUnterWineGesperrt()) return;
 		ECT_BerichtDrucken(TRUE);
+		return;
+	}
+	if (IstFormularWpfAktiv())
+	{
+		if (DruckenUnterWineGesperrt()) return;
+		ECT_FormularDrucken(TRUE);
 		return;
 	}
 	if (IstJournalWpfAktiv())
@@ -6224,7 +6260,7 @@ void CEasyCashView::OnEditEinnahmeBuchen()
 	// sofort aktualisieren, damit die neue Buchung ohne Ansichtswechsel erscheint.
 	if (ECT_ShowBuchungDialog(GetDocument(), FALSE, AfxGetMainWnd()->GetSafeHwnd()))
 	{
-		if (IstJournalWpfAktiv() || IstBerichtWpfAktiv())
+		if (IstJournalWpfAktiv() || IstBerichtWpfAktiv() || IstFormularWpfAktiv())
 			AktualisiereJournalFilter();
 	}
 #else
@@ -6247,7 +6283,7 @@ void CEasyCashView::OnEditAusgabeBuchen()
 	// sofort aktualisieren, damit die neue Buchung ohne Ansichtswechsel erscheint.
 	if (ECT_ShowBuchungDialog(GetDocument(), TRUE, AfxGetMainWnd()->GetSafeHwnd()))
 	{
-		if (IstJournalWpfAktiv() || IstBerichtWpfAktiv())
+		if (IstJournalWpfAktiv() || IstBerichtWpfAktiv() || IstFormularWpfAktiv())
 			AktualisiereJournalFilter();
 	}
 #else
@@ -6272,7 +6308,7 @@ void CEasyCashView::BucheMitVorlage(BOOL bAusgaben, int nVorlagenSlot)
 	if (ECT_ShowBuchungDialogMitVorlage(GetDocument(), bAusgaben,
 		AfxGetMainWnd()->GetSafeHwnd(), nVorlagenSlot))
 	{
-		if (IstJournalWpfAktiv() || IstBerichtWpfAktiv())
+		if (IstJournalWpfAktiv() || IstBerichtWpfAktiv() || IstFormularWpfAktiv())
 			AktualisiereJournalFilter();
 	}
 }
@@ -6774,6 +6810,20 @@ void CEasyCashView::SetUmsatzsteuervorauszahlung(int nZeitraum, CString& csValue
 
 void CEasyCashView::OnEditUmsatzsteuervorauszahlungen()
 {
+#ifdef USE_ECTENGINE
+	// WPF-Dialog (UstVorauszahlungenView); Sync + SetModifiedFlag macht
+	// der Bridge-Export. Danach zeigt eine offene Formular-/Berichts-
+	// Ansicht die neuen Zahlbetraege sofort.
+	if (ECT_ZeigeUstVorauszahlungenDialog(GetDocument(),
+		AfxGetMainWnd()->GetSafeHwnd()))
+	{
+		if (IstFormularWpfAktiv())
+			ECT_FormularAktualisiere(GetDocument());
+		else
+			GetDocument()->UpdateAllViews(NULL);
+	}
+	return;
+#else
 	CUstVorauszahlungenDlg dlg(this);
 
 	GetUmsatzsteuervorauszahlung(1, dlg.m_m1);
@@ -6830,6 +6880,7 @@ void CEasyCashView::OnEditUmsatzsteuervorauszahlungen()
 			SetErweiterungKey(GetDocument()->Erweiterung, "Dauerfristverlängerung", Key, dlg.m_vorauszahlung);
 		}
 	}
+#endif
 }
 
 void CEasyCashView::OnFindNext() 
@@ -9082,11 +9133,13 @@ void CEasyCashView::ZeigeJournalWpf(int nAnzeigeModus)
 {
 	SetzeListenFuerBuchungsdialog();
 
-	// Eine offene Formlos-Ansicht (liegt als Vollflaeche ueber dem
-	// Journal) zuerst schliessen -- sie zeigt das Journal wieder an,
+	// Eine offene Formlos-/Formular-Ansicht (liegt als Vollflaeche ueber
+	// dem Journal) zuerst schliessen -- sie zeigt das Journal wieder an,
 	// falls es darunter eingebettet war.
 	if (m_hwndBerichtWpf)
 		VerstecktBerichtWpf();
+	if (m_hwndFormularWpf)
+		VerstecktFormularWpf();
 
 	if (m_hwndJournalWpf)
 	{
@@ -9211,10 +9264,12 @@ void CEasyCashView::ZeigeEinstellungenWpf(LPCTSTR szStartSeite)
 		return;
 	}
 
-	// Eine offene Formlos-Ansicht zuerst schliessen (beide sind
+	// Eine offene Formlos-/Formular-Ansicht zuerst schliessen (alles
 	// Vollflaechen-Overlays; uebereinander stapeln waere Chaos).
 	if (m_hwndBerichtWpf)
 		VerstecktBerichtWpf();
+	if (m_hwndFormularWpf)
+		VerstecktFormularWpf();
 
 	CWnd* pSplitter = GetParent();
 	if (!pSplitter) return;
@@ -9254,7 +9309,7 @@ void CEasyCashView::ZeigeEinstellungenWpf(LPCTSTR szStartSeite)
 	}
 }
 
-void CEasyCashView::VerstecktEinstellungenWpf()
+void CEasyCashView::VerstecktEinstellungenWpf(BOOL bFormularWiederherstellen)
 {
 	if (!m_hwndEinstellungenWpf) return;
 
@@ -9294,6 +9349,14 @@ void CEasyCashView::VerstecktEinstellungenWpf()
 		if (m_pNavigationWnd) m_pNavigationWnd->ShowWindow(SW_SHOW);
 		SetupScroll();
 		Invalidate();
+
+		// War vor den Einstellungen die WPF-Formular-Ansicht aktiv
+		// (ZeigeEinstellungenWpf hat sie geschlossen), wieder oeffnen --
+		// sonst kaeme der alte native DrawToDC-Formularmodus zum
+		// Vorschein. Plugin-Modus setzt m_GewaehltesFormular auf -1,
+		// der greift hier also nicht.
+		if (bFormularWiederherstellen && m_GewaehltesFormular >= 0 && !pPluginWnd)
+			ZeigeFormularWpf(m_GewaehltesFormular);
 	}
 	m_einstellungenUeberJournal = false;
 }
@@ -9327,6 +9390,13 @@ void CEasyCashView::AktualisiereJournalFilter()
 			m_MonatsFilterDisplay,
 			m_BetriebFilterDisplay,
 			JournalSchriftgroesse(m_zoomfaktor));
+
+	// Eine aktive WPF-Formular-Ansicht rechnet bei Datenaenderungen neu
+	// (ihr Zeitraum kommt aus dem Formular, ihr Betriebsfilter aus der
+	// Formularauswahl -- die Ribbon-Filter wirken hier bewusst NICHT,
+	// wie im nativen Formularmodus).
+	if (IstFormularWpfAktiv())
+		ECT_FormularAktualisiere(GetDocument());
 }
 
 // ----------------------------------------------------------
@@ -9350,9 +9420,12 @@ void CEasyCashView::ZeigeBerichtWpf(int nBerichtTyp)
 	CWnd* pSplitter = GetParent();
 	if (!pSplitter) return;
 
-	// Offene Einstellungen zuerst schliessen (beide sind Vollflaechen).
+	// Offene Einstellungen/Formular-Ansicht zuerst schliessen
+	// (alles Vollflaechen-Overlays).
 	if (IstEinstellungenWpfAktiv())
 		VerstecktEinstellungenWpf();
+	if (IstFormularWpfAktiv())
+		VerstecktFormularWpf();
 
 	// Engine-Berichte rechnen auf den Einstellungs-Listen -- sicherstellen,
 	// dass Betriebe/Bestandskonten-Sprites etc. gesetzt sind (wie Journal).
@@ -9433,6 +9506,146 @@ void CEasyCashView::GroessenAnpassungBerichtWpf()
 	::SetWindowPos(m_hwndBerichtWpf, NULL,
 		rcAll.left, rcAll.top, rcAll.Width(), rcAll.Height(),
 		SWP_NOZORDER | SWP_NOACTIVATE);
+}
+
+// ----------------------------------------------------------
+// WPF-Formular-Ansicht (.ecf-Formulare: EUeR, USt-Erklaerung, UVA/U30,
+// AT-Formulare)
+// ----------------------------------------------------------
+// Vollflaechen-Overlay wie die Formlos-Ansicht. Das gewaehlte Formular
+// bleibt in m_GewaehltesFormular (Menue-Haekchen, UVA-Autowahl und das
+// ELSTER-Plugin arbeiten unveraendert darauf); gerendert und gerechnet
+// wird aber managed (FormularRechner/FormularView statt DrawFormularToDC).
+
+void CEasyCashView::ZeigeFormularWpf(int nFormularIndex)
+{
+	if (nFormularIndex < 0 || nFormularIndex >= m_csaFormulare.GetSize())
+		return;
+
+	m_GewaehltesFormular = nFormularIndex;
+
+	// Schon offen? Nur das Formular wechseln (kein Re-Embedding).
+	if (m_hwndFormularWpf)
+	{
+		ECT_FormularWechsle(GetDocument(),
+			m_csaFormulare[nFormularIndex],
+			m_csaFormularfilter[nFormularIndex]);
+		::BringWindowToTop(m_hwndFormularWpf);
+		VergleicheFormularwerteDebug();
+		return;
+	}
+
+	CWnd* pSplitter = GetParent();
+	if (!pSplitter) return;
+
+	// Andere Vollflaechen-Overlays zuerst schliessen.
+	if (IstEinstellungenWpfAktiv())
+		VerstecktEinstellungenWpf();
+	if (IstBerichtWpfAktiv())
+		VerstecktBerichtWpf();
+
+	CRect rcAll;
+	pSplitter->GetClientRect(&rcAll);
+
+	m_hwndFormularWpf = ECT_FormularEinbetten(
+		pSplitter->m_hWnd,
+		rcAll.left, rcAll.top, rcAll.Width(), rcAll.Height(),
+		GetDocument(),
+		m_csaFormulare[nFormularIndex],
+		m_csaFormularfilter[nFormularIndex],
+		m_zoomfaktor);
+
+	if (!m_hwndFormularWpf)
+	{
+		AfxMessageBox(_T("Konnte WPF-Formularfenster nicht erzeugen."));
+		return;
+	}
+
+	// Zoom-Tasten + Strg+P der Formular-Ansicht auf dieselben nativen
+	// Mechanismen routen wie beim Journal.
+	ECT_FormularRegistriereCallbacks(
+		&CEasyCashView::JournalWpfZoomAenderung,
+		&CEasyCashView::JournalWpfDruckAnforderung);
+
+	::ShowWindow(m_hwndFormularWpf, SW_SHOW);
+	::BringWindowToTop(m_hwndFormularWpf);
+
+	// Darunterliegende Fenster verstecken (Vollflaeche).
+	if (m_hwndJournalWpf)    ::ShowWindow(m_hwndJournalWpf, SW_HIDE);
+	if (m_hwndNavigationWpf) ::ShowWindow(m_hwndNavigationWpf, SW_HIDE);
+	ShowWindow(SW_HIDE);
+	if (m_pNavigationWnd) m_pNavigationWnd->ShowWindow(SW_HIDE);
+
+	VergleicheFormularwerteDebug();
+}
+
+void CEasyCashView::VerstecktFormularWpf()
+{
+	if (!m_hwndFormularWpf) return;
+
+	ECT_FormularAbloesen(m_hwndFormularWpf);
+	m_hwndFormularWpf = NULL;
+
+	if (m_hwndJournalWpf)
+	{
+		// Darunter lag das WPF-Journal: wieder zeigen und nachfuehren.
+		::ShowWindow(m_hwndJournalWpf, SW_SHOW);
+		::BringWindowToTop(m_hwndJournalWpf);
+		if (m_hwndNavigationWpf)
+		{
+			::ShowWindow(m_hwndNavigationWpf, SW_SHOW);
+			::BringWindowToTop(m_hwndNavigationWpf);
+		}
+		GroessenAnpassungJournalWpf();
+	}
+	else
+	{
+		// Darunter lag die native View (Plugin-Modus o.ae.).
+		ShowWindow(SW_SHOW);
+		if (m_pNavigationWnd) m_pNavigationWnd->ShowWindow(SW_SHOW);
+		SetupScroll();
+		Invalidate();
+	}
+}
+
+void CEasyCashView::GroessenAnpassungFormularWpf()
+{
+	CWnd* pSplitter = GetParent();
+	if (!pSplitter || !m_hwndFormularWpf) return;
+
+	CRect rcAll;
+	pSplitter->GetClientRect(&rcAll);
+	::SetWindowPos(m_hwndFormularWpf, NULL,
+		rcAll.left, rcAll.top, rcAll.Width(), rcAll.Height(),
+		SWP_NOZORDER | SWP_NOACTIVATE);
+}
+
+// Golden-Master-Vergleich nativ/managed (nur Debug-Build): rechnet die
+// Feldwerte einmal ueber den alten nativen Pfad und laesst die Bridge
+// dieselben Werte mit dem managed FormularRechner gegenrechnen.
+// Differenzen landen im Debug-Output (ECT_FormularVergleichsdump).
+void CEasyCashView::VergleicheFormularwerteDebug()
+{
+#ifdef _DEBUG
+	if (m_GewaehltesFormular < 0
+		|| m_GewaehltesFormular >= m_csaFormulare.GetSize())
+		return;
+
+	BerechneFormularfeldwerte();
+	CString csNativ;
+	int i;
+	for (i = 0; i < m_csaFormularfeldwerte.GetSize(); i++)
+	{
+		if (i) csNativ += "\n";
+		csNativ += m_csaFormularfeldwerte[i];
+	}
+	int nDiff = ECT_FormularVergleichsdump(GetDocument(),
+		m_csaFormulare[m_GewaehltesFormular],
+		m_csaFormularfilter[m_GewaehltesFormular],
+		csNativ);
+	if (nDiff != 0)
+		TRACE1("VergleicheFormularwerteDebug: %d Differenzen nativ/managed (siehe Debug-Output)\n", nDiff);
+#endif
 }
 
 // ----------------------------------------------------------
@@ -10315,15 +10528,22 @@ void CEasyCashView::DestroyPlugin()
 	{
 		VerstecktBerichtWpf();
 	}
+	// Falls WPF-Formular-Ansicht aktiv ist, ebenfalls schliessen
+	if (m_hwndFormularWpf)
+	{
+		VerstecktFormularWpf();
+	}
 	// Falls WPF-Journal aktiv ist, ebenfalls schliessen
 	if (m_hwndJournalWpf || m_hwndNavigationWpf)
 	{
 		VerstecktJournalWpf();
 	}
-	// Falls WPF-Einstellungen aktiv sind, ebenfalls schliessen
+	// Falls WPF-Einstellungen aktiv sind, ebenfalls schliessen (ohne
+	// eine darunterliegende Formular-Ansicht wiederherzustellen -- es
+	// folgt ein anderer Modus)
 	if (m_hwndEinstellungenWpf)
 	{
-		VerstecktEinstellungenWpf();
+		VerstecktEinstellungenWpf(FALSE);
 	}
 #endif
 
@@ -10665,10 +10885,18 @@ BOOL CEasyCashView::OnCmdMsg(UINT nID, int nCode, void* pExtra, AFX_CMDHANDLERIN
 	{
 		if (nCode == CN_COMMAND)
 		{
+#ifdef USE_ECTENGINE
+			// plugin fenster schliessen -- ausser die WPF-Formular-Ansicht
+			// ist bereits offen: dann nur das Formular wechseln (der
+			// Abriss inkl. Journal-Teardown waere unnoetig)
+			if (!IstFormularWpfAktiv())
+				DestroyPlugin();
+#else
 			// plugin fenster schließen
 			DestroyPlugin();
-			
-			if (pFormularfeldDlg) 
+#endif
+
+			if (pFormularfeldDlg)
 			{
 				// ggf. Formularfeld-Edit-Fenster schließen
 				pFormularfeldDlg->DestroyWindow();
@@ -10717,8 +10945,13 @@ BOOL CEasyCashView::OnCmdMsg(UINT nID, int nCode, void* pExtra, AFX_CMDHANDLERIN
 				}
 			}
 
+#ifdef USE_ECTENGINE
+			// WPF-Formular-Ansicht statt des nativen DrawToDC-Modus
+			ZeigeFormularWpf(m_GewaehltesFormular);
+#else
 			ShowWindow(SW_SHOW);
 			GetDocument()->UpdateAllViews(NULL);
+#endif
 		}
 		else if (nCode == CN_UPDATE_COMMAND_UI)
 		{
@@ -10731,10 +10964,18 @@ BOOL CEasyCashView::OnCmdMsg(UINT nID, int nCode, void* pExtra, AFX_CMDHANDLERIN
 	{
 		if (nCode == CN_COMMAND)
 		{
+#ifdef USE_ECTENGINE
+			// plugin fenster schliessen -- ausser die WPF-Formular-Ansicht
+			// ist bereits offen: dann nur das Formular wechseln (der
+			// Abriss inkl. Journal-Teardown waere unnoetig)
+			if (!IstFormularWpfAktiv())
+				DestroyPlugin();
+#else
 			// plugin fenster schließen
 			DestroyPlugin();
-			
-			if (pFormularfeldDlg) 
+#endif
+
+			if (pFormularfeldDlg)
 			{
 				// ggf. Formularfeld-Edit-Fenster schließen
 				pFormularfeldDlg->DestroyWindow();
@@ -10742,9 +10983,14 @@ BOOL CEasyCashView::OnCmdMsg(UINT nID, int nCode, void* pExtra, AFX_CMDHANDLERIN
 				pFormularfeldDlg = NULL;
 			}
 
+#ifdef USE_ECTENGINE
+			// WPF-Formular-Ansicht statt des nativen DrawToDC-Modus
+			ZeigeFormularWpf(nID - ID_FORMULAR_BASE);
+#else
 			m_GewaehltesFormular = nID - ID_FORMULAR_BASE;
 			ShowWindow(SW_SHOW);
 			GetDocument()->UpdateAllViews(NULL);
+#endif
 		}
 		else if (nCode == CN_UPDATE_COMMAND_UI)
 		{
@@ -11254,6 +11500,9 @@ void CEasyCashView::SetzeZoomfaktor()
 	ECT_JournalSetzeZoom(JournalSchriftgroesse(m_zoomfaktor));
 	// Formlos-Ansicht ebenfalls (gleiches Mapping)
 	ECT_BerichtSetzeZoom(JournalSchriftgroesse(m_zoomfaktor));
+	// Formular-Ansicht zoomt geometrisch (ScaleTransform) und bekommt
+	// darum direkt den Prozentwert.
+	ECT_FormularSetzeZoom(m_zoomfaktor);
 #endif
 }
 

@@ -236,17 +236,10 @@ namespace ECTEngine
         }
 
         /// <summary>Vorauszahlung für den Zeitraum (1-12 Monat, 41-44 Quartal)
-        /// in Cent, oder null wenn nicht gemerkt.</summary>
+        /// in Cent, oder null wenn nicht gemerkt. Delegiert an den
+        /// gemeinsamen Helfer (auch vom UstVorauszahlungen-Dialog genutzt).</summary>
         private static long? HoleVorauszahlung(BuchungsDocument doc, int zeitraum)
-        {
-            string key = string.Format(CultureInfo.InvariantCulture,
-                "UST-Zahlbetrag-{0:D4}-{1:D2}", doc.Jahr, zeitraum);
-            string wert = doc.Erweiterungen.Hole("Elster", key, "");
-            if (string.IsNullOrEmpty(wert)) return null;
-            if (!Waehrungsformat.TryParse(wert, out decimal betrag)) return null;
-            return (long)decimal.Round(betrag * 100m, 0,
-                MidpointRounding.AwayFromZero);
-        }
+            => UstVorauszahlungen.HoleCent(doc, zeitraum);
 
         // ----------------------------------------------------------
         // Formatierung

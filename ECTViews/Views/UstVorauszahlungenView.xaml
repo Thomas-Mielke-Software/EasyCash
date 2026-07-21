@@ -1,0 +1,109 @@
+<Window x:Class="ECTViews.Views.UstVorauszahlungenView"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="clr-namespace:ECTViews.ViewModels"
+        Title="{Binding Titel}"
+        Width="520" SizeToContent="Height"
+        WindowStartupLocation="CenterOwner"
+        ResizeMode="NoResize"
+        ShowInTaskbar="False"
+        Background="#F5F5F5"
+        FontFamily="Segoe UI" FontSize="13">
+
+    <!-- [USt-Vorauszahlungen]
+         WPF-Ersatz fuer CUstVorauszahlungenDlg: die ans Finanzamt
+         GEZAHLTEN Umsatzsteuer-Vorauszahlungen je Voranmeldungszeitraum
+         plus die Sondervorauszahlung der Dauerfristverlaengerung.
+         Die UVA-Formulare zeigen die gemerkten Betraege ueber
+         Dokumentdaten-Felder an; die formlose USt-Erklaerung verrechnet
+         sie in der Zahllast-Aufstellung. -->
+
+    <Window.Resources>
+        <DataTemplate x:Key="ZeitraumTemplate" DataType="{x:Type vm:UstZeitraumEintrag}">
+            <Grid Margin="0,0,14,5">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="90"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+                <TextBlock Text="{Binding Label}" VerticalAlignment="Center"/>
+                <TextBox Grid.Column="1" Padding="3,2"
+                         HorizontalContentAlignment="Right"
+                         Text="{Binding Wert, UpdateSourceTrigger=PropertyChanged}">
+                    <TextBox.Style>
+                        <Style TargetType="TextBox">
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding IstGueltig}" Value="False">
+                                    <Setter Property="BorderBrush" Value="#D32F2F"/>
+                                    <Setter Property="Background" Value="#FFF3F3"/>
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </TextBox.Style>
+                </TextBox>
+            </Grid>
+        </DataTemplate>
+    </Window.Resources>
+
+    <StackPanel Margin="16">
+        <TextBlock TextWrapping="Wrap" Foreground="#333" Margin="0,0,0,10"
+                   Text="Bereits ans Finanzamt gezahlte Umsatzsteuer-Vorauszahlungen. Sie erscheinen im UVA-Formular und werden in der formlosen USt-Erklärung verrechnet."/>
+
+        <GroupBox Header="Monatliche Zahlbeträge" Padding="8,6,0,2">
+            <ItemsControl ItemsSource="{Binding Monate}"
+                          ItemTemplate="{StaticResource ZeitraumTemplate}">
+                <ItemsControl.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <UniformGrid Columns="2"/>
+                    </ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
+            </ItemsControl>
+        </GroupBox>
+
+        <GroupBox Header="Quartalsweise Zahlbeträge" Padding="8,6,0,2"
+                  Margin="0,10,0,0">
+            <ItemsControl ItemsSource="{Binding Quartale}"
+                          ItemTemplate="{StaticResource ZeitraumTemplate}">
+                <ItemsControl.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <UniformGrid Columns="2"/>
+                    </ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
+            </ItemsControl>
+        </GroupBox>
+
+        <GroupBox Header="Dauerfristverlängerung" Padding="8,6,8,6"
+                  Margin="0,10,0,0">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="140"/>
+                </Grid.ColumnDefinitions>
+                <TextBlock Text="Sondervorauszahlung (1/11):"
+                           VerticalAlignment="Center" Margin="0,0,10,0"/>
+                <TextBox Grid.Column="1" Padding="3,2"
+                         HorizontalContentAlignment="Right"
+                         Text="{Binding Sondervorauszahlung, UpdateSourceTrigger=PropertyChanged}">
+                    <TextBox.Style>
+                        <Style TargetType="TextBox">
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding SondervorauszahlungGueltig}" Value="False">
+                                    <Setter Property="BorderBrush" Value="#D32F2F"/>
+                                    <Setter Property="Background" Value="#FFF3F3"/>
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </TextBox.Style>
+                </TextBox>
+            </Grid>
+        </GroupBox>
+
+        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right"
+                    Margin="0,14,0,0">
+            <Button Content="OK" MinWidth="100" Padding="14,5" Margin="0,0,8,0"
+                    IsDefault="True" IsEnabled="{Binding AlleGueltig}"
+                    Click="OnOk"/>
+            <Button Content="Abbrechen" MinWidth="100" Padding="14,5"
+                    IsCancel="True"/>
+        </StackPanel>
+    </StackPanel>
+</Window>

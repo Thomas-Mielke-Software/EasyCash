@@ -115,6 +115,16 @@ EasyCash/
       BerichtView.xaml(.cs)      — Vollflächen-Ansicht + Zoom/Strg+P
       BerichtViewModel.cs        — projiziert ECTEngine.Bericht auf Zeilen-VMs
       BerichtEmbed.cs            — HwndSource-Hosting (Muster JournalEmbed)
+    Formulare/                   — WPF-Formular-Modi (.ecf: EÜR/USt/UVA/AT)
+      FormularLayout.cs          — Promille->DIP (EINE Klasse für Ansicht
+                                   UND Druck = WYSIWYG; Font-Kalibrierung)
+      FormularView.xaml(.cs)     — Seiten (PNG-Scan + Feldwerte) + Leiste
+                                   + Designer (Drag/Dialoge/Kontextmenü)
+      FormularViewModel.cs       — Rechner-Anbindung, Seiten-/Feld-VMs,
+                                   Zoom als ScaleTransform, Designer-Modus
+      FormularFeldDialog.xaml    — Feld-Eigenschaften (Pendant CFormularfeld)
+      FormularAbschnittDialog.xaml — Abschnitts-Editor
+      FormularEmbed.cs           — HwndSource-Hosting (Muster BerichtEmbed)
     Resources/
       icons.bmp                  — Sprite mit Betrieb-Icons (32x32 horiz.)
       icons_bestandskonten.bmp   — Sprite mit Bestandskonto-Icons
@@ -132,6 +142,9 @@ EasyCash/
                                    ECT_JournalDrucken + Druck-Callback (Strg+P)
     BerichtExports.h(.cpp)       — ECT_BerichtEinbetten/-Aktualisiere/-Drucken
                                    (Formlos-Ansicht)
+    FormularExports.h(.cpp)      — ECT_FormularEinbetten/-Wechsle/-Aktualisiere/
+                                   -Drucken + ECT_FormularVergleichsdump
+                                   (Golden-Master nativ/managed, Debug)
     EasyCashDocBridge.h          — CEasyCashDocBridge + GetEngine(bridge)
 ```
 
@@ -407,7 +420,8 @@ robuster in hosted-WPF-Szenarien.
   Ribbon-Filtern. Der alte `DruckauswahlDlg` (Parallel-Filterwelt
   `m_*FilterPrinter` + tagesgenauer von/bis-Bereich) ist im
   USE_ECTENGINE-Pfad abgeklemmt; tagesgenauer Zeitraum entfällt
-  ersatzlos. `.ecf`-Formulardruck bleibt nativ (`DrawFormularToDC`).
+  ersatzlos. `.ecf`-Formulardruck läuft inzwischen ebenfalls über WPF
+  (`FormularDruckBauer`, siehe Abschnitt Formular-Modi).
 - **Druck-Infrastruktur** (`ECTViews/Druck/`): `DruckDokument` baut aus
   `DruckBlock`-Listen ein A4-FixedDocument (Kopfzeile Titel+Filter+Datum,
   Seitennummern, Keep-with-next für Abschnittstitel, Spaltenkopf-
@@ -441,6 +455,58 @@ robuster in hosted-WPF-Szenarien.
   fensterlose Controls). Plugins
   laufen in-process, HDC-Übergabe wäre daher auch für eine spätere
   kooperative Plugin-Methode (`DruckeSeite(hdc, n)`) möglich.
+
+### Formular-Modi (WPF, komplett, Stand 2026-07-20)
+- **Ablöse von DrawFormularToDC**: Das native Formular-System ist
+  datengetrieben (generischer Interpreter über .ecf-Feldtypen), darum
+  deckt EIN Renderer + EIN Rechner alle Formulare ab.
+- **Engine**: `FormularDefinition.cs` (Vollparser: Geometrie in
+  Promille 0-1000/0-1414, Seitenbilder, Abschnitte; CP1252-Fallback;
+  Mutations-API + XMLite-formatgetreues Speichern — Byte-Roundtrip
+  getestet, native Leser/ELSTER lesen die Dateien weiter),
+  `FormularRechner.cs` (exakter long/Cent-Port von
+  GetFormularwertByIndex, ECTBridge/easycashdoc.cpp:2259: Einnahmen/
+  Ausgaben/Summe/Einstellungsdaten/Dokumentdaten/Freitext,
+  Summe-Formelparser mit Rekursion+Zyklenschutz, Zeitraum aus
+  voranmeldungszeitraum-Attribut, Betriebsfilter mit C-Präzedenz,
+  AfA-Regeln). Die native Rechenfunktion bleibt UNANGETASTET — sie
+  versorgt das ELSTER-Plugin; Divergenz-Wächter ist
+  `ECT_FormularVergleichsdump` (läuft im Debug-Build bei jedem
+  Formular-Öffnen, Diff pro Feld in den Debug-Output).
+- **Geometrie/WYSIWYG**: `FormularLayout` ist die EINZIGE
+  Umrechnungsklasse für Ansicht UND Druck (x = h/1000·B,
+  y = v/1414·H − H/136; Referenz = nativer DRUCK-Pfad mit VCHARS=68;
+  die Bildschirm-Querformat-Näherung querformat_faktor=2 wurde bewusst
+  nicht nachgebaut). Font: `FontDip` mit Kalibrierkonstante
+  (ReferenzCharHeightPx=16, GdiZelleZuEm=1.17) — nativ hing die
+  Schriftgröße von der Journal-Bildschirmschrift ab (Quirk); bei
+  Abweichungen im Sichttest NUR diese Konstanten justieren.
+- **Ansicht**: Vollflächen-Overlay (Muster Formlos): `ZeigeFormularWpf`/
+  `VerstecktFormularWpf` in easycashview.cpp; `m_GewaehltesFormular`
+  bleibt gepflegt (Menü-Häkchen, UVA-Autowahl nativ, ELSTER).
+  OnCmdMsg-Zweige (ID_FORMULAR_BASE+i, ID_ANSICHT_FORMULARE) rufen
+  ZeigeFormularWpf; Formular-zu-Formular-Wechsel läuft ohne
+  Re-Embedding (ECT_FormularWechsle). Einstellungen über Formular
+  öffnen/schließen stellt die Formular-Ansicht wieder her
+  (VerstecktEinstellungenWpf(bFormularWiederherstellen)). Zoom
+  geometrisch per ScaleTransform (Prozentwert wie m_zoomfaktor,
+  eigener ECT_FormularSetzeZoom-Kanal).
+- **Designer** (ersetzt m_bFormularfelderAnzeigen + CFormularfeld):
+  Kontextmenü der FormularView ("Felder anzeigen/bearbeiten", Feld
+  bearbeiten/löschen/neu, Abschnitt neu, Feldwert kopieren, Datei im
+  Editor). Drag mit Live-Vorschau (RenderTransform), Strg-Klick =
+  Mehrfachauswahl, Pfeiltasten = 1-Promille-Feinjustage (Shift: 10);
+  Speichern sofort in die .ecf. Abschnitte auch über Rechtsklick in
+  der Seitenleiste editierbar.
+- **USt-Vorauszahlungen**: `UstVorauszahlungenView` (ersetzt
+  CUstVorauszahlungenDlg; Zeiträume 1-12/41-44), Engine-Helfer
+  `UstVorauszahlungen.cs` (Doc-ErweiterungStore "Elster"/
+  "Dauerfristverlängerung", Normalisierung wie nativ), Export
+  `ECT_ZeigeUstVorauszahlungenDialog`; UstErklaerungBericht liest
+  über denselben Helfer.
+- **Offen**: Sicht-/Druckabnahme (Font-Kalibrierung), Vergleichsdump
+  auf echten Mandantendaten, Moduswechsel-Matrix (siehe TODO
+  Test-Checkliste).
 
 ### Persistenz
 - `NavigationBreitenverhaeltnis` (Promille) wird vom existierenden
