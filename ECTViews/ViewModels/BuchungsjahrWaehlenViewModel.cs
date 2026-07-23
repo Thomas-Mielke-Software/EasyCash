@@ -1,5 +1,8 @@
 using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Linq;
+using ECTEngine;
 
 namespace ECTViews.ViewModels
 {
@@ -127,6 +130,12 @@ namespace ECTViews.ViewModels
             }
         }
 
+        /// <summary>Vorschläge für das Währungskürzel-Dropdown: EUR + die
+        /// hartkodierten EZB-Fiat-Codes. Rein lokal -- KEIN API-Abruf, keine
+        /// DSGVO-Abfrage. Die ComboBox bleibt editierbar (Freitext möglich).</summary>
+        public IReadOnlyList<string> WaehrungsVorschlaege { get; } =
+            new[] { "EUR" }.Concat(Waehrungsliste.StandardFiatCodes()).ToList();
+
         /// <summary>Geparstes Jahr; -1 wenn ungültig.</summary>
         public int Jahr => int.TryParse(JahrText, out var j) ? j : -1;
 
@@ -137,7 +146,7 @@ namespace ECTViews.ViewModels
 
         public string WaehrungFehler =>
             (Waehrung != null && Waehrung.Length > 3)
-                ? "Maximal 3 Zeichen (z.B. EUR, SFR)."
+                ? "Maximal 3 Zeichen (z.B. EUR, CHF)."
                 : "";
 
         public bool NeuMoeglich => JahrFehler == "" && WaehrungFehler == "";

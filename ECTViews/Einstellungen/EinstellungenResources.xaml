@@ -5,6 +5,10 @@
     <!-- Konverter: bool invertieren (Einnahme = !Ausgabe) -->
     <einst:InvertBoolConverter x:Key="InvertBool"/>
 
+    <!-- Konverter: bool -> Visibility (true=Visible, false=Collapsed).
+         Von der Waehrungen-Seite fuer Lade-/Leer-Zustaende genutzt. -->
+    <BooleanToVisibilityConverter x:Key="BoolZuVisibility"/>
+
     <!-- Gemeinsame Stile für alle Einstellungs-Seiten, abgestimmt auf den
          Look von BuchungView (Segoe UI, Blau-Akzent, dezente Labels). -->
 

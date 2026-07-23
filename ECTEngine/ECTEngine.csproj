@@ -20,4 +20,11 @@
     <Reference Include="System.Xml" />
     <Reference Include="System.Xml.Linq" />
   </ItemGroup>
+
+  <!-- Waehrungsliste.cs: HTTP-Abruf der ect-forex-API + JSON-Parsen
+       (JavaScriptSerializer liegt in System.Web.Extensions). -->
+  <ItemGroup>
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Web.Extensions" />
+  </ItemGroup>
 </Project>

@@ -1,0 +1,121 @@
+<UserControl x:Class="ECTViews.EinstellungenUi.Pages.WaehrungenPage"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:pages="clr-namespace:ECTViews.EinstellungenUi.Pages"
+             FontFamily="Segoe UI" FontSize="13">
+    <UserControl.Resources>
+        <ResourceDictionary Source="/ECTViews;component/Einstellungen/EinstellungenResources.xaml"/>
+    </UserControl.Resources>
+    <UserControl.DataContext>
+        <pages:WaehrungenPageViewModel/>
+    </UserControl.DataContext>
+
+    <Grid Margin="24,20">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <!-- [Kopf] -->
+        <StackPanel Grid.Row="0" MaxWidth="620" HorizontalAlignment="Left">
+            <TextBlock Text="Währungsumrechnung" Style="{StaticResource SeitenUeberschrift}"/>
+            <TextBlock Style="{StaticResource Hinweis}" Margin="0,0,0,4"
+                       Text="Angehakte Währungen stehen im Buchen-Dialog beim Umrechnungsknopf zur Auswahl. Die Kurse werden dort tagesgenau über die ect-forex-API (easyct.de) abgefragt."/>
+            <!-- Typ-Vorfilter: blendet die ~2800 Krypto-Werte standardmaessig aus. -->
+            <StackPanel Orientation="Horizontal" Margin="0,4,0,0">
+                <TextBlock Text="Anzeigen:" VerticalAlignment="Center"
+                           Margin="0,0,10,0" Foreground="#333333"/>
+                <RadioButton Content="Fiat" GroupName="WaehrungsTyp" Margin="0,0,14,0"
+                             VerticalContentAlignment="Center"
+                             IsChecked="{Binding FilterFiat}"/>
+                <RadioButton Content="Krypto" GroupName="WaehrungsTyp" Margin="0,0,14,0"
+                             VerticalContentAlignment="Center"
+                             IsChecked="{Binding FilterCrypto}"/>
+                <RadioButton Content="beide" GroupName="WaehrungsTyp"
+                             VerticalContentAlignment="Center"
+                             IsChecked="{Binding FilterBeide}"/>
+            </StackPanel>
+        </StackPanel>
+
+        <!-- [Werkzeugleiste: Aktualisieren + Filter + Status] -->
+        <Grid Grid.Row="1" Margin="0,8,0,8">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+
+            <Button Grid.Row="0" Grid.Column="0" Content="Liste aktualisieren"
+                    Command="{Binding AktualisiereCommand}"
+                    Padding="12,4" MinWidth="130" VerticalAlignment="Center"/>
+
+            <DockPanel Grid.Row="0" Grid.Column="1" Margin="12,0,0,0" LastChildFill="True">
+                <TextBlock DockPanel.Dock="Left" Text="Filter:" VerticalAlignment="Center"
+                           Margin="0,0,6,0" Foreground="#333333"/>
+                <TextBlock DockPanel.Dock="Right" Text="{Binding TrefferAnzeige}"
+                           VerticalAlignment="Center" Margin="10,0,0,0"
+                           Foreground="#777777" FontSize="11"/>
+                <TextBox Text="{Binding FilterText, UpdateSourceTrigger=PropertyChanged}"
+                         VerticalAlignment="Center"/>
+            </DockPanel>
+
+            <TextBlock Grid.Row="1" Grid.Column="1" Text="{Binding StatusText}"
+                       Margin="12,4,0,0" Foreground="#0277BD" FontStyle="Italic"
+                       TextTrimming="CharacterEllipsis"/>
+        </Grid>
+
+        <!-- [Liste der Waehrungen] -->
+        <Border Grid.Row="2" BorderBrush="#DDDDDD" BorderThickness="1"
+                Visibility="{Binding NichtLaedt, Converter={StaticResource BoolZuVisibility}}">
+            <Grid>
+                <ListBox ItemsSource="{Binding Sicht}" BorderThickness="0"
+                         Padding="8,6"
+                         ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+                         VirtualizingPanel.IsVirtualizing="True"
+                         VirtualizingPanel.VirtualizationMode="Recycling">
+                    <ListBox.ItemContainerStyle>
+                        <!-- Auswahl-Optik entfernen: die Zeile ist nur die Checkbox. -->
+                        <Style TargetType="ListBoxItem">
+                            <Setter Property="Focusable" Value="False"/>
+                            <Setter Property="Padding" Value="0"/>
+                            <Setter Property="Template">
+                                <Setter.Value>
+                                    <ControlTemplate TargetType="ListBoxItem">
+                                        <ContentPresenter/>
+                                    </ControlTemplate>
+                                </Setter.Value>
+                            </Setter>
+                        </Style>
+                    </ListBox.ItemContainerStyle>
+                    <ListBox.ItemTemplate>
+                        <DataTemplate>
+                            <CheckBox IsChecked="{Binding Aktiv}" Margin="0,3">
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock Text="{Binding Code}" FontWeight="SemiBold"
+                                               Width="80" Foreground="#1565C0"/>
+                                    <TextBlock Text="{Binding Name}" Foreground="#333333"/>
+                                </StackPanel>
+                            </CheckBox>
+                        </DataTemplate>
+                    </ListBox.ItemTemplate>
+                </ListBox>
+
+                <!-- [Hinweis, wenn gar nichts im Cache liegt] -->
+                <TextBlock Style="{StaticResource Hinweis}" Margin="12"
+                           HorizontalAlignment="Center" VerticalAlignment="Center"
+                           Text="Noch keine Währungsliste vorhanden. Bitte 'Liste aktualisieren' anklicken (benötigt eine Internetverbindung)."
+                           Visibility="{Binding KeineEintraege, Converter={StaticResource BoolZuVisibility}}"/>
+            </Grid>
+        </Border>
+
+        <!-- [Ladeanzeige] -->
+        <TextBlock Grid.Row="2" HorizontalAlignment="Center" VerticalAlignment="Center"
+                   Foreground="#0277BD" FontStyle="Italic"
+                   Text="Währungsliste wird geladen ..."
+                   Visibility="{Binding Laedt, Converter={StaticResource BoolZuVisibility}}"/>
+    </Grid>
+</UserControl>

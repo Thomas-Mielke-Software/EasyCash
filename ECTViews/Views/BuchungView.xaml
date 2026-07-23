@@ -175,14 +175,26 @@
                     <RowDefinition Height="Auto"/>
                 </Grid.RowDefinitions>
 
-                <!-- Bruttobetrag -->
+                <!-- Bruttobetrag (Label bewusst waehrungsneutral: vor dem
+                     Umrechnen steht hier ein Fremdwaehrungsbetrag). -->
                 <TextBlock Grid.Row="0" Grid.Column="0"
-                           Text="Brutto (€):" Style="{StaticResource LabelStyle}"/>
-                <TextBox Grid.Row="0" Grid.Column="1" x:Name="BetragBox"
-                         Text="{Binding BetragText, UpdateSourceTrigger=PropertyChanged}"
-                         TextAlignment="Right" FontWeight="SemiBold" FontSize="15"
-                         GotKeyboardFocus="OnFeldGotKeyboardFocus"
-                         PreviewMouseLeftButtonDown="OnFeldPreviewMouseLeftButtonDown"/>
+                           Text="Brutto:" Style="{StaticResource LabelStyle}"/>
+                <DockPanel Grid.Row="0" Grid.Column="1">
+                    <!-- Waehrungsrechner: rechnet einen Fremdwaehrungsbetrag ueber
+                         den Tageskurs in Euro um (Auswahl aus den Einstellungen). -->
+                    <Button DockPanel.Dock="Right" x:Name="WaehrungsrechnerKnopf"
+                            Content="{Binding UmrechnenKnopfText}"
+                            Margin="6,0,0,0" Padding="8,0" MinWidth="52"
+                            Focusable="False"
+                            IsEnabled="{Binding NichtAmUmrechnen}"
+                            ToolTip="{Binding UmrechnenKnopfTooltip}"
+                            Click="OnWaehrungsrechnerKnopf"/>
+                    <TextBox x:Name="BetragBox"
+                             Text="{Binding BetragText, UpdateSourceTrigger=PropertyChanged}"
+                             TextAlignment="Right" FontWeight="SemiBold" FontSize="15"
+                             GotKeyboardFocus="OnFeldGotKeyboardFocus"
+                             PreviewMouseLeftButtonDown="OnFeldPreviewMouseLeftButtonDown"/>
+                </DockPanel>
 
                 <!-- MWSt -->
                 <TextBlock Grid.Row="0" Grid.Column="2"
@@ -614,5 +626,26 @@
                     IsCancel="True"
                     Style="{StaticResource SecondaryButtonStyle}"/>
         </StackPanel>
+
+        <!-- Fortschritts-Overlay des Waehrungsrechners ueber Betrag (Zeile 2)
+             und Beschreibung (Zeile 3): waehrend der asynchronen Kursabfrage
+             sichtbar, mit Abbrechen-Moeglichkeit. Als letztes Grid-Kind = liegt
+             optisch oben (Issue #21: keine einfrierende/haengende Oberflaeche). -->
+        <Border Grid.Row="2" Grid.RowSpan="2" Panel.ZIndex="100"
+                Background="#D8FFFFFF" CornerRadius="3"
+                Visibility="{Binding UmrechnungLaeuft, Converter={StaticResource BoolToVis}}">
+            <Border HorizontalAlignment="Center" VerticalAlignment="Center"
+                    Background="White" BorderBrush="#1565C0" BorderThickness="1"
+                    CornerRadius="4" Padding="16,12">
+                <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                    <ProgressBar IsIndeterminate="True" Width="130" Height="14"
+                                 VerticalAlignment="Center"/>
+                    <TextBlock Text="{Binding UmrechnungStatus}" Margin="12,0,12,0"
+                               VerticalAlignment="Center" Foreground="#333"/>
+                    <Button Content="Abbrechen" Padding="10,3" Focusable="False"
+                            Command="{Binding AbbrechenUmrechnungCommand}"/>
+                </StackPanel>
+            </Border>
+        </Border>
     </Grid>
 </Window>

@@ -1,6 +1,8 @@
 using System;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Controls.Primitives;
 using System.Windows.Input;
 using System.Windows.Threading;
 using ECTViews.ViewModels;
@@ -42,6 +44,9 @@ namespace ECTViews.Views
             // Anlage-Dialog nach dem Kontonamen.
             viewModel.KontoAnlegenAbfrage = bedarf =>
                 Stammdaten.KontoAnlegenView.ZeigeDialog(bedarf, owner: this);
+
+            // DSGVO-Einwilligung vor der ersten Online-Kursabfrage.
+            viewModel.ApiEinwilligungAbfrage = WaehrungApiEinwilligung.Sicherstellen;
 
             // Auch beim erstmaligen Oeffnen die "Weiterbuchen-Verhalten"-
             // Einstellung zum Cursor beachten (nur bei neuer Buchung, nicht
@@ -141,6 +146,69 @@ namespace ECTViews.Views
                 if (DataContext is BuchungViewModel vm)
                     vm.VorschlaegeOffen = false;
             }), DispatcherPriority.Background);
+        }
+
+        /// <summary>Waehrungsrechner-Knopf neben dem Betragsfeld: klappt ein
+        /// Menue mit den in den Einstellungen ausgewaehlten Waehrungen auf. Die
+        /// Auswahl einer Waehrung startet die (asynchrone) Kursabfrage und
+        /// Umrechnung. Baut das Menue programmatisch wie das MFC-Original
+        /// (OnBnClickedWaehrungsrechner), gespeist aber aus der Whitelist.</summary>
+        private void OnWaehrungsrechnerKnopf(object sender, RoutedEventArgs e)
+        {
+            if (!(DataContext is BuchungViewModel vm)) return;
+            if (!(sender is Button knopf)) return;
+
+            var menue = new ContextMenu
+            {
+                PlacementTarget = knopf,
+                Placement = PlacementMode.Bottom
+            };
+
+            var aktive = vm.WaehrungenFuerMenue();
+            if (aktive == null || aktive.Count == 0)
+            {
+                menue.Items.Add(new MenuItem
+                {
+                    Header = "Keine Währungen ausgewählt – bitte unter "
+                             + "Einstellungen › Währungsumrechnung auswählen",
+                    IsEnabled = false
+                });
+            }
+            else
+            {
+                foreach (var w in aktive)
+                {
+                    string code = w.Code;   // fuer die Closure festhalten
+                    var item = new MenuItem { Header = w.Code + "  –  " + w.Name };
+                    item.Click += async (s2, e2) => await UmrechnungAusfuehren(vm, code);
+                    menue.Items.Add(item);
+                }
+            }
+
+            menue.IsOpen = true;
+        }
+
+        /// <summary>Fuehrt die Umrechnung aus und faengt JEDEN Fehler ab, damit
+        /// die Buchungsmaske nicht abstuerzt (Issue #21, Befund Darkwing371):
+        /// Netz-/Server-/Eingabefehler landen in einer freundlichen Meldung,
+        /// die UI bleibt waehrend des asynchronen Abrufs bedienbar.</summary>
+        private async Task UmrechnungAusfuehren(BuchungViewModel vm, string code)
+        {
+            try
+            {
+                await vm.WaehrungUmrechnenAsync(code);
+            }
+            catch (Exception ex)
+            {
+                try
+                {
+                    MessageBox.Show(this,
+                        "Die Währungsumrechnung ist nicht möglich:\n\n" + ex.Message,
+                        "Währungsumrechnung",
+                        MessageBoxButton.OK, MessageBoxImage.Warning);
+                }
+                catch { /* Fenster evtl. schon geschlossen -- ignorieren */ }
+            }
         }
 
         /// <summary>Zeigt die Preset-Notiz als Balloon und (re)startet den

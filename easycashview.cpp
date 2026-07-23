@@ -7628,6 +7628,8 @@ void CEasyCashView::AfAAbgang(CBuchung **ppb)
 
 int CEasyCashView::GetFeldindexFromMausposition(LPXNode felder)
 {
+	if (charheight <= 0) return -1;
+
 	// Feld über Clickposition bestimmen...
 	ptFeldmarke.x = ptFeldmarke.x * 1000 / (int)((double)(charheight * (VCHARS + PAGE_GAP) * 1000 / 1414) * querformat_faktor);
 	ptFeldmarke.y = ptFeldmarke.y * 1414 / (int)((double)(VCHARS + PAGE_GAP) * charheight);

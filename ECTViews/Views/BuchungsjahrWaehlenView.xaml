@@ -122,10 +122,14 @@
                              MaxLength="4" Padding="4,3" Margin="0,2"/>
 
                     <TextBlock Grid.Row="1" Grid.Column="0" Style="{StaticResource LabelStyle}"
-                               Text="Währungskürzel (z.B. EUR, SFR):"/>
-                    <TextBox Grid.Row="1" Grid.Column="1"
-                             Text="{Binding Waehrung, UpdateSourceTrigger=PropertyChanged}"
-                             MaxLength="3" Padding="4,3" Margin="0,2"/>
+                               Text="Währungskürzel (z.B. EUR, CHF):"/>
+                    <!-- Editierbar: Auswahl aus den hartkodierten Fiat-Codes ODER
+                         Freitext (kein API-Abruf, keine DSGVO-Abfrage). -->
+                    <ComboBox Grid.Row="1" Grid.Column="1"
+                              IsEditable="True"
+                              Text="{Binding Waehrung, UpdateSourceTrigger=PropertyChanged}"
+                              ItemsSource="{Binding WaehrungsVorschlaege}"
+                              Padding="4,3" Margin="0,2"/>
                 </Grid>
 
                 <TextBlock Style="{StaticResource ErrorStyle}" Text="{Binding JahrFehler}"/>
