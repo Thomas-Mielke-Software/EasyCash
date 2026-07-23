@@ -580,7 +580,7 @@ void CEasyCashView::UpdateFormularMenu()
 								int nJahr = atoi(attr_anzeigename + nStringlength) % 100;	// kleine Hashmap der Jahre, für die USt-VA-Formulare existieren
 								if (!pArrBtnSubmenus[nJahr+nOesterreichOffset])
 								{
-									pArrBtnSubmenus[nJahr+nOesterreichOffset] = new CMFCRibbonButton(ID_ANSICHT_FORMULARE, (LPCTSTR)csMenuText.Left(nStringlength+4), 21);
+									pArrBtnSubmenus[nJahr+nOesterreichOffset] = new CMFCRibbonButton((UINT)-1 /* keine QAT-Command-ID: reiner Gruppierungs-Container, sonst dangling QAT-m_pOriginal beim Menue-Rebuild -> Absturz */, (LPCTSTR)csMenuText.Left(nStringlength+4), 21);
 									pBtnAnsichtFormulare->AddSubItem(pArrBtnSubmenus[nJahr+nOesterreichOffset]);
 									pArrBtnSubmenus[nJahr+nOesterreichOffset]->SetMenu(IDR_ANSICHT_FORMULARE);
 									pArrBtnSubmenus[nJahr+nOesterreichOffset]->RemoveAllSubItems();
@@ -622,7 +622,7 @@ void CEasyCashView::UpdateFormularMenu()
 							int nJahr = atoi(attr_anzeigename + nStringlength) % 100;	// kleine Hashmap der Jahre, für die USt-VA-Formulare existieren
 							if (!pArrBtnSubmenus[nJahr+nOesterreichOffset])
 							{
-								pArrBtnSubmenus[nJahr+nOesterreichOffset] = new CMFCRibbonButton(ID_ANSICHT_FORMULARE, (LPCTSTR)((CString)attr_anzeigename).Left(nStringlength+4), 21);
+								pArrBtnSubmenus[nJahr+nOesterreichOffset] = new CMFCRibbonButton((UINT)-1 /* keine QAT-Command-ID: reiner Gruppierungs-Container, sonst dangling QAT-m_pOriginal beim Menue-Rebuild -> Absturz */, (LPCTSTR)((CString)attr_anzeigename).Left(nStringlength+4), 21);
 								pBtnAnsichtFormulare->AddSubItem(pArrBtnSubmenus[nJahr+nOesterreichOffset]);
 								pArrBtnSubmenus[nJahr+nOesterreichOffset]->SetMenu(IDR_ANSICHT_FORMULARE);
 								pArrBtnSubmenus[nJahr+nOesterreichOffset]->RemoveAllSubItems();
