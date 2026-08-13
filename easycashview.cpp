@@ -7675,7 +7675,7 @@ void CEasyCashView::OnMouseMove(UINT nFlags, CPoint point)
 
 Code zu hektisch */	
 
-	if (pFormularfeldDlg) 
+	if (pFormularfeldDlg && charheight)
 	{
 		CPoint ptDoc;
 		ptDoc = GetScrollPosition() + point;
@@ -7687,7 +7687,7 @@ Code zu hektisch */
 		pFormularfeldDlg->SetDlgItemText(IDC_MOUSEPOS, csMouseposText);
 	}
 
-	if (m_nFeldMove >= 0)
+	if (m_nFeldMove >= 0 && charheight)
 	{
 		CPoint ptFeldmarkeAlt = ptFeldmarke;
 		ptFeldmarke.x = ptFeldmarkeAlt.x + ((GetScrollPosition().x + point.x - ptLetzteMousePosition.x) * 1414 / (int)((double)(VCHARS + PAGE_GAP) * charheight));
@@ -7697,8 +7697,7 @@ Code zu hektisch */
 			//RedrawWindow();
 			GetDocument()->UpdateAllViews(NULL);
 		}
-		ptLetzteMousePosition = GetScrollPosition() + point;
-		
+		ptLetzteMousePosition = GetScrollPosition() + point;		
 	}
 
 	if (m_GewaehltesFormular >= 0 && m_csaFormulare.GetSize() > 0)

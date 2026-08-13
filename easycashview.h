@@ -219,7 +219,7 @@ public:
 	CPoint m_ptLinkerMausButtonDown;
 	int m_nFeldMove;							// enthält die ID beim Bewegen eines Formularfeldes
 	CArray<int> m_ptFeldMoveMultiselect;  // enthält die IDs beim Bewegen mehrerer Formularfelder wähend Multiselect mit mittlerer Maustaste
-	int querformat_faktor;
+	int querformat_faktor = 100;
 
 	// Menü-Krempel
 	CMenu PopUp;
