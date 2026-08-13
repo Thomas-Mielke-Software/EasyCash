@@ -1647,6 +1647,14 @@ BOOL CDocument::DoSave(LPCTSTR lpszPathName, BOOL bReplace)
 			  newName += strExt;
 			}
 		}
+
+		// Ohne uebergebenen Pfad (Speichern unter) muss der Datei-Dialog kommen --
+		// dieser Block ging beim Kopieren der Datei aus ECTIFace verloren, dadurch
+		// speicherte "Speichern unter" still ueber die bereits geoeffnete Datei.
+		if (!AfxGetApp()->DoPromptFileName(newName,
+		  bReplace ? AFX_IDS_SAVEFILE : AFX_IDS_SAVEFILECOPY,
+		  OFN_HIDEREADONLY | OFN_PATHMUSTEXIST, FALSE, pTemplate))
+			return FALSE;       // don't even attempt to save
 	}
 
 	CWaitCursor wait;
