@@ -1722,9 +1722,9 @@ namespace ECTViews.ViewModels
                     AfaError = "Kein Abschreibungssatz angegeben, obwohl degressiv ausgewählt.";
                     return false;
                 }
-                if (!int.TryParse(AfaSatz, out int satz) || satz <= 0)
+                if (!int.TryParse(AfaSatz, out int satz) || satz < 0)
                 {
-                    AfaError = "Abschreibungssatz muss eine positive Zahl sein.";
+                    AfaError = "Abschreibungssatz muss eine positive Zahl oder 0 sein.";
                     return false;
                 }
                 if (jahre <= 1)
