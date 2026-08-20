@@ -309,6 +309,18 @@ static void ECT_StatusAnMainframe(const char* text)
 	CWnd* w = AfxGetMainWnd();
 	if (w) ((CMainFrame*)w)->SetStatus(text ? text : "");
 }
+
+// Nativer Callback fuer ECT_SetzePresetsGeaendertCallback: die WPF-Einstellungen
+// sind ein Vollflaechen-Overlay, das Ribbon bleibt also waehrend des Editierens
+// sichtbar. Aendert sich eine Buchungsvorlage (Beschreibung, Art Einnahme/
+// Ausgabe, Nummer, angelegt/geloescht/importiert), muessen die Dropdowns der
+// Einnahme-/Ausgabe-Knoepfe sofort nachgezogen werden -- nicht erst beim
+// Schliessen der Einstellungen.
+static void ECT_PresetsGeaendertAnMainframe()
+{
+	CWnd* w = AfxGetMainWnd();
+	if (w) ((CMainFrame*)w)->UpdateBuchungsvorlagenMenu();
+}
 #endif
 
 int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
@@ -415,6 +427,7 @@ int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
 	m_wndStatusBar.AddExtendedElement(new CMFCRibbonStatusBarPane(ID_SALDO, ""), "Saldo");
 #ifdef USE_ECTENGINE
 	ECT_SetzeStatusCallback(&ECT_StatusAnMainframe);
+	ECT_SetzePresetsGeaendertCallback(&ECT_PresetsGeaendertAnMainframe);
 #endif
 		
 	return 0;

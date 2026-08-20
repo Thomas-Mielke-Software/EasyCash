@@ -478,6 +478,37 @@ namespace
     };
 }
 
+// -----------------------------------------------------------------------------
+// Buchungsvorlagen: managed ECTEngine::Einstellungen::PresetsGeaendert
+//                   ->  nativer Host-Callback (Ribbon-Dropdowns nachfuehren)
+// -----------------------------------------------------------------------------
+namespace
+{
+    static ECT_PresetsGeaendertCallback s_presetsCallback = nullptr;
+    static bool                         s_presetsHandlerRegistriert = false;
+
+    ref class PresetsHandler
+    {
+    public:
+        static void OnPresetsGeaendert()
+        {
+            if (s_presetsCallback == nullptr) return;
+            s_presetsCallback();
+        }
+    };
+}
+
+void ECT_SetzePresetsGeaendertCallback(ECT_PresetsGeaendertCallback cb)
+{
+    s_presetsCallback = cb;
+    if (!s_presetsHandlerRegistriert)
+    {
+        ECTEngine::Einstellungen::PresetsGeaendert +=
+            gcnew System::Action(&PresetsHandler::OnPresetsGeaendert);
+        s_presetsHandlerRegistriert = true;
+    }
+}
+
 void ECT_SetzeStatusCallback(ECT_StatusCallback cb)
 {
     s_statusCallback = cb;

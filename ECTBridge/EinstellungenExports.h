@@ -113,6 +113,17 @@ ECTBRIDGE_API void ECT_SpeichereBestandskontoSaldo(int index, int jahr, int cent
 typedef void (*ECT_StatusCallback)(const char* text);
 ECTBRIDGE_API void ECT_SetzeStatusCallback(ECT_StatusCallback cb);
 
+// -----------------------------------------------------------------------------
+// Buchungsvorlagen-Aenderungen (Buchungsposten)
+// -----------------------------------------------------------------------------
+
+// Wird gerufen, sobald ein Preset geschrieben wurde (angelegt, geaendert,
+// verschoben, geloescht, importiert). Der Host baut daraufhin die Dropdowns
+// der Einnahme-/Ausgabe-Ribbonknoepfe neu auf -- die Einstellungen sind ein
+// Vollflaechen-Overlay, das Ribbon bleibt waehrend des Editierens sichtbar.
+typedef void (*ECT_PresetsGeaendertCallback)();
+ECTBRIDGE_API void ECT_SetzePresetsGeaendertCallback(ECT_PresetsGeaendertCallback cb);
+
 #ifdef __cplusplus
 }
 #endif

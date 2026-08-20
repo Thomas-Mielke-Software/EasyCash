@@ -186,6 +186,15 @@ namespace ECTEngine
         public static event Action<string, string> WertGeaendert;
 
         /// <summary>
+        /// Wird ausgelöst, wenn ein Buchungsposten-Preset geschrieben wurde
+        /// (angelegt, geändert, verschoben, gelöscht, importiert). Der Host
+        /// hängt sich darauf, um die Vorlagen-Dropdowns der Einnahme-/
+        /// Ausgabe-Ribbonknöpfe sofort nachzuführen -- die Einstellungen sind
+        /// ein Vollflächen-Overlay, das Ribbon bleibt also sichtbar.
+        /// </summary>
+        public static event Action PresetsGeaendert;
+
+        /// <summary>
         /// Cache komplett ersetzen (von der Bridge nach ini-Lesen aufgerufen).
         /// Loest KEINE WertGeaendert-Events aus.
         /// </summary>
@@ -357,6 +366,7 @@ namespace ECTEngine
             Speichere(pfx + "BasisBetrag", p.BasisBetragFormel);
             SchreibeZusatzZeilen(pfx, p.Zeilen);
             BaueListenAuf();
+            PresetsGeaendert?.Invoke();
         }
 
         /// <summary>Maximale Zusatz-Zeilen pro Buchungsgruppen-Vorlage
