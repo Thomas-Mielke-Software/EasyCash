@@ -76,6 +76,84 @@ namespace ECTEngine.Tests
             Assert.Equal("48", de[1].FeldId);
         }
 
+        // ------------------------------------------------------------------
+        // Meta-Paar "$name=" (Kontoname-Vorschlag)
+        // ------------------------------------------------------------------
+
+        [Fact]
+        public void Parse_NameMetaPaar_IstKeinFeldbedarf()
+        {
+            var spez = KontoFeldSpezifikation.Parse(
+                "$de:Umsatzsteuer-Voranmeldung=47|$name=/Verrechnung von §13b-USt||",
+                out string fehler);
+            Assert.NotNull(spez);
+            Assert.Equal("", fehler);
+
+            var b = Assert.Single(spez.FuerLand("de"));
+            Assert.Equal("Umsatzsteuer-Voranmeldung", b.Formular);
+            Assert.Equal("47", b.FeldId);
+            // führendes '/' (neutrales Konto) muss überleben
+            Assert.Equal("/Verrechnung von §13b-USt", spez.NameFuerLand("de"));
+        }
+
+        [Fact]
+        public void Parse_NameVorFeldpaar_ReihenfolgeEgal()
+        {
+            var spez = KontoFeldSpezifikation.Parse(
+                "$de:$name=Mein Konto|EÜR=14||", out _);
+            Assert.Equal("Mein Konto", spez.NameFuerLand("de"));
+            Assert.Single(spez.FuerLand("de"));
+        }
+
+        [Fact]
+        public void Parse_NameProLandGetrennt()
+        {
+            var spez = KontoFeldSpezifikation.Parse(
+                "$de:EÜR=14|$name=Deutsch||at:E1a=9040|$name=Österreichisch||", out _);
+            Assert.Equal("Deutsch", spez.NameFuerLand("de"));
+            Assert.Equal("Österreichisch", spez.NameFuerLand("at"));
+            Assert.Equal("", spez.NameFuerLand("ch"));   // Land ohne Block
+        }
+
+        [Fact]
+        public void Parse_OhneName_LeererVorschlag()
+        {
+            var spez = KontoFeldSpezifikation.Parse(Beispiel, out _);
+            Assert.Equal("", spez.NameFuerLand("de"));
+        }
+
+        [Fact]
+        public void Parse_UnbekanntesMetaPaar_WirdUebersprungen()
+        {
+            // Vorwärtskompatibilität: ein künftiger $-Schlüssel darf eine
+            // ältere Binary nicht zum Verknüpfen gegen ein Phantom-Formular
+            // verleiten -- und die Spezifikation bleibt gültig.
+            var spez = KontoFeldSpezifikation.Parse(
+                "$de:EÜR=14|$kuenftig=egal||", out string fehler);
+            Assert.NotNull(spez);
+            Assert.Equal("", fehler);
+            var b = Assert.Single(spez.FuerLand("de"));
+            Assert.Equal("EÜR", b.Formular);
+        }
+
+        [Fact]
+        public void Parse_NurMetaPaar_OhneFeldzuordnung_IstFehler()
+        {
+            var spez = KontoFeldSpezifikation.Parse(
+                "$de:$name=Mein Konto||", out string fehler);
+            Assert.Null(spez);
+            Assert.Contains("keine Feld-Zuordnung", fehler);
+        }
+
+        [Fact]
+        public void Parse_ZweiNamenImBlock_IstFehler()
+        {
+            var spez = KontoFeldSpezifikation.Parse(
+                "$de:EÜR=14|$name=A|$name=B||", out string fehler);
+            Assert.Null(spez);
+            Assert.Contains("$name", fehler);
+        }
+
         [Theory]
         [InlineData("$")]                          // leer
         [InlineData("$de:")]                       // Block ohne Paar
@@ -150,6 +228,20 @@ namespace ECTEngine.Tests
             SeedeKonten();
             var a = KontoFeldSelektor.LoeseAuf("$de:E/Ü-Rechnung=1103||");
             Assert.Equal("Erlöse 19%", a.Konto);   // e00 kommt vor e01
+        }
+
+        [Fact]
+        public void LoeseAuf_ReichtNameVorschlagDurch()
+        {
+            SeedeKonten();
+            // Feld 81 hat kein Konto -> Anlage-Fall, und genau dann braucht
+            // der Dialog den Namensvorschlag der Spezifikation.
+            var a = KontoFeldSelektor.LoeseAuf(
+                "$de:Umsatzsteuer-Voranmeldung=81|$name=/Verrechnung von §13b-USt||");
+            Assert.Null(a.Konto);
+            Assert.Equal("", a.Fehler);
+            Assert.Equal("/Verrechnung von §13b-USt", a.NameVorschlag);
+            Assert.Single(a.Bedarf);
         }
 
         [Fact]
@@ -305,6 +397,17 @@ namespace ECTEngine.Tests
         {
             Assert.Equal("A / B", KontoFeldSelektor.VorgabeName(new[] { "A", "B" }));
             Assert.Equal("A", KontoFeldSelektor.VorgabeName(new[] { "A" }));
+        }
+
+        [Fact]
+        public void VorgabeName_SpezifikationsNameSchlaegtFeldnamen()
+        {
+            Assert.Equal("/Verrechnung von §13b-USt",
+                KontoFeldSelektor.VorgabeName(new[] { "A", "B" },
+                    "/Verrechnung von §13b-USt"));
+            // leer/Leerraum -> zurück zur Feldnamen-Vorgabe
+            Assert.Equal("A / B", KontoFeldSelektor.VorgabeName(new[] { "A", "B" }, "   "));
+            Assert.Equal("A / B", KontoFeldSelektor.VorgabeName(new[] { "A", "B" }, null));
         }
     }
 }

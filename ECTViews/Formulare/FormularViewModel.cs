@@ -413,6 +413,15 @@ namespace ECTViews.Formulare
         public double FontSize { get; }
         public string Tooltip { get; }
 
+        /// <summary>Feld-Id, im Designer-Modus klein in der Ecke der
+        /// Feldmarkierung eingeblendet (Pendant zum nativen Id-Text in der
+        /// Feldmarke, easycashview.cpp:5016).</summary>
+        public string IdText { get; }
+
+        /// <summary>Halbe Feldschrift wie nativ (lfHeight /= 2), aber nicht
+        /// unter 6 DIP -- bei kleinem Zoom waere die Id sonst unleserlich.</summary>
+        public double IdFontSize { get; }
+
         /// <summary>Schwarz auf der Seite; WEISS fuer Felder, deren Anker
         /// rechts neben dem Seitenrand liegt (horizontal &gt; 1000 Promille,
         /// z.B. Feld 1111 der EUeR) -- die stehen auf dem dunklen
@@ -449,6 +458,11 @@ namespace ECTViews.Formulare
             return brush;
         }
 
+        /// <summary>Id-Marke nur im Designer-Modus ("Felder anzeigen").</summary>
+        public System.Windows.Visibility IdSichtbar => DesignerAktiv
+            ? System.Windows.Visibility.Visible
+            : System.Windows.Visibility.Collapsed;
+
         /// <summary>Rahmen im Designer-Modus (sonst transparent).</summary>
         public System.Windows.Media.Brush RahmenBrush
         {
@@ -471,6 +485,8 @@ namespace ECTViews.Formulare
             Text = (designerAktiv && string.IsNullOrEmpty(wert.Text))
                 ? "0,00" : wert.Text;
             FontSize = fontDip;
+            IdText = feld.Id.ToString(System.Globalization.CultureInfo.InvariantCulture);
+            IdFontSize = Math.Max(6.0, fontDip / 2.0);
             Top = FormularLayout.YTextOben(feld.Vertikal, seitenHoehe);
 
             double x = FormularLayout.X(feld.Horizontal, seitenBreite);

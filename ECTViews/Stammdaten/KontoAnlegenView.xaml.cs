@@ -4,8 +4,9 @@
 // "$de:Formular=Id|...||"-Spezifikation) bzw. ein Plugin über
 // HoleKontoMitFeldern ein Konto mit bestimmten Formularfeld-Verknüpfungen
 // braucht, aber keines existiert. Es muss nur der Kontoname eingegeben
-// werden (vorbelegt mit den Feldnamen, " / "-getrennt); die
-// Feld-Verknüpfungen und der E/A-Typ stehen durch die Spezifikation fest.
+// werden (vorbelegt mit dem "$name="-Vorschlag der Spezifikation, sonst mit
+// den Feldnamen, " / "-getrennt); die Feld-Verknüpfungen und der E/A-Typ
+// stehen durch die Spezifikation fest.
 //
 // Die Anlage selbst macht KontoFeldSelektor.ErzeugeKonto (Engine):
 // Namens-Duplikate werden inline gemeldet (Dialog bleibt offen), volle
@@ -28,13 +29,16 @@ namespace ECTViews.Stammdaten
         public string ErzeugtesKonto { get; private set; }
 
         private KontoAnlegenView(IReadOnlyList<KontoFeldBedarf> bedarf,
-            KontoFeldInfo info)
+            KontoFeldInfo info, string nameVorschlag)
         {
             InitializeComponent();
             _bedarf = bedarf;
             _istEinnahme = info.IstEinnahme;
-            HinweisText.Text = KontoFeldSelektor.HinweisText(info.Feldnamen);
-            NameBox.Text = KontoFeldSelektor.VorgabeName(info.Feldnamen);
+            // Hinweistext mit Feld-Kennzeichen ("... (Feld 47)"), damit
+            // erkennbar bleibt, fuer WELCHE Vorlagen-Zeile das Konto gebraucht
+            // wird; der Vorgabe-Name bleibt die reine Bezeichnung.
+            HinweisText.Text = KontoFeldSelektor.HinweisText(info.FeldnamenMitKennzeichen);
+            NameBox.Text = KontoFeldSelektor.VorgabeName(info.Feldnamen, nameVorschlag);
             Loaded += (s, e) => { NameBox.Focus(); NameBox.SelectAll(); };
         }
 
@@ -47,9 +51,12 @@ namespace ECTViews.Stammdaten
         /// Liefert den Namen des angelegten Kontos oder null (abgebrochen,
         /// Feld-Infos nicht ermittelbar oder alle Slots belegt -- die beiden
         /// letzten Fälle mit Fehlermeldung-MessageBox).
+        /// <paramref name="nameVorschlag"/> ist der "$name="-Wert der
+        /// Spezifikation ("" = keiner, dann Vorbelegung aus den Feldnamen).
         /// </summary>
         public static string ZeigeDialog(IReadOnlyList<KontoFeldBedarf> bedarf,
-            Window owner = null, IntPtr ownerHwnd = default)
+            Window owner = null, IntPtr ownerHwnd = default,
+            string nameVorschlag = null)
         {
             var info = KontoFeldSelektor.ErmittleFeldInfo(bedarf);
             if (info.Fehler.Length > 0)
@@ -59,7 +66,7 @@ namespace ECTViews.Stammdaten
                 return null;
             }
 
-            var dlg = new KontoAnlegenView(bedarf, info);
+            var dlg = new KontoAnlegenView(bedarf, info, nameVorschlag);
             if (owner != null)
                 dlg.Owner = owner;
             else if (ownerHwnd != IntPtr.Zero)

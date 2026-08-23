@@ -104,6 +104,27 @@ namespace ECTViews.EinstellungenUi.Pages
         // XML-Export/Import (Vorlagen teilen)
         // -----------------------------------------------------------------
 
+        /// <summary>
+        /// Fehlermeldung -- mit Besitzer-Fenster nur dort, wo es eines gibt.
+        /// Die Einstellungs-Seiten laufen im MFC-Host in einer HwndSource und
+        /// haben dann KEINEN Window-Vorfahren: Window.GetWindow(this) liefert
+        /// null, und MessageBox.Show(null, ...) wirft eine
+        /// ArgumentNullException (der WindowInteropHelper-Konstruktor
+        /// verträgt kein null). Ohne Besitzer nimmt WPF selbst das aktive
+        /// Fenster -- im Host also den MFC-Rahmen. Die CommonDialog-Aufrufe
+        /// daneben brauchen das nicht, ShowDialog(null) ist dort zulässig.
+        /// </summary>
+        private void ZeigeFehler(string text, string titel)
+        {
+            var besitzer = Window.GetWindow(this);
+            if (besitzer != null)
+                MessageBox.Show(besitzer, text, titel,
+                    MessageBoxButton.OK, MessageBoxImage.Error);
+            else
+                MessageBox.Show(text, titel,
+                    MessageBoxButton.OK, MessageBoxImage.Error);
+        }
+
         private void OnExportieren(object sender, RoutedEventArgs e)
         {
             var vm = VM;
@@ -133,10 +154,9 @@ namespace ECTViews.EinstellungenUi.Pages
             }
             catch (Exception ex)
             {
-                MessageBox.Show(Window.GetWindow(this),
+                ZeigeFehler(
                     "Die Vorlage konnte nicht gespeichert werden:\n" + ex.Message,
-                    "Buchungsvorlage exportieren",
-                    MessageBoxButton.OK, MessageBoxImage.Error);
+                    "Buchungsvorlage exportieren");
             }
         }
 
@@ -163,10 +183,9 @@ namespace ECTViews.EinstellungenUi.Pages
             }
 
             if (fehler != null)
-                MessageBox.Show(Window.GetWindow(this),
+                ZeigeFehler(
                     "Die Vorlage konnte nicht importiert werden:\n" + fehler,
-                    "Buchungsvorlage importieren",
-                    MessageBoxButton.OK, MessageBoxImage.Error);
+                    "Buchungsvorlage importieren");
         }
     }
 }

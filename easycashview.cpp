@@ -194,6 +194,7 @@ CEasyCashView::CEasyCashView()
 	m_hwndBerichtWpf = NULL;
 	m_nBerichtTyp = -1;
 	m_hwndFormularWpf = NULL;
+	m_bFormularWpfImAufbau = false;
 #endif
 	m_vt = 1;
 	m_vm = 1;
@@ -4873,8 +4874,16 @@ void CEasyCashView::DrawFormularToDC(CDC* pDC, DrawInfo *pDrawInfo)
 			
 			if (child && !child->value.IsEmpty())
 			{
-				// Hier kommt der Feldinhalt hinein:
-				CString csFeldinhalt = m_csaFormularfeldwerte[i];
+				// Hier kommt der Feldinhalt hinein. Der Index wird geprueft:
+				// die Schleife laeuft ueber die Felder der .ecf-Datei, waehrend
+				// m_csaFormularfeldwerte aus einem frueheren
+				// BerechneFormularfeldwerte()-Lauf stammt. Beide koennen
+				// auseinanderlaufen (neues Feld im Designer, oder gar keine
+				// Berechnung wie im WPF-Formularmodus) -- dann lieber ein
+				// leerer Feldwert als ein ASSERT in CStringArray::ElementAt.
+				CString csFeldinhalt;
+				if (i < m_csaFormularfeldwerte.GetSize())
+					csFeldinhalt = m_csaFormularfeldwerte[i];
 
 
 				nID = atoi(child->GetAttrValue("id"));
@@ -9208,6 +9217,14 @@ void CEasyCashView::ZeigeJournalWpf(int nAnzeigeModus)
 			m_pNavigationWnd->ShowWindow(SW_HIDE);
 		}
 	}
+
+	// Ein frisch eingebettetes Journal kennt nur Modus und Zoom
+	// (ECT_JournalEinbetten hat keine Filter-Parameter) und wuerde
+	// darum ungefiltert anzeigen. Die aktiven Ribbon-Filter
+	// (Monat/Quartal, Konto, Betrieb, Bestandskonto) darum sofort
+	// nachreichen -- sonst gehen sie z.B. auf dem Rueckweg aus einem
+	// Plugin verloren, weil DestroyPlugin das Journal abgeloest hat.
+	AktualisiereJournalFilter();
 }
 
 void CEasyCashView::VerstecktJournalWpf()
@@ -9525,6 +9542,16 @@ void CEasyCashView::ZeigeFormularWpf(int nFormularIndex)
 
 	m_GewaehltesFormular = nFormularIndex;
 
+	// Ab hier gilt die Formular-Ansicht als aktiv, obwohl ihr HWND erst
+	// weiter unten entsteht. Alles dazwischen ist managed (Abloesen der
+	// anderen Overlays, ECT_FormularEinbetten) und laeuft durch den
+	// CLR/COM-Interop, der beim RCW-Cleanup eine STA-Modal-Loop MIT
+	// Nachrichtenpumpe dreht. Ein dabei zugestelltes WM_PAINT landet
+	// sonst im alten DrawFormularToDC (m_GewaehltesFormular ist ja schon
+	// gesetzt, IstFormularWpfAktiv() waere aber noch false) -- und dessen
+	// m_csaFormularfeldwerte wird im WPF-Modus gar nicht mehr berechnet.
+	m_bFormularWpfImAufbau = true;
+
 	// Schon offen? Nur das Formular wechseln (kein Re-Embedding).
 	if (m_hwndFormularWpf)
 	{
@@ -9532,12 +9559,13 @@ void CEasyCashView::ZeigeFormularWpf(int nFormularIndex)
 			m_csaFormulare[nFormularIndex],
 			m_csaFormularfilter[nFormularIndex]);
 		::BringWindowToTop(m_hwndFormularWpf);
+		m_bFormularWpfImAufbau = false;
 		VergleicheFormularwerteDebug();
 		return;
 	}
 
 	CWnd* pSplitter = GetParent();
-	if (!pSplitter) return;
+	if (!pSplitter) { m_bFormularWpfImAufbau = false; return; }
 
 	// Andere Vollflaechen-Overlays zuerst schliessen.
 	if (IstEinstellungenWpfAktiv())
@@ -9558,9 +9586,17 @@ void CEasyCashView::ZeigeFormularWpf(int nFormularIndex)
 
 	if (!m_hwndFormularWpf)
 	{
+		// Flag erst NACH der Meldung loeschen - die Messagebox pumpt
+		// ebenfalls Nachrichten. Danach ist wieder die native View dran,
+		// die ohne Formular auf ihren Journal-Modus zurueckfaellt.
 		AfxMessageBox(_T("Konnte WPF-Formularfenster nicht erzeugen."));
+		m_bFormularWpfImAufbau = false;
+		m_GewaehltesFormular = -1;
+		Invalidate();
 		return;
 	}
+
+	m_bFormularWpfImAufbau = false;
 
 	// Zoom-Tasten + Strg+P der Formular-Ansicht auf dieselben nativen
 	// Mechanismen routen wie beim Journal.

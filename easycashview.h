@@ -158,6 +158,13 @@ private:
 	// Ansicht; das gewaehlte Formular steht weiter in
 	// m_GewaehltesFormular (Menue-Haekchen + ELSTER-Kontext).
 	HWND m_hwndFormularWpf;
+	// true zwischen "Formular-Ansicht angefordert" und "HWND steht".
+	// ECT_FormularEinbetten laeuft durch CLR/COM-Interop, das eine
+	// STA-Modal-Loop mit Nachrichtenpumpe durchlaeuft (RCW-Cleanup) --
+	// ein dabei zugestelltes WM_PAINT wuerde sonst in den alten
+	// DrawFormularToDC-Pfad laufen, obwohl m_hwndFormularWpf noch NULL
+	// und m_csaFormularfeldwerte im WPF-Modus gar nicht mehr befuellt ist.
+	bool m_bFormularWpfImAufbau;
 
 	// Hilfsfunktionen
 	void ZeigeJournalWpf(int nAnzeigeModus);   // 0=Datum, 1=Konten, 2=BK, 3=AfA
@@ -201,7 +208,7 @@ private:
 	bool IstJournalWpfAktiv() const { return m_hwndJournalWpf != NULL; }
 	bool IstEinstellungenWpfAktiv() const { return m_hwndEinstellungenWpf != NULL; }
 	bool IstBerichtWpfAktiv() const { return m_hwndBerichtWpf != NULL; }
-	bool IstFormularWpfAktiv() const { return m_hwndFormularWpf != NULL; }
+	bool IstFormularWpfAktiv() const { return m_hwndFormularWpf != NULL || m_bFormularWpfImAufbau; }
 #endif
 
 // Operations

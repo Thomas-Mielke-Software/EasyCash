@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ECTBuchungsvorlage Version="1">
+  <Name>Reverse Charge EU-Eingangsrechnung</Name>
+  <Typ>A</Typ>
+  <MwSt>0</MwSt>
+  <AfaJahre>1</AfaJahre>
+  <Konto>$de:E/Ü-Rechnung=1110|Umsatzsteuer-Voranmeldung=46|$name=Bezogene Leistungen aus dem EU-Ausland||</Konto>
+  <Notiz>Sonstige Leistung eines EU-Unternehmers, §13b Abs. 1 UStG. Rechnungsbetrag ohne USt eingeben. In der EÜR erscheint nur dieser Nettobetrag als Betriebsausgabe; die geschuldete USt (KZ 47) und die Vorsteuer (KZ 67) bucht die Vorlage auf neutrale "/"-Konten, die nur die Voranmeldung speisen und den Gewinn nicht berühren (Anleitung zur Anlage EÜR: Zeile 17 kennt nur vereinnahmte USt, Zeile 57 schließt §13b-Vorsteuer ausdrücklich aus). Ohne Vorsteuerabzug (Kleinunternehmer) beide Zusatzzeilen löschen und den Bruttobetrag eingeben.</Notiz>
+  <Degressiv>false</Degressiv>
+  <AfaSatz>0</AfaSatz>
+  <BasisBetrag></BasisBetrag>
+  <Zeilen>
+    <Zeile Typ="E" Konto="$de:Umsatzsteuer-Voranmeldung=47|$name=/Verrechnung von USt gemäß §13b Abs. 1||" MwSt="0" Betrag="$netto*$vat1/100" Text="$beschreibung (USt §13b)" Beleg="" Betrieb="" Bestandskonto="" Darstellung="" />
+    <Zeile Typ="A" Konto="$de:Umsatzsteuer-Voranmeldung=67|$name=/Verrechnung von VSt gemäß §13b||" MwSt="0" Betrag="$netto*$vat1/100" Text="$beschreibung (Vorsteuer §13b)" Beleg="" Betrieb="" Bestandskonto="" Darstellung="" />
+  </Zeilen>
+</ECTBuchungsvorlage>

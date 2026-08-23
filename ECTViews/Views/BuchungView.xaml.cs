@@ -42,11 +42,20 @@ namespace ECTViews.Views
             // Ad-hoc-Kontoselektor: fehlt das per Feld-Spezifikation
             // ("$de:Formular=Id|...||") geforderte Konto, fragt der
             // Anlage-Dialog nach dem Kontonamen.
-            viewModel.KontoAnlegenAbfrage = bedarf =>
-                Stammdaten.KontoAnlegenView.ZeigeDialog(bedarf, owner: this);
+            viewModel.KontoAnlegenAbfrage = (bedarf, nameVorschlag) =>
+                Stammdaten.KontoAnlegenView.ZeigeDialog(bedarf, owner: this,
+                    nameVorschlag: nameVorschlag);
 
             // DSGVO-Einwilligung vor der ersten Online-Kursabfrage.
             viewModel.ApiEinwilligungAbfrage = WaehrungApiEinwilligung.Sicherstellen;
+
+            // Sicherheitsabfrage, wenn die Wahl einer Vorlage im Bearbeiten-
+            // Modus die Buchung in eine Buchungsgruppe umwandelt, eine Gruppe
+            // umstellt oder auflöst.
+            viewModel.UmwandlungBestaetigen = (text, titel) =>
+                MessageBox.Show(this, text, titel,
+                    MessageBoxButton.YesNo, MessageBoxImage.Question)
+                == MessageBoxResult.Yes;
 
             // Auch beim erstmaligen Oeffnen die "Weiterbuchen-Verhalten"-
             // Einstellung zum Cursor beachten (nur bei neuer Buchung, nicht

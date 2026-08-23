@@ -283,6 +283,19 @@ namespace ECTViews.Journal
         }
 
         /// <summary>
+        /// Füllt vor dem Aufklappen des Kontextmenüs das Submenü
+        /// "Umwandeln in" mit den Buchungsgruppen-Vorlagen, die zur
+        /// selektierten Buchung passen. Erst hier (statt bei jeder
+        /// Selektionsänderung), damit auch in den Einstellungen frisch
+        /// angelegte Vorlagen sofort auftauchen.
+        /// </summary>
+        private void OnKontextmenueOeffnet(object sender, ContextMenuEventArgs e)
+        {
+            if (DataContext is JournalViewModel vm)
+                vm.AktualisiereUmwandelVorlagen();
+        }
+
+        /// <summary>
         /// Klick auf ein Buchungsgruppen-Mitglied markiert die ganze Gruppe
         /// (Phase D). Nur bei einfachem Linksklick ohne Modifier -- Ctrl/
         /// Shift erlaubt weiterhin die Einzelauswahl innerhalb einer Gruppe

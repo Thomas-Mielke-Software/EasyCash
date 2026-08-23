@@ -212,8 +212,14 @@ namespace ECTViews
         /// durch Buchungen[0], entfernt bei WarGruppenBearbeitung alle alten
         /// Gruppen-Mitglieder und fügt Buchungen[1..] neu ein.
         /// </summary>
+        /// <param name="umwandelVorlagenSlot">Slot 0-99 einer Buchungsgruppen-
+        /// Vorlage, in die die Buchung beim Öffnen umgewandelt werden soll
+        /// (Journal-Kontextmenü "Umwandeln in"); -1 = normale Bearbeitung.
+        /// Ist die Buchung schon Gruppen-Mitglied, wird die Gruppe unter
+        /// derselben UUID auf die neue Vorlage umgestellt.</param>
         public static BuchungBearbeitenKombiErgebnis ZeigeBuchungBearbeitenKombiDialog(
-            BuchungsDocument doc, Buchung angeklickt, IntPtr ownerHwnd = default)
+            BuchungsDocument doc, Buchung angeklickt, IntPtr ownerHwnd = default,
+            int umwandelVorlagenSlot = -1)
         {
             EnsureWpfInitialized();
 
@@ -222,11 +228,12 @@ namespace ECTViews
             List<Buchung> zusatz = null;
             Preset vorlage = null;
             int slot = -1;
+            Buchung basisKandidat = null;   // auch bei nicht auflösbarer Vorlage
             string uuid = angeklickt.GruppenUuid;
             if (uuid != null)
             {
                 var alle = doc.Buchungen.Where(b => b.GruppenUuid == uuid).ToList();
-                var basisKandidat = alle.FirstOrDefault(b => b.GruppenRolle == 0);
+                basisKandidat = alle.FirstOrDefault(b => b.GruppenRolle == 0);
                 slot = basisKandidat?.GruppenVorlage ?? -1;
                 if (basisKandidat != null && slot >= 0
                     && slot < Einstellungen.Presets.Count
@@ -242,21 +249,43 @@ namespace ECTViews
             if (vorlage == null)
             {
                 // Einzel-Fallback (Alt-Split ohne Vorlage, gelöschte/
-                // geänderte Vorlage, Basis nicht auffindbar)
+                // geänderte Vorlage, Basis nicht auffindbar) -- bzw. der
+                // Normalfall beim Umwandeln einer gewöhnlichen Buchung:
+                // dann trägt der Dialog die Vorlage beim Öffnen ein.
+                //
+                // Beim Umwandeln eines Gruppen-Mitglieds, dessen Vorlage
+                // nicht (mehr) auffindbar ist, setzt die Umwandlung auf der
+                // BASIS-Buchung der Gruppe auf: sonst hinge die neue Gruppe
+                // an einer Neben-Buchung und die alte Basis fiele beim
+                // Ersetzen der Mitglieder weg.
+                var ziel = (umwandelVorlagenSlot >= 0 && basisKandidat != null)
+                    ? basisKandidat : angeklickt;
                 var vmEinzel = ZeigeBearbeitenInternal(
-                    doc, angeklickt, ownerHwnd, abgangErlaubt: true);
+                    doc, ziel, ownerHwnd,
+                    abgangErlaubt: umwandelVorlagenSlot < 0,
+                    vorgewaehltesPreset: umwandelVorlagenSlot);
+                var buchungenEinzel = vmEinzel.Bestaetigt
+                    ? vmEinzel.ErgebnisBuchungen : null;
                 return new BuchungBearbeitenKombiErgebnis
                 {
-                    Buchungen = vmEinzel.Bestaetigt ? vmEinzel.ErgebnisBuchungen : null,
+                    Buchungen = buchungenEinzel,
                     AbgangGewuenscht = vmEinzel.AbgangGewuenscht,
-                    WarGruppenBearbeitung = false,
-                    ErsetzteBasis = angeklickt
+                    // Aus der Einzelbuchung kann per "Umwandeln in" eine
+                    // Buchungsgruppe geworden sein -- dann soll der Aufrufer
+                    // sie wie eine Gruppen-Bearbeitung behandeln (Meldung,
+                    // Journal-Selektion des ganzen Blocks).
+                    WarGruppenBearbeitung =
+                        buchungenEinzel != null && buchungenEinzel.Count > 1,
+                    ErsetzteBasis = ziel
                 };
             }
 
             // Gruppen-Bearbeitung: Dialog auf der Basis öffnen, Gruppe laden
             var vm = new BuchungViewModel(doc, basis);
             vm.LadeGruppeFuerBearbeitung(vorlage, slot, zusatz, uuid);
+            // "Umwandeln in": Gruppe beim Öffnen auf die neue Vorlage
+            // umstellen (die Gruppen-UUID bleibt dabei erhalten).
+            vm.VorgewaehltesPreset = umwandelVorlagenSlot;
             BefuelleListen(vm);
             var view = new BuchungView(vm);
             if (ownerHwnd != IntPtr.Zero)
@@ -274,11 +303,16 @@ namespace ECTViews
         }
 
         private static BuchungViewModel ZeigeBearbeitenInternal(
-            BuchungsDocument doc, Buchung buchung, IntPtr ownerHwnd, bool abgangErlaubt)
+            BuchungsDocument doc, Buchung buchung, IntPtr ownerHwnd, bool abgangErlaubt,
+            int vorgewaehltesPreset = -1)
         {
             EnsureWpfInitialized();
 
-            var vm = new BuchungViewModel(doc, buchung) { AbgangErlaubt = abgangErlaubt };
+            var vm = new BuchungViewModel(doc, buchung)
+            {
+                AbgangErlaubt = abgangErlaubt,
+                VorgewaehltesPreset = vorgewaehltesPreset
+            };
             BefuelleListen(vm);
             var view = new BuchungView(vm);
 
@@ -524,7 +558,8 @@ namespace ECTViews
             if (a.Konto != null) return a.Konto;
 
             return Stammdaten.KontoAnlegenView.ZeigeDialog(
-                a.Bedarf, owner: null, ownerHwnd: ownerHwnd) ?? "";
+                a.Bedarf, owner: null, ownerHwnd: ownerHwnd,
+                nameVorschlag: a.NameVorschlag) ?? "";
         }
 
         /// <summary>

@@ -664,13 +664,28 @@
                  PreviewKeyDown="OnListBoxPreviewKeyDown"
                  PreviewMouseWheel="OnListBoxPreviewMouseWheel"
                  PreviewMouseLeftButtonUp="OnZeilenMausKlick"
-                 SelectionChanged="OnSelectionChanged">
+                 SelectionChanged="OnSelectionChanged"
+                 ContextMenuOpening="OnKontextmenueOeffnet">
             <ListBox.ContextMenu>
                 <ContextMenu>
                     <MenuItem Header="Ändern" Command="{Binding BearbeitenCommand}"/>
                     <MenuItem Header="Löschen" Command="{Binding LoeschenCommand}"/>
                     <MenuItem Header="Buchungsgruppe löschen"
                               Command="{Binding GruppeLoeschenCommand}"/>
+                    <Separator/>
+                    <!-- [Umwandeln in] Buchungsgruppen-Vorlagen der passenden
+                         Buchungsart; die Liste fuellt ContextMenuOpening. -->
+                    <MenuItem Header="Umwandeln in"
+                              ItemsSource="{Binding UmwandelVorlagen}"
+                              IsEnabled="{Binding UmwandelnMoeglich}">
+                        <MenuItem.ItemContainerStyle>
+                            <Style TargetType="MenuItem">
+                                <Setter Property="Header" Value="{Binding Anzeige}"/>
+                                <Setter Property="ToolTip" Value="{Binding Tooltip}"/>
+                                <Setter Property="Command" Value="{Binding UmwandelnCommand}"/>
+                            </Style>
+                        </MenuItem.ItemContainerStyle>
+                    </MenuItem>
                     <Separator/>
                     <MenuItem Header="Kopieren" Command="{Binding KopierenCommand}"/>
                     <MenuItem Header="Kopieren mit neuer Belegnummer"

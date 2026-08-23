@@ -646,6 +646,13 @@ extern "C" AFX_EXT_CLASS char *HoleKontoFuerFeld(char ea, LPCSTR eurech_feld, LP
 // Landes müssen am Konto verknüpft sein (UND-Kombination); geliefert wird
 // das erstbeste Konto (Slot-Reihenfolge, Einnahmen vor Ausgaben).
 //
+// Zusaetzlich kennt jeder Land-Block das Meta-Paar "$name=<Kontoname>":
+// keine Feldzuordnung, sondern der Namensvorschlag fuer die Eingabemaske
+// (sonst werden die Feldnamen verbunden). Formularnamen beginnen nie mit
+// '$', darum kollidiert der Schluesselraum nicht; unbekannte
+// $-Schluessel werden ignoriert, damit diese Binary auch mit einer
+// neueren Spezifikation zurechtkommt.
+//
 // Existiert kein passendes Konto, fragt eine Eingabemaske (IDD_KONTO_ANLEGEN)
 // den Kontonamen ab (vorbelegt mit den Feldnamen aus den .ecf-Formularen,
 // " / "-getrennt) und legt das Konto samt Feldzuweisungen in der ini an.
@@ -679,7 +686,8 @@ static CString KontoFeldLandKuerzel(LPCSTR inifilename)
 // Parst aus der Spezifikation den Block des gewünschten Landes.
 // Return: Anzahl der Paare; 0 = kein Block für das Land; -1 = Syntaxfehler.
 static int ParseKontoFeldSpez(LPCSTR spez, const CString &csLand,
-	KontoFeldPaar *paare, int nMaxPaare, CString &csFehler)
+	KontoFeldPaar *paare, int nMaxPaare, CString &csFehler,
+	CString &csNameVorschlag)
 {
 	csFehler = "";
 	CString s = spez ? spez : "";
@@ -717,6 +725,7 @@ static int ParseKontoFeldSpez(LPCSTR spez, const CString &csLand,
 
 		BOOL bAktiv = land == csLand;
 		if (bAktiv) bLandGefunden = TRUE;
+		BOOL bNameImBlock = FALSE;
 
 		// Paare "Formularname=Feld-Id", '|'-getrennt
 		int p = 0;
@@ -735,6 +744,34 @@ static int ParseKontoFeldSpez(LPCSTR spez, const CString &csLand,
 					(LPCTSTR)paar);
 				return -1;
 			}
+			// Meta-Paare ("$name=..."): keine Feldzuordnung, sondern eine
+			// Zusatzangabe zur Spezifikation. Formularnamen beginnen nie
+			// mit '$', darum ist die Unterscheidung kollisionsfrei.
+			// Unbekannte $-Schluessel werden bewusst ignoriert statt
+			// abgelehnt, damit diese Binary auch mit einer neueren
+			// Spezifikation zurechtkommt.
+			CString csSchluessel = paar.Left(gleich);
+			csSchluessel.Trim();
+			if (!csSchluessel.IsEmpty() && csSchluessel[0] == '$')
+			{
+				if (csSchluessel.CompareNoCase("$name") == 0)
+				{
+					if (bNameImBlock)
+					{
+						csFehler.Format("Land-Block \"%s:\" enthält mehr als ein \"$name=\".",
+							(LPCTSTR)land);
+						return -1;
+					}
+					bNameImBlock = TRUE;
+					if (bAktiv)
+					{
+						csNameVorschlag = paar.Mid(gleich + 1);
+						csNameVorschlag.Trim();
+					}
+				}
+				continue;
+			}
+
 			if (bAktiv && nAnzahl < nMaxPaare)
 			{
 				paare[nAnzahl].formular = paar.Left(gleich);
@@ -960,7 +997,9 @@ extern "C" AFX_EXT_CLASS char *HoleKontoMitFeldern(LPCSTR spez)
 	CString csLand = KontoFeldLandKuerzel(inifilename);
 	KontoFeldPaar paare[MAX_KONTOFELD_PAARE];
 	CString csFehler;
-	int nPaare = ParseKontoFeldSpez(spez, csLand, paare, MAX_KONTOFELD_PAARE, csFehler);
+	CString csNameVorschlag;
+	int nPaare = ParseKontoFeldSpez(spez, csLand, paare, MAX_KONTOFELD_PAARE, csFehler,
+		csNameVorschlag);
 	if (nPaare <= 0)
 	{
 		AfxMessageBox(csFehler, MB_ICONWARNING);
@@ -1009,6 +1048,9 @@ extern "C" AFX_EXT_CLASS char *HoleKontoMitFeldern(LPCSTR spez)
 		if (p > 0) csVorgabe += " / ";
 		csVorgabe += feldnamen[p];
 	}
+
+	// "$name=" der Spezifikation schlaegt die Feldnamen-Vorgabe
+	if (!csNameVorschlag.IsEmpty()) csVorgabe = csNameVorschlag;
 
 	CKontoAnlegenDlg dlg;
 	dlg.m_csHinweis = csHinweis;

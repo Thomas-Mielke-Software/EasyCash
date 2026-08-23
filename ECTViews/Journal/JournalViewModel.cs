@@ -533,6 +533,67 @@ namespace ECTViews.Journal
                 .ToList();
         }
 
+        // ----------------------------------------------
+        // "Umwandeln in" -- eine gewöhnliche Buchung nachträglich in eine
+        // Buchungsgruppe verwandeln (bzw. eine Gruppe auf eine andere
+        // Vorlage umstellen). Das Submenü wird beim Öffnen des Kontextmenüs
+        // aus den mehrzeiligen Vorlagen der passenden Buchungsart gefüllt;
+        // die eigentliche Arbeit macht dann der Bearbeiten-Dialog, der die
+        // Vorlage vorgewählt bekommt (so bleiben manuelle Zeilen-Beträge,
+        // Konto-Anlage und das Speichern-Kommando an einer Stelle).
+        // ----------------------------------------------
+
+        /// <summary>Vorlagen des Submenüs "Umwandeln in" (leer, wenn nichts
+        /// Eindeutiges selektiert ist oder es keine passende Gruppen-Vorlage
+        /// gibt).</summary>
+        public ObservableCollection<UmwandelVorlage> UmwandelVorlagen { get; }
+            = new ObservableCollection<UmwandelVorlage>();
+
+        /// <summary>Steuert IsEnabled des Submenü-Kopfes.</summary>
+        public bool UmwandelnMoeglich => UmwandelVorlagen.Count > 0;
+
+        /// <summary>Wunsch, die Buchung in die Buchungsgruppen-Vorlage mit
+        /// dem übergebenen Slot (0-99) umzuwandeln.</summary>
+        public event Action<Buchung, int> BuchungUmwandeln;
+
+        /// <summary>
+        /// Baut die Vorlagen-Liste des Submenüs neu auf: alle mehrzeiligen
+        /// Vorlagen der Buchungsart des Ziels, ohne die bereits verwendete.
+        /// Wird vom Code-Behind beim Öffnen des Kontextmenüs gerufen -- so
+        /// sind auch zwischenzeitlich geänderte Vorlagen dabei.
+        /// </summary>
+        public void AktualisiereUmwandelVorlagen()
+        {
+            UmwandelVorlagen.Clear();
+            var ziel = EinzelZiel;
+            if (ziel != null)
+            {
+                bool ausgabe = ziel.Art == Buchungsart.Ausgabe;
+                // Die Vorlage, in der das Ziel schon steckt, waere ein
+                // Nichts-Tun -- die faellt aus der Liste raus.
+                int schonSlot = string.IsNullOrEmpty(ziel.GruppenUuid)
+                    ? -1 : ziel.GruppenVorlage;
+                var presets = Einstellungen.Presets;
+                for (int i = 0; i < presets.Count; i++)
+                {
+                    var p = presets[i];
+                    if (p.IstLeer || !p.IstMehrzeilig || p.Ausgabe != ausgabe)
+                        continue;
+                    if (i == schonSlot) continue;
+                    int slot = i;   // fuer die Closure festhalten
+                    UmwandelVorlagen.Add(new UmwandelVorlage(i, p,
+                        new RelayCommand(() => LoeseUmwandlungAus(slot))));
+                }
+            }
+            OnPropertyChanged(nameof(UmwandelnMoeglich));
+        }
+
+        private void LoeseUmwandlungAus(int slot)
+        {
+            var ziel = EinzelZiel;
+            if (ziel != null) BuchungUmwandeln?.Invoke(ziel, slot);
+        }
+
         public JournalViewModel(BuchungsDocument doc)
         {
             _doc = doc ?? throw new ArgumentNullException(nameof(doc));

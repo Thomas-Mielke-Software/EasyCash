@@ -14,6 +14,14 @@
 //     müssen am Konto verknüpft sein (UND-Kombination).
 //   - '|', '=' dürfen nicht in Formularnamen/Feld-Ids vorkommen (dieselbe
 //     Einschränkung wie beim ErweiterungStore-Pipe-Format).
+//   - Meta-Paar "$name=<Kontoname>": Vorschlag für den Anlage-Dialog, statt
+//     des aus den Feldnamen zusammengesetzten Namens. Pro Land-Block einer,
+//     Reihenfolge im Block egal, z.B.
+//       $de:Umsatzsteuer-Voranmeldung=47|$name=/Verrechnung von §13b-USt||
+//     Formularnamen beginnen nie mit '$' (sie stammen aus dem name=-Attribut
+//     der .ecf), darum kollidiert der Schlüsselraum nicht. Unbekannte
+//     $-Schlüssel werden übersprungen, nicht abgelehnt -- das hält das
+//     Format vorwärtskompatibel (siehe Parse).
 //
 // Findet sich kein Konto, liefert ErmittleFeldInfo() die Feldnamen und den
 // E/A-Typ aus den .ecf-Formularen, damit die UI (KontoAnlegenView bzw. der
@@ -50,10 +58,13 @@ namespace ECTEngine
     public sealed class KontoFeldSpezifikation
     {
         private readonly Dictionary<string, List<KontoFeldBedarf>> _proLand;
+        private readonly Dictionary<string, string> _namenProLand;
 
-        private KontoFeldSpezifikation(Dictionary<string, List<KontoFeldBedarf>> proLand)
+        private KontoFeldSpezifikation(Dictionary<string, List<KontoFeldBedarf>> proLand,
+            Dictionary<string, string> namenProLand)
         {
-            _proLand = proLand;
+            _proLand      = proLand;
+            _namenProLand = namenProLand;
         }
 
         public IReadOnlyCollection<string> Laender => _proLand.Keys;
@@ -65,6 +76,18 @@ namespace ECTEngine
             if (string.IsNullOrEmpty(kuerzel)) return null;
             return _proLand.TryGetValue(kuerzel.ToLowerInvariant(), out var liste)
                 ? liste : null;
+        }
+
+        /// <summary>
+        /// Vorgeschlagener Kontoname des Land-Blocks ($name=...); "" wenn die
+        /// Spezifikation keinen mitbringt -- dann bleibt es beim aus den
+        /// Feldnamen zusammengesetzten Vorschlag.
+        /// </summary>
+        public string NameFuerLand(string kuerzel)
+        {
+            if (string.IsNullOrEmpty(kuerzel)) return "";
+            return _namenProLand.TryGetValue(kuerzel.ToLowerInvariant(), out var name)
+                ? name : "";
         }
 
         /// <summary>
@@ -96,7 +119,8 @@ namespace ECTEngine
                 return null;
             }
 
-            var proLand = new Dictionary<string, List<KontoFeldBedarf>>(StringComparer.OrdinalIgnoreCase);
+            var proLand      = new Dictionary<string, List<KontoFeldBedarf>>(StringComparer.OrdinalIgnoreCase);
+            var namenProLand = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
 
             // Land-Blöcke sind durch "||" getrennt; ein abschließendes "||"
             // erzeugt einen leeren letzten Block, der ignoriert wird.
@@ -119,6 +143,7 @@ namespace ECTEngine
                 }
 
                 var paare = new List<KontoFeldBedarf>();
+                string nameVorschlag = "";
                 foreach (var paarRoh in block.Substring(doppelpunkt + 1)
                              .Split(new[] { '|' }, StringSplitOptions.None))
                 {
@@ -130,8 +155,33 @@ namespace ECTEngine
                         fehler = $"\"{Kuerze(paar)}\" ist kein gültiges Paar (erwartet Formularname=Feld-Id).";
                         return null;
                     }
-                    paare.Add(new KontoFeldBedarf(
-                        paar.Substring(0, gleich), paar.Substring(gleich + 1)));
+                    var schluessel = paar.Substring(0, gleich).Trim();
+                    var wert       = paar.Substring(gleich + 1).Trim();
+
+                    // Meta-Paare ("$name=..."): keine Feld-Verknüpfung, sondern
+                    // Zusatzangabe zur Spezifikation. Formularnamen können nie
+                    // mit '$' beginnen (sie stammen aus dem name=-Attribut der
+                    // .ecf), darum ist die Unterscheidung kollisionsfrei.
+                    // UNBEKANNTE $-Schlüssel werden bewusst übersprungen statt
+                    // abgelehnt: so verkraftet ein älterer Parser (etwa ein
+                    // V3-Plugin mit alter Binary) eine neuere Spezifikation,
+                    // statt ein Konto gegen ein Phantom-Formular zu verknüpfen.
+                    if (schluessel.StartsWith("$", StringComparison.Ordinal))
+                    {
+                        if (string.Equals(schluessel, "$name",
+                                StringComparison.OrdinalIgnoreCase))
+                        {
+                            if (nameVorschlag.Length > 0)
+                            {
+                                fehler = $"Land-Block \"{land}:\" enthält mehr als ein \"$name=\".";
+                                return null;
+                            }
+                            nameVorschlag = wert;
+                        }
+                        continue;
+                    }
+
+                    paare.Add(new KontoFeldBedarf(schluessel, wert));
                 }
                 if (paare.Count == 0)
                 {
@@ -143,6 +193,10 @@ namespace ECTEngine
                     vorhanden.AddRange(paare);   // zweiter Block gleichen Landes ergänzt
                 else
                     proLand[land] = paare;
+
+                // Erster Block gleichen Landes gewinnt beim Namen.
+                if (nameVorschlag.Length > 0 && !namenProLand.ContainsKey(land))
+                    namenProLand[land] = nameVorschlag;
             }
 
             if (proLand.Count == 0)
@@ -150,7 +204,7 @@ namespace ECTEngine
                 fehler = "Die Spezifikation enthält keinen Land-Block.";
                 return null;
             }
-            return new KontoFeldSpezifikation(proLand);
+            return new KontoFeldSpezifikation(proLand, namenProLand);
         }
 
         private static string Kuerze(string s) =>
@@ -175,6 +229,10 @@ namespace ECTEngine
         /// (Grundlage der Konto-Anlage, wenn Konto == null).</summary>
         public IReadOnlyList<KontoFeldBedarf> Bedarf { get; internal set; }
             = Array.Empty<KontoFeldBedarf>();
+
+        /// <summary>Kontoname-Vorschlag des aktiven Landes ("$name=..." der
+        /// Spezifikation); "" = keiner, dann greift die Feldnamen-Vorgabe.</summary>
+        public string NameVorschlag { get; internal set; } = "";
     }
 
     /// <summary>Feld-Infos aus den .ecf-Formularen für die Konto-Anlage.</summary>
@@ -182,6 +240,16 @@ namespace ECTEngine
     {
         /// <summary>Feld-Bezeichnungen in Bedarfs-Reihenfolge.</summary>
         public IReadOnlyList<string> Feldnamen { get; internal set; }
+            = Array.Empty<string>();
+        /// <summary>
+        /// Feld-Bezeichnungen mit angehängtem Feld-Kennzeichen, z.B.
+        /// "Bezogene Leistungen (Feld 1110)". Für den Hinweistext des
+        /// Anlage-Dialogs: mehrere Vorlagen-Zeilen fragen nacheinander nach
+        /// verschiedenen Konten, und die Bezeichnungen allein verraten nicht,
+        /// welches Formularfeld gemeint ist. Der Vorgabe-Name des Kontos
+        /// nutzt weiterhin die reinen Bezeichnungen.
+        /// </summary>
+        public IReadOnlyList<string> FeldnamenMitKennzeichen { get; internal set; }
             = Array.Empty<string>();
         /// <summary>True = Einnahmenkonto anlegen, false = Ausgabenkonto.</summary>
         public bool IstEinnahme { get; internal set; }
@@ -234,6 +302,7 @@ namespace ECTEngine
             }
 
             ergebnis.Bedarf = bedarf;
+            ergebnis.NameVorschlag = spez.NameFuerLand(land);
             ergebnis.Konto = FindeKonto(bedarf);
             return ergebnis;
         }
@@ -297,6 +366,7 @@ namespace ECTEngine
             EUKonten.Lade();   // Formular-Gruppen einmalig aus .ecf (gecacht)
 
             var namen = new List<string>();
+            var namenMitId = new List<string>();
             bool? einnahme = null;
             foreach (var b in bedarf)
             {
@@ -321,8 +391,20 @@ namespace ECTEngine
                     return info;
                 }
 
-                namen.Add(string.IsNullOrEmpty(feld.Bezeichnung)
-                    ? b.Formular + " Feld " + b.FeldId : feld.Bezeichnung);
+                // Reine Bezeichnung (Vorgabe-Name) + Variante mit
+                // Feld-Kennzeichen (Hinweistext). Fehlt die Bezeichnung im
+                // Formular, traegt der Ersatzname die Id schon selbst.
+                if (string.IsNullOrEmpty(feld.Bezeichnung))
+                {
+                    string ersatz = b.Formular + " Feld " + b.FeldId;
+                    namen.Add(ersatz);
+                    namenMitId.Add(ersatz);
+                }
+                else
+                {
+                    namen.Add(feld.Bezeichnung);
+                    namenMitId.Add(feld.Bezeichnung + " (Feld " + b.FeldId + ")");
+                }
                 if (einnahme == null)
                     einnahme = feld.IstEinnahme;
                 else if (einnahme != feld.IstEinnahme)
@@ -333,13 +415,24 @@ namespace ECTEngine
             }
 
             info.Feldnamen = namen;
+            info.FeldnamenMitKennzeichen = namenMitId;
             info.IstEinnahme = einnahme ?? true;
             return info;
         }
 
-        /// <summary>Vorgabe für den Kontonamen: Feldnamen mit " / " verbunden.</summary>
-        public static string VorgabeName(IReadOnlyList<string> feldnamen)
-            => string.Join(" / ", feldnamen ?? (IReadOnlyList<string>)Array.Empty<string>());
+        /// <summary>
+        /// Vorgabe für den Kontonamen. Bringt die Spezifikation einen eigenen
+        /// Vorschlag mit ("$name=..."), gewinnt dieser; sonst werden die
+        /// Feldnamen mit " / " verbunden.
+        /// </summary>
+        public static string VorgabeName(IReadOnlyList<string> feldnamen,
+            string vorschlag = null)
+        {
+            vorschlag = (vorschlag ?? "").Trim();
+            if (vorschlag.Length > 0) return vorschlag;
+            return string.Join(" / ",
+                feldnamen ?? (IReadOnlyList<string>)Array.Empty<string>());
+        }
 
         /// <summary>
         /// Hinweistext des Anlage-Dialogs: "Diese Vorlage benötigt ein Konto,

@@ -87,7 +87,9 @@ namespace ECTViews.ViewModels
         /// (nicht verdrahtet) = keine Anlage möglich, die Zeile behält dann
         /// ihren "kein Konto"-Fehler.
         /// </summary>
-        public Func<IReadOnlyList<KontoFeldBedarf>, string> KontoAnlegenAbfrage { get; set; }
+        /// <remarks>Zweites Argument: Kontoname-Vorschlag der Spezifikation
+        /// ("$name=...", "" wenn keiner).</remarks>
+        public Func<IReadOnlyList<KontoFeldBedarf>, string, string> KontoAnlegenAbfrage { get; set; }
 
         /// <summary>
         /// Löst eine Feld-Spezifikation im BASIS-Konto-Feld eines Presets
@@ -105,7 +107,7 @@ namespace ECTViews.ViewModels
                 return "";
             }
 
-            var neu = KontoAnlegenAbfrage?.Invoke(a.Bedarf);
+            var neu = KontoAnlegenAbfrage?.Invoke(a.Bedarf, a.NameVorschlag);
             if (neu == null) return "";
             LadeKonten();   // das neue Konto in die Auswahl-Liste holen
             return neu;
@@ -129,7 +131,7 @@ namespace ECTViews.ViewModels
                 var a = KontoFeldSelektor.LoeseAuf(z.Konto);
                 if (!a.IstSpezifikation || a.Konto != null || a.Fehler.Length > 0)
                     continue;
-                if (KontoAnlegenAbfrage(a.Bedarf) != null)
+                if (KontoAnlegenAbfrage(a.Bedarf, a.NameVorschlag) != null)
                     angelegt = true;
                 else
                     break;
@@ -324,6 +326,137 @@ namespace ECTViews.ViewModels
             }
 
             AktualisiereZusatzzeilen();
+        }
+
+        // ------------------------------------------------------------------
+        // Umwandeln einer bestehenden Buchung in eine Buchungsgruppe
+        //
+        // Zwei Einstiege, eine Mechanik:
+        //   - Journal-Kontextmenue "Umwandeln in <Vorlage>": die Vorlage
+        //     kommt als VorgewaehltesPreset in den Bearbeiten-Dialog, der
+        //     sie beim Oeffnen anwendet. Dort ist keine Rueckfrage noetig --
+        //     der Dialog zeigt das Ergebnis und speichert erst auf Knopfdruck.
+        //   - Vorlagen-Dropdown des Beschreibungsfelds im Bearbeiten-Modus:
+        //     hier ist die Auswahl schnell mal versehentlich passiert, darum
+        //     die Sicherheitsabfrage in BestaetigeGruppenWechsel.
+        // ------------------------------------------------------------------
+
+        /// <summary>
+        /// Sicherheitsabfrage vor dem Umwandeln/Umstellen/Aufloesen einer
+        /// Buchungsgruppe im Bearbeiten-Modus (Ja/Nein). Wird vom
+        /// BuchungView-Code-Behind gesetzt, damit die MessageBox den Dialog
+        /// als Owner bekommt. Args: (Text, Titel); nicht verdrahtet =
+        /// im Zweifel nichts aendern.
+        /// </summary>
+        public Func<string, string, bool> UmwandlungBestaetigen { get; set; }
+
+        // Gesetzt, waehrend eine ueber das Journal ausdruecklich angeforderte
+        // Umwandlung laeuft -- dann entfaellt die Rueckfrage.
+        private bool _umwandlungOhneRueckfrage;
+
+        /// <summary>Slot der geladenen Gruppen-Vorlage (-1 = keine).</summary>
+        public int GruppenVorlagenSlot => _gruppenVorlageSlot;
+
+        /// <summary>
+        /// Wandelt die bearbeitete Buchung in eine Buchungsgruppe um bzw.
+        /// stellt eine bestehende Gruppe auf die angegebene Vorlage um --
+        /// ohne Rueckfrage, weil der Aufrufer die Vorlage ausdruecklich
+        /// gewaehlt hat (Journal-Kontextmenue). Die Zusatz-Buchungen
+        /// entstehen erst beim Speichern.
+        /// </summary>
+        /// <returns>False, wenn der Slot keine zur Buchungsart passende
+        /// Gruppen-Vorlage enthaelt (Buchung bleibt dann unveraendert).</returns>
+        public bool WandleInGruppeUm(int presetSlot)
+        {
+            var presets = Einstellungen.Presets;
+            if (presetSlot < 0 || presetSlot >= presets.Count) return false;
+            var p = presets[presetSlot];
+            if (p.IstLeer || !p.IstMehrzeilig || p.Ausgabe != IstAusgabe)
+                return false;
+
+            _umwandlungOhneRueckfrage = true;
+            try { LadePresetInFelder(p, presetSlot, beschreibungErhalten: true); }
+            finally { _umwandlungOhneRueckfrage = false; }
+            return true;
+        }
+
+        /// <summary>
+        /// Rueckfrage, wenn die Wahl einer Vorlage im Bearbeiten-Modus die
+        /// Gruppen-Zugehoerigkeit der Buchung aendert (umwandeln, umstellen,
+        /// aufloesen). True = weitermachen. Aendert die Vorlage an der
+        /// Gruppe nichts (klassische Vorlage auf einer normalen Buchung),
+        /// wird nicht gefragt.
+        /// </summary>
+        private bool BestaetigeGruppenWechsel(Preset p)
+        {
+            if (_umwandlungOhneRueckfrage) return true;
+
+            bool hatGruppe = _gruppenVorlage != null;
+            if (!hatGruppe && !p.IstMehrzeilig) return true;
+
+            string text;
+            if (!hatGruppe)
+            {
+                text = "Diese Buchung in eine Buchungsgruppe umwandeln?\n\n"
+                     + "Vorlage: \"" + p.Text + "\" (" + ZeilenAnzahlText(p) + ")\n\n"
+                     + "Konto, MWSt. und AfA werden aus der Vorlage übernommen; "
+                     + "Datum, Betrag und Belegnummer bleiben erhalten.\n"
+                     + BeschreibungsHinweis(p) + "\n\n"
+                     + "Die zusätzlichen Buchungen entstehen erst beim Speichern.";
+            }
+            else if (p.IstMehrzeilig)
+            {
+                text = "Die Buchungsgruppe auf die Vorlage \"" + p.Text
+                     + "\" umstellen?\n\n"
+                     + "Die bisherigen Zusatz-Buchungen werden beim Speichern "
+                     + "durch " + ZeilenAnzahlText(p) + " ersetzt.\n"
+                     + BeschreibungsHinweis(p);
+            }
+            else
+            {
+                text = "Die Buchungsgruppe auflösen?\n\n"
+                     + "\"" + p.Text + "\" ist eine einfache Buchungsvorlage. "
+                     + "Beim Speichern bleibt nur diese eine Buchung übrig, "
+                     + "die Zusatz-Buchungen der Gruppe werden entfernt.";
+            }
+
+            if (UmwandlungBestaetigen == null) return false;
+            return UmwandlungBestaetigen(text, "Buchungsgruppe");
+        }
+
+        private static string ZeilenAnzahlText(Preset p)
+            => p.Zeilen.Count == 1
+                ? "1 zusätzliche Buchung"
+                : p.Zeilen.Count + " zusätzliche Buchungen";
+
+        /// <summary>Sagt in der Rueckfrage an, was mit dem vorhandenen
+        /// Beschreibungstext passiert (siehe BeschreibungIstAutomatisch).</summary>
+        private string BeschreibungsHinweis(Preset p)
+            => BeschreibungIstAutomatisch()
+                ? "Als Beschreibung wird \"" + p.Text + "\" eingesetzt."
+                : "Die Beschreibung \"" + Beschreibung + "\" bleibt erhalten.";
+
+        /// <summary>
+        /// True, wenn der aktuelle Beschreibungstext NICHT von Hand stammt:
+        /// leer oder wortgleich mit dem Text einer Buchungsvorlage (dann hat
+        /// ihn eine fruehere Vorlagen-Wahl eingesetzt). Nur solche Texte darf
+        /// eine Vorlage beim Bearbeiten ueberschreiben -- ein selbst
+        /// getippter Text ("Hotel Berlin, 3 Naechte") ist der eigentliche
+        /// Inhalt der Buchung und ueberlebt die Umwandlung. Er ist ausserdem
+        /// die bessere Grundlage fuer die Zeilen-Templates der Vorlage
+        /// ($B liefert dann "Hotel Berlin, 3 Naechte" statt des
+        /// Vorlagen-Namens).
+        /// </summary>
+        private bool BeschreibungIstAutomatisch()
+        {
+            var t = (Beschreibung ?? "").Trim();
+            if (t.Length == 0) return true;
+            foreach (var vorlage in Einstellungen.Presets)
+                if (!vorlage.IstLeer && !string.IsNullOrEmpty(vorlage.Text)
+                    && string.Equals(vorlage.Text.Trim(), t,
+                        StringComparison.OrdinalIgnoreCase))
+                    return true;
+            return false;
         }
     }
 

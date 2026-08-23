@@ -179,15 +179,16 @@ BOOL ECT_ShowBuchungDialogMitVorlage(
 // auffindbarer Vorlage ist; sonst Einzel-Bearbeitung mit "Abgang buchen")
 // und ersetzt die Buchung(en) im Dokument. Bei Gruppen werden die alten
 // Zusatz-Mitglieder entfernt und durch die neu berechneten ersetzt; die
-// Gruppen-UUID bleibt erhalten (ViewModel).
+// Gruppen-UUID bleibt erhalten (ViewModel). nUmwandelSlot >= 0 wendet beim
+// Oeffnen eine Buchungsgruppen-Vorlage an ("Umwandeln in").
 static BOOL ECTBridge_BearbeiteBuchung(CEasyCashDocBridge* bridge,
-    ECTEngine::Buchung^ angeklickt, HWND hWndOwner)
+    ECTEngine::Buchung^ angeklickt, HWND hWndOwner, int nUmwandelSlot = -1)
 {
     auto engine = GetEngine(bridge);
     IntPtr hwnd = IntPtr((void*)hWndOwner);
 
     auto erg = ECTViews::ViewHost::ZeigeBuchungBearbeitenKombiDialog(
-        engine, angeklickt, hwnd);
+        engine, angeklickt, hwnd, nUmwandelSlot);
 
     // "Abgang buchen": gleiche AfA-Abgang-Logik wie der Journal-
     // Kontextmenue-Eintrag (nur im Einzel-Fall moeglich).
@@ -271,6 +272,41 @@ BOOL ECT_ShowBuchungBearbeitenDialog(
     {
         CString msg;
         msg = "Fehler bei Buchungsbearbeitung: "; msg += CString(ex->Message);
+        AfxMessageBox(msg, MB_ICONERROR);
+        return FALSE;
+    }
+}
+
+// ----------------------------------------------------------
+// ECT_ShowBuchungUmwandelnDialog
+// ----------------------------------------------------------
+//
+// "Umwandeln in <Vorlage>" aus dem Journal-Kontextmenue: derselbe
+// Bearbeiten-Pfad wie oben, nur mit vorgewaehlter Buchungsgruppen-Vorlage.
+// Die Zusatz-Buchungen entstehen erst, wenn der Anwender im Dialog
+// speichert -- Abbrechen laesst die Buchung unveraendert.
+BOOL ECT_ShowBuchungUmwandelnDialog(
+    void* pDocBridge, int nBuchungIdx, int nVorlagenSlot, HWND hWndOwner)
+{
+    try
+    {
+        auto* bridge = static_cast<CEasyCashDocBridge*>(pDocBridge);
+        if (!bridge) return FALSE;
+        auto engine = GetEngine(bridge);
+
+        bridge->SyncNativeToManaged();
+
+        if (nBuchungIdx < 0 || nBuchungIdx >= engine->Buchungen->Count)
+            return FALSE;
+
+        return ECTBridge_BearbeiteBuchung(bridge,
+            engine->Buchungen[nBuchungIdx], hWndOwner, nVorlagenSlot);
+    }
+    catch (Exception^ ex)
+    {
+        CString msg;
+        msg = "Fehler beim Umwandeln in eine Buchungsgruppe: ";
+        msg += CString(ex->Message);
         AfxMessageBox(msg, MB_ICONERROR);
         return FALSE;
     }
@@ -826,6 +862,22 @@ namespace ECTBridge
             }
         }
 
+        // "Umwandeln in <Vorlage>": Bearbeiten-Dialog mit vorgewaehlter
+        // Buchungsgruppen-Vorlage (Zusatz-Buchungen entstehen beim Speichern).
+        void OnUmwandeln(ECTEngine::Buchung^ b, int nVorlagenSlot)
+        {
+            auto* bridge = static_cast<CEasyCashDocBridge*>(m_pBridge.ToPointer());
+            HWND hwnd = static_cast<HWND>(m_hwnd.ToPointer());
+            if (!bridge) return;
+
+            int idx = GetEngine(bridge)->Buchungen->IndexOf(b);
+            if (idx >= 0)
+            {
+                ECT_ShowBuchungUmwandelnDialog(bridge, idx, nVorlagenSlot, hwnd);
+                ECTViews::Journal::JournalHost::AktualisiereOffenesJournal();
+            }
+        }
+
         // Löscht eine ODER mehrere Buchungen; Bestätigung und
         // Kaskadenlösch-Abfrage für Buchungsgruppen stecken in der
         // geteilten Funktion (BuchungenLoeschenShared.h, Definition
@@ -928,6 +980,8 @@ BOOL ECT_ZeigeJournal(void* pDocBridge, HWND hWndOwner)
             handler, &ECTBridge::JournalEventHandler::OnKopieren);
         vm->BuchungKopierenMitNeuerBelegnummer += gcnew System::Action<ECTEngine::Buchung^>(
             handler, &ECTBridge::JournalEventHandler::OnKopierenMitNeuerBelegnummer);
+        vm->BuchungUmwandeln += gcnew System::Action<ECTEngine::Buchung^, int>(
+            handler, &ECTBridge::JournalEventHandler::OnUmwandeln);
 
         return TRUE;
     }

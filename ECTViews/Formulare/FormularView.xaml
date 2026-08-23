@@ -185,13 +185,31 @@
                                                         Padding="1,0,1,0"
                                                         Margin="-2,-1,-2,-1"
                                                         Background="Transparent">
-                                                    <TextBlock Text="{Binding Text}"
-                                                               FontSize="{Binding FontSize}"
-                                                               Foreground="{Binding Foreground}"
-                                                               FontFamily="{Binding DataContext.Schriftart,
-                                                                   RelativeSource={RelativeSource AncestorType=UserControl}}"
-                                                               ToolTip="{Binding Tooltip}"
-                                                               ToolTipService.InitialShowDelay="400"/>
+                                                    <Grid>
+                                                        <TextBlock Text="{Binding Text}"
+                                                                   FontSize="{Binding FontSize}"
+                                                                   Foreground="{Binding Foreground}"
+                                                                   FontFamily="{Binding DataContext.Schriftart,
+                                                                       RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                                                   ToolTip="{Binding Tooltip}"
+                                                                   ToolTipService.InitialShowDelay="400"/>
+                                                        <!-- Feld-Id unten rechts in der Feldmarke (nur
+                                                             Designer). Der 0x0-Canvas haengt sich an die
+                                                             Ecke, ohne die Groesse der Marke zu
+                                                             beeinflussen; ein normales Grid-Kind wuerde
+                                                             die Marke verbreitern und den Feldwert von
+                                                             seiner Ankerposition wegschieben. -->
+                                                        <Canvas Width="0" Height="0" ClipToBounds="False"
+                                                                HorizontalAlignment="Right"
+                                                                VerticalAlignment="Bottom"
+                                                                Visibility="{Binding IdSichtbar}">
+                                                            <TextBlock Canvas.Right="0" Canvas.Bottom="0"
+                                                                       Text="{Binding IdText}"
+                                                                       FontSize="{Binding IdFontSize}"
+                                                                       Foreground="{Binding RahmenBrush}"
+                                                                       IsHitTestVisible="False"/>
+                                                        </Canvas>
+                                                    </Grid>
                                                 </Border>
                                             </DataTemplate>
                                         </ItemsControl.ItemTemplate>

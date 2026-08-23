@@ -113,14 +113,29 @@ foreach ($f in $list) {
       Write-Host "ENCODING-FEHLER: $f war Windows-1252 und wurde auf UTF-8 (ohne BOM) gekippt -- MBCS-Strings wuerden zur Laufzeit als Mojibake erscheinen."
       $violations++
     }
+
+    # (3) Gegenrichtung: UTF-8 -> Windows-1252 gekippt. Passiert, wenn ein
+    #     Werkzeug die Datei als UTF-8 liest (BOM!) und mit cp1252 zurueck-
+    #     schreibt -- z.B. [IO.File]::ReadAllText($p, $cp1252), das sein
+    #     Encoding-Argument bei vorhandenem BOM stillschweigend ignoriert.
+    #     Dabei entsteht KEIN U+FFFD (alle Umlaute sind in cp1252 gueltig),
+    #     Regel (1) und (2) greifen also nicht: der Unfall ist unsichtbar,
+    #     bis der Compiler die Datei ohne BOM in der Ausfuehrungs-Codepage liest.
+    $headWarUtf8 = (Test-Utf8Bom $head) -or (Test-Utf8Multibyte $head)
+    $stagedIstCp1252 = (Test-HighByte $staged) -and (-not (Test-Utf8Multibyte $staged)) -and (-not (Test-Utf8Bom $staged))
+    if ($headWarUtf8 -and $stagedIstCp1252) {
+      Write-Host "ENCODING-FEHLER: $f war UTF-8 und wurde auf Windows-1252 gekippt (BOM weg, Umlaute als Einzelbytes)."
+      $violations++
+    }
   }
 }
 
 if ($violations -gt 0) {
   Write-Host ""
   Write-Host "$violations Encoding-Verstoss/-Verstoesse. Commit abgebrochen."
-  Write-Host "Legacy-.cpp/.h sind Windows-1252: NUR mit PowerShell + GetEncoding(1252) bearbeiten,"
-  Write-Host "nicht mit UTF-8-Werkzeugen. Details: .githooks/check-encoding.ps1."
+  Write-Host "Das Encoding einer Legacy-.cpp/.h ist NICHT einheitlich (teils cp1252, teils"
+  Write-Host "UTF-8 mit BOM): vor dem Bearbeiten an den Bytes bestimmen und beim Schreiben"
+  Write-Host "exakt erhalten. Details: .githooks/check-encoding.ps1."
   Write-Host "Notfall-Bypass (mit Bedacht): git commit --no-verify"
   exit 1
 }

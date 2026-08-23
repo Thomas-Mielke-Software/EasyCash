@@ -402,7 +402,8 @@ namespace ECTViews.ViewModels
                 if (value.Nummer >= 0 && value.Nummer < presets.Count)
                 {
                     var p = presets[value.Nummer];
-                    if (!p.IstLeer) LadePresetInFelder(p, value.Nummer);
+                    if (!p.IstLeer)
+                        LadePresetInFelder(p, value.Nummer, beschreibungErhalten: true);
                 }
                 VorschlaegeOffen = false;
                 _gewaehlterVorschlag = null;
@@ -418,7 +419,8 @@ namespace ECTViews.ViewModels
 
         /// <summary>Slot (0-99) einer Buchungsvorlage, die beim Oeffnen des
         /// Dialogs automatisch geladen werden soll -- gesetzt beim Aufruf ueber
-        /// das Ribbon-Dropdown der Einnahme-/Ausgabe-Knoepfe. -1 = keine Vorwahl.
+        /// das Ribbon-Dropdown der Einnahme-/Ausgabe-Knoepfe bzw. (im Bearbeiten-
+        /// Modus) das Journal-Kontextmenue "Umwandeln in". -1 = keine Vorwahl.
         /// Die View wendet sie ueber <see cref="LadeVorgewaehlteVorlage"/> an,
         /// sobald das Fenster steht.</summary>
         public int VorgewaehltesPreset { get; set; } = -1;
@@ -436,6 +438,17 @@ namespace ECTViews.ViewModels
             if (slot >= presets.Count) return;
             var p = presets[slot];
             if (p.IstLeer || p.Ausgabe != _istAusgabe) return;
+
+            // Im Bearbeiten-Modus ist die Vorwahl eine ausdrücklich
+            // angeforderte Umwandlung in eine Buchungsgruppe (Journal-
+            // Kontextmenü "Umwandeln in") -- ohne Rückfrage, weil der
+            // geöffnete Dialog selbst die Bestätigung ist.
+            if (IstBearbeitung)
+            {
+                WandleInGruppeUm(slot);
+                return;
+            }
+
             LadePresetInFelder(p, slot);
         }
 
@@ -489,8 +502,18 @@ namespace ECTViews.ViewModels
             return false;
         }
 
-        private void LadePresetInFelder(Preset p, int presetSlot)
+        private void LadePresetInFelder(Preset p, int presetSlot,
+            bool beschreibungErhalten = false)
         {
+            // Bearbeiten-Modus: die Wahl einer Vorlage kann die Buchung in
+            // eine Buchungsgruppe umwandeln, eine bestehende Gruppe umstellen
+            // oder sie auflösen. Die Rückfrage kommt VOR jeder Feldänderung --
+            // ein "Nein" lässt die Buchung komplett unberührt.
+            if (IstBearbeitung && !BestaetigeGruppenWechsel(p))
+            {
+                VorschlaegeOffen = false;
+                return;
+            }
             // Vorschlags-Popup zuerst schliessen: das Auflösen einer
             // Feld-Spezifikation kann den modalen "Konto anlegen"-Dialog
             // öffnen, der sonst hinter dem noch offenen (immer obenauf
@@ -531,23 +554,31 @@ namespace ECTViews.ViewModels
             // (z.B. direkt nach Eingabe der 2. Ziffer) wird von WPF nicht in das
             // Editierfeld zurückgeschrieben (TwoWay-Binding-Re-Entrancy). Daher
             // per Dispatcher nach dem aktuellen Eingabe-Zyklus nachziehen.
-            var beschreibungNeu = p.Text;
-            System.Windows.Threading.Dispatcher.CurrentDispatcher.BeginInvoke(
-                new Action(() =>
-                {
-                    _presetLaden = true;
-                    try { Beschreibung = beschreibungNeu; }
-                    finally { _presetLaden = false; }
-                }),
-                System.Windows.Threading.DispatcherPriority.Background);
+            //
+            // Ausnahme: beim Bearbeiten/Umwandeln bleibt ein selbst getippter
+            // Beschreibungstext stehen -- er ist der Inhalt der Buchung, der
+            // Vorlagenname nur deren Etikett (siehe BeschreibungIstAutomatisch).
+            if (!beschreibungErhalten || BeschreibungIstAutomatisch())
+            {
+                var beschreibungNeu = p.Text;
+                System.Windows.Threading.Dispatcher.CurrentDispatcher.BeginInvoke(
+                    new Action(() =>
+                    {
+                        _presetLaden = true;
+                        try { Beschreibung = beschreibungNeu; }
+                        finally { _presetLaden = false; }
+                    }),
+                    System.Windows.Threading.DispatcherPriority.Background);
+            }
 
             if (!string.IsNullOrWhiteSpace(p.Notiz))
                 PresetNotizAnzeigen?.Invoke(p.Notiz);
 
             // Buchungsgruppen-Vorlage: Zusatz-Zeilen laden bzw. wegräumen.
-            // Im Bearbeiten-Modus bewusst NICHT (der Bearbeiten-Pfad liefert
-            // eine Einzelbuchung; Gruppen entstehen nur beim Neu-Buchen).
-            if (!IstBearbeitung && p.IstMehrzeilig)
+            // Im Bearbeiten-Modus ist die Umwandlung an dieser Stelle bereits
+            // bestätigt (BestaetigeGruppenWechsel ganz oben) bzw. ausdrücklich
+            // über das Journal angefordert.
+            if (p.IstMehrzeilig)
                 UebernimmGruppenVorlage(p, presetSlot);
             else
                 EntferneGruppenVorlage();

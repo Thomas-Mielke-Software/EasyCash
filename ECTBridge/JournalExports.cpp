@@ -114,6 +114,24 @@ public:
         }
     }
 
+    // "Umwandeln in <Vorlage>" aus dem Kontextmenue: oeffnet den
+    // Bearbeiten-Dialog mit vorgewaehlter Buchungsgruppen-Vorlage. Die
+    // Zusatz-Buchungen legt erst das Speichern im Dialog an -- Abbrechen
+    // laesst die Buchung unveraendert (und erspart den Rebuild).
+    void OnUmwandeln(ECTEngine::Buchung^ b, int nVorlagenSlot)
+    {
+        auto* bridge = static_cast<CEasyCashDocBridge*>(m_pBridge.ToPointer());
+        HWND hwnd = static_cast<HWND>(m_hwnd.ToPointer());
+        if (!bridge || !b) return;
+
+        int idx = FindeBuchungIdx(GetEngine(bridge), b);
+        if (idx >= 0)
+        {
+            if (ECT_ShowBuchungUmwandelnDialog(bridge, idx, nVorlagenSlot, hwnd))
+                ECTViews::Journal::JournalEmbed::AktualisiereAlle(nullptr);
+        }
+    }
+
     // Löscht eine ODER mehrere Buchungen (Mehrfachauswahl im Journal).
     // Bestätigung und Kaskadenlösch-Abfrage für Buchungsgruppen stecken
     // in der geteilten Funktion (BuchungenLoeschenShared.h, Definition
@@ -260,6 +278,8 @@ HWND ECT_JournalEinbetten(
 
             vm->BuchungBearbeiten += gcnew System::Action<ECTEngine::Buchung^>(
                 handler, &JournalEventHandler::OnBearbeiten);
+            vm->BuchungUmwandeln += gcnew System::Action<ECTEngine::Buchung^, int>(
+                handler, &JournalEventHandler::OnUmwandeln);
             vm->BuchungenLoeschen += gcnew System::Action<
                 System::Collections::Generic::IList<ECTEngine::Buchung^>^>(
                 handler, &JournalEventHandler::OnLoeschenMehrere);

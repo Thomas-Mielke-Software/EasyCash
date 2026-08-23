@@ -387,6 +387,21 @@ robuster in hosted-WPF-Szenarien.
   (`BuchungenLoeschenShared.h`, Definition in JournalExports.cpp, genutzt
   von beiden JournalEventHandlern) per Ja/Nein/Abbrechen, ob die ganze
   Gruppe gelöscht werden soll (Kaskadenlöschen).
+- **"Umwandeln in" (2026-08-21)**: Eine bestehende Buchung wird nachträglich
+  zur Buchungsgruppe -- entweder über das Journal-Kontextmenü (Submenü
+  "Umwandeln in" mit den mehrzeiligen Vorlagen der passenden Buchungsart,
+  gefüllt in `JournalView.OnKontextmenueOeffnet` ->
+  `JournalViewModel.AktualisiereUmwandelVorlagen`) oder im Bearbeiten-Dialog
+  über das Vorlagen-Dropdown des Beschreibungsfelds (dort mit
+  Sicherheitsabfrage, `BestaetigeGruppenWechsel`: umwandeln / auf andere
+  Vorlage umstellen / Gruppe auflösen). Beide Wege laufen über denselben
+  Bearbeiten-Dialog (`ECT_ShowBuchungUmwandelnDialog` ->
+  `ZeigeBuchungBearbeitenKombiDialog(..., umwandelVorlagenSlot)` ->
+  `VorgewaehltesPreset`), die Zusatz-Buchungen entstehen erst beim Speichern.
+  Konto/MWSt/AfA kommen aus der Vorlage; **ein selbst getippter
+  Beschreibungstext bleibt erhalten** (`BeschreibungIstAutomatisch`: nur ein
+  leerer Text oder der Text einer Vorlage wird überschrieben) -- er ist der
+  Inhalt der Buchung und speist als `$B` die Zeilen-Templates.
 
 ### Ad-hoc-Kontoselektor / HoleKontoMitFeldern (Stand 2026-07-15)
 - Konto-Feld einer Vorlagen-Zeile (und Basis-Konto eines Presets) kann

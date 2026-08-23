@@ -76,6 +76,28 @@ ECTBRIDGE_API BOOL ECT_ShowBuchungDialogMitVorlage(
 ECTBRIDGE_API BOOL ECT_ShowBuchungBearbeitenDialog(
     void* pDocBridge, int nBuchungIdx, HWND hWndOwner);
 
+/// <summary>
+/// Zeigt den Bearbeiten-Dialog mit einer beim Öffnen angewandten
+/// Buchungsgruppen-Vorlage -- der Weg vom Journal-Kontextmenü
+/// "Umwandeln in <Vorlage>".
+///
+/// Aus der Einzelbuchung wird beim Speichern eine Buchungsgruppe (Basis +
+/// Zusatz-Buchungen der Vorlage). War die Buchung schon Gruppen-Mitglied,
+/// wird die Gruppe unter derselben UUID auf die neue Vorlage umgestellt.
+/// Datum, Betrag, Belegnummer und ein selbst getippter Beschreibungstext
+/// bleiben erhalten; Konto, MWSt und AfA kommen aus der Vorlage.
+///
+/// Parameter:
+///   nBuchungIdx   - Index der Buchung in der Engine-Buchungsliste
+///   nVorlagenSlot - Slot 0-99 der Buchungsgruppen-Vorlage. Passt die
+///                   Vorlage nicht zur Buchungsart oder ist sie nicht
+///                   mehrzeilig, wird sie ignoriert (normale Bearbeitung).
+///
+/// Rückgabe: TRUE wenn gespeichert wurde, FALSE bei Abbruch.
+/// </summary>
+ECTBRIDGE_API BOOL ECT_ShowBuchungUmwandelnDialog(
+    void* pDocBridge, int nBuchungIdx, int nVorlagenSlot, HWND hWndOwner);
+
 // ──────────────────────────────────────────────
 // Pointer-basierte API (komfortabel für bestehenden View-Code)
 // ──────────────────────────────────────────────
