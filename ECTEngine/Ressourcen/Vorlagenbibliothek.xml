@@ -1,0 +1,316 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Vorlagenbibliothek.xml: mitgelieferte Buchungsvorlagen (eingebettete
+  Ressource von ECTEngine).
+
+  Aufbau: beliebig tief verschachtelte <Abschnitt>-Elemente, deren Blätter
+  <Eintrag>-Elemente sind. Jeder Eintrag enthält GENAU EIN
+  <ECTBuchungsvorlage>-Element im Austauschformat von PresetXml, also genau
+  dem Format, das der Datei-Import liest. Dadurch braucht die Bibliothek
+  keinen eigenen Vorlagen-Parser: VorlagenBibliothek reicht das Element als
+  String an PresetXml.Importiere weiter.
+
+  Konto-Felder nutzen die Feld-Spezifikation des Ad-hoc-Kontoselektors
+  (KontoFeldSelektor), inkl. "$name=" für den Vorschlag im Anlage-Dialog.
+  Ein führendes '/' im Kontonamen kennzeichnet ein NEUTRALES Konto: es
+  speist die Formularfelder, bleibt aber aus Gewinn und EÜR heraus.
+
+  ZWEI REGELN, die die Gliederung bestimmen:
+
+  (1) Ein Konto kann nur Felder EINER Richtung tragen. Mischt eine
+      Spezifikation ein Einnahmen- mit einem Ausgaben-Feld, lehnt
+      ErmittleFeldInfo die Anlage mit "E/A gemischt" ab. Steuerbeträge, die
+      sowohl den Aufwand erhöhen als auch in einer Einnahmen-Kennzahl
+      erscheinen müssen, brauchen deshalb ZWEI Zeilen.
+
+  (2) Deutschland und Österreich lassen sich nur dort in einer Vorlage
+      zusammenfassen, wo Zeilenzahl UND Buchungsrichtung übereinstimmen.
+      Beim Übergang der Steuerschuld ist das nicht der Fall (DE: Steuer als
+      Einnahmen-Kennzahl 47/85, AT: als Ausgaben-Kennzahl 1057), und beim
+      innergemeinschaftlichen Erwerb rechnet das österreichische Formular
+      die Erwerbsteuer selbst aus (2072 = 1072*20/100, Vorsteuer 1065 als
+      Summe); dort wären Zusatzzeilen sogar doppelt gezählt. Diese Fälle
+      stehen darum in eigenen Länder-Unterabschnitten; alles andere trägt
+      de- UND at-Block in einer Vorlage.
+-->
+<ECTVorlagenBibliothek Version="1">
+  <Abschnitt Titel="Auslandsgeschäfte">
+
+    <Abschnitt Titel="Übergang der Steuerschuld (Reverse Charge)">
+
+      <Abschnitt Titel="Deutschland (§13b UStG)">
+
+        <Eintrag Titel="Eingangsrechnung eines EU-Unternehmers (§13b Abs. 1)"
+                 Stichworte="reverse charge, 13b, EU, Leistung, sonstige Leistung, Eingangsrechnung, Steuerschuldnerschaft">
+          <ECTBuchungsvorlage Version="1">
+            <Name>Reverse Charge EU-Eingangsrechnung</Name>
+            <Typ>A</Typ>
+            <MwSt>0</MwSt>
+            <AfaJahre>1</AfaJahre>
+            <Konto>$de:E/Ü-Rechnung=1110|Umsatzsteuer-Voranmeldung=46|$name=Bezogene Leistungen aus dem EU-Ausland||</Konto>
+            <Notiz>Sonstige Leistung eines im übrigen Gemeinschaftsgebiet ansässigen Unternehmers, §13b Abs. 1 UStG. Rechnungsbetrag ohne USt eingeben. In der EÜR erscheint nur dieser Nettobetrag als Betriebsausgabe; die geschuldete USt (KZ 47) und die Vorsteuer (KZ 67) laufen über neutrale "/"-Konten, die nur die Voranmeldung speisen und den Gewinn nicht berühren. So will es die Anleitung zur Anlage EÜR: Zeile 17 kennt nur vereinnahmte Umsatzsteuer, und Zeile 57 schließt Vorsteuer aus §13b-Leistungen ausdrücklich aus. Steuersatz über $vat1 (Regelsatz aus den Einstellungen).</Notiz>
+            <Degressiv>false</Degressiv>
+            <AfaSatz>0</AfaSatz>
+            <BasisBetrag></BasisBetrag>
+            <Zeilen>
+              <Zeile Typ="E" Konto="$de:Umsatzsteuer-Voranmeldung=47|$name=/Verrechnung von USt gemäß §13b Abs. 1||" MwSt="0" Betrag="$netto*$vat1/100" Text="$beschreibung (USt §13b)" Beleg="" Betrieb="" Bestandskonto="" Darstellung="" />
+              <Zeile Typ="A" Konto="$de:Umsatzsteuer-Voranmeldung=67|$name=/Verrechnung von VSt gemäß §13b||" MwSt="0" Betrag="$netto*$vat1/100" Text="$beschreibung (Vorsteuer §13b)" Beleg="" Betrieb="" Bestandskonto="" Darstellung="" />
+            </Zeilen>
+          </ECTBuchungsvorlage>
+        </Eintrag>
+
+        <Eintrag Titel="Eingangsrechnung aus dem Drittland (§13b Abs. 2)"
+                 Stichworte="reverse charge, 13b, Drittland, Ausland, Werklieferung, Eingangsrechnung">
+          <ECTBuchungsvorlage Version="1">
+            <Name>Reverse Charge Drittland-Eingangsrechnung</Name>
+            <Typ>A</Typ>
+            <MwSt>0</MwSt>
+            <AfaJahre>1</AfaJahre>
+            <Konto>$de:E/Ü-Rechnung=1110|Umsatzsteuer-Voranmeldung=84|$name=Bezogene Leistungen aus dem Drittland||</Konto>
+            <Notiz>Leistung eines im Ausland ansässigen Unternehmers nach §13b Abs. 2 UStG (KZ 84/85). Rechnungsbetrag ohne USt eingeben; USt und Vorsteuer laufen über neutrale "/"-Konten (siehe EU-Eingangsrechnung). Dieselbe Kennzahl gilt für Werklieferungen ausländischer Unternehmer -- geht es um Ware statt um eine Leistung, im Basis-Konto statt Feld 1110 das Feld 1100 (Waren, Rohstoffe und Hilfsstoffe) verknüpfen.</Notiz>
+            <Degressiv>false</Degressiv>
+            <AfaSatz>0</AfaSatz>
+            <BasisBetrag></BasisBetrag>
+            <Zeilen>
+              <Zeile Typ="E" Konto="$de:Umsatzsteuer-Voranmeldung=85|$name=/Verrechnung von USt gemäß §13b Abs. 2||" MwSt="0" Betrag="$netto*$vat1/100" Text="$beschreibung (USt §13b)" Beleg="" Betrieb="" Bestandskonto="" Darstellung="" />
+              <Zeile Typ="A" Konto="$de:Umsatzsteuer-Voranmeldung=67|$name=/Verrechnung von VSt gemäß §13b||" MwSt="0" Betrag="$netto*$vat1/100" Text="$beschreibung (Vorsteuer §13b)" Beleg="" Betrieb="" Bestandskonto="" Darstellung="" />
+            </Zeilen>
+          </ECTBuchungsvorlage>
+        </Eintrag>
+
+        <Eintrag Titel="Eingangsrechnung ohne Vorsteuerabzug (Kleinunternehmer)"
+                 Stichworte="reverse charge, 13b, EU, Kleinunternehmer, 19 UStG, ohne Vorsteuerabzug">
+          <ECTBuchungsvorlage Version="1">
+            <Name>Reverse Charge EU-Eingang (Kleinunternehmer)</Name>
+            <Typ>A</Typ>
+            <MwSt>0</MwSt>
+            <AfaJahre>1</AfaJahre>
+            <Konto>$de:E/Ü-Rechnung=1110|Umsatzsteuer-Voranmeldung=46|$name=Bezogene Leistungen aus dem EU-Ausland||</Konto>
+            <Notiz>Wie die EU-Eingangsrechnung, aber ohne Vorsteuerabzug: als Kleinunternehmer schuldest du die §13b-Steuer trotzdem und musst sie anmelden, darfst sie aber nicht als Vorsteuer abziehen. Sie ist damit echter Aufwand. Weil ein Konto keine Einnahmen- und Ausgaben-Felder mischen darf, braucht das ZWEI Zeilen: die erste erhöht die Betriebsausgabe (EÜR-Feld 1110), die zweite meldet denselben Betrag über ein neutrales Konto in KZ 47. Im Ergebnis steht in der EÜR der Bruttobetrag, in der Voranmeldung Netto und Steuer -- so, wie die Anleitung es für Aufwendungen ohne Vorsteuerabzug vorsieht.</Notiz>
+            <Degressiv>false</Degressiv>
+            <AfaSatz>0</AfaSatz>
+            <BasisBetrag></BasisBetrag>
+            <Zeilen>
+              <Zeile Typ="A" Konto="$de:E/Ü-Rechnung=1110|$name=§13b-USt ohne Vorsteuerabzug||" MwSt="0" Betrag="$netto*$vat1/100" Text="$beschreibung (USt §13b, nicht abziehbar)" Beleg="" Betrieb="" Bestandskonto="" Darstellung="" />
+              <Zeile Typ="E" Konto="$de:Umsatzsteuer-Voranmeldung=47|$name=/Verrechnung von USt gemäß §13b Abs. 1||" MwSt="0" Betrag="$netto*$vat1/100" Text="$beschreibung (Anmeldung §13b)" Beleg="" Betrieb="" Bestandskonto="" Darstellung="" />
+            </Zeilen>
+          </ECTBuchungsvorlage>
+        </Eintrag>
+
+      </Abschnitt>
+
+      <Abschnitt Titel="Österreich (§19 UStG)">
+
+        <Eintrag Titel="Eingangsrechnung eines ausländischen Unternehmers (§19)"
+                 Stichworte="reverse charge, 19, Österreich, Übergang der Steuerschuld, Eingangsrechnung, Fremdleistung">
+          <ECTBuchungsvorlage Version="1">
+            <Name>Übergang der Steuerschuld §19 (AT)</Name>
+            <Typ>A</Typ>
+            <MwSt>0</MwSt>
+            <AfaJahre>1</AfaJahre>
+            <Konto>$at:Beilage E1a=9110|$name=Fremdleistungen aus dem Ausland||</Konto>
+            <Notiz>Leistung eines nicht in Österreich ansässigen Unternehmers, für die die Steuerschuld auf dich übergeht (§19 UStG). Rechnungsbetrag ohne USt eingeben; er erscheint in der E1a als Fremdleistung (Kennzahl 9110). Die geschuldete Steuer (U30-Kennzahl 057) und die dazugehörige Vorsteuer (Kennzahl 066) laufen über neutrale "/"-Konten: sie heben sich auf, füllen aber die Voranmeldung. Anders als in Deutschland fragt die U30 keine eigene Bemessungsgrundlage ab, sondern nur die Steuerbeträge -- deshalb trägt das Basis-Konto keine U30-Kennzahl. Steuersatz über $vat1.</Notiz>
+            <Degressiv>false</Degressiv>
+            <AfaSatz>0</AfaSatz>
+            <BasisBetrag></BasisBetrag>
+            <Zeilen>
+              <Zeile Typ="A" Konto="$at:Umsatzsteuer=1057|$name=/Verrechnung von Steuerschuld gemäß §19||" MwSt="0" Betrag="$netto*$vat1/100" Text="$beschreibung (Steuerschuld §19)" Beleg="" Betrieb="" Bestandskonto="" Darstellung="" />
+              <Zeile Typ="A" Konto="$at:Umsatzsteuer=1066|$name=/Verrechnung von Vorsteuer gemäß §19||" MwSt="0" Betrag="$netto*$vat1/100" Text="$beschreibung (Vorsteuer §19)" Beleg="" Betrieb="" Bestandskonto="" Darstellung="" />
+            </Zeilen>
+          </ECTBuchungsvorlage>
+        </Eintrag>
+
+        <Eintrag Titel="Eingangsrechnung ohne Vorsteuerabzug (Kleinunternehmer)"
+                 Stichworte="reverse charge, 19, Österreich, Kleinunternehmer, ohne Vorsteuerabzug">
+          <ECTBuchungsvorlage Version="1">
+            <Name>Übergang der Steuerschuld §19 (AT, Kleinunternehmer)</Name>
+            <Typ>A</Typ>
+            <MwSt>0</MwSt>
+            <AfaJahre>1</AfaJahre>
+            <Konto>$at:Beilage E1a=9110|$name=Fremdleistungen aus dem Ausland||</Konto>
+            <Notiz>Wie der normale Übergang der Steuerschuld, aber ohne Vorsteuerabzug (Kleinunternehmer nach §6 Abs. 1 Z 27). Die Steuer bleibt geschuldet und anmeldepflichtig, ist aber nicht abziehbar und damit echter Aufwand: die erste Zusatzzeile erhöht deshalb die Fremdleistung in der E1a, die zweite meldet denselben Betrag über ein neutrales Konto in der U30-Kennzahl 057. Eine Vorsteuer-Zeile entfällt.</Notiz>
+            <Degressiv>false</Degressiv>
+            <AfaSatz>0</AfaSatz>
+            <BasisBetrag></BasisBetrag>
+            <Zeilen>
+              <Zeile Typ="A" Konto="$at:Beilage E1a=9110|$name=§19-Steuerschuld ohne Vorsteuerabzug||" MwSt="0" Betrag="$netto*$vat1/100" Text="$beschreibung (Steuerschuld §19, nicht abziehbar)" Beleg="" Betrieb="" Bestandskonto="" Darstellung="" />
+              <Zeile Typ="A" Konto="$at:Umsatzsteuer=1057|$name=/Verrechnung von Steuerschuld gemäß §19||" MwSt="0" Betrag="$netto*$vat1/100" Text="$beschreibung (Anmeldung §19)" Beleg="" Betrieb="" Bestandskonto="" Darstellung="" />
+            </Zeilen>
+          </ECTBuchungsvorlage>
+        </Eintrag>
+
+      </Abschnitt>
+
+      <Eintrag Titel="Ausgangsrechnung an einen EU-Unternehmer (nicht steuerbar)"
+               Stichworte="reverse charge, 13b, EU, Ausgangsrechnung, Erlöse, Zusammenfassende Meldung, Österreich">
+        <ECTBuchungsvorlage Version="1">
+          <Name>Reverse Charge EU-Ausgangsrechnung</Name>
+          <Typ>E</Typ>
+          <MwSt>0</MwSt>
+          <AfaJahre>1</AfaJahre>
+          <Konto>$de:E/Ü-Rechnung=1103|Umsatzsteuer-Voranmeldung=21|$name=Erlöse ohne USt (Reverse Charge EU)||at:Beilage E1a=9040|$name=Erlöse ohne USt (Reverse Charge EU)||</Konto>
+          <Notiz>Eigene sonstige Leistung an einen EU-Unternehmer ohne USt; die Steuer schuldet der Leistungsempfänger. Rechnungsbetrag eingeben, Gegenbuchungen entstehen keine. In Deutschland ist EÜR-Feld 1103 das amtlich vorgesehene: Zeile 16 nennt ausdrücklich die Betriebseinnahmen, für die der Leistungsempfänger die Umsatzsteuer nach §13b UStG schuldet; die Voranmeldung nimmt den Umsatz in KZ 21 auf. In Österreich gehört der Erlös zu den Betriebseinnahmen der E1a (Kennzahl 9040); die U30 kennt dafür keine eigene Kennzahl. In beiden Ländern ist der Umsatz zusätzlich in der Zusammenfassenden Meldung anzugeben, und die USt-IdNr. des Empfängers gehört auf die Rechnung.</Notiz>
+          <Degressiv>false</Degressiv>
+          <AfaSatz>0</AfaSatz>
+          <BasisBetrag></BasisBetrag>
+          <Zeilen />
+        </ECTBuchungsvorlage>
+      </Eintrag>
+
+    </Abschnitt>
+
+    <Abschnitt Titel="Innergemeinschaftlicher Warenverkehr">
+
+      <Eintrag Titel="Warenverkauf in die EU -- steuerfreie innergemeinschaftliche Lieferung"
+               Stichworte="innergemeinschaftliche Lieferung, EU, Warenverkauf, steuerfrei, 4 Nr. 1b, Zusammenfassende Meldung, Österreich">
+        <ECTBuchungsvorlage Version="1">
+          <Name>i.g. Lieferung (Warenverkauf EU)</Name>
+          <Typ>E</Typ>
+          <MwSt>0</MwSt>
+          <AfaJahre>1</AfaJahre>
+          <Konto>$de:E/Ü-Rechnung=1103|Umsatzsteuer-Voranmeldung=41|$name=Steuerfreie i.g. Lieferungen||at:Beilage E1a=9040|Umsatzsteuer=1017|$name=Steuerfreie i.g. Lieferungen||</Konto>
+          <Notiz>Warenlieferung an einen EU-Abnehmer mit USt-IdNr., steuerfrei (Deutschland §4 Nr. 1b UStG, KZ 41; Österreich Art. 6 Abs. 1, U30-Kennzahl 017). Rechnungsbetrag eingeben, Gegenbuchungen entstehen keine. Ertragsseitig zählt der Umsatz zu den umsatzsteuerfreien Betriebseinnahmen (EÜR-Feld 1103 bzw. E1a-Kennzahl 9040). Voraussetzung sind die geprüfte USt-IdNr. des Abnehmers, Beleg- und Buchnachweis sowie die Angabe in der Zusammenfassenden Meldung.</Notiz>
+          <Degressiv>false</Degressiv>
+          <AfaSatz>0</AfaSatz>
+          <BasisBetrag></BasisBetrag>
+          <Zeilen />
+        </ECTBuchungsvorlage>
+      </Eintrag>
+
+      <Abschnitt Titel="Wareneinkauf -- Deutschland">
+
+        <Eintrag Titel="Innergemeinschaftlicher Erwerb (19 %)"
+                 Stichworte="innergemeinschaftlicher Erwerb, EU, Ware, Wareneinkauf, Erwerbsteuer, 19, Lieferung">
+          <ECTBuchungsvorlage Version="1">
+            <Name>i.g. Erwerb 19 % (Wareneinkauf EU)</Name>
+            <Typ>A</Typ>
+            <MwSt>0</MwSt>
+            <AfaJahre>1</AfaJahre>
+            <Konto>$de:E/Ü-Rechnung=1100|Umsatzsteuer-Voranmeldung=89|$name=Wareneingang aus der EU (19 %)||</Konto>
+            <Notiz>Warenbezug von einem EU-Lieferanten unter Angabe der eigenen USt-IdNr. Das ist KEIN Fall des §13b, sondern ein innergemeinschaftlicher Erwerb nach §1a UStG: Netto in KZ 89, die Erwerbsteuer in KZ 1189, der Vorsteuerabzug in KZ 61. Rechnungsbetrag ohne USt eingeben. In der EÜR erscheint nur der Nettobetrag als Wareneinkauf (Feld 1100); Erwerbsteuer und Vorsteuer heben sich auf und laufen über neutrale "/"-Konten -- die Anleitung zur Anlage EÜR nimmt innergemeinschaftliche Erwerbe von Zeile 57 ausdrücklich aus. Steuersatz über $vat1.</Notiz>
+            <Degressiv>false</Degressiv>
+            <AfaSatz>0</AfaSatz>
+            <BasisBetrag></BasisBetrag>
+            <Zeilen>
+              <Zeile Typ="E" Konto="$de:Umsatzsteuer-Voranmeldung=1189|$name=/Verrechnung von Erwerbsteuer 19 %||" MwSt="0" Betrag="$netto*$vat1/100" Text="$beschreibung (Erwerbsteuer)" Beleg="" Betrieb="" Bestandskonto="" Darstellung="" />
+              <Zeile Typ="A" Konto="$de:Umsatzsteuer-Voranmeldung=61|$name=/Verrechnung von VSt aus i.g. Erwerb||" MwSt="0" Betrag="$netto*$vat1/100" Text="$beschreibung (Vorsteuer i.g. Erwerb)" Beleg="" Betrieb="" Bestandskonto="" Darstellung="" />
+            </Zeilen>
+          </ECTBuchungsvorlage>
+        </Eintrag>
+
+        <Eintrag Titel="Innergemeinschaftlicher Erwerb (7 %)"
+                 Stichworte="innergemeinschaftlicher Erwerb, EU, Ware, Wareneinkauf, Erwerbsteuer, 7, ermäßigt">
+          <ECTBuchungsvorlage Version="1">
+            <Name>i.g. Erwerb 7 % (Wareneinkauf EU)</Name>
+            <Typ>A</Typ>
+            <MwSt>0</MwSt>
+            <AfaJahre>1</AfaJahre>
+            <Konto>$de:E/Ü-Rechnung=1100|Umsatzsteuer-Voranmeldung=93|$name=Wareneingang aus der EU (7 %)||</Konto>
+            <Notiz>Wie der Erwerb zu 19 %, nur mit dem ermäßigten Steuersatz: Netto in KZ 93, Erwerbsteuer in KZ 1193, Vorsteuer in KZ 61. Steuersatz über $vat2 -- prüfe in den Einstellungen, dass $vat2 bei dir der ermäßigte Satz ist.</Notiz>
+            <Degressiv>false</Degressiv>
+            <AfaSatz>0</AfaSatz>
+            <BasisBetrag></BasisBetrag>
+            <Zeilen>
+              <Zeile Typ="E" Konto="$de:Umsatzsteuer-Voranmeldung=1193|$name=/Verrechnung von Erwerbsteuer 7 %||" MwSt="0" Betrag="$netto*$vat2/100" Text="$beschreibung (Erwerbsteuer)" Beleg="" Betrieb="" Bestandskonto="" Darstellung="" />
+              <Zeile Typ="A" Konto="$de:Umsatzsteuer-Voranmeldung=61|$name=/Verrechnung von VSt aus i.g. Erwerb||" MwSt="0" Betrag="$netto*$vat2/100" Text="$beschreibung (Vorsteuer i.g. Erwerb)" Beleg="" Betrieb="" Bestandskonto="" Darstellung="" />
+            </Zeilen>
+          </ECTBuchungsvorlage>
+        </Eintrag>
+
+        <Eintrag Titel="Innergemeinschaftlicher Erwerb ohne Vorsteuerabzug (Kleinunternehmer)"
+                 Stichworte="innergemeinschaftlicher Erwerb, Kleinunternehmer, Erwerbsschwelle, ohne Vorsteuerabzug">
+          <ECTBuchungsvorlage Version="1">
+            <Name>i.g. Erwerb (Kleinunternehmer)</Name>
+            <Typ>A</Typ>
+            <MwSt>0</MwSt>
+            <AfaJahre>1</AfaJahre>
+            <Konto>$de:E/Ü-Rechnung=1100|Umsatzsteuer-Voranmeldung=89|$name=Wareneingang aus der EU (19 %)||</Konto>
+            <Notiz>Innergemeinschaftlicher Erwerb ohne Vorsteuerabzug. Relevant erst, wenn du die Erwerbsschwelle überschreitest oder auf ihre Anwendung verzichtet hast -- darunter behandelt der EU-Lieferant den Verkauf wie einen Inlandsumsatz und stellt seine USt in Rechnung; dann NICHT diese Vorlage nehmen, sondern den Bruttobetrag normal als Wareneinkauf buchen. Mangels Vorsteuerabzug ist die Erwerbsteuer echter Aufwand: die erste Zusatzzeile erhöht deshalb den Wareneinkauf (Feld 1100), die zweite meldet denselben Betrag über ein neutrales Konto in KZ 1189.</Notiz>
+            <Degressiv>false</Degressiv>
+            <AfaSatz>0</AfaSatz>
+            <BasisBetrag></BasisBetrag>
+            <Zeilen>
+              <Zeile Typ="A" Konto="$de:E/Ü-Rechnung=1100|$name=Erwerbsteuer ohne Vorsteuerabzug||" MwSt="0" Betrag="$netto*$vat1/100" Text="$beschreibung (Erwerbsteuer, nicht abziehbar)" Beleg="" Betrieb="" Bestandskonto="" Darstellung="" />
+              <Zeile Typ="E" Konto="$de:Umsatzsteuer-Voranmeldung=1189|$name=/Verrechnung von Erwerbsteuer 19 %||" MwSt="0" Betrag="$netto*$vat1/100" Text="$beschreibung (Anmeldung Erwerbsteuer)" Beleg="" Betrieb="" Bestandskonto="" Darstellung="" />
+            </Zeilen>
+          </ECTBuchungsvorlage>
+        </Eintrag>
+
+      </Abschnitt>
+
+      <Abschnitt Titel="Wareneinkauf -- Österreich">
+
+        <Eintrag Titel="Innergemeinschaftlicher Erwerb (20 %)"
+                 Stichworte="innergemeinschaftlicher Erwerb, Österreich, Ware, Wareneinkauf, 20, Art 6">
+          <ECTBuchungsvorlage Version="1">
+            <Name>i.g. Erwerb 20 % (AT)</Name>
+            <Typ>A</Typ>
+            <MwSt>0</MwSt>
+            <AfaJahre>1</AfaJahre>
+            <Konto>$at:Beilage E1a=9100|Umsatzsteuer=1072|$name=Wareneingang aus der EU (20 %)||</Konto>
+            <Notiz>Warenbezug von einem EU-Lieferanten unter Angabe der eigenen UID. Nur der NETTOBETRAG wird gebucht -- Zusatzzeilen gibt es bewusst keine: die U30 rechnet die Erwerbsteuer selbst aus (Kennzahl 2072 = 1072 x 20/100) und leitet daraus auch die Vorsteuer aus innergemeinschaftlichem Erwerb ab (Kennzahl 065 als Summenfeld). Eigene Steuerzeilen würden diese Beträge doppelt zählen. In der E1a erscheint der Nettobetrag als Wareneinsatz (Kennzahl 9100).</Notiz>
+            <Degressiv>false</Degressiv>
+            <AfaSatz>0</AfaSatz>
+            <BasisBetrag></BasisBetrag>
+            <Zeilen />
+          </ECTBuchungsvorlage>
+        </Eintrag>
+
+        <Eintrag Titel="Innergemeinschaftlicher Erwerb (10 %)"
+                 Stichworte="innergemeinschaftlicher Erwerb, Österreich, Ware, Wareneinkauf, 10, ermäßigt, Art 6">
+          <ECTBuchungsvorlage Version="1">
+            <Name>i.g. Erwerb 10 % (AT)</Name>
+            <Typ>A</Typ>
+            <MwSt>0</MwSt>
+            <AfaJahre>1</AfaJahre>
+            <Konto>$at:Beilage E1a=9100|Umsatzsteuer=1073|$name=Wareneingang aus der EU (10 %)||</Konto>
+            <Notiz>Wie der Erwerb zu 20 %, nur mit dem ermäßigten Steuersatz (U30-Kennzahl 1073; die Steuer rechnet das Formular über 2073 = 1073 x 10/100 selbst aus). Ebenfalls ohne Zusatzzeilen.</Notiz>
+            <Degressiv>false</Degressiv>
+            <AfaSatz>0</AfaSatz>
+            <BasisBetrag></BasisBetrag>
+            <Zeilen />
+          </ECTBuchungsvorlage>
+        </Eintrag>
+
+      </Abschnitt>
+
+    </Abschnitt>
+
+    <Abschnitt Titel="Einfuhr aus dem Drittland">
+
+      <Eintrag Titel="Wareneinkauf aus dem Drittland (ohne Einfuhrumsatzsteuer)"
+               Stichworte="Einfuhr, Import, Drittland, Ware, Wareneinkauf, Zoll, Österreich">
+        <ECTBuchungsvorlage Version="1">
+          <Name>Wareneinkauf Drittland</Name>
+          <Typ>A</Typ>
+          <MwSt>0</MwSt>
+          <AfaJahre>1</AfaJahre>
+          <Konto>$de:E/Ü-Rechnung=1100|$name=Wareneingang aus dem Drittland||at:Beilage E1a=9100|$name=Wareneingang aus dem Drittland||</Konto>
+          <Notiz>Warenbezug aus einem Drittland. Der Rechnungsbetrag des Lieferanten ist ohne inländische USt; die Einfuhrumsatzsteuer entsteht erst beim Zoll und hat eine eigene Bemessungsgrundlage (Zollwert zzgl. Zoll und Nebenkosten), lässt sich also nicht aus dem Rechnungsbetrag errechnen. Sie wird deshalb mit dem Zollbeleg separat gebucht -- dafür gibt es die Vorlage "Entrichtete Einfuhrumsatzsteuer". Der Warenbezug selbst erscheint in keiner Kennzahl der Voranmeldung.</Notiz>
+          <Degressiv>false</Degressiv>
+          <AfaSatz>0</AfaSatz>
+          <BasisBetrag></BasisBetrag>
+          <Zeilen />
+        </ECTBuchungsvorlage>
+      </Eintrag>
+
+      <Eintrag Titel="Entrichtete Einfuhrumsatzsteuer (Zollbeleg)"
+               Stichworte="Einfuhrumsatzsteuer, EUSt, Zoll, Drittland, Vorsteuer, 62, Österreich">
+        <ECTBuchungsvorlage Version="1">
+          <Name>Entrichtete Einfuhrumsatzsteuer</Name>
+          <Typ>A</Typ>
+          <MwSt>0</MwSt>
+          <AfaJahre>1</AfaJahre>
+          <Konto>$de:E/Ü-Rechnung=1185|Umsatzsteuer-Voranmeldung=62|$name=Entrichtete Einfuhrumsatzsteuer||at:Umsatzsteuer=1061|$name=Entrichtete Einfuhrumsatzsteuer||</Konto>
+          <Notiz>Betrag laut Zollbeleg eingeben. Anders als bei §13b und beim innergemeinschaftlichen Erwerb wird die Einfuhrumsatzsteuer tatsächlich gezahlt -- es fließt Geld ab. Nach dem Zufluss-/Abfluss-Prinzip ist sie deshalb in Deutschland im Zeitpunkt der Zahlung eine Betriebsausgabe (EÜR-Feld 1185, gezahlte Vorsteuerbeträge) und zugleich in KZ 62 abziehbar; die Erstattung über die Voranmeldung erscheint später als vom Finanzamt erstattete Umsatzsteuer. Ein neutrales "/"-Konto wäre hier also falsch. In Österreich läuft die E1a im Nettosystem und kennt keine eigene Vorsteuerzeile -- dort trägt das Konto nur die U30-Kennzahl 1061.</Notiz>
+          <Degressiv>false</Degressiv>
+          <AfaSatz>0</AfaSatz>
+          <BasisBetrag></BasisBetrag>
+          <Zeilen />
+        </ECTBuchungsvorlage>
+      </Eintrag>
+
+    </Abschnitt>
+
+  </Abschnitt>
+</ECTVorlagenBibliothek>

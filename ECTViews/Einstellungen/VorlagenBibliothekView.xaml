@@ -1,0 +1,140 @@
+<Window x:Class="ECTViews.EinstellungenUi.VorlagenBibliothekView"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:local="clr-namespace:ECTViews.EinstellungenUi"
+        Title="Vorlagen-Bibliothek"
+        Width="820" Height="560" MinWidth="640" MinHeight="420"
+        WindowStartupLocation="CenterOwner"
+        ShowInTaskbar="False"
+        Background="#F5F5F5"
+        FontFamily="Segoe UI" FontSize="13">
+
+    <Window.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="/ECTViews;component/GemeinsameStile.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+
+            <!-- Muss VOR den Triggern stehen, die ihn per StaticResource nutzen -->
+            <BooleanToVisibilityConverter x:Key="BoolZuSichtbar"/>
+
+            <!-- Baum: Abschnitte und Vorlagen teilen sich eine Kinderliste,
+                 unterschieden wird ueber IstEintrag. -->
+            <HierarchicalDataTemplate DataType="{x:Type local:BibliothekKnoten}"
+                                      ItemsSource="{Binding Kinder}">
+                <StackPanel Orientation="Horizontal" Margin="0,2">
+                    <TextBlock Text="{Binding Titel}" TextTrimming="CharacterEllipsis">
+                        <TextBlock.Style>
+                            <Style TargetType="TextBlock">
+                                <Setter Property="Foreground" Value="#333"/>
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding IstEintrag}" Value="False">
+                                        <Setter Property="FontWeight" Value="SemiBold"/>
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </TextBlock.Style>
+                    </TextBlock>
+                    <TextBlock Text="{Binding Kurzinfo}" Foreground="#888"
+                               Margin="8,0,0,0" VerticalAlignment="Center"
+                               FontSize="11"/>
+                </StackPanel>
+            </HierarchicalDataTemplate>
+        </ResourceDictionary>
+    </Window.Resources>
+
+    <Grid Margin="16">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <TextBlock Grid.Row="0" TextWrapping="Wrap" Foreground="#333"
+                   Margin="0,0,0,10"
+                   Text="Mitgelieferte Buchungsvorlagen. Die gewählte Vorlage wird in den nächsten freien Vorlagen-Platz übernommen und kann dort weiter angepasst werden."/>
+
+        <DockPanel Grid.Row="1" Margin="0,0,0,10">
+            <TextBlock Text="Suchen:" VerticalAlignment="Center"
+                       Margin="0,0,6,0" Foreground="#333"/>
+            <TextBox x:Name="SuchBox" Padding="4,3"
+                     Text="{Binding Suchtext, UpdateSourceTrigger=PropertyChanged, Delay=150}"
+                     ToolTip="Stichwörter, mit Leerzeichen kombiniert (z.B. &quot;erwerb kleinunternehmer&quot;)"/>
+        </DockPanel>
+
+        <Grid Grid.Row="2">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" MinWidth="240"/>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="300" MinWidth="200"/>
+            </Grid.ColumnDefinitions>
+
+            <Border Grid.Column="0" BorderBrush="#CCC" BorderThickness="1"
+                    Background="White">
+                <Grid>
+                    <TreeView x:Name="Baum" ItemsSource="{Binding Wurzeln}"
+                              BorderThickness="0"
+                              SelectedItemChanged="OnAuswahlGeaendert"
+                              MouseDoubleClick="OnBaumDoppelklick">
+                        <TreeView.ItemContainerStyle>
+                            <Style TargetType="TreeViewItem">
+                                <Setter Property="IsExpanded" Value="{Binding IstAufgeklappt, Mode=TwoWay}"/>
+                                <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+                            </Style>
+                        </TreeView.ItemContainerStyle>
+                    </TreeView>
+
+                    <!-- Leere Bibliothek / keine Treffer -->
+                    <TextBlock Text="{Binding HinweisText}" TextWrapping="Wrap"
+                               Foreground="#777" Margin="12" VerticalAlignment="Top"
+                               Visibility="{Binding ZeigeHinweis, Converter={StaticResource BoolZuSichtbar}}"/>
+                </Grid>
+            </Border>
+
+            <GridSplitter Grid.Column="1" Width="6" HorizontalAlignment="Stretch"
+                          Background="Transparent"/>
+
+            <Border Grid.Column="2" BorderBrush="#CCC" BorderThickness="1"
+                    Background="White" Padding="10">
+                <ScrollViewer VerticalScrollBarVisibility="Auto"
+                              HorizontalScrollBarVisibility="Disabled">
+                    <StackPanel>
+                        <TextBlock Text="{Binding AuswahlUeberschrift}"
+                                   TextWrapping="Wrap" FontWeight="SemiBold"
+                                   Foreground="#333" Margin="0,0,0,8"/>
+                        <TextBlock Text="{Binding AuswahlNotiz}" TextWrapping="Wrap"
+                                   Foreground="#555" LineHeight="18"/>
+                    </StackPanel>
+                </ScrollViewer>
+            </Border>
+        </Grid>
+
+        <DockPanel Grid.Row="3" Margin="0,14,0,0">
+            <!-- Zielplatz: nur die freien Nummern, vorbelegt mit der ersten.
+                 Sind alle 100 belegt, steht hier der Hinweis und
+                 "Übernehmen" bleibt gesperrt. -->
+            <TextBlock DockPanel.Dock="Left" Text="Platz:" VerticalAlignment="Center"
+                       Margin="0,0,6,0" Foreground="#333"
+                       Visibility="{Binding HatFreienSlot, Converter={StaticResource BoolZuSichtbar}}"/>
+            <ComboBox DockPanel.Dock="Left" Width="72" VerticalAlignment="Center"
+                      ItemsSource="{Binding FreieSlots}"
+                      SelectedItem="{Binding GewaehlterSlot, Mode=TwoWay}"
+                      ItemStringFormat="{}{0:D2}"
+                      ToolTip="Vorlagen-Platz, in den die Vorlage übernommen wird (Kurzwahl-Nummer)"
+                      Visibility="{Binding HatFreienSlot, Converter={StaticResource BoolZuSichtbar}}"/>
+            <TextBlock DockPanel.Dock="Left" Text="{Binding SlotHinweis}"
+                       VerticalAlignment="Center" Foreground="#C00000"
+                       TextWrapping="Wrap" Margin="0,0,12,0"/>
+
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                <Button Content="Übernehmen" MinWidth="110" Height="32" Margin="0,0,8,0"
+                        IsDefault="True" Click="OnUebernehmen"
+                        IsEnabled="{Binding KannUebernehmen}"
+                        Style="{StaticResource PrimaryButtonStyle}"/>
+                <Button Content="Schließen" MinWidth="110" Height="32" IsCancel="True"
+                        Style="{StaticResource SecondaryButtonStyle}"/>
+            </StackPanel>
+        </DockPanel>
+    </Grid>
+</Window>
