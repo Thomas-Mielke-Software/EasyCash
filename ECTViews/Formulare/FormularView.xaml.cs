@@ -326,9 +326,9 @@ namespace ECTViews.Formulare
         {
             // Die View haengt per HwndSource in einem nativen Parent --
             // WPF-Owner gibt es nicht, also das native Top-Level-Fenster.
-            var quelle = PresentationSource.FromVisual(this) as HwndSource;
-            if (quelle != null)
-                new WindowInteropHelper(dlg) { Owner = quelle.Handle };
+            // Wichtig: die HwndSource selbst ist ein KIND-Fenster und taugt
+            // als Owner nicht; DialogBesitzer geht darum ueber GA_ROOT hoch.
+            DialogBesitzer.Setze(dlg, this);
         }
 
         private void BearbeiteFeld(FormularFeldDef feld)

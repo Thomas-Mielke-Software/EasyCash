@@ -12,6 +12,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Globalization;
 using System.Linq;
+using System.Text;
 using ECTEngine;
 
 namespace ECTViews.ViewModels
@@ -43,8 +44,9 @@ namespace ECTViews.ViewModels
         public string GruppenVorlageName => _gruppenVorlage?.Text ?? "";
 
         private string _gruppenSummeText = "";
-        /// <summary>Summenzeile: gebuchter Basis-Betrag, Summe der
-        /// Zusatz-Zeilen, verbleibender Rest.</summary>
+        /// <summary>Summenzeile der Gruppe: Basis mit ihrer Richtung, die
+        /// Zusatz-Zeilen je Richtung getrennt (nie über Richtungen hinweg
+        /// addiert) und der ergebnisneutrale Anteil -- siehe BaueSummeText.</summary>
         public string GruppenSummeText
         {
             get => _gruppenSummeText;
@@ -181,11 +183,7 @@ namespace ECTViews.ViewModels
                 for (int i = 0; i < Zusatzzeilen.Count && i < b.Zeilen.Count; i++)
                     Zusatzzeilen[i].UebernimmBerechnung(b.Zeilen[i]);
 
-                decimal summeZeilen = b.Zeilen.Sum(z => z.Brutto);
-                GruppenSummeText =
-                    "Basis bucht " + Waehrungsformat.Betrag(b.BasisGebuchtBrutto)
-                    + " + Zusatz-Zeilen " + Waehrungsformat.Betrag(summeZeilen)
-                    + " (Rest " + Waehrungsformat.Betrag(b.Rest) + ")";
+                GruppenSummeText = BaueSummeText(b);
 
                 GruppenFehlerText = SammleGruppenFehler(b, pruefeManuelle: _validierungAktiv);
             }
@@ -193,6 +191,75 @@ namespace ECTViews.ViewModels
             {
                 _zusatzzeilenRechnenAktiv = false;
             }
+        }
+
+        /// <summary>
+        /// Summenzeile der Gruppe. Leitregel: NIE über Buchungsrichtungen
+        /// hinweg addieren. Eine Gruppe kann Zeilen enthalten, die einander
+        /// aufheben (Reverse Charge: geschuldete USt als Einnahme, Vorsteuer
+        /// als Ausgabe) -- eine Gesamtsumme suggeriert dort eine Bewegung,
+        /// die es nicht gibt. Stattdessen: Basis mit ihrer Richtung, die
+        /// Zusatz-Zeilen je Richtung getrennt, und der Hinweis, welcher
+        /// Anteil über neutrale "/"-Konten läuft und damit den Gewinn gar
+        /// nicht berührt. Alles, was hier steht, ist damit unmittelbar
+        /// nachprüfbar -- es gibt keine Zahl, die erst erklärt werden muss.
+        /// </summary>
+        private string BaueSummeText(GruppenBerechnung b)
+        {
+            string basisArt = IstAusgabe ? "Ausgabe" : "Einnahme";
+            var text = new StringBuilder("Basis " +
+                Waehrungsformat.Betrag(b.BasisGebuchtBrutto) + " " + basisArt);
+
+            var zeilen = b.Zeilen;
+            if (zeilen.Count > 0)
+            {
+                decimal aus = zeilen.Where(z => z.Art == Buchungsart.Ausgabe)
+                                    .Sum(z => z.Brutto);
+                decimal ein = zeilen.Where(z => z.Art == Buchungsart.Einnahme)
+                                    .Sum(z => z.Brutto);
+
+                var teile = new List<string>();
+                if (aus != 0) teile.Add(Waehrungsformat.Betrag(aus) + " Ausgabe");
+                if (ein != 0) teile.Add(Waehrungsformat.Betrag(ein) + " Einnahme");
+                if (teile.Count > 0)
+                    text.Append("; Zusatz ").Append(string.Join(", ", teile));
+
+                // Neutrale Konten ('/'-Präfix) speisen nur die Formulare.
+                var neutrale = zeilen.Where(z => IstNeutralesKonto(z.Konto)).ToList();
+                decimal neutralSumme = neutrale.Sum(z => z.Brutto);
+                if (neutralSumme != 0)
+                    text.Append(neutrale.Count == zeilen.Count
+                        ? " (ergebnisneutral)"
+                        : " (davon " + Waehrungsformat.Betrag(neutralSumme)
+                          + " ergebnisneutral)");
+            }
+
+            text.Append(RestHinweis(b));
+            return text.ToString();
+        }
+
+        private static bool IstNeutralesKonto(string konto)
+            => !string.IsNullOrEmpty(konto) && konto.StartsWith("/");
+
+        /// <summary>
+        /// "(Rest ...)" nur bei Vorlagen, die den Eingabebetrag AUFTEILEN.
+        /// Der Rest ist die Restgröße der Aufteilungs-Mechanik: Eingabe minus
+        /// Zusatz-Zeilen, gedacht als $rest für die BasisBetragFormel (Herkunft
+        /// Privat-Split). Hat die Vorlage keine solche Formel, bucht die Basis
+        /// den vollen Eingabebetrag und die Zeilen kommen OBENDRAUF -- dann
+        /// beschreibt der Rest nichts und liest sich wie ein nicht zugeordneter
+        /// Betrag (typisch bei Reverse Charge: "Basis bucht 18,00 +
+        /// Zusatz-Zeilen 6,84 (Rest 11,16)", obwohl 18,00 gebucht werden).
+        /// </summary>
+        private string RestHinweis(GruppenBerechnung b)
+        {
+            if (string.IsNullOrEmpty(_gruppenVorlage?.BasisBetragFormel)) return "";
+            // Der Normalfall der Aufteilung ist BasisBetrag = "$rest": dann
+            // IST der Rest schon der Basis-Betrag und stünde nur doppelt da.
+            // Interessant wird die Zahl erst, wenn die Formel den Rest NICHT
+            // vollständig aufbraucht -- dann ist wirklich etwas offen.
+            if (b.Rest == b.BasisGebuchtBrutto) return "";
+            return "; nicht zugeordnet " + Waehrungsformat.Betrag(b.Rest);
         }
 
         /// <summary>Basis-Buchung für die LIVE-Berechnung -- tolerant, weil
@@ -429,12 +496,35 @@ namespace ECTViews.ViewModels
                 ? "1 zusätzliche Buchung"
                 : p.Zeilen.Count + " zusätzliche Buchungen";
 
-        /// <summary>Sagt in der Rueckfrage an, was mit dem vorhandenen
-        /// Beschreibungstext passiert (siehe BeschreibungIstAutomatisch).</summary>
+        /// <summary>Sagt in der Rueckfrage an, wie die Beschreibung danach
+        /// lautet (siehe BeschreibungIstAutomatisch, MitVorlagenNamen).</summary>
         private string BeschreibungsHinweis(Preset p)
-            => BeschreibungIstAutomatisch()
-                ? "Als Beschreibung wird \"" + p.Text + "\" eingesetzt."
-                : "Die Beschreibung \"" + Beschreibung + "\" bleibt erhalten.";
+            => "Die Beschreibung lautet dann \""
+               + (BeschreibungIstAutomatisch()
+                    ? (p.Text ?? "").Trim()
+                    : MitVorlagenNamen(p.Text, Beschreibung))
+               + "\".";
+
+        /// <summary>
+        /// Stellt beim Umwandeln den Vorlagen-Namen vor einen selbst
+        /// getippten Beschreibungstext: aus "Hotel Berlin" wird
+        /// "Reverse Charge EU-Eingangsrechnung: Hotel Berlin". Der eigene
+        /// Text bleibt damit erhalten (er ist der Inhalt der Buchung), die
+        /// Gruppe ist aber schon im Journal an der Beschreibung erkennbar.
+        /// Idempotent: traegt der Text den Namen schon vorne, bleibt er wie
+        /// er ist -- sonst stapelten sich die Praefixe bei jedem erneuten
+        /// Umstellen oder Bearbeiten.
+        /// </summary>
+        private static string MitVorlagenNamen(string vorlagenName, string beschreibung)
+        {
+            var name = (vorlagenName ?? "").Trim();
+            var text = (beschreibung ?? "").Trim();
+            if (name.Length == 0) return text;
+            if (text.Length == 0) return name;
+            return text.StartsWith(name, StringComparison.OrdinalIgnoreCase)
+                ? text
+                : name + ": " + text;
+        }
 
         /// <summary>
         /// True, wenn der aktuelle Beschreibungstext NICHT von Hand stammt:

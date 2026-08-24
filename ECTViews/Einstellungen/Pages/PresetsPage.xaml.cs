@@ -187,5 +187,34 @@ namespace ECTViews.EinstellungenUi.Pages
                     "Die Vorlage konnte nicht importiert werden:\n" + fehler,
                     "Buchungsvorlage importieren");
         }
+
+        /// <summary>
+        /// Mitgelieferte Vorlagen-Bibliothek: Auswahl im Dialog, Übernahme
+        /// über denselben Weg wie der Datei-Import.
+        /// </summary>
+        private void OnBibliothek(object sender, RoutedEventArgs e)
+        {
+            var vm = VM;
+            if (vm == null) return;
+
+            string xml = VorlagenBibliothekView.ZeigeDialog(
+                this, vm.FreieSlots(), out int zielSlot);
+            if (xml == null) return;   // abgebrochen
+
+            string fehler;
+            try
+            {
+                fehler = vm.ImportiereXml(xml, zielSlot);
+            }
+            catch (Exception ex)
+            {
+                fehler = ex.Message;
+            }
+
+            if (fehler != null)
+                ZeigeFehler(
+                    "Die Vorlage konnte nicht übernommen werden:\n" + fehler,
+                    "Vorlagen-Bibliothek");
+        }
     }
 }

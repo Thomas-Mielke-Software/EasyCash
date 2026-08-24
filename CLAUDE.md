@@ -209,6 +209,15 @@ Beträge/Prozente auf der C#-Seite laufen IMMER über
   WPF sie überlagert, sonst malt ihr `OnDraw` ständig drüber.
 - **`OnDraw` und `OnUpdate`** der nativen View müssen einen
   `IstJournalWpfAktiv()`-Frühausstieg haben, sonst Race Conditions.
+- **`Window.GetWindow(this)` liefert in gehosteten Views NULL** — es gibt
+  keinen WPF-Window-Vorfahren. Zwei Fehlerbilder, beide schon passiert:
+  `MessageBox.Show(null, …)` wirft eine ArgumentNullException, und ein
+  Dialog ohne Owner rutscht hinter das Hauptfenster. Besitzer muss das
+  native **Top-Level**-Fenster sein; die HwndSource selbst ist ein
+  KIND-Fenster und taugt nicht (`GetAncestor(GA_ROOT)`). Deshalb: Dialoge
+  aus gehosteten Views IMMER über `ECTViews/DialogBesitzer.cs`
+  (`DialogBesitzer.Setze(dialog, view)`), nie den Owner selbst herleiten.
+  Ein Test wacht darüber (`DialogBesitzerKonventionTests`).
 
 ### ViewHost / Listen-Cache
 
@@ -401,7 +410,72 @@ robuster in hosted-WPF-Szenarien.
   Konto/MWSt/AfA kommen aus der Vorlage; **ein selbst getippter
   Beschreibungstext bleibt erhalten** (`BeschreibungIstAutomatisch`: nur ein
   leerer Text oder der Text einer Vorlage wird überschrieben) -- er ist der
-  Inhalt der Buchung und speist als `$B` die Zeilen-Templates.
+  Inhalt der Buchung und speist als `$B` die Zeilen-Templates. Beim
+  Umwandeln in eine GRUPPE wird der Vorlagenname zusätzlich **vorangestellt**
+  ("Reverse Charge EU-Eingangsrechnung: Hotel Berlin", `MitVorlagenNamen`),
+  damit die Art der Buchung im Journal ablesbar bleibt; idempotent, damit
+  sich beim Umstellen/Bearbeiten keine Präfixe stapeln.
+
+### Vorlagen-Bibliothek (mitgeliefert, Stand 2026-08-23)
+- **Kuratierte Sammlung** von Buchungsvorlagen, hierarchisch + über
+  Stichwortsuche eingrenzbar — ergänzend zum Datei-Import, nicht als
+  Ersatz. Knopf "Bibliothek..." auf der PresetsPage neben "Importieren...".
+  Der Dialog lässt den **Ziel-Platz** über ein Dropdown wählen (nur freie
+  Nummern, vorbelegt mit der ersten); `ImportiereXml(xml, zielSlot)` nimmt
+  ihn entgegen, `zielSlot = -1` heißt weiterhin "erster freier".
+- **Als eingebettete Ressource**, NICHT als Dateien im Programmverzeichnis:
+  `ECTEngine/Ressourcen/Vorlagenbibliothek.xml`. Begründung: die Bibliothek
+  gehört zur Programmversion, nicht zum Datenbestand — anders als die
+  .ecf-Formulare ist sie nicht nach Steuerjahr versioniert, nicht
+  länderweise über `Components:` abwählbar und muss damit auch nicht
+  einzeln in `easycash.iss` gepflegt werden. Kein Deployment-Pfad, der
+  fehlschlagen kann (schreibgeschütztes {app}, portable Kopien, Wine).
+- **Format**: verschachtelte `<Abschnitt Titel="...">`, Blätter sind
+  `<Eintrag Titel="..." Stichworte="...">` mit GENAU EINEM
+  `<ECTBuchungsvorlage>`-Element im PresetXml-Austauschformat. Dadurch
+  kein zweiter Vorlagen-Parser: `VorlagenBibliothek` reicht das Element
+  als String an `PresetXml.Importiere` weiter, die Übernahme in den
+  nächsten freien Slot macht `PresetsPageViewModel.ImportiereXml` —
+  derselbe Weg wie beim Datei-Import.
+- **Suche**: UND-verknüpfte Wörter über Titel/Stichworte/Name/Notiz;
+  `Normalisiere()` löst Umlaute und ß auf ("gemass" findet "gemäß").
+  Trifft ein Abschnittstitel, bleibt sein Inhalt vollständig sichtbar.
+- **Inhalt** (14 Vorlagen unter "Auslandsgeschäfte", DE + AT): Übergang der
+  Steuerschuld (Deutschland §13b, Österreich §19, je inkl.
+  Kleinunternehmer-Variante, dazu die für beide Länder gültige
+  Ausgangsrechnung), Innergemeinschaftlicher Warenverkehr (i.g. Lieferung
+  für beide Länder; Wareneinkauf getrennt nach DE 19/7 % und AT 20/10 %),
+  Einfuhr aus dem Drittland (Wareneinkauf, entrichtete EUSt). Die
+  Steuerbeträge laufen über neutrale `/`-Konten (siehe unten), soweit sie
+  sich mit dem Vorsteuerabzug aufheben.
+- **Zwei Regeln bestimmen die Gliederung** (stehen auch im Katalog-Kopf):
+  1. Ein Konto kann nur Felder EINER Richtung tragen — `ErmittleFeldInfo`
+     bricht sonst mit "E/A gemischt" ab. Ein Steuerbetrag, der zugleich
+     den Aufwand erhöhen und in einer Einnahmen-Kennzahl erscheinen muss
+     (Kleinunternehmer), braucht deshalb ZWEI Zeilen.
+  2. DE und AT passen nur dort in eine Vorlage, wo Zeilenzahl UND
+     Buchungsrichtung übereinstimmen. Beim Übergang der Steuerschuld ist
+     das nicht so (DE: Steuer als Einnahmen-KZ 47/85, AT: als
+     Ausgaben-KZ 1057), und die österreichische U30 rechnet die
+     Erwerbsteuer selbst aus (2072 = 1072x20/100, Vorsteuer 1065 als
+     Summenfeld) — Zusatzzeilen wären dort doppelt gezählt. Diese Fälle
+     stehen in Länder-Unterabschnitten, alles andere trägt de- UND
+     at-Block in einer Vorlage.
+- **Tests**: `VorlagenBibliothekTests` prüft Struktur, Suche und dass jede
+  Vorlage über `PresetXml.Importiere` lesbar ist;
+  `VorlagenBibliothekFelderTests` prüft die Spezifikationen gegen die
+  ECHTEN .ecf des Repos (Feld existiert, ist bebuchbar statt Summenfeld,
+  Richtung einheitlich und passend zur Buchungsart). Der reine
+  Syntax-Test allein hätte das E/A-Mischen nicht bemerkt.
+
+### Neutrale Konten ('/'-Präfix)
+Konten, deren Name mit `/` beginnt, speisen ihre verknüpften
+Formularfelder ganz normal, bleiben aber aus Gewinn und EÜR heraus:
+`EinnahmenSumme`/`AusgabenSumme` (easycashdoc.cpp) überspringen sie,
+`EuerBericht` nimmt nur den MwSt-Anteil ("(nur UST)"/"(nur VST)"),
+`UstErklaerungBericht` überspringt sie — der `FormularRechner` kennt die
+Regel bewusst NICHT. Genau daraus entsteht die Neutralität: die
+Voranmeldung wird gefüttert, der Gewinn nicht berührt.
 
 ### Ad-hoc-Kontoselektor / HoleKontoMitFeldern (Stand 2026-07-15)
 - Konto-Feld einer Vorlagen-Zeile (und Basis-Konto eines Presets) kann
@@ -412,6 +486,12 @@ robuster in hosted-WPF-Szenarien.
   mit '|' getrennt, UND-Kombination; aufgelöst wird das ERSTBESTE Konto
   in Slot-Reihenfolge, Einnahmen vor Ausgaben). Erkennungs-Heuristik:
   `$` + zwei Buchstaben + `:` (kollidiert nicht mit Template-Variablen).
+- **Meta-Paar `$name=<Kontoname>`** (2026-08-23): Vorschlag für den
+  Anlage-Dialog statt der aneinandergehängten Feldnamen, pro Land-Block
+  einer. Formularnamen beginnen nie mit '$', darum kollisionsfrei;
+  unbekannte `$`-Schlüssel werden ÜBERSPRUNGEN statt abgelehnt, damit
+  eine ältere Binary (V3-Plugin) eine neuere Spezifikation nicht gegen
+  ein Phantom-Formular verknüpft.
 - Engine: `KontoFeldSelektor.cs` (Parse/LoeseAuf/FindeKonto rein lesend —
   läuft live in `BuchungsgruppenRechner.Berechne`; `ErmittleFeldInfo`
   liest Feldnamen + E/A-Typ aus den .ecf via EUKonten; `ErzeugeKonto`

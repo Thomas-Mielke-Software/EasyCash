@@ -593,7 +593,9 @@
                         <ColumnDefinition Width="Auto"/>
                     </Grid.ColumnDefinitions>
                     <StackPanel Grid.Column="0">
-                        <TextBlock Text="{Binding GruppenSummeText}" Foreground="#333"/>
+                        <TextBlock Text="{Binding GruppenSummeText}" Foreground="#333"
+                                   TextWrapping="Wrap"
+                                   ToolTip="Einnahmen und Ausgaben werden getrennt ausgewiesen, weil sich Zusatz-Zeilen gegenseitig aufheben können. &quot;Ergebnisneutral&quot; heißt: die Zeile läuft über ein Konto, dessen Name mit / beginnt -- sie speist nur die Formulare (z.B. die Umsatzsteuer-Voranmeldung) und berührt den Gewinn nicht."/>
                         <TextBlock Style="{StaticResource ErrorStyle}"
                                    Text="{Binding GruppenFehlerText}"/>
                     </StackPanel>

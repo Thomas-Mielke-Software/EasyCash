@@ -21,6 +21,11 @@
     <Reference Include="System.Xml.Linq" />
   </ItemGroup>
 
+  <!-- Mitgelieferte Buchungsvorlagen (VorlagenBibliothek.cs) -->
+  <ItemGroup>
+    <EmbeddedResource Include="Ressourcen\Vorlagenbibliothek.xml" />
+  </ItemGroup>
+
   <!-- Waehrungsliste.cs: HTTP-Abruf der ect-forex-API + JSON-Parsen
        (JavaScriptSerializer liegt in System.Web.Extensions). -->
   <ItemGroup>

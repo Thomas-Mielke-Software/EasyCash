@@ -54,22 +54,30 @@
 
             <!-- Master: Liste der Presets + Buttons -->
             <DockPanel Grid.Column="0">
-                <StackPanel DockPanel.Dock="Bottom" Margin="0,8,0,0">
-                    <StackPanel Orientation="Horizontal">
+                <!-- WrapPanel statt StackPanel: die Listenspalte ist schmal
+                     (220 px, MinWidth 160), nebeneinander passen die Knöpfe
+                     dort nicht. Der untere Rand von 6 an jedem Knopf ist der
+                     Zeilenabstand, wenn umbrochen wird; -6 am Container
+                     schluckt ihn in der letzten Zeile wieder. -->
+                <StackPanel DockPanel.Dock="Bottom" Margin="0,8,0,-6">
+                    <WrapPanel>
                         <Button Content="Neu" Click="OnNeu"
-                                Padding="12,4" Margin="0,0,6,0"/>
+                                Padding="12,4" Margin="0,0,6,6"/>
                         <Button Content="Löschen" Command="{Binding LoeschenCommand}"
-                                Padding="12,4"/>
-                    </StackPanel>
-                    <StackPanel Orientation="Horizontal" Margin="0,6,0,0">
+                                Padding="12,4" Margin="0,0,6,6"/>
+                    </WrapPanel>
+                    <WrapPanel>
                         <Button Content="Exportieren..." Click="OnExportieren"
                                 IsEnabled="{Binding HatAuswahl}"
-                                Padding="12,4" Margin="0,0,6,0"
+                                Padding="12,4" Margin="0,0,6,6"
                                 ToolTip="Ausgewählte Vorlage als XML-Datei speichern (zum Teilen, z.B. im Forum)"/>
                         <Button Content="Importieren..." Click="OnImportieren"
-                                Padding="12,4"
+                                Padding="12,4" Margin="0,0,6,6"
                                 ToolTip="Buchungsvorlage aus XML-Datei in einen freien Vorlagen-Platz übernehmen"/>
-                    </StackPanel>
+                        <Button Content="Bibliothek..." Click="OnBibliothek"
+                                Padding="12,4" Margin="0,0,6,6"
+                                ToolTip="Mitgelieferte Buchungsvorlagen durchsuchen und übernehmen"/>
+                    </WrapPanel>
                 </StackPanel>
                 <Border BorderBrush="#E0E0E0" BorderThickness="1">
                     <ListBox ItemsSource="{Binding Presets}"

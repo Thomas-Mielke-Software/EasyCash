@@ -558,9 +558,19 @@ namespace ECTViews.ViewModels
             // Ausnahme: beim Bearbeiten/Umwandeln bleibt ein selbst getippter
             // Beschreibungstext stehen -- er ist der Inhalt der Buchung, der
             // Vorlagenname nur deren Etikett (siehe BeschreibungIstAutomatisch).
+            // Beim Umwandeln in eine GRUPPE wird der Vorlagenname zusaetzlich
+            // vorangestellt ("Reverse Charge EU-Eingangsrechnung: Hotel
+            // Berlin"), damit im Journal erkennbar bleibt, worum es sich
+            // handelt, ohne den eigenen Text zu verlieren (MitVorlagenNamen).
+            string beschreibungNeu = null;
             if (!beschreibungErhalten || BeschreibungIstAutomatisch())
+                beschreibungNeu = p.Text;
+            else if (p.IstMehrzeilig)
+                beschreibungNeu = MitVorlagenNamen(p.Text, Beschreibung);
+
+            if (beschreibungNeu != null
+                && !string.Equals(beschreibungNeu, Beschreibung, StringComparison.Ordinal))
             {
-                var beschreibungNeu = p.Text;
                 System.Windows.Threading.Dispatcher.CurrentDispatcher.BeginInvoke(
                     new Action(() =>
                     {

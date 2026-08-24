@@ -108,20 +108,37 @@ namespace ECTViews.EinstellungenUi.Pages
             => _ausgewaehlt == null
                 ? null : PresetXml.Exportiere(_ausgewaehlt.NachModell());
 
-        /// <summary>Importiert eine XML-Vorlage in den nächsten freien Slot
-        /// und selektiert sie. Liefert null bei Erfolg, sonst den Fehlertext
-        /// (die Seite zeigt ihn als MessageBox).</summary>
-        public string ImportiereXml(string xml)
+        /// <summary>Alle freien Vorlagen-Plätze in aufsteigender Reihenfolge
+        /// (Grundlage für die Platz-Auswahl der Bibliothek).</summary>
+        public IReadOnlyList<int> FreieSlots()
+        {
+            var alle = Einstellungen.Presets;
+            var frei = new List<int>();
+            for (int i = 0; i < alle.Count; i++)
+                if (alle[i].IstLeer && Presets.All(x => x.Index != i)) frei.Add(i);
+            return frei;
+        }
+
+        /// <summary>Importiert eine XML-Vorlage und selektiert sie. Ohne
+        /// <paramref name="zielSlot"/> (-1) landet sie im ersten freien Platz.
+        /// Liefert null bei Erfolg, sonst den Fehlertext (die Seite zeigt ihn
+        /// als MessageBox).</summary>
+        public string ImportiereXml(string xml, int zielSlot = -1)
         {
             Preset p;
             try { p = PresetXml.Importiere(xml); }
             catch (FormatException ex) { return ex.Message; }
 
-            var alle = Einstellungen.Presets;
-            int frei = -1;
-            for (int i = 0; i < alle.Count; i++)
-                if (alle[i].IstLeer && Presets.All(x => x.Index != i)) { frei = i; break; }
-            if (frei < 0) return "Alle 100 Vorlagen-Plätze sind belegt.";
+            var freie = FreieSlots();
+            if (freie.Count == 0) return "Alle 100 Vorlagen-Plätze sind belegt.";
+
+            int frei;
+            if (zielSlot < 0)
+                frei = freie[0];
+            else if (freie.Contains(zielSlot))
+                frei = zielSlot;
+            else
+                return $"Platz {zielSlot:D2} ist bereits belegt.";
 
             Einstellungen.SpeicherePreset(frei, p);
             var item = new PresetItem(frei, p, this);
