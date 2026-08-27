@@ -30,6 +30,13 @@ namespace ECTViews.Views
 
             // Balloon schliessen, wenn das Fenster geschlossen wird.
             Closed += (s, e) => { _notizTimer.Stop(); NotizBalloon.IsOpen = false; };
+
+            // Alt-Kuerzel der Icon-Listen (siehe OnFensterPreviewKeyDown).
+            PreviewKeyDown += OnFensterPreviewKeyDown;
+            PreviewKeyUp += OnFensterPreviewKeyUp;
+            // Mit gedruecktem Alt weggeschaltet (Alt+Tab): das KeyUp kommt
+            // dann nicht mehr an, die Schilder blieben sonst stehen.
+            Deactivated += (s, e) => VersteckeAltHinweise();
         }
 
         public BuchungView(BuchungViewModel viewModel) : this()
@@ -122,6 +129,147 @@ namespace ECTViews.Views
                 box.Focus();
                 e.Handled = true;
             }
+        }
+
+        // ----------------------------------------------------------
+        // Alt-Kuerzel fuer die Icon-Listen
+        //
+        // Alt+1..Alt+9 und Alt+0 waehlen die ersten ZEHN Bestandskonten,
+        // Strg+Alt+<Ziffer> die ersten zehn Betriebe (Pendant zu
+        // IDC_ALT1..IDC_ALT6 im MFC-Original, dort als kleine Knoepfe unter
+        // den Listen). Solange Alt gedrueckt ist, zeigen die Listeneintraege
+        // ihr Kuerzel.
+        //
+        // Alt kommt in WPF nicht als normaler Tastendruck herein: e.Key ist
+        // dann Key.System, die eigentliche Taste steht in e.SystemKey.
+        // ----------------------------------------------------------
+
+        /// <summary>Die tatsaechlich gedrueckte Taste -- bei gehaltenem Alt
+        /// liefert WPF Key.System und die echte Taste in SystemKey.</summary>
+        private static Key EchteTaste(KeyEventArgs e)
+        {
+            return e.Key == Key.System ? e.SystemKey : e.Key;
+        }
+
+        /// <summary>Ziffer 0-9 der Taste, sonst -1 (nur die Zifferreihe --
+        /// der Ziffernblock bleibt frei fuer Alt+Zahlencode-Eingaben).</summary>
+        private static int ZifferAus(Key taste)
+        {
+            if (taste >= Key.D0 && taste <= Key.D9) return taste - Key.D0;
+            return -1;
+        }
+
+        /// <summary>
+        /// True, wenn die gedrueckte Strg+Alt-Kombination in Wahrheit AltGr
+        /// ist. Windows meldet AltGr als linkes Strg PLUS rechtes Alt -- ohne
+        /// diese Unterscheidung wuerde die deutsche Tastatur ihre AltGr-Zeichen
+        /// verlieren (AltGr+8 = '[', AltGr+7 = '{', AltGr+3 = '³' ...), weil
+        /// wir sie als Betriebs-Kuerzel wegfangen.
+        /// </summary>
+        private static bool IstAltGr()
+        {
+            return Keyboard.IsKeyDown(Key.RightAlt);
+        }
+
+        private void OnFensterPreviewKeyDown(object sender, KeyEventArgs e)
+        {
+            if (!(DataContext is BuchungViewModel vm)) return;
+
+            var taste = EchteTaste(e);
+
+            if (taste == Key.LeftAlt || taste == Key.RightAlt)
+            {
+                vm.AltHinweiseSichtbar = true;
+                return;
+            }
+
+            if ((Keyboard.Modifiers & ModifierKeys.Alt) != ModifierKeys.Alt) return;
+
+            int ziffer = ZifferAus(taste);
+            if (ziffer < 0) return;
+
+            bool mitStrg = (Keyboard.Modifiers & ModifierKeys.Control) == ModifierKeys.Control;
+            if (mitStrg && IstAltGr()) return;   // AltGr-Zeichen durchlassen
+
+            vm.WaehleUeberHotkey(ziffer, betrieb: mitStrg);
+            // Auch dann als erledigt melden, wenn die Liste den Eintrag nicht
+            // hat: sonst quittiert Windows das Kuerzel mit einem Piepton.
+            e.Handled = true;
+        }
+
+        private void OnFensterPreviewKeyUp(object sender, KeyEventArgs e)
+        {
+            var taste = EchteTaste(e);
+            if (taste != Key.LeftAlt && taste != Key.RightAlt) return;
+
+            VersteckeAltHinweise();
+
+            // Losgelassenes Alt NICHT an DefWindowProc durchreichen: Windows
+            // macht daraus SC_KEYMENU und schaltet das Fenster in den
+            // Menue-Modus. Weil dieses Fenster keine Menueleiste hat, landet
+            // die Auswahl auf dem SYSTEMMENUE -- unsichtbar, bis der naechste
+            // Druck auf Return/Leertaste/Pfeil-ab es aufklappt. Genau das
+            // passierte nach einem Blick auf die Alt-Kuerzel: das naechste
+            // Return im Beschreibungsfeld oeffnete das Fenstermenue statt zu
+            // buchen. Alt+Leertaste erreicht das Systemmenue weiterhin.
+            e.Handled = true;
+        }
+
+        /// <summary>Blendet die Kuerzel-Schilder wieder aus. Auch noetig, wenn
+        /// das Fenster mit gedruecktem Alt verlassen wird (Alt+Tab) -- das
+        /// KeyUp kommt dann nie an.</summary>
+        private void VersteckeAltHinweise()
+        {
+            if (DataContext is BuchungViewModel vm)
+                vm.AltHinweiseSichtbar = false;
+        }
+
+        // ----------------------------------------------------------
+        // Automatischer Feldwechsel in der Datumszeile
+        //
+        // Pendant zu BuchenDlg::OnChangeDatumTag/-Monat/-Jahr: sobald das Feld
+        // voll getippt ist (2 Ziffern bei Tag/Monat, 4 beim Jahr) und der
+        // Cursor am Ende steht, springt der Fokus ins naechste Feld. Anders als
+        // im Original ist das naechste Feld nach dem Datum die BESCHREIBUNG --
+        // sie steht in dieser Maske vor dem Betrag, weil die Wahl einer
+        // Buchungsvorlage die MWSt. setzt.
+        //
+        // Wichtig: nur reagieren, wenn das Feld auch den Tastaturfokus hat.
+        // Sonst wuerde ein programmatisches Befuellen der Datumsfelder
+        // (SetzeFrischesDatum beim Oeffnen/Weiterbuchen) den Fokus verschieben.
+        // ----------------------------------------------------------
+
+        /// <summary>True, wenn das Feld gerade per Tastatur bis zur vollen
+        /// Laenge <paramref name="laenge"/> gefuellt wurde und der Cursor ohne
+        /// Selektion am Ende steht (Pendant zu GetSel(m,n) mit m==n==Laenge).</summary>
+        private static bool FeldVollGetippt(object sender, int laenge)
+        {
+            var box = sender as TextBox;
+            return box != null
+                && box.IsKeyboardFocused
+                && box.Text.Length == laenge
+                && box.SelectionLength == 0
+                && box.CaretIndex == laenge;
+        }
+
+        private void OnDatumTagTextChanged(object sender, TextChangedEventArgs e)
+        {
+            if (FeldVollGetippt(sender, 2))
+                MonatBox.Focus();
+        }
+
+        private void OnDatumMonatTextChanged(object sender, TextChangedEventArgs e)
+        {
+            if (!FeldVollGetippt(sender, 2)) return;
+            // Ist das Jahresfeld gesperrt, wird es uebersprungen (wie nativ).
+            if (JahrBox.IsEnabled) JahrBox.Focus();
+            else BeschreibungBox.Focus();
+        }
+
+        private void OnDatumJahrTextChanged(object sender, TextChangedEventArgs e)
+        {
+            if (FeldVollGetippt(sender, 4))
+                BeschreibungBox.Focus();
         }
 
         /// <summary>Dropdown-Knopf neben dem Beschreibungsfeld: klappt die

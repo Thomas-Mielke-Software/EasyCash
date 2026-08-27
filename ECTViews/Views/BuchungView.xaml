@@ -77,9 +77,6 @@
         <!-- Konverter: bool → Visibility (Collapsed bei false) -->
         <BooleanToVisibilityConverter x:Key="BoolToVis"/>
 
-        <!-- Konverter: 0 → leeres Feld (Tag/Monat ohne Vorbelegung) -->
-        <local:LeereZahlConverter x:Key="LeereZahl"/>
-
         <!-- PrimaryButtonStyle/SecondaryButtonStyle kommen aus
              GemeinsameStile.xaml (MergedDictionaries oben). -->
 
@@ -88,13 +85,42 @@
              die Image-Größe — funktioniert egal ob die Quell-Sprites 16x16,
              32x32 oder andere Größen verwenden. -->
         <DataTemplate x:Key="IconItemTemplate">
-            <StackPanel Orientation="Horizontal">
-                <Image Source="{Binding Icon}" Width="32" Height="32"
+            <!-- LastChildFill=False + rechts angedocktes Kuerzel-Schild: so
+                 verschiebt das Ein-/Ausblenden des Hinweises Icon und Name
+                 nicht. Braucht HorizontalContentAlignment=Stretch an der
+                 ListBox, sonst ist die Zeile nur so breit wie ihr Inhalt. -->
+            <DockPanel LastChildFill="False">
+                <Image DockPanel.Dock="Left" Source="{Binding Icon}"
+                       Width="32" Height="32"
                        Margin="0,0,8,0" Stretch="Uniform"
                        VerticalAlignment="Center"/>
-                <TextBlock Text="{Binding Name}"
-                           VerticalAlignment="Center" FontSize="13"/>
-            </StackPanel>
+                <TextBlock DockPanel.Dock="Left" Text="{Binding Name}"
+                           VerticalAlignment="Center" FontSize="13"
+                           TextTrimming="CharacterEllipsis"/>
+                <!-- Kuerzel-Schild: nur sichtbar, solange Alt gedrueckt ist
+                     (BuchungViewModel.AltHinweiseSichtbar) und der Eintrag
+                     ueberhaupt ein Kuerzel hat (die ersten fuenf). -->
+                <Border x:Name="HotkeySchild" DockPanel.Dock="Right"
+                        Visibility="Collapsed"
+                        Background="#FFF3C4" BorderBrush="#D4A72C"
+                        BorderThickness="1" CornerRadius="3"
+                        Padding="4,0" Margin="8,0,2,0"
+                        VerticalAlignment="Center">
+                    <TextBlock Text="{Binding Hotkey}" FontSize="11"
+                               Foreground="#5D4A00"/>
+                </Border>
+            </DockPanel>
+            <DataTemplate.Triggers>
+                <MultiDataTrigger>
+                    <MultiDataTrigger.Conditions>
+                        <Condition Binding="{Binding HatHotkey}" Value="True"/>
+                        <Condition Binding="{Binding DataContext.AltHinweiseSichtbar,
+                                             RelativeSource={RelativeSource AncestorType=Window}}"
+                                   Value="True"/>
+                    </MultiDataTrigger.Conditions>
+                    <Setter TargetName="HotkeySchild" Property="Visibility" Value="Visible"/>
+                </MultiDataTrigger>
+            </DataTemplate.Triggers>
         </DataTemplate>
         </ResourceDictionary>
     </Window.Resources>
@@ -103,8 +129,8 @@
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>  <!-- Buchungsart -->
             <RowDefinition Height="Auto"/>  <!-- Datum -->
-            <RowDefinition Height="Auto"/>  <!-- Betrag + MWSt -->
             <RowDefinition Height="Auto"/>  <!-- Beschreibung -->
+            <RowDefinition Height="Auto"/>  <!-- Betrag + MWSt -->
             <RowDefinition Height="Auto"/>  <!-- Belegnummer + Konto -->
             <RowDefinition Height="Auto"/>  <!-- Bestandskonto + Betrieb -->
             <RowDefinition Height="Auto"/>  <!-- AfA -->
@@ -133,33 +159,122 @@
                 <StackPanel Orientation="Horizontal">
                     <TextBlock Text="Tag:" Style="{StaticResource LabelStyle}"/>
                     <TextBox x:Name="TagBox"
-                             Text="{Binding DatumTag, UpdateSourceTrigger=PropertyChanged, Converter={StaticResource LeereZahl}}"
+                             Text="{Binding DatumTagText, UpdateSourceTrigger=PropertyChanged}"
                              Width="40" MaxLength="2" TextAlignment="Center"
                              GotKeyboardFocus="OnFeldGotKeyboardFocus"
+                             TextChanged="OnDatumTagTextChanged"
                              PreviewMouseLeftButtonDown="OnFeldPreviewMouseLeftButtonDown"/>
                     <TextBlock Text="." VerticalAlignment="Center" Margin="2,0"/>
                     <TextBlock Text="Monat:" Style="{StaticResource LabelStyle}" Margin="8,0,8,0"/>
-                    <TextBox Text="{Binding DatumMonat, UpdateSourceTrigger=PropertyChanged, Converter={StaticResource LeereZahl}}"
+                    <TextBox x:Name="MonatBox"
+                             Text="{Binding DatumMonatText, UpdateSourceTrigger=PropertyChanged}"
                              Width="40" MaxLength="2" TextAlignment="Center"
                              GotKeyboardFocus="OnFeldGotKeyboardFocus"
+                             TextChanged="OnDatumMonatTextChanged"
                              PreviewMouseLeftButtonDown="OnFeldPreviewMouseLeftButtonDown"/>
                     <TextBlock Text="." VerticalAlignment="Center" Margin="2,0"/>
                     <TextBlock Text="Jahr:" Style="{StaticResource LabelStyle}" Margin="8,0,8,0"/>
-                    <TextBox Text="{Binding DatumJahr, UpdateSourceTrigger=PropertyChanged}"
+                    <TextBox x:Name="JahrBox"
+                             Text="{Binding DatumJahrText, UpdateSourceTrigger=PropertyChanged}"
                              Width="60" MaxLength="4" TextAlignment="Center"
                              IsEnabled="{Binding BuchungsjahrFeldAktiviert}"
                              ToolTip="{Binding BuchungsjahrFeldHinweis}"
                              ToolTipService.ShowOnDisabled="True"
                              GotKeyboardFocus="OnFeldGotKeyboardFocus"
+                             TextChanged="OnDatumJahrTextChanged"
                              PreviewMouseLeftButtonDown="OnFeldPreviewMouseLeftButtonDown"/>
+                    <!-- Haekchen direkt am Jahresfeld (Pendant zu
+                         IDC_JAHR_ENABLED im MFC-Original): schaltet das
+                         Jahresfeld frei und merkt sich das global in den
+                         Einstellungen.
+                         IsTabStop=False: die Checkbox steht mitten im
+                         Eingabefluss, soll ihn aber nicht aufhalten. Per
+                         Tastatur bleibt sie ueber ihr Kuerzel Alt+N
+                         erreichbar (das "n" in "aenderbar"). -->
+                    <CheckBox Content="ä_nderbar" Margin="8,0,0,0"
+                              VerticalAlignment="Center" IsTabStop="False"
+                              IsChecked="{Binding BuchungsjahrFeldAktiviert, Mode=TwoWay}"
+                              ToolTip="Buchungsjahr-Feld zum Bearbeiten freigeben (Alt+N; Einstellung gilt dauerhaft, wie Einstellungen -> Allgemein)"/>
                 </StackPanel>
                 <TextBlock Style="{StaticResource ErrorStyle}"
                            Text="{Binding DatumError}"/>
             </StackPanel>
         </GroupBox>
 
-        <!-- ═══ Zeile 2: Betrag + MWSt ═══ -->
-        <GroupBox Grid.Row="2" Header="Betrag">
+        <!-- ═══ Zeile 2: Beschreibung ═══ -->
+        <GroupBox Grid.Row="2" Header="Beschreibung">
+            <StackPanel>
+                <!-- Echtes TextBox (kein ComboBox): so stoert das Filtern der
+                     Vorschlagsliste das Editierfeld/den Cursor NICHT. Der
+                     Dropdown-Knopf rechts ersetzt den ComboBox-Pfeil des
+                     Originals: er klappt die UNGEFILTERTE Vorlagen-Liste auf. -->
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+                    <TextBox Grid.Column="0" x:Name="BeschreibungBox"
+                             Text="{Binding Beschreibung, UpdateSourceTrigger=PropertyChanged}"
+                             LostFocus="OnBeschreibungLostFocus"
+                             GotKeyboardFocus="OnFeldGotKeyboardFocus"
+                             PreviewMouseLeftButtonDown="OnFeldPreviewMouseLeftButtonDown"/>
+                    <!-- Focusable=False: der Klick darf dem Beschreibungsfeld
+                         nicht den Fokus stehlen, sonst schoesse dessen
+                         LostFocus-Handler das frisch geoeffnete Popup zu. -->
+                    <Button Grid.Column="1" Width="22" Margin="2,2,0,2"
+                            Focusable="False"
+                            Click="OnVorschlaegeKnopf"
+                            ToolTip="{Binding VorschlaegeKnopfTooltip}">
+                        <Path Data="M 0 0 L 8 0 L 4 5 Z" Fill="#555"
+                              HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                    </Button>
+                </Grid>
+
+                <!-- Vorschlags-Liste (Auto-Complete) als Popup unter dem Feld.
+                     Filtert nach Nummer ODER Beschreibungstext. -->
+                <Popup PlacementTarget="{Binding ElementName=BeschreibungBox}"
+                       Placement="Bottom" StaysOpen="True"
+                       IsOpen="{Binding VorschlaegeOffen, Mode=TwoWay}"
+                       MinWidth="{Binding ActualWidth, ElementName=BeschreibungBox}">
+                    <Border Background="White" BorderBrush="#999999" BorderThickness="1">
+                        <ListBox ItemsSource="{Binding PresetVorschlaege}"
+                                 DisplayMemberPath="Anzeige"
+                                 SelectedItem="{Binding GewaehlterVorschlag, Mode=TwoWay}"
+                                 MaxHeight="220"
+                                 ScrollViewer.HorizontalScrollBarVisibility="Disabled"/>
+                    </Border>
+                </Popup>
+
+                <TextBlock Style="{StaticResource ErrorStyle}"
+                           Text="{Binding BeschreibungError}"/>
+
+                <!-- Balloon: zeigt die Preset-Notiz fuer ein paar Sekunden,
+                     wenn ein Preset mit Notiz ausgewaehlt wurde. -->
+                <Popup x:Name="NotizBalloon"
+                       PlacementTarget="{Binding ElementName=BeschreibungBox}"
+                       Placement="Bottom" AllowsTransparency="True"
+                       StaysOpen="True" PopupAnimation="Fade"
+                       HorizontalOffset="8" VerticalOffset="2">
+                    <Border Background="#FFFDE7" BorderBrush="#E0C46C" BorderThickness="1"
+                            CornerRadius="3" Padding="10,7" MaxWidth="360"
+                            SnapsToDevicePixels="True">
+                        <Border.Effect>
+                            <DropShadowEffect Color="#888888" BlurRadius="8"
+                                              ShadowDepth="2" Opacity="0.5"/>
+                        </Border.Effect>
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="&#128161;" FontSize="14" Margin="0,0,8,0"
+                                       VerticalAlignment="Top"/>
+                            <TextBlock x:Name="NotizText" TextWrapping="Wrap"
+                                       Foreground="#5D4A00"/>
+                        </StackPanel>
+                    </Border>
+                </Popup>
+            </StackPanel>
+        </GroupBox>
+
+        <!-- ═══ Zeile 3: Betrag + MWSt ═══ -->
+        <GroupBox Grid.Row="3" Header="Betrag">
             <Grid>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="Auto"/>
@@ -232,78 +347,6 @@
             </Grid>
         </GroupBox>
 
-        <!-- ═══ Zeile 3: Beschreibung ═══ -->
-        <GroupBox Grid.Row="3" Header="Beschreibung">
-            <StackPanel>
-                <!-- Echtes TextBox (kein ComboBox): so stoert das Filtern der
-                     Vorschlagsliste das Editierfeld/den Cursor NICHT. Der
-                     Dropdown-Knopf rechts ersetzt den ComboBox-Pfeil des
-                     Originals: er klappt die UNGEFILTERTE Vorlagen-Liste auf. -->
-                <Grid>
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="*"/>
-                        <ColumnDefinition Width="Auto"/>
-                    </Grid.ColumnDefinitions>
-                    <TextBox Grid.Column="0" x:Name="BeschreibungBox"
-                             Text="{Binding Beschreibung, UpdateSourceTrigger=PropertyChanged}"
-                             LostFocus="OnBeschreibungLostFocus"
-                             GotKeyboardFocus="OnFeldGotKeyboardFocus"
-                             PreviewMouseLeftButtonDown="OnFeldPreviewMouseLeftButtonDown"/>
-                    <!-- Focusable=False: der Klick darf dem Beschreibungsfeld
-                         nicht den Fokus stehlen, sonst schoesse dessen
-                         LostFocus-Handler das frisch geoeffnete Popup zu. -->
-                    <Button Grid.Column="1" Width="22" Margin="2,2,0,2"
-                            Focusable="False"
-                            Click="OnVorschlaegeKnopf"
-                            ToolTip="{Binding VorschlaegeKnopfTooltip}">
-                        <Path Data="M 0 0 L 8 0 L 4 5 Z" Fill="#555"
-                              HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                    </Button>
-                </Grid>
-
-                <!-- Vorschlags-Liste (Auto-Complete) als Popup unter dem Feld.
-                     Filtert nach Nummer ODER Beschreibungstext. -->
-                <Popup PlacementTarget="{Binding ElementName=BeschreibungBox}"
-                       Placement="Bottom" StaysOpen="True"
-                       IsOpen="{Binding VorschlaegeOffen, Mode=TwoWay}"
-                       MinWidth="{Binding ActualWidth, ElementName=BeschreibungBox}">
-                    <Border Background="White" BorderBrush="#999999" BorderThickness="1">
-                        <ListBox ItemsSource="{Binding PresetVorschlaege}"
-                                 DisplayMemberPath="Anzeige"
-                                 SelectedItem="{Binding GewaehlterVorschlag, Mode=TwoWay}"
-                                 MaxHeight="220"
-                                 ScrollViewer.HorizontalScrollBarVisibility="Disabled"/>
-                    </Border>
-                </Popup>
-
-                <TextBlock Style="{StaticResource ErrorStyle}"
-                           Text="{Binding BeschreibungError}"/>
-
-                <!-- Balloon: zeigt die Preset-Notiz fuer ein paar Sekunden,
-                     wenn ein Preset mit Notiz ausgewaehlt wurde. -->
-                <Popup x:Name="NotizBalloon"
-                       PlacementTarget="{Binding ElementName=BeschreibungBox}"
-                       Placement="Bottom" AllowsTransparency="True"
-                       StaysOpen="True" PopupAnimation="Fade"
-                       HorizontalOffset="8" VerticalOffset="2">
-                    <Border Background="#FFFDE7" BorderBrush="#E0C46C" BorderThickness="1"
-                            CornerRadius="3" Padding="10,7" MaxWidth="360"
-                            SnapsToDevicePixels="True">
-                        <Border.Effect>
-                            <DropShadowEffect Color="#888888" BlurRadius="8"
-                                              ShadowDepth="2" Opacity="0.5"/>
-                        </Border.Effect>
-                        <StackPanel Orientation="Horizontal">
-                            <TextBlock Text="&#128161;" FontSize="14" Margin="0,0,8,0"
-                                       VerticalAlignment="Top"/>
-                            <TextBlock x:Name="NotizText" TextWrapping="Wrap"
-                                       Foreground="#5D4A00"/>
-                        </StackPanel>
-                    </Border>
-                </Popup>
-            </StackPanel>
-        </GroupBox>
-
         <!-- ═══ Zeile 4: Belegnummer + Konto ═══ -->
         <GroupBox Grid.Row="4" Header="Zuordnung">
             <Grid>
@@ -345,6 +388,7 @@
                                    SelectedItem="{Binding SelectedBestandskonto}"
                                    ItemTemplate="{StaticResource IconItemTemplate}"
                                    Height="160"
+                                   HorizontalContentAlignment="Stretch"
                                    ScrollViewer.VerticalScrollBarVisibility="Auto"/>
                     <TextBlock Style="{StaticResource ErrorStyle}"
                                Text="{Binding BestandskontoError}"/>
@@ -359,6 +403,7 @@
                              SelectedItem="{Binding SelectedBetrieb}"
                              ItemTemplate="{StaticResource IconItemTemplate}"
                              Height="160"
+                             HorizontalContentAlignment="Stretch"
                              ScrollViewer.VerticalScrollBarVisibility="Auto"/>
                     <TextBlock Style="{StaticResource ErrorStyle}"
                                Text="{Binding BetriebError}"/>
@@ -629,8 +674,8 @@
                     Style="{StaticResource SecondaryButtonStyle}"/>
         </StackPanel>
 
-        <!-- Fortschritts-Overlay des Waehrungsrechners ueber Betrag (Zeile 2)
-             und Beschreibung (Zeile 3): waehrend der asynchronen Kursabfrage
+        <!-- Fortschritts-Overlay des Waehrungsrechners ueber Beschreibung (Zeile 2)
+             und Betrag (Zeile 3): waehrend der asynchronen Kursabfrage
              sichtbar, mit Abbrechen-Moeglichkeit. Als letztes Grid-Kind = liegt
              optisch oben (Issue #21: keine einfrierende/haengende Oberflaeche). -->
         <Border Grid.Row="2" Grid.RowSpan="2" Panel.ZIndex="100"

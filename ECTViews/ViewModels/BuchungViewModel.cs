@@ -131,44 +131,91 @@ namespace ECTViews.ViewModels
 
         // ----------------------------------------------
         // Datum (drei Felder wie im Original)
+        //
+        // Gebunden wird der ROHE TEXT der Felder, nicht der Zahlenwert. Eine
+        // int-Bindung schrieb waehrend des Tippens den formatierten Wert ins
+        // Feld zurueck: aus "01" wurde sofort "1" -- die fuehrende Null
+        // verschwand, und der automatische Feldwechsel bei zwei Ziffern kam
+        // nie zustande (die Eingabe "01" ist aber genau der bequeme Weg, ihn
+        // auszuloesen). Wie im Original (schlichte EDIT-Felder, kein
+        // ES_NUMBER) bleibt jetzt stehen, was getippt wurde.
+        //
+        // Die int-Properties bleiben als Sicht auf den Text erhalten, damit
+        // der Rest des ViewModels unveraendert mit Zahlen rechnet. Sie
+        // begrenzen NICHT mehr auf 1..31 bzw. 1..12 -- ein Zurechtbiegen
+        // waehrend des Tippens waere dieselbe Bevormundung; unsinnige Werte
+        // meldet ValidiereDatum.
         // ----------------------------------------------
 
-        private int _datumTag;
+        /// <summary>Wert eines Datumsfelds; 0 = leer/unlesbar.</summary>
+        private static int ZahlAusFeld(string text)
+        {
+            return int.TryParse((text ?? "").Trim(), NumberStyles.Integer,
+                CultureInfo.InvariantCulture, out int n) && n > 0 ? n : 0;
+        }
+
+        /// <summary>Feldtext fuer einen Wert; 0 (und kleiner) = leeres Feld.</summary>
+        private static string FeldAusZahl(int wert)
+        {
+            return wert <= 0 ? "" : wert.ToString(CultureInfo.InvariantCulture);
+        }
+
+        private string _datumTagText = "";
+        public string DatumTagText
+        {
+            get => _datumTagText;
+            set
+            {
+                if (!SetProperty(ref _datumTagText, value ?? "")) return;
+                OnPropertyChanged(nameof(DatumTag));
+                ValidiereFeldFallsAktiv(ValidiereDatum);
+            }
+        }
+
+        private string _datumMonatText = "";
+        public string DatumMonatText
+        {
+            get => _datumMonatText;
+            set
+            {
+                if (!SetProperty(ref _datumMonatText, value ?? "")) return;
+                OnPropertyChanged(nameof(DatumMonat));
+                BerechneRestwertHeuristisch();
+                ValidiereFeldFallsAktiv(ValidiereDatum);
+            }
+        }
+
+        private string _datumJahrText = "";
+        public string DatumJahrText
+        {
+            get => _datumJahrText;
+            set
+            {
+                if (!SetProperty(ref _datumJahrText, value ?? "")) return;
+                OnPropertyChanged(nameof(DatumJahr));
+                ValidiereFeldFallsAktiv(ValidiereDatum);
+            }
+        }
+
+        /// <summary>Tag der Buchung; 0 = leeres Feld (noch nicht eingegeben).</summary>
         public int DatumTag
         {
-            // 0 = leeres Feld (noch nicht eingegeben); sonst auf 1..31 begrenzt.
-            get => _datumTag;
-            set
-            {
-                if (SetProperty(ref _datumTag, Math.Max(0, Math.Min(31, value))))
-                    ValidiereFeldFallsAktiv(ValidiereDatum);
-            }
+            get => ZahlAusFeld(_datumTagText);
+            set => DatumTagText = FeldAusZahl(value);
         }
 
-        private int _datumMonat;
+        /// <summary>Monat der Buchung; 0 = leeres Feld.</summary>
         public int DatumMonat
         {
-            // 0 = leeres Feld (noch nicht eingegeben); sonst auf 1..12 begrenzt.
-            get => _datumMonat;
-            set
-            {
-                if (SetProperty(ref _datumMonat, Math.Max(0, Math.Min(12, value))))
-                {
-                    BerechneRestwertHeuristisch();
-                    ValidiereFeldFallsAktiv(ValidiereDatum);
-                }
-            }
+            get => ZahlAusFeld(_datumMonatText);
+            set => DatumMonatText = FeldAusZahl(value);
         }
 
-        private int _datumJahr;
+        /// <summary>Jahr der Buchung; 0 = leeres Feld.</summary>
         public int DatumJahr
         {
-            get => _datumJahr;
-            set
-            {
-                if (SetProperty(ref _datumJahr, value))
-                    ValidiereFeldFallsAktiv(ValidiereDatum);
-            }
+            get => ZahlAusFeld(_datumJahrText);
+            set => DatumJahrText = FeldAusZahl(value);
         }
 
         // ----------------------------------------------
@@ -297,11 +344,31 @@ namespace ECTViews.ViewModels
         // per Tooltip auf die Einstellungen verwiesen. Das MWSt-Feld enthaelt
         // dann in jedem Fall 0 (kein Steueranteil). Eine eigene MWSt-Checkbox
         // im Buchen-Dialog gibt es nicht mehr -- das regelt die Einstellung.
+        // Das JAHRESFELD hat dagegen wie im MFC-Original ein Haekchen direkt
+        // daneben (IDC_JAHR_ENABLED), weil man beim Buchen oefter mal kurz ins
+        // Vorjahr muss; es schreibt dieselbe globale Einstellung.
         // ----------------------------------------------
 
-        /// <summary>True wenn das Buchungsjahr-Feld bearbeitet werden darf
-        /// (Einstellung "Buchungsjahr-Feld anzeigen").</summary>
-        public bool BuchungsjahrFeldAktiviert { get; }
+        /// <summary>
+        /// True wenn das Buchungsjahr-Feld bearbeitet werden darf (Einstellung
+        /// "Buchungsjahr-Feld anzeigen"). Schreibbar: das Haekchen neben dem
+        /// Jahresfeld schaltet es um und speichert die Einstellung sofort
+        /// global -- wie IDC_JAHR_ENABLED im MFC-Original
+        /// (buchendlg.cpp::OnJahrEnabled). Der Wert des Feldes bleibt dabei
+        /// unangetastet; bei einer neuen Buchung ist er immer das
+        /// Buchungsjahr des Dokuments (siehe SetzeFrischesDatum).
+        /// </summary>
+        public bool BuchungsjahrFeldAktiviert
+        {
+            get => _buchungsjahrFeldAktiviert;
+            set
+            {
+                if (!SetProperty(ref _buchungsjahrFeldAktiviert, value)) return;
+                GlobaleEinstellungen.JahresfeldAktiviert = value;
+                OnPropertyChanged(nameof(BuchungsjahrFeldHinweis));
+            }
+        }
+        private bool _buchungsjahrFeldAktiviert;
 
         /// <summary>True wenn das MWSt-Feld benutzt werden darf
         /// (Einstellung "MWSt.-Feld anzeigen" UND Umsatzsteuerpflicht).</summary>
@@ -925,6 +992,60 @@ namespace ECTViews.ViewModels
 
         private string _betriebFallback = "";
 
+        // ----------------------------------------------
+        // Tastenkuerzel fuer die beiden Icon-Listen
+        //
+        // Alt+1..Alt+9 und Alt+0 waehlen die ersten zehn Bestandskonten,
+        // Strg+Alt+<Ziffer> die ersten zehn Betriebe. Pendant zu den kleinen
+        // "&1".."&6"-Knoepfen unter den Listen des MFC-Originals
+        // (IDC_ALT1..IDC_ALT6, BuchenDlg::OnAlt) -- statt eigener Knoepfe
+        // blendet die WPF-Maske die Kuerzel an den Eintraegen selbst ein,
+        // solange Alt gedrueckt ist.
+        // ----------------------------------------------
+
+        private bool _altHinweiseSichtbar;
+
+        /// <summary>
+        /// True solange Alt gedrueckt ist: die Listen zeigen dann an ihren
+        /// ersten zehn Eintraegen das jeweilige Tastenkuerzel. Wird vom
+        /// Code-Behind der View gesetzt (Alt ist kein normaler Tastendruck,
+        /// er kommt als Key.System herein).
+        /// </summary>
+        public bool AltHinweiseSichtbar
+        {
+            get => _altHinweiseSichtbar;
+            set => SetProperty(ref _altHinweiseSichtbar, value);
+        }
+
+        /// <summary>
+        /// Waehlt per Ziffer aus: 1-9 und 0 stehen fuer die Listenplaetze
+        /// 1 bis 10. <paramref name="betrieb"/> entscheidet, welche der beiden
+        /// Listen gemeint ist (Strg+Alt = Betrieb). Eintraege, die es nicht
+        /// gibt (kurze oder leere Liste), werden stillschweigend ignoriert.
+        /// </summary>
+        public void WaehleUeberHotkey(int ziffer, bool betrieb)
+        {
+            if (ziffer < 0 || ziffer > 9) return;
+
+            int platz = (ziffer == 0) ? 9 : ziffer - 1;   // Alt+0 = zehnter Eintrag
+
+            if (betrieb)
+            {
+                if (platz < Betriebe.Count) SelectedBetrieb = Betriebe[platz];
+            }
+            else
+            {
+                if (platz < Bestandskonten.Count) SelectedBestandskonto = Bestandskonten[platz];
+            }
+        }
+
+        /// <summary>Beschriftung des Kuerzels fuer Listenposition
+        /// <paramref name="i"/>; leer ab dem elften Eintrag.</summary>
+        private static string HotkeyBeschriftung(int i, string praefix)
+        {
+            return i < 10 ? praefix + ((i + 1) % 10) : "";
+        }
+
         // Validierungsfehler für die zwei Listen
         private string _bestandskontoError = "";
         public string BestandskontoError
@@ -983,7 +1104,9 @@ namespace ECTViews.ViewModels
             IstBearbeitung = false;
 
             // Globale Feld-Einstellungen lesen (Sektion [Allgemein] der easyct.ini).
-            BuchungsjahrFeldAktiviert =
+            // Direkt ins Feld: der Setter wuerde die eben gelesene Einstellung
+            // nur wieder zurueckschreiben.
+            _buchungsjahrFeldAktiviert =
                 Einstellungen.HoleBool("[Allgemein]JahresfeldAktiviert", false);
             // Das MWSt-Feld ist nur benutzbar, wenn es nicht ausgeblendet ist
             // UND Umsatzsteuerpflicht besteht (sonst buchen ohne Steueranteil).
@@ -1031,9 +1154,9 @@ namespace ECTViews.ViewModels
             _originalBuchung = buchung;   // fuer Erhalt von Erweiterungen/AfaGenauigkeit
 
             // Felder aus der Buchung befüllen
-            _datumTag = buchung.Datum.Day;
-            _datumMonat = buchung.Datum.Month;
-            _datumJahr = buchung.Datum.Year;
+            _datumTagText = FeldAusZahl(buchung.Datum.Day);
+            _datumMonatText = FeldAusZahl(buchung.Datum.Month);
+            _datumJahrText = FeldAusZahl(buchung.Datum.Year);
             _betragText = Waehrungsformat.BetragOhneGruppierung(
                 buchung.BruttoBetrag.InCent / 100m);
             _mwstText = Waehrungsformat.Zahl(
@@ -1633,7 +1756,14 @@ namespace ECTViews.ViewModels
                 return false;
             }
 
-            // Jahr: 2-stellig wird auf 4-stellig expandiert, dann 1990-3000
+            // Jahr: 2-stellig wird auf 4-stellig expandiert, dann 1990-3000.
+            // Das leere Feld vorher abfangen -- ExpandiereJahr(0) waere 2000
+            // und damit ein gueltiger, aber sicher nicht gemeinter Wert.
+            if (DatumJahr <= 0)
+            {
+                DatumError = "Bitte ein Jahr angeben.";
+                return false;
+            }
             int jahr = ExpandiereJahr(DatumJahr);
             if (jahr < 1990 || jahr > 3000)
             {
@@ -1902,7 +2032,8 @@ namespace ECTViews.ViewModels
                 {
                     Name = namen[i],
                     IconIndex = idx,
-                    Icon = IconSpriteSplitter.Crop(sprite, idx)
+                    Icon = IconSpriteSplitter.Crop(sprite, idx),
+                    Hotkey = HotkeyBeschriftung(i, "Strg+Alt+")
                 });
             }
             OnPropertyChanged(nameof(BetriebeAnzeigen)); OnPropertyChanged(nameof(ListenAnzeigen));
@@ -1939,7 +2070,8 @@ namespace ECTViews.ViewModels
                 {
                     Name = namen[i],
                     IconIndex = idx,
-                    Icon = IconSpriteSplitter.Crop(sprite, idx)
+                    Icon = IconSpriteSplitter.Crop(sprite, idx),
+                    Hotkey = HotkeyBeschriftung(i, "Alt+")
                 });
             }
             OnPropertyChanged(nameof(BestandskontenAnzeigen)); OnPropertyChanged(nameof(ListenAnzeigen));

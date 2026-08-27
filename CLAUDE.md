@@ -247,6 +247,49 @@ robuster in hosted-WPF-Szenarien.
 - Auto-Hide der Listen wenn keine Daten gesetzt
 - `IstBearbeitung` als notifying Property mit `OkButtonText`
   ("Buchen" / "Speichern")
+- **Feld-Reihenfolge**: Beschreibung steht VOR Betrag/MWSt (anders als im
+  MFC-Original) — die Wahl einer Buchungsvorlage setzt die MWSt., ist der
+  Betragseingabe also logisch vorgelagert.
+- **Datumszeile wie nativ**: Auto-Feldwechsel beim Volltippen (2 Ziffern
+  Tag/Monat, 4 Jahr; Pendant zu `OnChangeDatumTag/-Monat/-Jahr`) — nächstes
+  Feld nach dem Datum ist hier die Beschreibung. Häkchen "änderbar" direkt am
+  Jahresfeld (Pendant `IDC_JAHR_ENABLED`) schaltet es frei und schreibt
+  dieselbe globale Einstellung `[Allgemein]JahresfeldAktiviert` wie
+  Einstellungen -> Allgemein; Vorbelegung bleibt immer das Buchungsjahr.
+  Die drei Felder binden den **rohen Text** (`DatumTagText` etc.), nicht den
+  Zahlenwert: eine int-Bindung formatierte während des Tippens zurück, aus
+  "01" wurde sofort "1" — die führende Null verschwand und der Feldwechsel
+  kam nie zustande. Die int-Properties sind nur noch Sicht auf den Text
+  (kein Clamping mehr, unsinnige Werte meldet `ValidiereDatum`).
+  Das Häkchen ist `IsTabStop=False` (es säße sonst mitten im Eingabefluss)
+  und per Zugriffstaste **Alt+N** erreichbar. Ein "ganz ans Ende der
+  Tab-Folge" gibt es in WPF nicht geschenkt: der Default-`TabIndex` ist
+  `int.MaxValue`, ein Element ans Ende zu sortieren hieße, allen anderen
+  Bedienelementen des Dialogs (inkl. der dynamischen Gruppen-Zeilen)
+  explizite Indizes zu geben.
+- **Alt-Kürzel für die Icon-Listen**: Alt+1..Alt+9 und Alt+0 wählen die
+  ersten zehn Bestandskonten, Strg+Alt+Ziffer die ersten zehn Betriebe
+  (Pendant zu `IDC_ALT1..IDC_ALT6`/`BuchenDlg::OnAlt`, dort noch als kleine
+  "&1"-Knöpfe unter den Listen). Solange Alt gedrückt ist, blenden die
+  Einträge ihr Kürzel als Schild ein (`IconListItem.Hotkey` +
+  `BuchungViewModel.AltHinweiseSichtbar`, gesetzt aus dem Code-Behind).
+  Alt kommt in WPF als `Key.System` herein — die echte Taste steht in
+  `KeyEventArgs.SystemKey`. Zugriffstasten sind in WPF NICHT abgeschafft:
+  Unterstrich im `Content` (`"ä_nderbar"` -> Alt+N), Unterstreichung
+  erscheint beim Alt-Druck; nur freie Kombinationen wie Alt+Ziffer muss man
+  sich selbst greifen (und `e.Handled` setzen, sonst piept Windows).
+  Drei Fallstricke, alle in `BuchungView.xaml.cs` behandelt:
+  1. **Strg+Alt IST AltGr** (Windows schickt linkes Strg + rechtes Alt).
+     Ohne Prüfung auf `Keyboard.IsKeyDown(Key.RightAlt)` fräße das
+     Betriebs-Kürzel die AltGr-Zeichen der deutschen Tastatur
+     (AltGr+8 = `[`, AltGr+7 = `{`, AltGr+3 = `³` …).
+  2. **Losgelassenes Alt muss verschluckt werden** (`e.Handled` im
+     `PreviewKeyUp`): sonst macht `DefWindowProc` daraus `SC_KEYMENU` und
+     schaltet das Fenster in den Menü-Modus. Da der Dialog keine Menüleiste
+     hat, landet die Auswahl unsichtbar auf dem SYSTEMMENÜ — der nächste
+     Druck auf Return (z.B. im Beschreibungsfeld) klappt es dann auf statt
+     zu buchen. Alt+Leertaste erreicht das Systemmenü weiterhin.
+  3. Der Ziffernblock bleibt bewusst frei (Alt+Zahlencode-Eingabe).
 - `MinWidth=480 MinHeight=640 Width=800 SizeToContent=Height
   ResizeMode=CanResizeWithGrip`
 
