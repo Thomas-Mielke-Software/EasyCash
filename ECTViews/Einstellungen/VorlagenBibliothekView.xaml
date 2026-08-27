@@ -19,26 +19,48 @@
             <BooleanToVisibilityConverter x:Key="BoolZuSichtbar"/>
 
             <!-- Baum: Abschnitte und Vorlagen teilen sich eine Kinderliste,
-                 unterschieden wird ueber IstEintrag. -->
+                 unterschieden wird ueber IstEintrag.
+
+                 Die Selektion faerbt eine eigene Border in der Zeile, nicht
+                 das TreeViewItem: dessen Vorgabe ist das kraeftige Systemblau
+                 mit weisser Schrift, deutlich dunkler als alles andere im
+                 Dialog. Die Schriftfarben sind hier ohnehin fest gesetzt,
+                 darum bliebe der Text auf dem Systemblau schlecht lesbar. -->
             <HierarchicalDataTemplate DataType="{x:Type local:BibliothekKnoten}"
                                       ItemsSource="{Binding Kinder}">
-                <StackPanel Orientation="Horizontal" Margin="0,2">
-                    <TextBlock Text="{Binding Titel}" TextTrimming="CharacterEllipsis">
-                        <TextBlock.Style>
-                            <Style TargetType="TextBlock">
-                                <Setter Property="Foreground" Value="#333"/>
-                                <Style.Triggers>
-                                    <DataTrigger Binding="{Binding IstEintrag}" Value="False">
-                                        <Setter Property="FontWeight" Value="SemiBold"/>
-                                    </DataTrigger>
-                                </Style.Triggers>
-                            </Style>
-                        </TextBlock.Style>
-                    </TextBlock>
-                    <TextBlock Text="{Binding Kurzinfo}" Foreground="#888"
-                               Margin="8,0,0,0" VerticalAlignment="Center"
-                               FontSize="11"/>
-                </StackPanel>
+                <Border x:Name="Zeile" Background="Transparent" CornerRadius="2"
+                        Padding="4,2" Margin="0,1" HorizontalAlignment="Stretch">
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="{Binding Titel}" TextTrimming="CharacterEllipsis">
+                            <TextBlock.Style>
+                                <Style TargetType="TextBlock">
+                                    <Setter Property="Foreground" Value="#333"/>
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding IstEintrag}" Value="False">
+                                            <Setter Property="FontWeight" Value="SemiBold"/>
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </TextBlock.Style>
+                        </TextBlock>
+                        <TextBlock Text="{Binding Kurzinfo}" Foreground="#888"
+                                   Margin="8,0,0,0" VerticalAlignment="Center"
+                                   FontSize="11"/>
+                    </StackPanel>
+                </Border>
+                <HierarchicalDataTemplate.Triggers>
+                    <DataTrigger Value="True"
+                                 Binding="{Binding IsMouseOver,
+                                     RelativeSource={RelativeSource AncestorType=TreeViewItem}}">
+                        <Setter TargetName="Zeile" Property="Background" Value="#EDF5FC"/>
+                    </DataTrigger>
+                    <!-- nach dem Hover, damit die Selektion gewinnt -->
+                    <DataTrigger Value="True"
+                                 Binding="{Binding IsSelected,
+                                     RelativeSource={RelativeSource AncestorType=TreeViewItem}}">
+                        <Setter TargetName="Zeile" Property="Background" Value="#CFE4F5"/>
+                    </DataTrigger>
+                </HierarchicalDataTemplate.Triggers>
             </HierarchicalDataTemplate>
         </ResourceDictionary>
     </Window.Resources>
@@ -79,6 +101,18 @@
                               MouseDoubleClick="OnBaumDoppelklick">
                         <TreeView.ItemContainerStyle>
                             <Style TargetType="TreeViewItem">
+                                <!-- Systemblau abschalten; gefaerbt wird die
+                                     Border im ItemTemplate (siehe oben). -->
+                                <Style.Resources>
+                                    <SolidColorBrush Color="Transparent"
+                                        x:Key="{x:Static SystemColors.HighlightBrushKey}"/>
+                                    <SolidColorBrush Color="Transparent"
+                                        x:Key="{x:Static SystemColors.InactiveSelectionHighlightBrushKey}"/>
+                                    <SolidColorBrush Color="#333"
+                                        x:Key="{x:Static SystemColors.HighlightTextBrushKey}"/>
+                                    <SolidColorBrush Color="#333"
+                                        x:Key="{x:Static SystemColors.InactiveSelectionHighlightTextBrushKey}"/>
+                                </Style.Resources>
                                 <Setter Property="IsExpanded" Value="{Binding IstAufgeklappt, Mode=TwoWay}"/>
                                 <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
                             </Style>
