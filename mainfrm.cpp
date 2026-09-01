@@ -2162,6 +2162,40 @@ void CMainFrame::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
 	CMDIFrameWndEx::OnKeyDown(nChar, nRepCnt, nFlags);
 }
 
+#ifdef USE_ECTENGINE
+// ----------------------------------------------------------
+// Ist das eine Taste, die in einem Textfeld etwas anderes bedeutet als in
+// der Accelerator-Tabelle IDR_MAINFRAME? Dort sind belegt:
+//   Strg+C / Strg+Einfg  -> ID_EDIT_COPY
+//   Strg+V / Umsch+Einfg -> ID_EDIT_PASTE
+//   Strg+X / Umsch+Entf  -> ID_EDIT_CUT
+//   Strg+Z               -> ID_EDIT_UNDO
+//   Strg+A               -> ID_EDIT_AUSGABE_BUCHEN
+// In einem Textfeld erwartet man dort Kopieren/Einfuegen/Ausschneiden/
+// Rueckgaengig/Alles markieren.
+// ----------------------------------------------------------
+static BOOL IstTextBearbeitenTaste(const MSG* pMsg)
+{
+	const BOOL bStrg  = (::GetKeyState(VK_CONTROL) & 0x8000) != 0;
+	const BOOL bUmsch = (::GetKeyState(VK_SHIFT)   & 0x8000) != 0;
+	const UINT nChar  = (UINT)pMsg->wParam;
+
+	if (bStrg && !bUmsch)
+	{
+		switch (nChar)
+		{
+		case 'C': case 'V': case 'X': case 'Z': case 'A':
+		case VK_INSERT:
+			return TRUE;
+		}
+	}
+	if (bUmsch && !bStrg && (nChar == VK_INSERT || nChar == VK_DELETE))
+		return TRUE;
+
+	return FALSE;
+}
+#endif
+
 BOOL CMainFrame::PreTranslateMessage(MSG* pMsg)
 {
 #ifdef USE_ECTENGINE
@@ -2179,6 +2213,16 @@ BOOL CMainFrame::PreTranslateMessage(MSG* pMsg)
 				return TRUE;
 			}
 		}
+
+		// Steht der Tastaturfokus in einem WPF-Textfeld (Einstellungen und
+		// die anderen eingebetteten Ansichten), darf TranslateAccelerator
+		// Strg+C/V/X/Z/A nicht wegschnappen -- sonst funktionierten dort
+		// weder Kopieren noch Einfuegen. FALSE heisst: nicht behandelt,
+		// die Taste wird ganz normal an das fokussierte Fenster zugestellt.
+		// Ausserhalb von Textfeldern (z.B. in der Journal-Liste) bleibt es
+		// bei den Accelerators -- Strg+A bucht dort weiter eine Ausgabe.
+		if (IstTextBearbeitenTaste(pMsg) && ECT_WpfTextfeldHatFokus())
+			return FALSE;
 	}
 #endif
 	return CMDIFrameWndEx::PreTranslateMessage(pMsg);

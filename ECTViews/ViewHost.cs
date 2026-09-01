@@ -89,6 +89,39 @@ namespace ECTViews
         }
 
         /// <summary>
+        /// True, wenn der WPF-Tastaturfokus gerade in einem Texteingabe-
+        /// Element steht (TextBox/RichTextBox/PasswordBox oder das
+        /// Editierfeld einer aufklappbaren ComboBox).
+        ///
+        /// Aufgerufen aus <c>CMainFrame::PreTranslateMessage</c> über
+        /// <c>ECT_WpfTextfeldHatFokus</c>: die Accelerator-Tabelle
+        /// IDR_MAINFRAME belegt Strg+C/V/X/Z/A und die Einfg-/Entf-
+        /// Varianten. TranslateAccelerator schnappt sie sich, bevor ein
+        /// eingebettetes WPF-Textfeld sie sieht -- in den Einstellungen
+        /// (und jeder anderen eingebetteten Ansicht) ließe sich dann weder
+        /// kopieren noch einfügen. Der native Aufrufer lässt den
+        /// Accelerator deshalb aus, wenn diese Abfrage true liefert.
+        ///
+        /// Steht der Fokus NICHT in einem Textfeld (z.B. in der
+        /// Journal-Liste), kommt false zurück -- Strg+A bucht dort
+        /// weiterhin eine Ausgabe.
+        /// </summary>
+        public static bool TextfeldHatFokus()
+        {
+            var fokus = System.Windows.Input.Keyboard.FocusedElement;
+            if (fokus == null) return false;
+
+            // TextBox, RichTextBox und das PART_EditableTextBox einer
+            // aufklappbaren ComboBox sind alle TextBoxBase.
+            if (fokus is System.Windows.Controls.Primitives.TextBoxBase) return true;
+            if (fokus is System.Windows.Controls.PasswordBox) return true;
+
+            // Sicherheitsnetz: manche ComboBox-Stile lassen den Fokus auf
+            // der ComboBox selbst stehen.
+            return fokus is System.Windows.Controls.ComboBox cb && cb.IsEditable;
+        }
+
+        /// <summary>
         /// Stellt sicher, dass ein WPF Application-Objekt existiert.
         /// Muss vor dem ersten WPF-Fenster aufgerufen werden.
         /// In einer MFC-Hostanwendung gibt es kein WPF App.xaml --

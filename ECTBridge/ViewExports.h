@@ -369,6 +369,27 @@ ECTBRIDGE_API void ECT_AktualisiereJournal(
     LPCSTR pszBestandskontoFilter,
     double dSchriftgroesse);
 
+// ──────────────────────────────────────────────
+// Tastatur-Fokus
+// ──────────────────────────────────────────────
+
+/// <summary>
+/// TRUE, wenn der WPF-Tastaturfokus gerade in einem Texteingabe-Element
+/// steht (TextBox/RichTextBox/PasswordBox oder das Editierfeld einer
+/// aufklappbaren ComboBox).
+///
+/// Gedacht für CMainFrame::PreTranslateMessage: die Accelerator-Tabelle
+/// IDR_MAINFRAME belegt Strg+C/V/X/Z/A und die Einfg-/Entf-Varianten.
+/// TranslateAccelerator würde sie schlucken, bevor ein eingebettetes
+/// WPF-Textfeld sie sieht -- in den Einstellungen (und jedem anderen
+/// WPF-Overlay) ließe sich dann weder kopieren noch einfügen. Steht der
+/// Fokus in einem Textfeld, muss der Aufrufer den Accelerator auslassen.
+///
+/// Liegt der Fokus NICHT in einem Textfeld (z.B. in der Journal-Liste),
+/// kommt FALSE zurück -- Strg+A bucht dort weiterhin eine Ausgabe.
+/// </summary>
+ECTBRIDGE_API BOOL ECT_WpfTextfeldHatFokus();
+
 #ifdef __cplusplus
 }
 #endif

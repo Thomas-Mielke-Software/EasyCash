@@ -218,6 +218,20 @@ Beträge/Prozente auf der C#-Seite laufen IMMER über
   aus gehosteten Views IMMER über `ECTViews/DialogBesitzer.cs`
   (`DialogBesitzer.Setze(dialog, view)`), nie den Owner selbst herleiten.
   Ein Test wacht darüber (`DialogBesitzerKonventionTests`).
+- **MFC frisst Strg+C/V/X/Z/A vor dem WPF-Textfeld**: Die
+  Accelerator-Tabelle `IDR_MAINFRAME` belegt diese Kombinationen
+  (ID_EDIT_COPY/PASTE/CUT/UNDO und Strg+A = "Ausgabe buchen"), dazu
+  Strg+Einfg / Umschalt+Einfg / Umschalt+Entf. `TranslateAccelerator` in
+  `CMDIFrameWndEx::PreTranslateMessage` schnappt sie sich, BEVOR das
+  eingebettete WPF-Fenster sie sieht — in den Einstellungen ließ sich
+  darum weder kopieren noch einfügen. Fix: `CMainFrame::PreTranslateMessage`
+  gibt für genau diese Tasten `FALSE` zurück (= nicht behandelt, normal
+  zustellen), sobald `ECT_WpfTextfeldHatFokus()` meldet, dass der
+  WPF-Tastaturfokus in einem Textfeld steht (managed in
+  `ViewHost.TextfeldHatFokus()`: `TextBoxBase`/`PasswordBox`/editierbare
+  `ComboBox`). Außerhalb von Textfeldern (Journal-Liste) bleibt es bei
+  den Accelerators, Strg+A bucht dort weiter eine Ausgabe. Betrifft
+  ALLE eingebetteten Ansichten, nicht nur die Einstellungen.
 
 ### ViewHost / Listen-Cache
 

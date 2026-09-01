@@ -1025,3 +1025,27 @@ void ECT_AktualisiereJournal(
         AfxMessageBox(msg, MB_ICONERROR);
     }
 }
+
+// ----------------------------------------------------------
+// ECT_WpfTextfeldHatFokus
+//
+// Duenne Weiterleitung an ViewHost::TextfeldHatFokus (siehe Doku im
+// Header). Die eigentliche Pruefung liegt managed, weil ECTViews die
+// WPF-Assemblies ohnehin referenziert -- die Bridge braucht so kein
+// zusaetzliches #using auf PresentationCore/PresentationFramework.
+//
+// Laeuft auf dem UI-Thread, demselben, auf dem auch MFC seine Nachrichten
+// pumpt -- der Fokuswert ist damit der aktuelle.
+// ----------------------------------------------------------
+ECTBRIDGE_API BOOL ECT_WpfTextfeldHatFokus()
+{
+    try
+    {
+        return ECTViews::ViewHost::TextfeldHatFokus() ? TRUE : FALSE;
+    }
+    catch (Exception^)
+    {
+        // Im Zweifel den Accelerator wirken lassen (altes Verhalten).
+        return FALSE;
+    }
+}
