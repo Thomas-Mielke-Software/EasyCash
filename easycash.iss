@@ -3,7 +3,7 @@
 
 [Setup]
 AppName=EasyCash&Tax
-AppVerName=EasyCash&Tax 4.0.22 (preview)
+AppVerName=EasyCash&Tax 4.0.23 (preview)
 DiskSpanning=no
 AppPublisher=tm
 AppPublisherURL=http://www.easyct.de
@@ -12,6 +12,8 @@ AppUpdatesURL=http://www.easyct.de
 DefaultDirName={pf}\EasyCash&Tax
 UsePreviousAppDir=yes
 DefaultGroupName=EasyCash
+UninstallDisplayIcon={app}\EasyCT.exe
+SetupIconFile=RES\setup.ico
 OutputBaseFilename=ECTSetup4
 OutputDir=.\Setup 
 MinVersion=7.0
