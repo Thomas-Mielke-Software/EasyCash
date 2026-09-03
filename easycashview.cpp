@@ -194,8 +194,6 @@ CEasyCashView::CEasyCashView()
 
 	m_GewaehltesFormular = -1;
 	m_bFormularfelderAnzeigen = FALSE;
-	for (i = 0; i < FORMULARSEITENCACHESIZE; i++)
-		m_pFormularseitenImageCache[i] = NULL;	
 }
 
 CEasyCashView::~CEasyCashView()
@@ -219,10 +217,7 @@ CEasyCashView::~CEasyCashView()
 	if (!GetIniFileName(EasyCashIniFilenameBuffer, sizeof(EasyCashIniFilenameBuffer))) { AfxMessageBox("Konnte Konfigurationsdatei EasyCT.ini nicht öffnen"); return; }
 	sprintf(buffer, "%d", (int)m_nAnzeige);
 	WritePrivateProfileString("Allgemein", "Anzeige", (LPCSTR)buffer, EasyCashIniFilenameBuffer);	
-	int i;
-	for (i = 0; i < FORMULARSEITENCACHESIZE; i++)
-		if (m_pFormularseitenImageCache[i])
-			delete m_pFormularseitenImageCache[i];	
+
 }
 
 BOOL CEasyCashView::PreCreateWindow(CREATESTRUCT& cs)
@@ -5258,8 +5253,11 @@ void CEasyCashView::Image(DrawInfo *pDrawInfo, char *filename)
 		int format = search_formats(filename+strlen(filename)-3);
 
 		::CImage *image = new ::CImage(path, format);
-		int n = image->GetColorType();
-		if (image->GetWidth() <= 0 || image->GetHeight() <= 0)
+		// implementation bleibt NULL, wenn CImage das Dateiformat nicht kennt;
+		// der Konstruktor wertet den Fehlschlag nicht aus. Ohne diese Pruefung
+		// laufen GetWidth() & Co. in einen Nullzeiger.
+		if (!image->implementation || !image->implementation->GetRawImage()
+			|| image->GetWidth() <= 0 || image->GetHeight() <= 0)
 		{
 			delete image;
 			image = NULL;
@@ -5282,6 +5280,136 @@ void CEasyCashView::Image(DrawInfo *pDrawInfo, char *filename)
 	}
 }
 
+// ----------------------------------------------------------------------
+// Cache fuer die dekodierten Grafiken der Formularseiten (siehe Image2)
+//
+// Frueher: ein Array mit 1000 Plaetzen pro CEasyCashView, ohne jede
+// Verdraengung. Das war praktisch unbegrenzt -- der ausgelieferte
+// Formularbestand hat rund 530 Seitenscans, die dekodiert zusammen ueber
+// 2 GB belegen (Median 4 MB, groesste Seite 25 MB). Wer genug Formulare
+// durchblaettert, sprengt damit den 2-GB-Adressraum des 32-Bit-Prozesses,
+// und die naechste Anforderung scheitert mitten im PNG-Dekoder.
+//
+// Jetzt: EIN Cache fuer alle Views (mehrere MDI-Fenster teilen sich die
+// Seiten) mit einem BYTE-Budget statt einer Stueckzahl -- bei einer
+// Streuung von 0,2 bis 25 MB pro Seite sagt eine Anzahl nichts ueber den
+// Verbrauch. Ist das Budget voll, fliegt die am laengsten nicht mehr
+// benutzte Seite raus (LRU).
+// ----------------------------------------------------------------------
+
+#define FORMULARSEITENCACHE_BUDGET	(96u * 1024u * 1024u)	// Bytes
+#define FORMULARSEITENCACHE_MAX		256			// Eintraege
+
+struct FORMULARSEITE_EINTRAG
+{
+	CString		csPfad;
+	::CImage  *pImage;
+	DWORD		dwBytes;		// Speicherbedarf des dekodierten Bildes
+	ULONGLONG	ullNutzung;	// Zeitstempel der letzten Verwendung (LRU)
+	FORMULARSEITE_EINTRAG() : pImage(NULL), dwBytes(0), ullNutzung(0) {}
+};
+
+struct FORMULARSEITEN_CACHE
+{
+	FORMULARSEITE_EINTRAG a[FORMULARSEITENCACHE_MAX];
+	int			nAnzahl;
+	DWORD		dwBelegt;	// Summe der dwBytes aller Eintraege
+	ULONGLONG	ullUhr;		// monoton steigend, vergibt die Zeitstempel
+	FORMULARSEITEN_CACHE() : nAnzahl(0), dwBelegt(0), ullUhr(0) {}
+};
+
+// Function-local static: wird erst beim ersten Zugriff angelegt, also
+// sicher nach der MFC-Initialisierung (anders als ein globales Objekt).
+static FORMULARSEITEN_CACHE& Formularseiten()
+{
+	static FORMULARSEITEN_CACHE cache;
+	return cache;
+}
+
+// Speicherbedarf des dekodierten Bildes. Die DIB-Zeilen sind auf 4 Byte
+// aufgerundet, siehe DibCreate() bzw. CImageImpl::Create() in GrafLib.
+static DWORD FormularseiteBytes(::CImage *pImage)
+{
+	if (!pImage || !pImage->implementation || !pImage->implementation->GetRawImage())
+		return 0;	// kein dekodiertes Bild da -- die Getter unten wuerden
+				// sonst ueber einen Nullzeiger laufen
+	__int64 nZeile = (((__int64)pImage->GetWidth() * pImage->GetDepth() + 31) / 32) * 4;
+	__int64 nGesamt = nZeile * pImage->GetHeight();
+	if (nGesamt <= 0 || nGesamt > 0x7FFFFFFF)
+		return 0;	// unsinnig gross: gar nicht erst cachen
+	return (DWORD)nGesamt;
+}
+
+static void FormularseiteEintragLoeschen(int i)
+{
+	FORMULARSEITEN_CACHE &c = Formularseiten();
+	if (i < 0 || i >= c.nAnzahl)
+		return;
+	delete c.a[i].pImage;
+	c.dwBelegt -= c.a[i].dwBytes;
+	if (i != c.nAnzahl - 1)
+		c.a[i] = c.a[c.nAnzahl - 1];	// Luecke mit dem letzten Eintrag schliessen
+	c.nAnzahl--;
+	c.a[c.nAnzahl].csPfad.Empty();		// Verweise wirklich loswerden
+	c.a[c.nAnzahl].pImage = NULL;
+	c.a[c.nAnzahl].dwBytes = 0;
+	c.a[c.nAnzahl].ullNutzung = 0;
+}
+
+// Liefert das gecachte Bild zu pszPfad oder NULL. Ein Treffer wird als
+// "gerade benutzt" gestempelt und rutscht damit ans LRU-Ende.
+static ::CImage *FormularseiteAusCache(LPCSTR pszPfad)
+{
+	FORMULARSEITEN_CACHE &c = Formularseiten();
+	for (int i = 0; i < c.nAnzahl; i++)
+		if (c.a[i].csPfad.CompareNoCase(pszPfad) == 0)
+		{
+			c.a[i].ullNutzung = ++c.ullUhr;
+			return c.a[i].pImage;
+		}
+	return NULL;
+}
+
+// Uebernimmt pImage in den Cache und verdraengt dafuer so lange die am
+// laengsten nicht mehr benutzten Seiten, bis das Budget wieder passt.
+// FALSE = nicht uebernommen, der Aufrufer muss das Bild selbst loeschen.
+static BOOL FormularseiteInCache(LPCSTR pszPfad, ::CImage *pImage)
+{
+	FORMULARSEITEN_CACHE &c = Formularseiten();
+	DWORD dwBytes = FormularseiteBytes(pImage);
+	if (dwBytes == 0 || dwBytes > FORMULARSEITENCACHE_BUDGET)
+		return FALSE;	// unbrauchbar oder allein schon groesser als das Budget
+
+	while (c.nAnzahl >= FORMULARSEITENCACHE_MAX
+		|| c.dwBelegt + dwBytes > FORMULARSEITENCACHE_BUDGET)
+	{
+		int iAeltester = -1;
+		for (int i = 0; i < c.nAnzahl; i++)
+			if (iAeltester < 0 || c.a[i].ullNutzung < c.a[iAeltester].ullNutzung)
+				iAeltester = i;
+		if (iAeltester < 0)
+			return FALSE;	// Cache schon leer (kann eigentlich nicht sein)
+		FormularseiteEintragLoeschen(iAeltester);
+	}
+
+	FORMULARSEITE_EINTRAG &e = c.a[c.nAnzahl++];
+	e.csPfad = pszPfad;
+	e.pImage = pImage;
+	e.dwBytes = dwBytes;
+	e.ullNutzung = ++c.ullUhr;
+	c.dwBelegt += dwBytes;
+	return TRUE;
+}
+
+// Gibt alle gecachten Formularseiten frei (CEasyCashApp::ExitInstance).
+void FormularseitenCacheLeeren()
+{
+	FORMULARSEITEN_CACHE &c = Formularseiten();
+	while (c.nAnzahl > 0)
+		FormularseiteEintragLoeschen(c.nAnzahl - 1);
+	c.dwBelegt = 0;
+}
+
 // das Image für die .ecf-Formulardateien
 void CEasyCashView::Image2(DrawInfo *pDrawInfo, char *filename)
 {
@@ -5296,41 +5424,26 @@ void CEasyCashView::Image2(DrawInfo *pDrawInfo, char *filename)
 
 	BOOL bDeleteImage = FALSE;	// normalerweise können wir das image cachen
 
-	::CImage *image = NULL;
-	int i;
-	for (i = 0; i < m_csaFormularseitenPfade.GetSize() && i < FORMULARSEITENCACHESIZE; i++)
-	{
-		if (!m_pFormularseitenImageCache[i])
-			break;
-		if (m_csaFormularseitenPfade[i] == filename)
-		{
-			image = m_pFormularseitenImageCache[i];
-			break;
-		}
-	}
+	::CImage *image = FormularseiteAusCache(filename);
 
 	if (!image) // image noch nicht im Cache? 
 	{
 		//Laden
 		image = new ::CImage(filename, format);
-		int n = image->GetColorType();
-		if (image->GetWidth() <= 0 || image->GetHeight() <= 0)
-		{
+		// implementation bleibt NULL, wenn CImage das Dateiformat nicht kennt;
+		// der Konstruktor wertet den Fehlschlag nicht aus. Ohne diese Pruefung
+		// laufen GetWidth() & Co. in einen Nullzeiger.
+		if (!image->implementation || !image->implementation->GetRawImage()
+			|| image->GetWidth() <= 0 || image->GetHeight() <= 0)
+		{	// Datei fehlt, Format unbekannt, oder der Speicher fuer das
+			// dekodierte Bild war nicht mehr zu bekommen
 			delete image;
 			image = NULL;
 			return;
 		}
 
-		// freien Platz im Cache suchen
-		for (i = 0; i < FORMULARSEITENCACHESIZE; i++)
-			if (!m_pFormularseitenImageCache[i])
-			{
-				m_pFormularseitenImageCache[i] = image;
-				m_csaFormularseitenPfade.Add(filename);
-				break;
-			}
-		if (i >= FORMULARSEITENCACHESIZE)	// kein Platz mehr im Cache? Dann am Ende wieder löschen
-			bDeleteImage = TRUE;
+		if (!FormularseiteInCache(filename, image))
+			bDeleteImage = TRUE;	// passt nicht ins Budget: nach dem Zeichnen wieder loeschen
 	}
 
 	if (pDrawInfo->pm)

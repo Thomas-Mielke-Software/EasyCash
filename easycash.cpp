@@ -648,6 +648,9 @@ void CEasyCashApp::ParseCommandLine(CCommandLineInfo& rCmdInfo)
 
 int CEasyCashApp::ExitInstance() 
 {
+	// gemeinsamer Cache der Formularseiten-Grafiken (easycashview.cpp)
+	FormularseitenCacheLeeren();
+
 	// ExtensionDLLs Exit-Hook
 	CIterateExtensionDLLs("ECTE_Exit", NULL);
 
