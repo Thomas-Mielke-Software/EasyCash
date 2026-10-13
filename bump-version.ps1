@@ -138,6 +138,16 @@ Update-File1252 -Path $issPath `
     -Pattern '(?m)^(AppVerName=EasyCash&Tax )[^\r\n]+' `
     -Replacement "`${1}$issVersion" `
     -Required
+# AppVersion (Uninstall-Eintrag) und VersionInfoVersion (Dateiversion der
+# ECTSetup.exe) rein numerisch -- VersionInfoVersion erlaubt keinen Suffix
+Update-File1252 -Path $issPath `
+    -Pattern '(?m)^(AppVersion=)[^\r\n]+' `
+    -Replacement "`${1}$newVersion" `
+    -Required
+Update-File1252 -Path $issPath `
+    -Pattern '(?m)^(VersionInfoVersion=)[^\r\n]+' `
+    -Replacement "`${1}$newVersion" `
+    -Required
 
 # --- 6. TestReg.txt / VollReg.txt aktualisieren (Win-1252, nur Major.Minor) -----
 #Write-Host "Registrierungs-Dateien:"
