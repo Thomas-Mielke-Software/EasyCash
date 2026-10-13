@@ -3,7 +3,7 @@
 
 [Setup]
 AppName=EasyCash&Tax
-AppVerName=EasyCash&Tax 4.0.23 (preview)
+AppVerName=EasyCash&Tax 4.0.24 (preview)
 DiskSpanning=no
 AppPublisher=tm
 AppPublisherURL=http://www.easyct.de
@@ -43,25 +43,24 @@ Name: desktopicon; Description: Create a &desktop icon; GroupDescription: Additi
 ;___v4-Dateien___
 Source: "..\EasyCash\Systemdateien\ndp48-web.exe"; DestDir: {tmp}; Flags: deleteafterinstall; AfterInstall: InstallFramework; Check: FrameworkIsNotInstalled    
 ;-> [Run] !!
-Source: .\Release\ECTBridge.dll; DestDir: {app}; Flags: ignoreversion
-Source: .\Release\ECTEngine.dll; DestDir: {app}; Flags: ignoreversion
-Source: .\Release\ECTViews.dll; DestDir: {app}; Flags: ignoreversion
-Source: .\Release\ECTBridge.ini; DestDir: {app}; Flags: ignoreversion
+Source: .\Release\ECTBridge.dll; DestDir: {app}; Flags: ignoreversion signonce
+Source: .\Release\ECTEngine.dll; DestDir: {app}; Flags: ignoreversion signonce
+Source: .\Release\ECTViews.dll; DestDir: {app}; Flags: ignoreversion signonce
 Source: .\Release\ECTBridge.ini; DestDir: {app}; Flags: ignoreversion
 Source: .\Release\EasyCT.exe.config; DestDir: {app}; Flags: ignoreversion
 ;__v3.x-Dateien___
 Source: ..\EasyCash\Systemdateien\VC_redist.x86.exe; DestDir: {tmp}; Flags: dontcopy;
 ;-> [Run] !!
-Source: .\Release\EasyCT.exe; DestDir: {app}; Flags: ignoreversion
-Source: .\Release\ECTIFace.dll; DestDir: {app}; Flags: ignoreversion  
-Source: .\Release\EasyCTXP.dll; DestDir: {app}; Flags: ignoreversion
-Source: .\Release\EasyCTX.ocx; DestDir: {app}; Flags: ignoreversion regserver restartreplace  
+Source: .\Release\EasyCT.exe; DestDir: {app}; Flags: ignoreversion signonce
+Source: .\Release\ECTIFace.dll; DestDir: {app}; Flags: ignoreversion signonce  
+Source: .\Release\EasyCTXP.dll; DestDir: {app}; Flags: ignoreversion signonce
+Source: .\Release\EasyCTX.ocx; DestDir: {app}; Flags: ignoreversion signonce regserver restartreplace  
 Source: .\tipps.txt; DestDir: {app}; Flags: ignoreversion             
-Source: .\Release\ECTUpdater.exe; DestDir: {app}; Flags: ignoreversion
-Source: ..\CrashRpt\bin\CrashSender1403.exe; DestDir: {app}; Flags: ignoreversion  
-Source: ..\CrashRpt\bin\CrashRpt1403.dll; DestDir: {app}; Flags: ignoreversion
+Source: .\Release\ECTUpdater.exe; DestDir: {app}; Flags: ignoreversion signonce
+Source: ..\CrashRpt\bin\CrashSender1403.exe; DestDir: {app}; Flags: ignoreversion signonce  
+Source: ..\CrashRpt\bin\CrashRpt1403.dll; DestDir: {app}; Flags: ignoreversion signonce
 Source: ..\CrashRpt\bin\crashrpt_lang.ini; DestDir: {app}; Flags: ignoreversion
-Source: ..\CrashRpt\bin\dbghelp.dll; DestDir: {app}; Flags: ignoreversion 
+Source: ..\CrashRpt\bin\dbghelp.dll; DestDir: {app}; Flags: ignoreversion signonce 
 Source: .\Doc\PDF-Anleitungen\ECT-Doku_Michael.pdf; DestDir: {app}; Flags: ignoreversion
 ;___USt deutsch___
 Source: .\UST\D-2024\ust-d-2024.ecf; DestDir: {app}; Flags: ignoreversion; Components: BRDFormular
