@@ -135,8 +135,9 @@ char app_name_und_version_string_exakt[100];
 
 #if defined(NDEBUG)
 // Crash-Callback: beim regulaeren Beenden (Teardown) keinen Absturzbericht anzeigen/senden.
-// Hintergrund: bekannter MFC-Bug in CMFCRibbonCaptionButton::OnLButtonUp, wenn ein verzoegerter
-// Maus-Event waehrend des Ribbon-Teardowns zugestellt wird (m_pRibbonBar == NULL).
+// Hintergrund: ursprünglich für den MFC-Bug in CMFCRibbonCaptionButton::OnLButtonUp
+// (m_pRibbonBar == NULL), der im Mac-Paket beim Beenden auftrat. Der Bug kommt aber auch im
+// laufenden Betrieb vor; abgefangen wird er inzwischen ursächlich in CECTRibbonBar (MainFrm.h).
 int CALLBACK ECTCrashCallback(CR_CRASH_CALLBACK_INFO* pInfo)
 {
 	if (pInfo->nStage == CR_CB_STAGE_PREPARE)
