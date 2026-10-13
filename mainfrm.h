@@ -63,6 +63,23 @@ private:
 
 #define ID_CMD_PLUGIN_BASE 38000	// hier fangen die Comand-IDs der Plugin-Knöpfe an
 
+// ----------------------------------------------------------
+// CECTRibbonBar: faengt einen MFC-Bug in CMFCRibbonCaptionButton::OnLButtonUp ab.
+// Die Minimieren-/Wiederherstellen-/Schliessen-Knoepfe eines maximierten
+// MDI-Kindfensters (CMFCRibbonBar::SetMaximizeMode) haben keinen Ribbon-Zeiger
+// und verlassen sich allein auf m_hwndMDIChild. Das setzt MFC in
+// SetActiveMDIChild(MDIGetActive()) aber auf NULL, wenn gerade kein Kindfenster
+// aktiv ist (OnSetMenu/OnMDIRefreshMenu, unter Wine im laufenden Betrieb
+// beobachtet), die Knoepfe bleiben dabei stehen. Ein Klick darauf faellt dann in
+// den Zweig fuer die Rahmen-Knoepfe und dereferenziert m_pRibbonBar == NULL.
+// ----------------------------------------------------------
+class CECTRibbonBar : public CMFCRibbonBar
+{
+protected:
+	afx_msg void OnLButtonUp(UINT nFlags, CPoint point);
+	DECLARE_MESSAGE_MAP()
+};
+
 class CMainFrame : public CMDIFrameWndEx
 {
 	friend class CEasyCashView;
@@ -137,7 +154,7 @@ public:
 	CMFCRibbonButton* m_pAnsichtPluginsButton;
 
 protected:  // control bar embedded members
-	CMFCRibbonBar				m_wndRibbonBar;
+	CECTRibbonBar				m_wndRibbonBar;
 	CMFCRibbonApplicationButton	m_MainButton;
 	CMFCToolBarImages			m_PanelImages16;
 	CMFCToolBarImages			m_PanelImages32;
