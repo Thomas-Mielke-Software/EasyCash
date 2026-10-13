@@ -24,7 +24,6 @@
 #include "resource.h"
 #include "Startoptionen.h"
 #include "EasyCashDoc.h"
-#include "resource.h"	// IDD_KONTO_ANLEGEN (HoleKontoMitFeldern)
 
 // Wandelt einen Betrag von String in int (= Pfennige/Cents) um
 extern "C" AFX_EXT_CLASS int currency_to_int(char *s)

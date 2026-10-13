@@ -57,9 +57,9 @@
 #define IDC_ZEIT                        1161
 #define IDC_EXIT                        1161
 #define IDC_LEER2                       1171
-#define ID_FILE_WAEHLE_DATENVERZEICHNIS 32829
 #define IDC_KONTO_HINWEIS               1200
 #define IDC_KONTO_NAME                  1201
+#define ID_FILE_WAEHLE_DATENVERZEICHNIS 32829
 #define ID_FILE_BACKUP                  32833
 #define ID_FILE_BACKUP_EXTERNAL         32883
 #define ID_FILE_BACKUP_SUBFOLDER        32884
@@ -70,7 +70,7 @@
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        704
 #define _APS_NEXT_COMMAND_VALUE         32771
-#define _APS_NEXT_CONTROL_VALUE         1010
+#define _APS_NEXT_CONTROL_VALUE         1202
 #define _APS_NEXT_SYMED_VALUE           101
 #endif
 #endif
