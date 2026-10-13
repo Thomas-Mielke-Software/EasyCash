@@ -70,6 +70,7 @@ protected:
 	CImageList m_imgListIcons;
 	CImageList m_imgListIconsBestandskonten;
 	BOOL m_bUnterkategorien;
+	BOOL m_bRestwertNeuberechnungAktiv;	// erst nach Dialog-Init (Timer 101) scharf -> verhindert Restwert-Neuberechnung beim Initialisieren
 
 	void InitDlg(BOOL bBelasseEinigeFelder = FALSE);
 	void InitRestwert();

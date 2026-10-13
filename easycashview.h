@@ -75,7 +75,9 @@ public:
 
 class CToolBarWithCombo;
 
-#define FORMULARSEITENCACHESIZE 1000
+// Gibt den gemeinsamen Cache der Formularseiten-Grafiken frei
+// (Implementierung in easycashview.cpp, gerufen aus ExitInstance).
+void FormularseitenCacheLeeren();
 
 class CEasyCashView : public CScrollView
 {
@@ -129,8 +131,6 @@ public:
 	int m_GewaehltesFormular;			// aktuell gewähltes Formular, -1 wenn Journal Ansicht aktiv
 	CStringArray m_csaFormulare;		// Dateipfade zu den Formulardateien
 	CStringArray m_csaFormularnamen;	// Namen der Formulare
-	CStringArray m_csaFormularseitenPfade;	// Dateipfade zu den Grafikdateien der Formularseiten
-	::CImage *m_pFormularseitenImageCache[FORMULARSEITENCACHESIZE];
 	CStringArray m_csaFormularfilter;	// Namen der zum Formular ausgewählten Betriebe etwa, wenn filter=betrieb im Formular
 	CStringArray m_csaFormularfeldwerte;// mit BerechneFormularfeldwerte() berechnete Inhalte der Formularfelder
 	BOOL m_bFormularfelderAnzeigen;		// Felder mit ID und Rahmen anzeigen (zum Bearbeiten)

@@ -272,12 +272,12 @@ void CIconAuswahl::OnLoeschen()
 					CString csName;
 					CString csProperty;
 					CString csIcon;
-					if (i > 1)
+					if (i > 0)
 					{
 						CString csKey;
 						csKey.Format("%s%-02.2dName", GetKey(), i);
 						csName = GetProfileString(GetSection(), csKey.GetBuffer(0), "");
-						csKey.Format("%s%-02.2dDatenverzeichnis", GetKey(), i);
+						csKey.Format("%s%-02.2d%s", GetKey(), i, GetProperty());
 						csProperty = GetProfileString(GetSection(), csKey.GetBuffer(0), "");
 						csKey.Format("%s%-02.2dIcon", GetKey(), i);
 						csIcon = GetProfileString(GetSection(), csKey.GetBuffer(0), "0");
@@ -295,7 +295,7 @@ void CIconAuswahl::OnLoeschen()
 				// letzte Position physisch löschen
 				csKey.Format("%s%-02.2dName", GetKey(), i);
 				WriteProfileString(GetSection(), csKey.GetBuffer(0), "");
-				csKey.Format("%s%-02.2dDatenverzeichnis", GetKey(), i);
+				csKey.Format("%s%-02.2d%s", GetKey(), i, GetProperty());
 				WriteProfileString(GetSection(), csKey.GetBuffer(0), "");
 				csKey.Format("%s%-02.2dIcon", GetKey(), i);
 				WriteProfileString(GetSection(), csKey.GetBuffer(0), "");

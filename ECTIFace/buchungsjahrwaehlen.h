@@ -34,12 +34,21 @@ public:
 	CString	m_waehrung;
 	//}}AFX_DATA
 
+	// Vom Aufrufer zu setzen: Verzeichnis, in dem nach *.eca-Buchungsdateien gesucht wird
+	// (ohne abschliessenden Backslash).
+	CString m_csDatenverzeichnis;
+	// Ergebnis bei Rueckgabewert IDRETRY: voller Pfad der gewaehlten bestehenden Buchungsdatei.
+	CString m_csAusgewaehlteDatei;
+	// TRUE, wenn die Liste echte Buchungsdateien enthaelt (nicht nur den Hinweistext).
+	BOOL m_bBuchungsdateienVorhanden;
+
 // Overrides
 	// ClassWizard generated virtual function overrides
 	//{{AFX_VIRTUAL(CBuchungsjahrWaehlen)
 	protected:
 	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV support
 	//}}AFX_VIRTUAL
+	virtual BOOL OnInitDialog();
 
 // Implementation
 protected:
@@ -49,4 +58,9 @@ protected:
 		// NOTE: the ClassWizard will add member functions here
 	//}}AFX_MSG
 	DECLARE_MESSAGE_MAP()
+public:
+	afx_msg void OnDblclkListeBuchungsdateien();   // Doppelklick auf Liste -> bestehende Datei oeffnen
+	afx_msg void OnOeffnen();                       // "Oeffnen"-Knopf (IDRETRY) -> bestehende Datei oeffnen
+private:
+	void UebernehmeAuswahlUndOeffne();              // gewaehlten Listeneintrag uebernehmen und Dialog mit IDRETRY schliessen
 };
