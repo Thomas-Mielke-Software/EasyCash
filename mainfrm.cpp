@@ -124,6 +124,47 @@ void CMFCRibbonButtonEx::PremultiplyBitmapAlpha(HDC hDC, HBITMAP hBmp)
 }
 
 /////////////////////////////////////////////////////////////////////////////
+// CECTRibbonBar (siehe MainFrm.h)
+
+// Zugriff auf das geschuetzte CMFCRibbonCaptionButton::m_hwndMDIChild ueber einen
+// Member-Zeiger der abgeleiteten Klasse (standardkonform, es wird nichts auf
+// einen falschen Typ gecastet und nichts instanziiert)
+struct CRibbonCaptionButtonZugriff : public CMFCRibbonCaptionButton
+{
+	static HWND CMFCRibbonCaptionButton::* MdiKindMember() { return &CRibbonCaptionButtonZugriff::m_hwndMDIChild; }
+};
+
+BEGIN_MESSAGE_MAP(CECTRibbonBar, CMFCRibbonBar)
+	ON_WM_LBUTTONUP()
+END_MESSAGE_MAP()
+
+void CECTRibbonBar::OnLButtonUp(UINT nFlags, CPoint point)
+{
+	// Die Rahmen-Knoepfe bekommen in CMFCRibbonBar::OnCreate immer m_pRibbonBar = this;
+	// ein Caption-Knopf ganz ohne Ziel kann also nur ein verwaister MDI-Kind-Knopf sein.
+	CMFCRibbonCaptionButton* pKnopf = DYNAMIC_DOWNCAST(CMFCRibbonCaptionButton, HitTest(point));
+	if (pKnopf != NULL && !pKnopf->IsMDIChildButton() && pKnopf->GetParentRibbonBar() == NULL)
+	{
+		BOOL bMaximiert = FALSE;
+		CMDIFrameWnd* pRahmen = DYNAMIC_DOWNCAST(CMDIFrameWnd, GetParent());
+		CMDIChildWnd* pKind = pRahmen != NULL ? pRahmen->MDIGetActive(&bMaximiert) : NULL;
+		if (pKind != NULL && bMaximiert && pKind->GetSafeHwnd() != NULL)
+		{
+			TRACE("CECTRibbonBar: verwaisten MDI-Caption-Knopf an aktives Kindfenster gebunden\n");
+			pKnopf->*CRibbonCaptionButtonZugriff::MdiKindMember() = pKind->GetSafeHwnd();
+		}
+		else
+		{
+			// kein maximiertes Kindfenster mehr: Knoepfe abbauen, dann findet die Basisklasse sie nicht mehr
+			TRACE("CECTRibbonBar: verwaiste MDI-Caption-Knoepfe entfernt\n");
+			SetMaximizeMode(FALSE);
+		}
+	}
+
+	CMFCRibbonBar::OnLButtonUp(nFlags, point);
+}
+
+/////////////////////////////////////////////////////////////////////////////
 // CMainFrame
 
 IMPLEMENT_DYNAMIC(CMainFrame, CMDIFrameWndEx)
