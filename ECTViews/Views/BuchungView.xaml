@@ -221,7 +221,8 @@
                     <!-- Focusable=False: der Klick darf dem Beschreibungsfeld
                          nicht den Fokus stehlen, sonst schoesse dessen
                          LostFocus-Handler das frisch geoeffnete Popup zu. -->
-                    <Button Grid.Column="1" Width="22" Margin="2,2,0,2"
+                    <Button Grid.Column="1" x:Name="VorschlaegeKnopf"
+                            Width="22" Margin="2,2,0,2"
                             Focusable="False"
                             Click="OnVorschlaegeKnopf"
                             ToolTip="{Binding VorschlaegeKnopfTooltip}">
@@ -232,7 +233,8 @@
 
                 <!-- Vorschlags-Liste (Auto-Complete) als Popup unter dem Feld.
                      Filtert nach Nummer ODER Beschreibungstext. -->
-                <Popup PlacementTarget="{Binding ElementName=BeschreibungBox}"
+                <Popup x:Name="VorschlagPopup"
+                       PlacementTarget="{Binding ElementName=BeschreibungBox}"
                        Placement="Bottom" StaysOpen="True"
                        IsOpen="{Binding VorschlaegeOffen, Mode=TwoWay}"
                        MinWidth="{Binding ActualWidth, ElementName=BeschreibungBox}">

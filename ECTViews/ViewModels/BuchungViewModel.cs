@@ -572,20 +572,29 @@ namespace ECTViews.ViewModels
         private void LadePresetInFelder(Preset p, int presetSlot,
             bool beschreibungErhalten = false)
         {
+            // Vorschlags-Popup zuerst schliessen -- noch VOR der Rueckfrage
+            // unten: ein WPF-Popup ist ein Topmost-Fenster, modale Dialoge
+            // (die Gruppen-Rueckfrage, der "Konto anlegen"-Dialog beim
+            // Auflösen einer Feld-Spezifikation) verschwinden sonst dahinter.
+            // Der Dialog wirkte dann wie eingefroren: Klick auf eine Vorlage,
+            // "nichts passiert" -- in Wahrheit wartete die unsichtbare
+            // MessageBox auf Antwort.
+            VorschlaegeOffen = false;
+
+            // Ist genau diese Gruppen-Vorlage schon geladen, ändert die Wahl
+            // nichts an der Gruppe: keine Rückfrage und die Zusatz-Zeilen
+            // bleiben stehen (sonst gingen die manuell erfassten bzw. beim
+            // Bearbeiten aus den bestehenden Buchungen vorbelegten Beträge
+            // verloren).
+            bool gleicheGruppenVorlage = p.IstMehrzeilig
+                && _gruppenVorlage != null && presetSlot == _gruppenVorlageSlot;
+
             // Bearbeiten-Modus: die Wahl einer Vorlage kann die Buchung in
             // eine Buchungsgruppe umwandeln, eine bestehende Gruppe umstellen
             // oder sie auflösen. Die Rückfrage kommt VOR jeder Feldänderung --
             // ein "Nein" lässt die Buchung komplett unberührt.
-            if (IstBearbeitung && !BestaetigeGruppenWechsel(p))
-            {
-                VorschlaegeOffen = false;
+            if (IstBearbeitung && !gleicheGruppenVorlage && !BestaetigeGruppenWechsel(p))
                 return;
-            }
-            // Vorschlags-Popup zuerst schliessen: das Auflösen einer
-            // Feld-Spezifikation kann den modalen "Konto anlegen"-Dialog
-            // öffnen, der sonst hinter dem noch offenen (immer obenauf
-            // liegenden) Popup verschwindet.
-            VorschlaegeOffen = false;
 
             _presetLaden = true;
             try
@@ -655,7 +664,9 @@ namespace ECTViews.ViewModels
             // Im Bearbeiten-Modus ist die Umwandlung an dieser Stelle bereits
             // bestätigt (BestaetigeGruppenWechsel ganz oben) bzw. ausdrücklich
             // über das Journal angefordert.
-            if (p.IstMehrzeilig)
+            if (gleicheGruppenVorlage)
+                AktualisiereZusatzzeilen();
+            else if (p.IstMehrzeilig)
                 UebernimmGruppenVorlage(p, presetSlot);
             else
                 EntferneGruppenVorlage();

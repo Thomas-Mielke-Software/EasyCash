@@ -417,6 +417,13 @@ namespace ECTViews.ViewModels
         /// </summary>
         public Func<string, string, bool> UmwandlungBestaetigen { get; set; }
 
+        /// <summary>
+        /// Hinweis (nur OK), wenn eine Umwandlung im Bearbeiten-Modus nicht
+        /// zulaessig ist. Args: (Text, Titel). Ebenfalls vom
+        /// BuchungView-Code-Behind gesetzt (Owner der MessageBox).
+        /// </summary>
+        public Action<string, string> UmwandlungHinweis { get; set; }
+
         // Gesetzt, waehrend eine ueber das Journal ausdruecklich angeforderte
         // Umwandlung laeuft -- dann entfaellt die Rueckfrage.
         private bool _umwandlungOhneRueckfrage;
@@ -461,8 +468,37 @@ namespace ECTViews.ViewModels
             bool hatGruppe = _gruppenVorlage != null;
             if (!hatGruppe && !p.IstMehrzeilig) return true;
 
+            // Gruppen-Mitglied, dessen Gruppe der Dialog nicht laden konnte
+            // (Vorlage geloescht/einzeilig geworden, Basis fehlt -- Einzel-
+            // Fallback in ViewHost.ZeigeBuchungBearbeitenKombiDialog): auch
+            // das ist eine Gruppe, die beim Speichern ersetzt wird.
+            bool warGruppenMitglied = !hatGruppe
+                && _originalBuchung?.GruppenUuid != null;
+
+            // ... und zwar eine ZUSATZ-Buchung dieser Gruppe: die neue Gruppe
+            // entstuende dann aus deren Betrag/Konto (z.B. der Vorsteuer-
+            // Zeile), und beim Speichern fiele die alte Basis als "altes
+            // Mitglied" weg. Das Journal-Kontextmenue "Umwandeln in" lenkt
+            // in diesem Fall auf die Basis um -- hier im Dialog geht das
+            // nicht mehr, also ablehnen und den Weg dorthin zeigen.
+            if (warGruppenMitglied && p.IstMehrzeilig
+                && _originalBuchung.GruppenRolle > 0)
+            {
+                UmwandlungHinweis?.Invoke(
+                    "Diese Buchung ist eine Zusatz-Buchung einer Buchungsgruppe, "
+                    + "deren Vorlage nicht mehr gefunden wurde. Sie kann hier "
+                    + "nicht in eine andere Buchungsgruppe umgewandelt werden -- "
+                    + "die neue Gruppe entstünde sonst aus dieser Zusatz-Buchung, "
+                    + "und die eigentliche Basis-Buchung ginge verloren.\n\n"
+                    + "Bitte stattdessen die Basis-Buchung der Gruppe bearbeiten "
+                    + "oder im Journal über das Kontextmenü \"Umwandeln in\" "
+                    + "umwandeln.",
+                    "Buchungsgruppe");
+                return false;
+            }
+
             string text;
-            if (!hatGruppe)
+            if (!hatGruppe && !warGruppenMitglied)
             {
                 text = "Diese Buchung in eine Buchungsgruppe umwandeln?\n\n"
                      + "Vorlage: \"" + p.Text + "\" (" + ZeilenAnzahlText(p) + ")\n\n"
@@ -473,11 +509,14 @@ namespace ECTViews.ViewModels
             }
             else if (p.IstMehrzeilig)
             {
-                text = "Die Buchungsgruppe auf die Vorlage \"" + p.Text
-                     + "\" umstellen?\n\n"
-                     + "Die bisherigen Zusatz-Buchungen werden beim Speichern "
-                     + "durch " + ZeilenAnzahlText(p) + " ersetzt.\n"
-                     + BeschreibungsHinweis(p);
+                text = "Diese Buchungsgruppe in eine andere Buchungsgruppe umwandeln?\n\n"
+                     + "Vorlage: \"" + p.Text + "\" (" + ZeilenAnzahlText(p) + ")\n\n"
+                     + "Konto, MWSt. und AfA werden aus der Vorlage übernommen; "
+                     + "Datum, Betrag und Belegnummer bleiben erhalten.\n"
+                     + BeschreibungsHinweis(p) + "\n\n"
+                     + "Die bisherigen Zusatz-Buchungen der Gruppe werden beim "
+                     + "Speichern entfernt und durch " + ZeilenAnzahlText(p)
+                     + " ersetzt.";
             }
             else
             {

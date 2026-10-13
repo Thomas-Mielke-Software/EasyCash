@@ -34,9 +34,54 @@ namespace ECTViews.Views
             // Alt-Kuerzel der Icon-Listen (siehe OnFensterPreviewKeyDown).
             PreviewKeyDown += OnFensterPreviewKeyDown;
             PreviewKeyUp += OnFensterPreviewKeyUp;
-            // Mit gedruecktem Alt weggeschaltet (Alt+Tab): das KeyUp kommt
-            // dann nicht mehr an, die Schilder blieben sonst stehen.
             Deactivated += (s, e) => VersteckeAltHinweise();
+            Deactivated += (s, e) => SchliessePopups();
+            LocationChanged += (s, e) => SchliessePopups();
+            PreviewMouseDown += OnFensterPreviewMouseDown;
+        }
+
+        /// <summary>Schliesst Vorlagen-Liste und Notiz-Balloon.</summary>
+        private void SchliessePopups()
+        {
+            if (DataContext is BuchungViewModel vm)
+                vm.VorschlaegeOffen = false;
+            _notizTimer.Stop();
+            NotizBalloon.IsOpen = false;
+        }
+
+        /// <summary>
+        /// Schliesst die Vorlagen-Liste bei jedem Mausklick ausserhalb von
+        /// Beschreibungsfeld, Dropdown-Knopf und der Liste selbst. Klicks IN
+        /// der Liste kommen hier ebenfalls an (WPF leitet Routed Events aus
+        /// einem Popup ueber dessen logischen Elternbaum weiter) und muessen
+        /// deshalb ausgenommen werden; der Dropdown-Knopf schaltet selbst um.
+        /// </summary>
+        private void OnFensterPreviewMouseDown(object sender, MouseButtonEventArgs e)
+        {
+            if (!(DataContext is BuchungViewModel vm) || !vm.VorschlaegeOffen) return;
+            var quelle = e.OriginalSource as DependencyObject;
+            if (IstInnerhalb(quelle, VorschlagPopup.Child)
+                || IstInnerhalb(quelle, BeschreibungBox)
+                || IstInnerhalb(quelle, VorschlaegeKnopf))
+                return;
+            vm.VorschlaegeOffen = false;
+        }
+
+        /// <summary>True, wenn <paramref name="element"/> gleich
+        /// <paramref name="vorfahr"/> ist oder darunter liegt (visueller Baum,
+        /// fuer Inhaltselemente wie Run ueber den logischen Baum).</summary>
+        private static bool IstInnerhalb(DependencyObject element, DependencyObject vorfahr)
+        {
+            if (vorfahr == null) return false;
+            while (element != null)
+            {
+                if (ReferenceEquals(element, vorfahr)) return true;
+                element = element is System.Windows.Media.Visual
+                       || element is System.Windows.Media.Media3D.Visual3D
+                    ? System.Windows.Media.VisualTreeHelper.GetParent(element)
+                    : LogicalTreeHelper.GetParent(element);
+            }
+            return false;
         }
 
         public BuchungView(BuchungViewModel viewModel) : this()
@@ -63,6 +108,9 @@ namespace ECTViews.Views
                 MessageBox.Show(this, text, titel,
                     MessageBoxButton.YesNo, MessageBoxImage.Question)
                 == MessageBoxResult.Yes;
+            viewModel.UmwandlungHinweis = (text, titel) =>
+                MessageBox.Show(this, text, titel,
+                    MessageBoxButton.OK, MessageBoxImage.Information);
 
             // Auch beim erstmaligen Oeffnen die "Weiterbuchen-Verhalten"-
             // Einstellung zum Cursor beachten (nur bei neuer Buchung, nicht
