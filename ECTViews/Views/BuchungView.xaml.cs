@@ -353,6 +353,95 @@ namespace ECTViews.Views
             }), DispatcherPriority.Background);
         }
 
+        // ----------------------------------------------------------
+        // Tastaturbedienung der Vorlagen-Liste (wie eine ComboBox)
+        //
+        // Der Fokus bleibt immer im Beschreibungsfeld; die Pfeiltasten
+        // verschieben nur die Markierung in der Liste:
+        //   Pfeil ab (auch Alt+Pfeil ab / F4) -- Liste oeffnen bzw. naechster
+        //       Eintrag. Beim Oeffnen gefiltert nach dem Feldtext; passt
+        //       nichts (z.B. beim Bearbeiten), erscheinen alle Vorlagen.
+        //   Pfeil auf -- vorheriger Eintrag
+        //   Enter     -- markierten Eintrag uebernehmen (ohne Markierung:
+        //                normal weiter, d.h. Buchen-Knopf)
+        //   Escape    -- Liste schliessen (statt den Dialog abzubrechen)
+        // ----------------------------------------------------------
+
+        private void OnBeschreibungPreviewKeyDown(object sender, KeyEventArgs e)
+        {
+            if (!(DataContext is BuchungViewModel vm)) return;
+            var taste = EchteTaste(e);
+            bool offen = vm.VorschlaegeOffen;
+
+            switch (taste)
+            {
+                case Key.Down:
+                case Key.F4:
+                    if (!offen)
+                    {
+                        vm.OeffneVorschlaegeFuerTastatur();
+                        if (vm.VorschlaegeOffen && taste == Key.Down)
+                            MarkiereVorschlag(0);
+                    }
+                    else if (taste == Key.Down)
+                        MarkiereVorschlag(VorschlagListe.SelectedIndex + 1);
+                    else
+                        vm.VorschlaegeOffen = false;   // F4 schaltet um
+                    e.Handled = true;
+                    break;
+
+                case Key.Up:
+                    if (!offen) return;
+                    MarkiereVorschlag(Math.Max(VorschlagListe.SelectedIndex - 1, 0));
+                    e.Handled = true;
+                    break;
+
+                case Key.Enter:
+                    if (!offen || !(VorschlagListe.SelectedItem is BuchungViewModel.PresetVorschlag v))
+                        return;
+                    vm.GewaehlterVorschlag = v;
+                    e.Handled = true;   // nicht zusaetzlich buchen
+                    break;
+
+                case Key.Escape:
+                    if (!offen) return;
+                    vm.VorschlaegeOffen = false;
+                    e.Handled = true;   // Dialog NICHT abbrechen
+                    break;
+            }
+        }
+
+        /// <summary>Markiert den Eintrag <paramref name="index"/> (auf den
+        /// gueltigen Bereich begrenzt) und rollt ihn in den sichtbaren
+        /// Bereich.</summary>
+        private void MarkiereVorschlag(int index)
+        {
+            int anzahl = VorschlagListe.Items.Count;
+            if (anzahl == 0) return;
+            index = Math.Max(0, Math.Min(index, anzahl - 1));
+            VorschlagListe.SelectedIndex = index;
+            VorschlagListe.ScrollIntoView(VorschlagListe.Items[index]);
+        }
+
+        /// <summary>Uebernimmt den angeklickten Eintrag. Schon beim
+        /// Mausdruck (und als erledigt markiert), damit die ListBox weder
+        /// Fokus noch Mauscapture an sich zieht. Klicks auf die Bildlaufleiste
+        /// liegen auf keinem ListBoxItem und laufen normal weiter.</summary>
+        private void OnVorschlagAngeklickt(object sender, MouseButtonEventArgs e)
+        {
+            if (!(DataContext is BuchungViewModel vm)) return;
+            var element = e.OriginalSource as DependencyObject;
+            while (element != null && !(element is ListBoxItem))
+                element = element is System.Windows.Media.Visual
+                       || element is System.Windows.Media.Media3D.Visual3D
+                    ? System.Windows.Media.VisualTreeHelper.GetParent(element)
+                    : LogicalTreeHelper.GetParent(element);
+            if (!(element is ListBoxItem item)
+                || !(item.DataContext is BuchungViewModel.PresetVorschlag v)) return;
+            vm.GewaehlterVorschlag = v;
+            e.Handled = true;
+        }
+
         /// <summary>Waehrungsrechner-Knopf neben dem Betragsfeld: klappt ein
         /// Menue mit den in den Einstellungen ausgewaehlten Waehrungen auf. Die
         /// Auswahl einer Waehrung startet die (asynchrone) Kursabfrage und

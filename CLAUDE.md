@@ -464,14 +464,25 @@ robuster in hosted-WPF-Szenarien.
   Bearbeiten-Dialog (`ECT_ShowBuchungUmwandelnDialog` ->
   `ZeigeBuchungBearbeitenKombiDialog(..., umwandelVorlagenSlot)` ->
   `VorgewaehltesPreset`), die Zusatz-Buchungen entstehen erst beim Speichern.
-  Konto/MWSt/AfA kommen aus der Vorlage; **ein selbst getippter
-  Beschreibungstext bleibt erhalten** (`BeschreibungIstAutomatisch`: nur ein
-  leerer Text oder der Text einer Vorlage wird überschrieben) -- er ist der
-  Inhalt der Buchung und speist als `$B` die Zeilen-Templates. Beim
-  Umwandeln in eine GRUPPE wird der Vorlagenname zusätzlich **vorangestellt**
-  ("Reverse Charge EU-Eingangsrechnung: Hotel Berlin", `MitVorlagenNamen`),
-  damit die Art der Buchung im Journal ablesbar bleibt; idempotent, damit
-  sich beim Umstellen/Bearbeiten keine Präfixe stapeln.
+  Konto/MWSt/AfA kommen aus der Vorlage. **Beschreibung beim Bearbeiten**
+  (`ECTEngine.VorlagenBeschreibung`, Tests `VorlagenBeschreibungTests`):
+  beginnt der Text mit einem Vorlagennamen (längster gewinnt, nur an
+  Wortgrenze), wird nur dieser Anfang getauscht, der Rest bleibt
+  ("Einnahme Eigenverbrauch 3Q/2026" -> "Finanzamtsrückzahlung 3Q/2026");
+  ein frei getippter Text bleibt erhalten -- er ist der Inhalt der Buchung
+  und speist als `$B` die Zeilen-Templates -- und bekommt bei einer
+  GRUPPEN-Vorlage deren Namen **vorangestellt** ("Reverse Charge
+  EU-Eingangsrechnung: Hotel Berlin"); Präfixe stapeln sich nicht, weil der
+  alte Gruppenname selbst als Vorlagen-Anfang getauscht wird. Bei einer
+  NEUEN Buchung ersetzt die Vorlage den Text immer (dort ist er nur der
+  Filter der Vorschlagsliste).
+- **Vorschlagsliste per Tastatur**: Pfeil ab/F4 öffnet (gefiltert, ohne
+  Treffer alle), Pfeile markieren, Enter übernimmt, Escape schließt; der
+  Fokus bleibt im Beschreibungsfeld. Die ListBox hat bewusst KEINE
+  SelectedItem-Bindung (die lud bei jeder Markierung sofort die Vorlage);
+  übernommen wird im Code-Behind per Enter oder Mausdruck. Das Popup
+  schließt bei Fensterwechsel, Verschieben und Klick außerhalb (Topmost-
+  Fenster, folgt dem Dialog sonst nicht).
 
 ### Vorlagen-Bibliothek (mitgeliefert, Stand 2026-08-23)
 - **Kuratierte Sammlung** von Buchungsvorlagen, hierarchisch + über

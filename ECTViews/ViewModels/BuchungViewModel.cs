@@ -470,7 +470,8 @@ namespace ECTViews.ViewModels
                 {
                     var p = presets[value.Nummer];
                     if (!p.IstLeer)
-                        LadePresetInFelder(p, value.Nummer, beschreibungErhalten: true);
+                        LadePresetInFelder(p, value.Nummer,
+                            beschreibungErhalten: IstBearbeitung);
                 }
                 VorschlaegeOffen = false;
                 _gewaehlterVorschlag = null;
@@ -631,18 +632,15 @@ namespace ECTViews.ViewModels
             // Editierfeld zurückgeschrieben (TwoWay-Binding-Re-Entrancy). Daher
             // per Dispatcher nach dem aktuellen Eingabe-Zyklus nachziehen.
             //
-            // Ausnahme: beim Bearbeiten/Umwandeln bleibt ein selbst getippter
-            // Beschreibungstext stehen -- er ist der Inhalt der Buchung, der
-            // Vorlagenname nur deren Etikett (siehe BeschreibungIstAutomatisch).
-            // Beim Umwandeln in eine GRUPPE wird der Vorlagenname zusaetzlich
-            // vorangestellt ("Reverse Charge EU-Eingangsrechnung: Hotel
-            // Berlin"), damit im Journal erkennbar bleibt, worum es sich
-            // handelt, ohne den eigenen Text zu verlieren (MitVorlagenNamen).
-            string beschreibungNeu = null;
-            if (!beschreibungErhalten || BeschreibungIstAutomatisch())
-                beschreibungNeu = p.Text;
-            else if (p.IstMehrzeilig)
-                beschreibungNeu = MitVorlagenNamen(p.Text, Beschreibung);
+            // Ausnahme: beim Bearbeiten/Umwandeln wird nur ein Vorlagenname am
+            // Textanfang ausgetauscht, der Rest bleibt ("Einnahme
+            // Eigenverbrauch 3Q/2026" -> "Finanzamtsrueckzahlung 3Q/2026");
+            // ein ganz eigener Text bleibt stehen bzw. bekommt bei einer
+            // GRUPPEN-Vorlage deren Namen vorangestellt (siehe
+            // BeschreibungNachVorlage / ECTEngine.VorlagenBeschreibung).
+            string beschreibungNeu = beschreibungErhalten
+                ? BeschreibungNachVorlage(p)
+                : p.Text;
 
             if (beschreibungNeu != null
                 && !string.Equals(beschreibungNeu, Beschreibung, StringComparison.Ordinal))
@@ -706,6 +704,17 @@ namespace ECTViews.ViewModels
             foreach (var v in _allePresetVorschlaege)
                 PresetVorschlaege.Add(v);
             VorschlaegeOffen = PresetVorschlaege.Count > 0;
+        }
+
+        /// <summary>Öffnet die Vorschlagsliste per Tastatur (Pfeil ab / F4):
+        /// gefiltert nach dem aktuellen Text, wenn das Treffer ergibt -- sonst
+        /// alle Vorlagen (beim Bearbeiten steht meist ein Text im Feld, der
+        /// keiner Vorlage entspricht).</summary>
+        public void OeffneVorschlaegeFuerTastatur()
+        {
+            AktualisiereVorschlaege(_beschreibung);
+            if (!VorschlaegeOffen)
+                OeffneAlleVorschlaege();
         }
 
         private static bool PasstAufFilter(PresetVorschlag v, string f)

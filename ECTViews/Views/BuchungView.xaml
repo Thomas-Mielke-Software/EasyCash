@@ -216,6 +216,7 @@
                     <TextBox Grid.Column="0" x:Name="BeschreibungBox"
                              Text="{Binding Beschreibung, UpdateSourceTrigger=PropertyChanged}"
                              LostFocus="OnBeschreibungLostFocus"
+                             PreviewKeyDown="OnBeschreibungPreviewKeyDown"
                              GotKeyboardFocus="OnFeldGotKeyboardFocus"
                              PreviewMouseLeftButtonDown="OnFeldPreviewMouseLeftButtonDown"/>
                     <!-- Focusable=False: der Klick darf dem Beschreibungsfeld
@@ -239,9 +240,15 @@
                        IsOpen="{Binding VorschlaegeOffen, Mode=TwoWay}"
                        MinWidth="{Binding ActualWidth, ElementName=BeschreibungBox}">
                     <Border Background="White" BorderBrush="#999999" BorderThickness="1">
-                        <ListBox ItemsSource="{Binding PresetVorschlaege}"
+                        <!-- KEINE SelectedItem-Bindung: die Markierung ist nur
+                             Hervorhebung (Pfeiltasten aus dem Beschreibungsfeld),
+                             uebernommen wird per Klick oder Enter (Code-Behind).
+                             Focusable=False: der Fokus bleibt im Feld. -->
+                        <ListBox x:Name="VorschlagListe"
+                                 ItemsSource="{Binding PresetVorschlaege}"
                                  DisplayMemberPath="Anzeige"
-                                 SelectedItem="{Binding GewaehlterVorschlag, Mode=TwoWay}"
+                                 Focusable="False"
+                                 PreviewMouseLeftButtonDown="OnVorschlagAngeklickt"
                                  MaxHeight="220"
                                  ScrollViewer.HorizontalScrollBarVisibility="Disabled"/>
                     </Border>

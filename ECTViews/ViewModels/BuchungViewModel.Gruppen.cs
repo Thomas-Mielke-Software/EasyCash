@@ -536,56 +536,36 @@ namespace ECTViews.ViewModels
                 : p.Zeilen.Count + " zusätzliche Buchungen";
 
         /// <summary>Sagt in der Rueckfrage an, wie die Beschreibung danach
-        /// lautet (siehe BeschreibungIstAutomatisch, MitVorlagenNamen).</summary>
+        /// lautet (siehe BeschreibungNachVorlage).</summary>
         private string BeschreibungsHinweis(Preset p)
             => "Die Beschreibung lautet dann \""
-               + (BeschreibungIstAutomatisch()
-                    ? (p.Text ?? "").Trim()
-                    : MitVorlagenNamen(p.Text, Beschreibung))
-               + "\".";
+               + BeschreibungNachVorlage(p) + "\".";
 
         /// <summary>
-        /// Stellt beim Umwandeln den Vorlagen-Namen vor einen selbst
-        /// getippten Beschreibungstext: aus "Hotel Berlin" wird
-        /// "Reverse Charge EU-Eingangsrechnung: Hotel Berlin". Der eigene
-        /// Text bleibt damit erhalten (er ist der Inhalt der Buchung), die
-        /// Gruppe ist aber schon im Journal an der Beschreibung erkennbar.
-        /// Idempotent: traegt der Text den Namen schon vorne, bleibt er wie
-        /// er ist -- sonst stapelten sich die Praefixe bei jedem erneuten
-        /// Umstellen oder Bearbeiten.
+        /// Beschreibung nach der Wahl von <paramref name="p"/> im
+        /// Bearbeiten-Modus: Vorlagenname am Textanfang austauschen, Rest
+        /// (Zusatz wie "3Q/2026" oder eigener Inhalt) erhalten -- Regel siehe
+        /// ECTEngine.VorlagenBeschreibung. Ein selbst getippter Text ist
+        /// ausserdem die bessere Grundlage fuer die Zeilen-Templates der
+        /// Vorlage ($B liefert dann "Hotel Berlin" statt des Vorlagen-Namens).
         /// </summary>
-        private static string MitVorlagenNamen(string vorlagenName, string beschreibung)
+        /// <remarks>Ausnahme: Hat der Text die Vorlage in der Liste GEFUNDEN
+        /// (gleiche Pruefung wie die Listenfilterung, z.B. "F" ->
+        /// "Finanzamtsrueckzahlung"), ist er nur der Suchbegriff und wird
+        /// komplett ersetzt -- sonst bliebe das getippte "F" stehen.</remarks>
+        private string BeschreibungNachVorlage(Preset p)
         {
-            var name = (vorlagenName ?? "").Trim();
-            var text = (beschreibung ?? "").Trim();
-            if (name.Length == 0) return text;
-            if (text.Length == 0) return name;
-            return text.StartsWith(name, StringComparison.OrdinalIgnoreCase)
-                ? text
-                : name + ": " + text;
-        }
+            var alsEintrag = new PresetVorschlag
+            {
+                Nummer = Einstellungen.Presets.ToList().IndexOf(p),
+                Text = p.Text ?? ""
+            };
+            if (PasstAufFilter(alsEintrag, (Beschreibung ?? "").Trim()))
+                return (p.Text ?? "").Trim();
 
-        /// <summary>
-        /// True, wenn der aktuelle Beschreibungstext NICHT von Hand stammt:
-        /// leer oder wortgleich mit dem Text einer Buchungsvorlage (dann hat
-        /// ihn eine fruehere Vorlagen-Wahl eingesetzt). Nur solche Texte darf
-        /// eine Vorlage beim Bearbeiten ueberschreiben -- ein selbst
-        /// getippter Text ("Hotel Berlin, 3 Naechte") ist der eigentliche
-        /// Inhalt der Buchung und ueberlebt die Umwandlung. Er ist ausserdem
-        /// die bessere Grundlage fuer die Zeilen-Templates der Vorlage
-        /// ($B liefert dann "Hotel Berlin, 3 Naechte" statt des
-        /// Vorlagen-Namens).
-        /// </summary>
-        private bool BeschreibungIstAutomatisch()
-        {
-            var t = (Beschreibung ?? "").Trim();
-            if (t.Length == 0) return true;
-            foreach (var vorlage in Einstellungen.Presets)
-                if (!vorlage.IstLeer && !string.IsNullOrEmpty(vorlage.Text)
-                    && string.Equals(vorlage.Text.Trim(), t,
-                        StringComparison.OrdinalIgnoreCase))
-                    return true;
-            return false;
+            return VorlagenBeschreibung.NachVorlagenwahl(
+                Beschreibung, p.Text, p.IstMehrzeilig,
+                Einstellungen.Presets.Where(v => !v.IstLeer).Select(v => v.Text));
         }
     }
 
