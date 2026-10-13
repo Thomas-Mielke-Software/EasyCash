@@ -130,6 +130,19 @@ if (-not $DryRun) {
     [System.IO.File]::WriteAllText($propsPath, $newPropsText, (New-Object System.Text.UTF8Encoding $false))
 }
 
+# --- Revision (Git-Commit-Count) fuer die vierstelligen Dateiversionen ----------
+# Einmal ermitteln, damit ECTSetup.exe (Abschnitt 5) und EasyCT.exe
+# (Abschnitt 7) dieselbe Nummer tragen.
+$gitCount = (& git -C $repoRoot rev-list --count HEAD 2>$null)
+if ($LASTEXITCODE -ne 0 -or -not $gitCount) {
+    Write-Host "  WARN: git rev-list fehlgeschlagen, Revision=0" -ForegroundColor Yellow
+    $gitCount = '0'
+}
+$gitCount = $gitCount.Trim()
+Write-Host "Revision (Git-Commit-Count): $gitCount"
+$rcComma   = "$newMajor,$newMinor,$newPatch,$gitCount"
+$rcDotted  = "$newMajor.$newMinor.$newPatch.$gitCount"
+
 # --- 5. easycash.iss aktualisieren (Win-1252) -----------------------------------
 Write-Host "easycash.iss:"
 $issVersion = $newVersion
@@ -140,13 +153,14 @@ Update-File1252 -Path $issPath `
     -Required
 # AppVersion (Uninstall-Eintrag) und VersionInfoVersion (Dateiversion der
 # ECTSetup.exe) rein numerisch -- VersionInfoVersion erlaubt keinen Suffix
+# und bekommt dieselbe vierstellige Nummer wie die EasyCT.exe
 Update-File1252 -Path $issPath `
     -Pattern '(?m)^(AppVersion=)[^\r\n]+' `
     -Replacement "`${1}$newVersion" `
     -Required
 Update-File1252 -Path $issPath `
     -Pattern '(?m)^(VersionInfoVersion=)[^\r\n]+' `
-    -Replacement "`${1}$newVersion" `
+    -Replacement "`${1}$rcDotted" `
     -Required
 
 # --- 6. TestReg.txt / VollReg.txt aktualisieren (Win-1252, nur Major.Minor) -----
@@ -161,15 +175,6 @@ Update-File1252 -Path $issPath `
 # --- 7. EasyCash.rc aktualisieren (Win-1252, Major,Minor,Patch,GitCommitCount) --
 Write-Host "EasyCash.rc:"
 $rcPath = Join-Path $repoRoot 'EasyCash.rc'
-$gitCount = (& git -C $repoRoot rev-list --count HEAD 2>$null)
-if ($LASTEXITCODE -ne 0 -or -not $gitCount) {
-    Write-Host "  WARN: git rev-list fehlgeschlagen, Revision=0" -ForegroundColor Yellow
-    $gitCount = '0'
-}
-$gitCount = $gitCount.Trim()
-Write-Host "  Revision (Git-Commit-Count): $gitCount"
-$rcComma   = "$newMajor,$newMinor,$newPatch,$gitCount"
-$rcDotted  = "$newMajor.$newMinor.$newPatch.$gitCount"
 Update-File1252 -Path $rcPath `
     -Pattern '(?m)^(\s*FILEVERSION\s+)\d+,\d+,\d+,\d+' `
     -Replacement "`${1}$rcComma" `
