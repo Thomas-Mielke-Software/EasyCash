@@ -473,9 +473,11 @@ robuster in hosted-WPF-Szenarien.
   und speist als `$B` die Zeilen-Templates -- und bekommt bei einer
   GRUPPEN-Vorlage deren Namen **vorangestellt** ("Reverse Charge
   EU-Eingangsrechnung: Hotel Berlin"); Präfixe stapeln sich nicht, weil der
-  alte Gruppenname selbst als Vorlagen-Anfang getauscht wird. Bei einer
-  NEUEN Buchung ersetzt die Vorlage den Text immer (dort ist er nur der
-  Filter der Vorschlagsliste).
+  alte Gruppenname selbst als Vorlagen-Anfang getauscht wird. Geschützt ist
+  dabei NUR die beim Öffnen geladene Beschreibung (bzw. das Ergebnis der
+  letzten Vorlagen-Wahl, `_geschuetzteBeschreibung`); alles im Dialog
+  Getippte ist Suchbegriff der Liste und wird komplett ersetzt -- ebenso
+  bei einer NEUEN Buchung.
 - **Vorschlagsliste per Tastatur**: Pfeil ab/F4 öffnet (gefiltert, ohne
   Treffer alle), Pfeile markieren, Enter übernimmt, Escape schließt; der
   Fokus bleibt im Beschreibungsfeld. Die ListBox hat bewusst KEINE

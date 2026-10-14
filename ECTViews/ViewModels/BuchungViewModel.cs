@@ -641,6 +641,8 @@ namespace ECTViews.ViewModels
             string beschreibungNeu = beschreibungErhalten
                 ? BeschreibungNachVorlage(p)
                 : p.Text;
+            if (beschreibungErhalten)
+                _geschuetzteBeschreibung = beschreibungNeu;
 
             if (beschreibungNeu != null
                 && !string.Equals(beschreibungNeu, Beschreibung, StringComparison.Ordinal))
@@ -1182,6 +1184,7 @@ namespace ECTViews.ViewModels
             _mwstText = Waehrungsformat.Zahl(
                 buchung.BruttoBetrag.MwstPromille / 1000m);
             _beschreibung = buchung.Beschreibung;
+            _geschuetzteBeschreibung = buchung.Beschreibung ?? "";
             _belegnummer = buchung.Belegnummer;
             _selectedKonto = buchung.Konto;
             _bestandskontoFallback = buchung.Bestandskonto ?? "";

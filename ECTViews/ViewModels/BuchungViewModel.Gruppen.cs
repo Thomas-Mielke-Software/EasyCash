@@ -535,6 +535,15 @@ namespace ECTViews.ViewModels
                 ? "1 zusätzliche Buchung"
                 : p.Zeilen.Count + " zusätzliche Buchungen";
 
+        /// <summary>
+        /// Beschreibung, die eine Vorlagen-Wahl beim Bearbeiten (teilweise)
+        /// erhaelt: beim Oeffnen der Text der Buchung, nach jeder
+        /// angewendeten Vorlagen-Wahl deren Ergebnis (so ueberlebt der Zusatz
+        /// "3Q/2026" auch einen zweiten Vorlagenwechsel). Null bei einer
+        /// neuen Buchung -- dort wird der Text immer ersetzt.
+        /// </summary>
+        private string _geschuetzteBeschreibung;
+
         /// <summary>Sagt in der Rueckfrage an, wie die Beschreibung danach
         /// lautet (siehe BeschreibungNachVorlage).</summary>
         private string BeschreibungsHinweis(Preset p)
@@ -549,18 +558,17 @@ namespace ECTViews.ViewModels
         /// ausserdem die bessere Grundlage fuer die Zeilen-Templates der
         /// Vorlage ($B liefert dann "Hotel Berlin" statt des Vorlagen-Namens).
         /// </summary>
-        /// <remarks>Ausnahme: Hat der Text die Vorlage in der Liste GEFUNDEN
-        /// (gleiche Pruefung wie die Listenfilterung, z.B. "F" ->
-        /// "Finanzamtsrueckzahlung"), ist er nur der Suchbegriff und wird
-        /// komplett ersetzt -- sonst bliebe das getippte "F" stehen.</remarks>
+        /// <remarks>Geschuetzt ist NUR die beim Oeffnen geladene Beschreibung
+        /// (bzw. das Ergebnis einer vorherigen Vorlagen-Wahl, siehe
+        /// <see cref="_geschuetzteBeschreibung"/>). Alles, was danach im
+        /// Dialog getippt wurde, ist Suchbegriff der Liste ("F" ->
+        /// "Finanzamtsrueckzahlung") und wird komplett ersetzt.</remarks>
         private string BeschreibungNachVorlage(Preset p)
         {
-            var alsEintrag = new PresetVorschlag
-            {
-                Nummer = Einstellungen.Presets.ToList().IndexOf(p),
-                Text = p.Text ?? ""
-            };
-            if (PasstAufFilter(alsEintrag, (Beschreibung ?? "").Trim()))
+            if (_geschuetzteBeschreibung == null
+                || !string.Equals((Beschreibung ?? "").Trim(),
+                                  _geschuetzteBeschreibung.Trim(),
+                                  StringComparison.Ordinal))
                 return (p.Text ?? "").Trim();
 
             return VorlagenBeschreibung.NachVorlagenwahl(
