@@ -351,6 +351,28 @@ namespace ECTEngine.Tests
         }
 
         [Fact]
+        public void Summe_AT_Steuersatz_4_9_Prozent()
+        {
+            // U30-AT-2026: KZ 1124/2124 (neuer Satz 4,9 % = 4900 in der
+            // Prozent-x1000-Skala). Felder 1:1 aus U30-AT-2026-01.ecf.
+            SeedStandard();
+            var doc = Doc2024();
+            // 104,90 brutto bei 4,9 % -> netto 100,00
+            doc.Buchungen.Add(Einnahme("Erlöse", 10490, 4900, new DateTime(2024, 1, 10)));
+            // andere Sätze dürfen nicht mitgezählt werden
+            doc.Buchungen.Add(Einnahme("Erlöse", 12000, 20000, new DateTime(2024, 1, 10)));
+            doc.Buchungen.Add(Einnahme("Erlöse", 10500, 5000, new DateTime(2024, 1, 10)));
+
+            var def = Formular("",
+                Feld(1124, "Summe", "netto4900(e)", "anteil=\"netto\""),
+                Feld(2124, "Summe", "1124*49/1000", "anteil=\"mwst\""));
+            var werte = FormularRechner.Berechne(doc, def, "");
+
+            Assert.Equal(10000, WertVon(werte, 1124).WertCent);
+            Assert.Equal(490, WertVon(werte, 2124).WertCent);
+        }
+
+        [Fact]
         public void SummeZyklusTerminiertMitNullwerten()
         {
             SeedStandard();

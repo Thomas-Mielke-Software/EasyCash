@@ -2,17 +2,22 @@
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         Title="Formularfeld bearbeiten"
-        Width="530" SizeToContent="Height"
+        Width="580" SizeToContent="Height"
         WindowStartupLocation="CenterOwner"
         ResizeMode="NoResize"
         ShowInTaskbar="False"
         Background="#F5F5F5"
-        FontFamily="Segoe UI" FontSize="13">
+        FontFamily="Segoe UI" FontSize="13"
+        PreviewKeyDown="OnPreviewKeyDown"
+        PreviewKeyUp="OnPreviewKeyUp">
 
     <!-- [Feld-Eigenschaften]
          Pendant des nativen CFormularfeld-Dialogs (IDD_FORMULARFELD):
          alle Attribute eines .ecf-Formularfelds. Der Aufrufer schreibt
-         die Werte bei OK zurueck in die Definition und speichert. -->
+         die Werte bei OK zurueck in die Definition und speichert.
+         Position: Pfeilknoepfe (Pendant IDC_*_SPIN) und Alt+Pfeiltasten
+         verschieben in Promille-Schritten, die Ansicht zeigt das Feld
+         live an der neuen Stelle (Pendant UpdateFeldmarke). -->
 
     <Grid Margin="16">
         <Grid.ColumnDefinitions>
@@ -20,6 +25,7 @@
             <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
@@ -50,6 +56,21 @@
                 <Setter Property="Margin" Value="0,2,0,6"/>
                 <Setter Property="VerticalAlignment" Value="Center"/>
             </Style>
+            <!-- Pfeilknopf: nicht fokussierbar (Fokus bleibt im Textfeld,
+                 Tab-Folge unveraendert), wiederholt beim Gedrueckthalten -->
+            <Style x:Key="PfeilKnopf" TargetType="RepeatButton">
+                <Setter Property="Width" Value="16"/>
+                <Setter Property="Padding" Value="0"/>
+                <Setter Property="Focusable" Value="False"/>
+                <Setter Property="IsTabStop" Value="False"/>
+                <Setter Property="Delay" Value="400"/>
+                <Setter Property="Interval" Value="60"/>
+            </Style>
+            <Style TargetType="Path">
+                <Setter Property="Fill" Value="#444444"/>
+                <Setter Property="HorizontalAlignment" Value="Center"/>
+                <Setter Property="VerticalAlignment" Value="Center"/>
+            </Style>
         </Grid.Resources>
 
         <TextBlock Text="Feld-Id:"/>
@@ -69,30 +90,72 @@
         <TextBlock Grid.Row="4" Text="Position:"/>
         <StackPanel Grid.Row="4" Grid.Column="1" Orientation="Horizontal">
             <TextBlock Text="Seite" Margin="0,0,4,6"/>
-            <TextBox x:Name="SeiteBox" Width="46"/>
-            <TextBlock Text="horizontal" Margin="10,0,4,6"/>
-            <TextBox x:Name="HorizontalBox" Width="60"/>
-            <TextBlock Text="vertikal" Margin="10,0,4,6"/>
-            <TextBox x:Name="VertikalBox" Width="60"/>
+            <TextBox x:Name="SeiteBox" Width="46" TextChanged="OnPositionGeaendert"/>
+            <Grid Margin="1,0,0,6">
+                <Grid.RowDefinitions>
+                    <RowDefinition/>
+                    <RowDefinition/>
+                </Grid.RowDefinitions>
+                <RepeatButton Style="{StaticResource PfeilKnopf}" Click="OnSeitePlus"
+                              ToolTip="Nächste Seite">
+                    <Path Data="M0,3 L3,0 L6,3 Z"/>
+                </RepeatButton>
+                <RepeatButton Grid.Row="1" Style="{StaticResource PfeilKnopf}" Click="OnSeiteMinus"
+                              ToolTip="Vorherige Seite">
+                    <Path Data="M0,0 L6,0 L3,3 Z"/>
+                </RepeatButton>
+            </Grid>
+
+            <TextBlock Text="horizontal" Margin="12,0,4,6"/>
+            <TextBox x:Name="HorizontalBox" Width="60" TextChanged="OnPositionGeaendert"/>
+            <RepeatButton Style="{StaticResource PfeilKnopf}" Margin="1,0,0,6"
+                          Click="OnLinks" ToolTip="Nach links (Alt+Pfeil links)">
+                <Path Data="M3,0 L3,6 L0,3 Z"/>
+            </RepeatButton>
+            <RepeatButton Style="{StaticResource PfeilKnopf}" Margin="0,0,0,6"
+                          Click="OnRechts" ToolTip="Nach rechts (Alt+Pfeil rechts)">
+                <Path Data="M0,0 L3,3 L0,6 Z"/>
+            </RepeatButton>
+
+            <TextBlock Text="vertikal" Margin="12,0,4,6"/>
+            <TextBox x:Name="VertikalBox" Width="60" TextChanged="OnPositionGeaendert"/>
+            <Grid Margin="1,0,0,6">
+                <Grid.RowDefinitions>
+                    <RowDefinition/>
+                    <RowDefinition/>
+                </Grid.RowDefinitions>
+                <RepeatButton Style="{StaticResource PfeilKnopf}" Click="OnHoch"
+                              ToolTip="Nach oben (Alt+Pfeil hoch)">
+                    <Path Data="M0,3 L3,0 L6,3 Z"/>
+                </RepeatButton>
+                <RepeatButton Grid.Row="1" Style="{StaticResource PfeilKnopf}" Click="OnRunter"
+                              ToolTip="Nach unten (Alt+Pfeil runter)">
+                    <Path Data="M0,0 L6,0 L3,3 Z"/>
+                </RepeatButton>
+            </Grid>
         </StackPanel>
 
-        <TextBlock Grid.Row="5" Text="Ausrichtung:"/>
-        <ComboBox Grid.Row="5" Grid.Column="1" x:Name="AusrichtungBox"
+        <TextBlock Grid.Row="5" Grid.Column="1" Margin="0,-3,0,8"
+                   FontSize="11" Foreground="#757575" TextWrapping="Wrap"
+                   Text="Alt+Pfeiltasten verschieben das Feld um 1 Promille, Alt+Umschalt+Pfeiltasten um 10 (Umschalt wirkt auch bei den Pfeilknöpfen)."/>
+
+        <TextBlock Grid.Row="6" Text="Ausrichtung:"/>
+        <ComboBox Grid.Row="6" Grid.Column="1" x:Name="AusrichtungBox"
                   Width="160" HorizontalAlignment="Left">
             <ComboBoxItem Content="rechtsbündig"/>
             <ComboBoxItem Content="linksbündig"/>
         </ComboBox>
 
-        <TextBlock Grid.Row="6" Text="Betragsanteil:"/>
-        <ComboBox Grid.Row="6" Grid.Column="1" x:Name="AnteilBox"
+        <TextBlock Grid.Row="7" Text="Betragsanteil:"/>
+        <ComboBox Grid.Row="7" Grid.Column="1" x:Name="AnteilBox"
                   Width="160" HorizontalAlignment="Left">
             <ComboBoxItem Content="brutto"/>
             <ComboBoxItem Content="netto"/>
             <ComboBoxItem Content="mwst"/>
         </ComboBox>
 
-        <TextBlock Grid.Row="7" Text="Darstellung:"/>
-        <StackPanel Grid.Row="7" Grid.Column="1">
+        <TextBlock Grid.Row="8" Text="Darstellung:"/>
+        <StackPanel Grid.Row="8" Grid.Column="1">
             <CheckBox x:Name="OhneNachkommaBox"
                       Content="ohne Nachkommaanteil (ganze Euro)"/>
             <CheckBox x:Name="NullwertBox"
@@ -101,14 +164,14 @@
                       Content="Feld ist veraltet"/>
         </StackPanel>
 
-        <TextBlock Grid.Row="8" Text="ELSTER-Feldname:"/>
-        <TextBox Grid.Row="8" Grid.Column="1" x:Name="ElsterBox"/>
+        <TextBlock Grid.Row="9" Text="ELSTER-Feldname:"/>
+        <TextBox Grid.Row="9" Grid.Column="1" x:Name="ElsterBox"/>
 
-        <TextBlock Grid.Row="9" Grid.ColumnSpan="2" x:Name="FehlerText"
+        <TextBlock Grid.Row="10" Grid.ColumnSpan="2" x:Name="FehlerText"
                    Foreground="#D32F2F" FontSize="11" FontStyle="Italic"
                    TextWrapping="Wrap" Visibility="Collapsed"/>
 
-        <StackPanel Grid.Row="10" Grid.ColumnSpan="2" Orientation="Horizontal"
+        <StackPanel Grid.Row="11" Grid.ColumnSpan="2" Orientation="Horizontal"
                     HorizontalAlignment="Right" Margin="0,10,0,0">
             <Button Content="Speichern" MinWidth="100" Padding="14,5"
                     Margin="0,0,8,0" IsDefault="True" Click="OnOk"/>

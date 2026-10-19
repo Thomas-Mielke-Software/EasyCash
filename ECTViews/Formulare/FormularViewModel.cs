@@ -542,7 +542,49 @@ namespace ECTViews.Formulare
                 tooltip = "Feld " + feld.Id + " (" + feld.TypRoh + ")"
                     + (tooltip.Length > 0 ? " -- " + tooltip : "");
             Tooltip = tooltip.Length > 0 ? tooltip : null;
+
+            _seitenBreite = seitenBreite;
+            _seitenHoehe = seitenHoehe;
+            _seiteBeiAufbau = feld.Seite;
+            _horizontalBeiAufbau = feld.Horizontal;
+            _vertikalBeiAufbau = feld.Vertikal;
         }
+
+        // ----------------------------------------------------------
+        // Positions-Vorschau waehrend "Feld bearbeiten" (Pendant der
+        // nativen Feldmarke, CFormularfeld::UpdateFeldmarke): das Feld
+        // wird per RenderTransform an die im Dialog eingestellte Position
+        // versetzt, ohne die .ecf anzufassen. Ein Seitenwechsel wird
+        // nicht vorgefuehrt (Seiten sind getrennte Panels) -- das Feld
+        // bleibt dann an seiner alten Stelle stehen.
+        // ----------------------------------------------------------
+        private readonly double _seitenBreite, _seitenHoehe;
+        private readonly int _seiteBeiAufbau, _horizontalBeiAufbau, _vertikalBeiAufbau;
+
+        private System.Windows.Media.Transform _vorschauVersatz;
+        public System.Windows.Media.Transform VorschauVersatz
+        {
+            get => _vorschauVersatz;
+            private set => SetProperty(ref _vorschauVersatz, value);
+        }
+
+        public void SetzeVorschau(int seite, int horizontal, int vertikal)
+        {
+            if (seite != _seiteBeiAufbau)
+            {
+                VorschauVersatz = null;
+                return;
+            }
+            double dx = FormularLayout.X(horizontal, _seitenBreite)
+                - FormularLayout.X(_horizontalBeiAufbau, _seitenBreite);
+            double dy = FormularLayout.YTextOben(vertikal, _seitenHoehe)
+                - FormularLayout.YTextOben(_vertikalBeiAufbau, _seitenHoehe);
+            VorschauVersatz = (dx == 0 && dy == 0)
+                ? null
+                : new System.Windows.Media.TranslateTransform(dx, dy);
+        }
+
+        public void BeendeVorschau() => VorschauVersatz = null;
     }
 
     /// <summary>Eintrag der Navigations-Leiste (Seite oder Abschnitt).</summary>

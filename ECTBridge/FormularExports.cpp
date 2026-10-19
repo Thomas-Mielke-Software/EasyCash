@@ -49,6 +49,41 @@ public:
 };
 
 // ----------------------------------------------------------
+// App-Profil fuer ECTViews.FensterPosition (Dialogpositionen
+// im Profil wie bei den nativen Dialogen, [Fenster]...PosX/Y).
+// Wird beim ersten Einbetten registriert; bei weiteren Nutzern
+// (z.B. BuchungView) an eine zentrale Stelle ziehen.
+// ----------------------------------------------------------
+ref class AppProfilZugriff
+{
+public:
+    static int Lese(String^ sektion, String^ schluessel, int vorgabe)
+    {
+        CWinApp* app = AfxGetApp();
+        if (!app) return vorgabe;
+        CString s(sektion), k(schluessel);
+        return (int)app->GetProfileInt(s, k, vorgabe);
+    }
+
+    static void Schreibe(String^ sektion, String^ schluessel, int wert)
+    {
+        CWinApp* app = AfxGetApp();
+        if (!app) return;
+        CString s(sektion), k(schluessel);
+        app->WriteProfileInt(s, k, wert);
+    }
+};
+
+static void RegistriereAppProfil()
+{
+    if (ECTViews::FensterPosition::ProfilIntLesen != nullptr) return;
+    ECTViews::FensterPosition::ProfilIntLesen =
+        gcnew System::Func<String^, String^, int, int>(&AppProfilZugriff::Lese);
+    ECTViews::FensterPosition::ProfilIntSchreiben =
+        gcnew System::Action<String^, String^, int>(&AppProfilZugriff::Schreibe);
+}
+
+// ----------------------------------------------------------
 // ECT_FormularEinbetten
 // ----------------------------------------------------------
 HWND ECT_FormularEinbetten(
@@ -63,6 +98,8 @@ HWND ECT_FormularEinbetten(
     {
         auto* bridge = static_cast<CEasyCashDocBridge*>(pDocBridge);
         if (!bridge) return NULL;
+
+        RegistriereAppProfil();   // Designer-Dialog merkt sich seine Position
 
         // Engine-Stand garantieren (der Rechner arbeitet auf den managed Buchungen)
         bridge->SyncNativeToManaged();

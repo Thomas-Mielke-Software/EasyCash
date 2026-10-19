@@ -184,7 +184,8 @@
                                                         BorderThickness="1"
                                                         Padding="1,0,1,0"
                                                         Margin="-2,-1,-2,-1"
-                                                        Background="Transparent">
+                                                        Background="Transparent"
+                                                        RenderTransform="{Binding VorschauVersatz}">
                                                     <Grid>
                                                         <TextBlock Text="{Binding Text}"
                                                                    FontSize="{Binding FontSize}"

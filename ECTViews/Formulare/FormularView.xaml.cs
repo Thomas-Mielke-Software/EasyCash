@@ -357,9 +357,21 @@ namespace ECTViews.Formulare
         {
             var vm = Vm;
             if (vm == null || feld == null) return;
-            var dlg = new FormularFeldDialog(feld);
+
+            // Feld-VM fuer die Positions-Vorschau (fehlt, wenn das Feld
+            // gerade nicht dargestellt wird -- dann eben ohne Vorschau)
+            FormularFeldVm feldVm = null;
+            foreach (var seite in vm.Seiten)
+                foreach (var f in seite.Felder)
+                    if (ReferenceEquals(f.FeldDef, feld)) feldVm = f;
+
+            var dlg = new FormularFeldDialog(feld,
+                feldVm == null ? null : new Action<int, int, int>(feldVm.SetzeVorschau));
             SetzeOwner(dlg);
-            if (dlg.ShowDialog() == true)
+            bool ok;
+            try { ok = dlg.ShowDialog() == true; }
+            finally { feldVm?.BeendeVorschau(); }
+            if (ok)
                 vm.SpeichereFeld(feld);
         }
 
