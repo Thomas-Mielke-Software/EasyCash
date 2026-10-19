@@ -111,6 +111,35 @@ namespace ECTViews.Formulare
                     f.IstSelektiert = false;
         }
 
+        /// <summary>Speichern der .ecf ist fehlgeschlagen (Pfad, Ursache).
+        /// Typisch: Formular liegt im schreibgeschuetzten Programmverzeichnis
+        /// (C:\Program Files (x86)\...) -- nativ gab es dafuer nur eine
+        /// MessageBox (Formularfeld.cpp, MoveFormularfeld), hier meldet die
+        /// View.</summary>
+        public event Action<string, Exception> SpeicherFehler;
+
+        /// <summary>Schreibt die Definition in die .ecf. Bei Fehler wird das
+        /// Formular neu von Platte geladen -- die Ansicht zeigt dann wieder
+        /// den tatsaechlich gespeicherten Stand statt einer Aenderung, die
+        /// beim naechsten Oeffnen verschwunden waere.</summary>
+        private bool SpeichereDefinition()
+        {
+            string pfad = _def.Quellpfad;
+            try
+            {
+                _def.Speichere();
+                return true;
+            }
+            catch (Exception ex) when (ex is UnauthorizedAccessException
+                || ex is IOException || ex is System.Security.SecurityException)
+            {
+                LadeDefinition(pfad);
+                Aktualisiere();
+                SpeicherFehler?.Invoke(pfad, ex);
+                return false;
+            }
+        }
+
         /// <summary>Verschiebt die Selektion um Promille-Deltas, schreibt
         /// in die .ecf und rechnet neu (Pendant MoveFormularfeld).</summary>
         public void VerschiebeSelektion(int deltaHorizontal, int deltaVertikal)
@@ -128,7 +157,7 @@ namespace ECTViews.Formulare
                 _def.UebernehmeFeld(vm.FeldDef);
                 ids.Add(vm.FeldDef.Id);
             }
-            _def.Speichere();
+            if (!SpeichereDefinition()) return;
             Aktualisiere();
             SelektiereFeldIds(ids);   // Selektion uebersteht den Neuaufbau
         }
@@ -146,7 +175,7 @@ namespace ECTViews.Formulare
         {
             if (_def == null || feld == null) return;
             _def.UebernehmeFeld(feld);
-            _def.Speichere();
+            if (!SpeichereDefinition()) return;
             Aktualisiere();
             SelektiereFeldIds(new List<int> { feld.Id });
         }
@@ -155,7 +184,7 @@ namespace ECTViews.Formulare
         {
             if (_def == null || feld == null) return;
             _def.LoescheFeld(feld);
-            _def.Speichere();
+            if (!SpeichereDefinition()) return;
             Aktualisiere();
         }
 
@@ -173,7 +202,7 @@ namespace ECTViews.Formulare
             feld.Horizontal = horizontal;
             feld.Vertikal = vertikal;
             _def.UebernehmeFeld(feld);
-            _def.Speichere();
+            if (!SpeichereDefinition()) return null;
             Aktualisiere();
             SelektiereFeldIds(new List<int> { feld.Id });
             return feld;
@@ -183,7 +212,7 @@ namespace ECTViews.Formulare
         {
             if (_def == null || abschnitt == null) return;
             _def.UebernehmeAbschnitt(abschnitt);
-            _def.Speichere();
+            if (!SpeichereDefinition()) return;
             Aktualisiere();
         }
 
@@ -191,7 +220,7 @@ namespace ECTViews.Formulare
         {
             if (_def == null) return null;
             var a = _def.NeuerAbschnitt(name, seite, vertikal);
-            _def.Speichere();
+            if (!SpeichereDefinition()) return null;
             Aktualisiere();
             return a;
         }
@@ -200,7 +229,7 @@ namespace ECTViews.Formulare
         {
             if (_def == null || abschnitt == null) return;
             _def.LoescheAbschnitt(abschnitt);
-            _def.Speichere();
+            if (!SpeichereDefinition()) return;
             Aktualisiere();
         }
 

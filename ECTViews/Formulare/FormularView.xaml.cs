@@ -32,9 +32,31 @@ namespace ECTViews.Formulare
         {
             InitializeComponent();
             Loaded += (s, e) => Focus();
+            DataContextChanged += (s, e) =>
+            {
+                if (e.OldValue is FormularViewModel alt) alt.SpeicherFehler -= OnSpeicherFehler;
+                if (e.NewValue is FormularViewModel neu) neu.SpeicherFehler += OnSpeicherFehler;
+            };
         }
 
         private FormularViewModel Vm => DataContext as FormularViewModel;
+
+        // Designer konnte die .ecf nicht schreiben (Pendant der nativen
+        // "Konnte die Aenderungen nicht in der Formulardatei speichern."-Box).
+        // Vorher: unbehandelte UnauthorizedAccessException -> Absturz, sobald
+        // das Formular im Programmverzeichnis liegt.
+        private void OnSpeicherFehler(string pfad, Exception ex)
+        {
+            string text = "Konnte die Änderung nicht in der Formulardatei speichern:\n"
+                + pfad + "\n\n" + ex.Message;
+            if (ex is UnauthorizedAccessException)
+                text += "\n\nDie mitgelieferten Formulare liegen im Programmverzeichnis, "
+                    + "das ohne Administratorrechte schreibgeschützt ist. Zum Bearbeiten "
+                    + "EasyCash&Tax als Administrator starten oder die Schreibrechte "
+                    + "der Datei anpassen.";
+            MessageBox.Show(text, "EasyCash&Tax", MessageBoxButton.OK,
+                MessageBoxImage.Warning);
+        }
 
         // ----------------------------------------------------------
         // Tastatur + Mausrad (Zoom/Druck wie BerichtView; Pfeiltasten
