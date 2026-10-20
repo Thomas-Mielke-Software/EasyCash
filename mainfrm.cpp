@@ -1156,7 +1156,7 @@ void CMainFrame::UpdateSaldo(CEasyCashView *pecv)
 	char buffer2[100];
 	CString cs;
 	int nJahr = 0;
-	if (pecv && (pecv->IsKindOf( RUNTIME_CLASS( CEasyCashView ) ) || pecv->IsKindOf( RUNTIME_CLASS( CScrollView ) )))
+	if (pecv && (pecv->IsKindOf( RUNTIME_CLASS( CEasyCashView ) )))
 	{
 		CEasyCashDoc* pDoc = pecv->GetDocument();
 
