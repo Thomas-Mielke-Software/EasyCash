@@ -1229,11 +1229,175 @@ void CEasyCashView::OnUpdate(CView* pSender, LPARAM lHint, CObject* pHint)
 	CScrollView::OnUpdate(pSender, lHint, pHint);
 }
 
+// Kodierungsprüfung der easyct.ini: Editoren speichern die Datei gern als UTF-8 (mit/ohne BOM) oder UTF-16,
+// GetPrivateProfileStringA erwartet aber Windows-1252. [Allgemein] EncodingTest enthält dafür "äöüÄÖÜß" als Testwert.
+#define INI_ENCODING_TEST_1252	"\xE4\xF6\xFC\xC4\xD6\xDC\xDF"						// "äöüÄÖÜß" in Windows-1252
+#define INI_ENCODING_TEST_UTF8	"\xC3\xA4\xC3\xB6\xC3\xBC\xC3\x84\xC3\x96\xC3\x9C\xC3\x9F"	// "äöüÄÖÜß" in UTF-8
+
+static CString IniKodierungsHinweis;	// wird in CaptionBoxCheckOnUpdate() angezeigt
+static BOOL IniReparaturAbgelehnt = FALSE;
+
+// eine Zeile von UTF-8 nach Windows-1252 wandeln, wenn sie gültiges UTF-8 mit Nicht-ASCII-Zeichen ist (sonst unverändert lassen)
+static BOOL IniZeileUtf8Nach1252(const char *pZeile, int nLaenge, std::string &ziel, BOOL &bNichtDarstellbar)
+{
+	int i;
+	for (i = 0; i < nLaenge; i++)
+		if ((unsigned char)pZeile[i] >= 0x80) break;
+	if (i == nLaenge) { ziel.append(pZeile, nLaenge); return FALSE; }	// reines ASCII
+
+	int nWide = MultiByteToWideChar(CP_UTF8, MB_ERR_INVALID_CHARS, pZeile, nLaenge, NULL, 0);
+	if (nWide <= 0) { ziel.append(pZeile, nLaenge); return FALSE; }	// kein gültiges UTF-8 -> ist schon Windows-1252
+
+	std::wstring wide(nWide, L'\0');
+	MultiByteToWideChar(CP_UTF8, 0, pZeile, nLaenge, &wide[0], nWide);
+	BOOL bDefault = FALSE;
+	int nAnsi = WideCharToMultiByte(1252, WC_NO_BEST_FIT_CHARS, wide.c_str(), nWide, NULL, 0, "?", &bDefault);
+	std::string ansi(nAnsi, '\0');
+	WideCharToMultiByte(1252, WC_NO_BEST_FIT_CHARS, wide.c_str(), nWide, &ansi[0], nAnsi, "?", &bDefault);
+	if (bDefault) bNichtDarstellbar = TRUE;
+	ziel += ansi;
+	return TRUE;
+}
+
+// liefert TRUE, wenn die Datei mindestens eine als UTF-8 kodierte Zeile mit Nicht-ASCII-Zeichen enthält
+static BOOL IniEnthaeltUtf8(const std::string &inhalt)
+{
+	std::string dummy;
+	BOOL bDummy = FALSE;
+	size_t pos = 0;
+	while (pos < inhalt.size())
+	{
+		size_t ende = inhalt.find('\n', pos);
+		if (ende == std::string::npos) ende = inhalt.size();
+		if (IniZeileUtf8Nach1252(inhalt.data() + pos, (int)(ende - pos), dummy, bDummy)) return TRUE;
+		pos = ende + 1;
+	}
+	return FALSE;
+}
+
+// Prüft die Kodierung der Ini-Datei, repariert sie nach Rückfrage und trägt Encoding/EncodingTest ein, falls noch nicht vorhanden
+static void PruefeIniKodierung(LPCSTR pszIniDatei)
+{
+	char buffer[100];
+
+	FILE *f = fopen(pszIniDatei, "rb");
+	if (!f) return;	// noch keine Ini vorhanden -> wird beim ersten Speichern angelegt, dann beim nächsten Mal prüfen
+	std::string inhalt;
+	char block[4096];
+	size_t n;
+	while ((n = fread(block, 1, sizeof(block), f)) > 0 && inhalt.size() < 16 * 1024 * 1024)
+		inhalt.append(block, n);
+	fclose(f);
+
+	enum { KOD_OK, KOD_UTF8_BOM, KOD_UTF8, KOD_UTF16LE, KOD_UTF16BE, KOD_ZEICHEN_VERLOREN } art = KOD_OK;
+	if (inhalt.size() >= 3 && inhalt.compare(0, 3, "\xEF\xBB\xBF") == 0)
+		art = KOD_UTF8_BOM;
+	else if (inhalt.size() >= 2 && inhalt.compare(0, 2, "\xFF\xFE") == 0)
+		art = KOD_UTF16LE;
+	else if (inhalt.size() >= 2 && inhalt.compare(0, 2, "\xFE\xFF") == 0)
+		art = KOD_UTF16BE;
+	else
+	{
+		GetPrivateProfileString("Allgemein", "EncodingTest", "", buffer, sizeof(buffer), pszIniDatei);
+		if (!strcmp(buffer, INI_ENCODING_TEST_1252))
+			art = KOD_OK;
+		else if (!strcmp(buffer, INI_ENCODING_TEST_UTF8) || IniEnthaeltUtf8(inhalt))
+			art = KOD_UTF8;
+		else if (*buffer)
+			art = KOD_ZEICHEN_VERLOREN;	// Testwert vorhanden, aber verstümmelt (z.B. '?' statt Umlaute)
+	}
+
+	CString csDatei = pszIniDatei;
+	CString csSicherung = csDatei + ".vor-reparatur.bak";
+
+	if (art == KOD_UTF8_BOM || art == KOD_UTF8 || art == KOD_UTF16LE || art == KOD_UTF16BE)
+	{
+		CString csKodierung = art == KOD_UTF8_BOM ? "UTF-8 mit BOM" : art == KOD_UTF8 ? "UTF-8" : "UTF-16";
+		if (IniReparaturAbgelehnt)
+		{
+			IniKodierungsHinweis = "Die Einstellungsdatei '" + csDatei + "' ist als " + csKodierung + " statt als Windows-1252 gespeichert. Umlaute in Einstellungen und Konten werden deshalb falsch angezeigt.";
+			return;
+		}
+		if (AfxMessageBox("Die Einstellungsdatei '" + csDatei + "' wurde, vermutlich von einem Texteditor, als " + csKodierung +
+			" gespeichert. EasyCash&Tax benötigt die Kodierung Windows-1252, sonst werden Umlaute in Einstellungen und Konten falsch gelesen und beim nächsten Speichern dauerhaft verstümmelt.\r\n\r\n"
+			"Soll die Datei jetzt automatisch nach Windows-1252 umgewandelt werden? Vorher wird eine Sicherungskopie '" + csSicherung + "' angelegt.", MB_YESNO | MB_ICONEXCLAMATION) != IDYES)
+		{
+			IniReparaturAbgelehnt = TRUE;
+			IniKodierungsHinweis = "Die Einstellungsdatei '" + csDatei + "' ist als " + csKodierung + " statt als Windows-1252 gespeichert. Umlaute in Einstellungen und Konten werden deshalb falsch angezeigt.";
+			return;
+		}
+
+		std::string neu;
+		BOOL bNichtDarstellbar = FALSE;
+		if (art == KOD_UTF16LE || art == KOD_UTF16BE)
+		{
+			std::wstring wide;
+			for (size_t i = 2; i + 1 < inhalt.size(); i += 2)
+				wide += art == KOD_UTF16LE ? (wchar_t)((unsigned char)inhalt[i] | ((unsigned char)inhalt[i+1] << 8))
+									   : (wchar_t)((unsigned char)inhalt[i+1] | ((unsigned char)inhalt[i] << 8));
+			int nAnsi = WideCharToMultiByte(1252, WC_NO_BEST_FIT_CHARS, wide.c_str(), (int)wide.size(), NULL, 0, "?", &bNichtDarstellbar);
+			neu.assign(nAnsi, '\0');
+			if (nAnsi) WideCharToMultiByte(1252, WC_NO_BEST_FIT_CHARS, wide.c_str(), (int)wide.size(), &neu[0], nAnsi, "?", &bNichtDarstellbar);
+		}
+		else
+		{
+			// zeilenweise, weil EasyCash&Tax evtl. schon einzelne Windows-1252-Zeilen in die UTF-8-Datei geschrieben hat
+			size_t pos = art == KOD_UTF8_BOM ? 3 : 0;
+			while (pos < inhalt.size())
+			{
+				size_t ende = inhalt.find('\n', pos);
+				if (ende == std::string::npos) ende = inhalt.size(); else ende++;
+				IniZeileUtf8Nach1252(inhalt.data() + pos, (int)(ende - pos), neu, bNichtDarstellbar);
+				pos = ende;
+			}
+		}
+
+		if (!CopyFile(pszIniDatei, csSicherung, FALSE))
+		{
+			IniKodierungsHinweis = "Die Einstellungsdatei '" + csDatei + "' ist als " + csKodierung + " gespeichert, konnte aber nicht repariert werden, weil keine Sicherungskopie angelegt werden konnte.";
+			return;
+		}
+		f = fopen(pszIniDatei, "wb");
+		if (!f || fwrite(neu.data(), 1, neu.size(), f) != neu.size())
+		{
+			if (f) fclose(f);
+			CopyFile(csSicherung, pszIniDatei, FALSE);
+			IniKodierungsHinweis = "Die Einstellungsdatei '" + csDatei + "' ist als " + csKodierung + " gespeichert, konnte aber nicht zurückgeschrieben werden (schreibgeschützt?).";
+			return;
+		}
+		fclose(f);
+		WritePrivateProfileString(NULL, NULL, NULL, pszIniDatei);	// Profil-Cache leeren
+
+		if (bNichtDarstellbar)
+			IniKodierungsHinweis = "Die Einstellungsdatei '" + csDatei + "' wurde von " + csKodierung + " nach Windows-1252 umgewandelt. Einige Zeichen sind in Windows-1252 nicht darstellbar und wurden durch '?' ersetzt. Sicherungskopie: '" + csSicherung + "'.";
+		else
+			IniKodierungsHinweis = "Die Einstellungsdatei '" + csDatei + "' war als " + csKodierung + " gespeichert und wurde automatisch nach Windows-1252 umgewandelt. Sicherungskopie: '" + csSicherung + "'.";
+	}
+	else if (art == KOD_ZEICHEN_VERLOREN)
+		IniKodierungsHinweis = "Die Einstellungsdatei '" + csDatei + "' wurde mit einer falschen Zeichenkodierung gespeichert, Umlaute sind dabei verloren gegangen. Bitte Einstellungen und Konten auf verstümmelte Umlaute prüfen und die Datei künftig als Windows-1252 (ANSI) speichern.";
+
+	// Kodierungsangabe und Testwert eintragen (Testwert nach Verlust neu setzen, damit spätere Fehler wieder erkannt werden)
+	GetPrivateProfileString("Allgemein", "Encoding", "", buffer, sizeof(buffer), pszIniDatei);
+	if (!*buffer)
+		WritePrivateProfileString("Allgemein", "Encoding", "Windows-1252", pszIniDatei);
+	GetPrivateProfileString("Allgemein", "EncodingTest", "", buffer, sizeof(buffer), pszIniDatei);
+	if (strcmp(buffer, INI_ENCODING_TEST_1252))
+		WritePrivateProfileString("Allgemein", "EncodingTest", INI_ENCODING_TEST_1252, pszIniDatei);
+}
+
 void CEasyCashView::CaptionBoxCheckOnUpdate()
 {
 	CEasyCashDoc *pDoc = GetDocument();
 
 	if (theApp.IsCaptionBoxShown()) return;
+
+	// Zeichenkodierung der easyct.ini falsch oder repariert?
+	if (!IniKodierungsHinweis.IsEmpty())
+	{
+		theApp.CaptionBox(IniKodierungsHinweis);
+		IniKodierungsHinweis.Empty();
+		return;
+	}
 
 	// gab es Korrekturen bei der AfA-Dauer?
 	if (m_bAfaKorrketuren)
@@ -8377,6 +8541,7 @@ void CEasyCashView::LoadProfile()
 	}
 	strcpy(EasyCashIniFilenameBuffer, (LPCSTR)((CString)(Datenverzeichnis + "\\easyct.ini")));
 	SetIniFileName(EasyCashIniFilenameBuffer);
+	PruefeIniKodierung(EasyCashIniFilenameBuffer);	// vor allen Lesezugriffen und vor der lokalen Kopie bei UNC-Pfaden
 
 	if (EasyCashIniFilenameBuffer[0] == '\\' && EasyCashIniFilenameBuffer[1] == '\\')	// UNC-Pfad ?
 	{
