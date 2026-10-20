@@ -1700,7 +1700,11 @@ void CEasyCashView::OnDraw(CDC* pDC_par)
 	}
 #endif
 
-	if (!pPluginWnd) 
+	// WM_PAINT kann eintreffen, bevor OnInitialUpdate() die Einstellungen angelegt hat
+	// (Crash in DrawToDC_Konten durch einstellungen1 == NULL)
+	if (!einstellungen1) return;
+
+	if (!pPluginWnd)
 	{
 		DrawInfo di;
 		di.pm = FALSE;
