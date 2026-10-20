@@ -1507,6 +1507,10 @@ void CEasyCashView::OnVScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar)
 
 void CEasyCashView::OnDraw(CDC* pDC_par)
 {
+	// WM_PAINT kann eintreffen, bevor OnInitialUpdate() die Einstellungen angelegt hat
+	// (Crash in DrawToDC_Konten durch einstellungen1 == NULL)
+	if (!einstellungen1) return;
+
 	if (!pPluginWnd) 
 	{
 		DrawInfo di;
