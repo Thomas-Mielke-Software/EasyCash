@@ -74,7 +74,7 @@ BOOL CToolBarWithCombo::OnCommand(WPARAM wParam, LPARAM lParam)
 			CMainFrame *wndMainFrame = (CMainFrame*)GetParent()->GetParent();
 			CMDIChildWndEx *pChild = (CMDIChildWndEx *)wndMainFrame->GetActiveFrame();
 			CEasyCashView *pecv = (CEasyCashView*)pChild->GetActiveView();
-			if (pecv && (pecv->IsKindOf( RUNTIME_CLASS( CEasyCashView ) ) || pecv->IsKindOf( RUNTIME_CLASS( CScrollView ) )))
+			if (pecv && (pecv->IsKindOf( RUNTIME_CLASS( CEasyCashView ) )))
 			{
 				POINT scrollpos = pecv->GetScrollPosition();
 				int line = scrollpos.y / pecv->charheight;
@@ -117,7 +117,7 @@ BOOL CToolBarWithCombo::OnCommand(WPARAM wParam, LPARAM lParam)
 		CMainFrame *wndMainFrame = (CMainFrame*)GetParent()->GetParent();
 		CMDIChildWndEx *pChild = (CMDIChildWndEx *)wndMainFrame->GetActiveFrame();
 		CEasyCashView *pecv = (CEasyCashView*)pChild->GetActiveView();
-		if (pecv && (pecv->IsKindOf( RUNTIME_CLASS( CEasyCashView ) ) || pecv->IsKindOf( RUNTIME_CLASS( CScrollView ) )))
+		if (pecv && (pecv->IsKindOf( RUNTIME_CLASS( CEasyCashView ) )))
 		{
 			pecv->ShowFindToolbar(SW_HIDE);
 		}
