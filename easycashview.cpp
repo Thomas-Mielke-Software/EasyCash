@@ -5778,7 +5778,7 @@ BOOL CEasyCashView::OnPreparePrinting(CPrintInfo* pInfo)
 			::GetProfileString(_T("windows"), _T("device"), _T(""), szDevice, 256);
 			if (szDevice[0] == _T('\0'))
 			{
-				AfxMessageBox(_T("EasyCash läuft unter Wine/CrossOver.\n\nDas Drucken steht in dieser Umgebung nicht zur Verfügung, wenn kein Drucker im Wine-Prefix konfiguriert ist.\n\nBitte Drucker einrichten (auf MacOS unter Programme -> Druckerzentrale)."), MB_OK | MB_ICONINFORMATION);
+				AfxMessageBox(_T("EasyCash läuft unter Wine oder CrossOver (oder dem offiziellen EC&T-Mac-Paket, das CrossOver enthält).\n\nDas Drucken steht in dieser Umgebung nicht zur Verfügung, wenn kein Drucker im Wine-Prefix konfiguriert (bzw. auf dem Mac installiert) ist.\n\nBitte Drucker einrichten (auf MacOS unter Programme -> Druckerzentrale). Unter MacOS bitte auch sicherstellen, dass das aktuellste Mac-Paket von der EC&T-Homepage installiert ist (und nicht nur über den Plugin-Manager auf die aktuellste EC&T-Programmdateien geupdatet wurde)."), MB_OK | MB_ICONINFORMATION);
 				return FALSE;
 			}
 		}
