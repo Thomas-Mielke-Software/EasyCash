@@ -59,6 +59,7 @@ public:
 	afx_msg void OnAppAbout();
 	afx_msg void OnFileOpen();
 	//}}AFX_MSG
+	afx_msg void OnMacPaketDownload();
 	DECLARE_MESSAGE_MAP()
 public:
 	void ShowTipAtStartup(void);

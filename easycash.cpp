@@ -32,6 +32,7 @@
 #include "RegDlg.h"
 #include "GetProgramVersion.h"
 #include "IconAuswahlMandant.h"
+#include "MacPaket.h"
 #include "XFolderDialog.h"
 #if defined(NDEBUG)
 #include "CrashRpt.h"
@@ -58,6 +59,7 @@ BEGIN_MESSAGE_MAP(CEasyCashApp, CWinAppEx)
 	ON_COMMAND(ID_FILE_OPEN, CWinAppEx::OnFileOpen)
 	// Standard print setup command
 	ON_COMMAND(ID_FILE_PRINT_SETUP, CWinAppEx::OnFilePrintSetup)
+	ON_COMMAND(ID_MAC_PAKET_DOWNLOAD, OnMacPaketDownload)
 END_MESSAGE_MAP()
 
 /////////////////////////////////////////////////////////////////////////////
@@ -1089,6 +1091,13 @@ void CEasyCashApp::CaptionBoxHide()
 		((CMainFrame*)m_pMainWnd)->GetCaptionBar()->ShowWindow(SW_HIDE);
 		((CMainFrame*)m_pMainWnd)->RecalcLayout(FALSE);
 	}
+}
+
+// Knopf in der CaptionBar bei veraltetem Mac-Paket (siehe CEasyCashView::CaptionBoxCheckOnUpdate)
+void CEasyCashApp::OnMacPaketDownload()
+{
+	ShellExecute(NULL, "open", MAC_PAKET_DOWNLOAD_URL, NULL, ".", SW_SHOWNORMAL);
+	CaptionBoxHide();
 }
 
 BOOL CEasyCashApp::IsCaptionBoxShown()

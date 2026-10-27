@@ -159,6 +159,9 @@
     <ClCompile Include="WebUpdate.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="MacPaket.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
     <ClCompile Include="WinVer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>

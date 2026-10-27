@@ -537,6 +537,7 @@
 #define ID_SALDO                        61446
 #define IDS_ZEIGE_PLUGIN_MANAGER        61447
 #define ID_FINDCOMBO                    61448
+#define ID_MAC_PAKET_DOWNLOAD           32924
 
 // Next default values for new objects
 // 
@@ -544,7 +545,7 @@
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_3D_CONTROLS                     1
 #define _APS_NEXT_RESOURCE_VALUE        443
-#define _APS_NEXT_COMMAND_VALUE         32918
+#define _APS_NEXT_COMMAND_VALUE         32925
 #define _APS_NEXT_CONTROL_VALUE         1172
 #define _APS_NEXT_SYMED_VALUE           115
 #endif
