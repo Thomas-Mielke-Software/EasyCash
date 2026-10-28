@@ -3,9 +3,9 @@
 
 [Setup]
 AppName=EasyCash&Tax
-AppVerName=EasyCash&Tax 4.0.28 (preview)
-AppVersion=4.0.28
-VersionInfoVersion=4.0.28.412
+AppVerName=EasyCash&Tax 4.0.29 (beta)
+AppVersion=4.0.29
+VersionInfoVersion=4.0.29.418
 AppCopyright=© 1998-2026 Thomas Mielke Softwareentwicklung
 VersionInfoCompany=Thomas Mielke Softwareentwicklung
 VersionInfoProductName=EasyCash&Tax

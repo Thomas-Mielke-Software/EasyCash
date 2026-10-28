@@ -33,6 +33,7 @@
 #include "IconAuswahlMandant.h"
 #include "XFolderDialog.h"
 #include "RegistrierenDlg.h"
+#include "ProgrammUpdate.h"
 #include <memory>
 
 
@@ -195,6 +196,9 @@ BEGIN_MESSAGE_MAP(CMainFrame, CMDIFrameWndEx)
 	ON_COMMAND(ID_EINSTELLUNGEN_SPENDE_BANK, OnSpendeBank)   
 	ON_COMMAND(ID_EINSTELLUNGEN_SPENDE_PAYPAL, OnSpendePayPal)
 	ON_COMMAND(ID_EINSTELLUNGEN_SPENDE_BITCOIN, OnSpendeBitcoin)
+	ON_MESSAGE(WM_PROGRAMMUPDATE_GEPRUEFT, OnProgrammUpdateGeprueft)
+	ON_MESSAGE(WM_PROGRAMMUPDATE_HERUNTERGELADEN, OnProgrammUpdateHeruntergeladen)
+	ON_MESSAGE(WM_PROGRAMMUPDATE_BEENDEN, OnProgrammUpdateBeenden)
 END_MESSAGE_MAP()
 
 static UINT indicators[] =
@@ -1588,6 +1592,23 @@ BOOL CMainFrame::DestroyWindow()
 	extern volatile BOOL g_bShuttingDown;
 	g_bShuttingDown = TRUE;	// ab hier zerstoert die Basisklasse das Ribbon; verzoegerte Maus-Events nicht als Absturz melden
 	return CMDIFrameWndEx::DestroyWindow();
+}
+
+// Programm-Update (siehe ProgrammUpdate.h): Ergebnisse der Worker-Threads und
+// das verzoegerte Beenden laufen als Nachrichten ueber das Hauptfenster
+LRESULT CMainFrame::OnProgrammUpdateGeprueft(WPARAM, LPARAM lParam)
+{
+	return ProgrammUpdateGeprueft(lParam);
+}
+
+LRESULT CMainFrame::OnProgrammUpdateHeruntergeladen(WPARAM, LPARAM lParam)
+{
+	return ProgrammUpdateHeruntergeladen(lParam);
+}
+
+LRESULT CMainFrame::OnProgrammUpdateBeenden(WPARAM, LPARAM)
+{
+	return ProgrammUpdateBeenden();
 }
 
 void CMainFrame::OnInitMenu(CMenu* pMenu)

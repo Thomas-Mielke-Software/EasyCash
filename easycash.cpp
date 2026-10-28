@@ -74,6 +74,8 @@
 #include "RegDlg.h"
 #include "GetProgramVersion.h"
 #include "IconAuswahlMandant.h"
+#include "MacPaket.h"
+#include "ProgrammUpdate.h"
 #include "XFolderDialog.h"
 #if defined(NDEBUG)
 #include "CrashRpt.h"
@@ -100,6 +102,9 @@ BEGIN_MESSAGE_MAP(CEasyCashApp, CWinAppEx)
 	ON_COMMAND(ID_FILE_OPEN, CWinAppEx::OnFileOpen)
 	// Standard print setup command
 	ON_COMMAND(ID_FILE_PRINT_SETUP, CWinAppEx::OnFilePrintSetup)
+	ON_COMMAND(ID_MAC_PAKET_DOWNLOAD, OnMacPaketDownload)
+	ON_COMMAND(ID_PROGRAMMUPDATE_INSTALLIEREN, OnProgrammUpdateInstallieren)
+	ON_COMMAND(ID_PROGRAMMUPDATE_UEBERSPRINGEN, OnProgrammUpdateUeberspringen)
 END_MESSAGE_MAP()
 
 /////////////////////////////////////////////////////////////////////////////
@@ -827,6 +832,9 @@ BOOL CEasyCashApp::InitInstance()
 	pMainFrame->UpdateWindow();
 	if (!csInitalStatusText.IsEmpty()) pMainFrame->SetStatus(csInitalStatusText);
 
+	// neue Programmversion auf easyct.de? (Thread, meldet sich per Nachricht beim Hauptfenster)
+	ProgrammUpdatePruefungStarten(pMainFrame->GetSafeHwnd());
+
 	// CG: This line inserted by 'Tip of the Day' component.
 	ShowTipAtStartup();
 
@@ -861,6 +869,9 @@ int CEasyCashApp::ExitInstance()
 	_Module.Term();
 	
 	AtlAxWinTerm();
+
+	// wurde fuer ein Programm-Update beendet? Dann jetzt das Setup starten (braucht noch COM)
+	ProgrammUpdateSetupNachProgrammende();
 
 	CoUninitialize();  // kann bei AfxOleInit() weggelassen werden: wird dann automatisch erledigt. AfxOleInit() führte aber zu heap corruptions
 
@@ -1281,10 +1292,11 @@ void CEasyCashApp::CaptionBox(LPCTSTR str, int id, LPCTSTR buttontext, LPCTSTR t
 		else
 			((CMainFrame*)m_pMainWnd)->GetCaptionBar()->SetText(str, CMFCCaptionBar::ALIGN_LEFT);
 		((CMainFrame*)m_pMainWnd)->GetCaptionBar()->ShowWindow(SW_SHOW);
-		if (id && buttontext != "") 
+		((CMainFrame*)m_pMainWnd)->GetCaptionBar()->RemoveButton2();
+		if (id && buttontext != "")
 		{
 			((CMainFrame*)m_pMainWnd)->GetCaptionBar()->SetButton(buttontext, id, CMFCCaptionBar::ALIGN_LEFT, FALSE);
-			((CMainFrame*)m_pMainWnd)->GetCaptionBar()->SetButtonToolTip(tooltiptext);	
+			((CMainFrame*)m_pMainWnd)->GetCaptionBar()->SetButtonToolTip(tooltiptext);
 		}
 		else
 			((CMainFrame*)m_pMainWnd)->GetCaptionBar()->RemoveButton();
@@ -1294,6 +1306,42 @@ void CEasyCashApp::CaptionBox(LPCTSTR str, int id, LPCTSTR buttontext, LPCTSTR t
 		AfxMessageBox(str);
 }
 
+// Programmweite Meldung (ohne Dokumenttitel-Praefix) mit bis zu zwei Knoepfen;
+// id = 0 laesst den jeweiligen Knopf weg. Bisher nur fuer das Programm-Update.
+void CEasyCashApp::ProgrammCaptionBox(LPCTSTR str, int id1, LPCTSTR buttontext1, LPCTSTR tooltiptext1, int id2, LPCTSTR buttontext2)
+{
+	if (!m_pMainWnd || !((CMainFrame*)m_pMainWnd)->GetCaptionBar())
+		return;
+
+	CZweiKnopfCaptionBar *pBar = ((CMainFrame*)m_pMainWnd)->GetCaptionBar();
+	if (pBar->m_hWnd == NULL)
+		((CMainFrame*)m_pMainWnd)->CreateCaptionBar();
+	pBar->SetText(str, CMFCCaptionBar::ALIGN_LEFT);
+	pBar->ShowWindow(SW_SHOW);
+	if (id1 && buttontext1 && *buttontext1)
+	{
+		pBar->SetButton(buttontext1, id1, CMFCCaptionBar::ALIGN_LEFT, FALSE);
+		pBar->SetButtonToolTip(tooltiptext1);
+	}
+	else
+		pBar->RemoveButton();
+	if (id2 && buttontext2 && *buttontext2)
+		pBar->SetButton2(buttontext2, id2);
+	else
+		pBar->RemoveButton2();
+	((CMainFrame*)m_pMainWnd)->RecalcLayout(FALSE);
+}
+
+void CEasyCashApp::OnProgrammUpdateInstallieren()
+{
+	ProgrammUpdateInstallieren();
+}
+
+void CEasyCashApp::OnProgrammUpdateUeberspringen()
+{
+	ProgrammUpdateUeberspringen();
+}
+
 void CEasyCashApp::CaptionBoxHide()
 {
 	if (m_pMainWnd && ((CMainFrame*)m_pMainWnd)->GetCaptionBar() && IsWindow(((CMainFrame*)m_pMainWnd)->GetCaptionBar()->m_hWnd))
@@ -1301,6 +1349,13 @@ void CEasyCashApp::CaptionBoxHide()
 		((CMainFrame*)m_pMainWnd)->GetCaptionBar()->ShowWindow(SW_HIDE);
 		((CMainFrame*)m_pMainWnd)->RecalcLayout(FALSE);
 	}
+}
+
+// Knopf in der CaptionBar bei veraltetem Mac-Paket (siehe CEasyCashView::CaptionBoxCheckOnUpdate)
+void CEasyCashApp::OnMacPaketDownload()
+{
+	ShellExecute(NULL, "open", MAC_PAKET_DOWNLOAD_URL, NULL, ".", SW_SHOWNORMAL);
+	CaptionBoxHide();
 }
 
 BOOL CEasyCashApp::IsCaptionBoxShown()

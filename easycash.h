@@ -59,12 +59,16 @@ public:
 	afx_msg void OnAppAbout();
 	afx_msg void OnFileOpen();
 	//}}AFX_MSG
+	afx_msg void OnMacPaketDownload();
+	afx_msg void OnProgrammUpdateInstallieren();
+	afx_msg void OnProgrammUpdateUeberspringen();
 	DECLARE_MESSAGE_MAP()
 public:
 	void ShowTipAtStartup(void);
 	void ShowTipOfTheDay(void);
 	void CaptionBox(LPCTSTR str);
 	void CaptionBox(LPCTSTR str, int id, LPCTSTR buttontext, LPCTSTR tooltiptext);
+	void ProgrammCaptionBox(LPCTSTR str, int id1, LPCTSTR buttontext1, LPCTSTR tooltiptext1, int id2, LPCTSTR buttontext2);
 	void CaptionBoxHide();
 	BOOL IsCaptionBoxShown();
 	CString m_csStartupPlugin;

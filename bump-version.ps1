@@ -192,6 +192,26 @@ Update-File1252 -Path $rcPath `
     -Replacement "`${1}$rcDotted`${2}" `
     -Required
 
+# --- 7b. Aenderungstext fuer update_v4.txt ermitteln ----------------------------
+# Letzte Commit-Nachricht VOR dem Release-Commit (Abschnitt 8). Merge-Commits
+# und fruehere "vX.Y.Z Release"-Commits werden uebersprungen, sonst stuende bei
+# zwei Releases ohne Zwischen-Commit nur "v4.0.27 Release" in der Meldung.
+# git liefert UTF-8; ohne Umstellung der Console-Kodierung macht PowerShell 5.1
+# aus Umlauten Mojibake.
+$prevOutEnc = [Console]::OutputEncoding
+[Console]::OutputEncoding = [System.Text.Encoding]::UTF8
+try {
+    $logZeilen = & git -C $repoRoot log --no-merges --format=%s -n 50 2>$null
+} finally {
+    [Console]::OutputEncoding = $prevOutEnc
+}
+$letzteAenderung = $logZeilen |
+    Where-Object { $_ -and ($_ -notmatch '^v\d+\.\d+\.\d+\S* Release$') } |
+    Select-Object -First 1
+if (-not $letzteAenderung) { $letzteAenderung = '' }
+$updateInfo = "v${newVersion}:" + ($letzteAenderung -replace '[\r\n]+', ' ').Trim()
+Write-Host "update_v4.txt: $updateInfo"
+
 Write-Host ""
 if ($DryRun) {
     Write-Host "DryRun: keine Dateien geschrieben, kein Build, kein ISCC." -ForegroundColor Yellow
@@ -288,6 +308,15 @@ if (-not $ISCC) {
     throw "ISCC.exe (Inno Setup 6) nicht gefunden. Gesucht in: $($ISCCKandidaten -join ', ')"
 }
 & "$ISCC" "easycash.iss"
+
+# --- 10b. update_v4.txt neben die Setup-Datei schreiben (Win-1252) --------------
+# Wird zusammen mit ECTSetup4.exe nach https://easyct.de/ hochgeladen und beim
+# Programmstart von der v4 abgefragt (ProgrammUpdate.cpp). Format:
+#   v4.0.28:<letzte Commit-Nachricht>
+# Zeichen ausserhalb von Windows-1252 werden dabei zu '?'.
+$updateTxtPfad = Join-Path $repoRoot 'Setup\update_v4.txt'
+[System.IO.File]::WriteAllBytes($updateTxtPfad, $enc1252.GetBytes($updateInfo))
+Write-Host "  -> $updateTxtPfad" -ForegroundColor Green
 
 # --- 11. Filezilla öffnen -------------------------------------------------------
 $CurrentDir = Get-Location

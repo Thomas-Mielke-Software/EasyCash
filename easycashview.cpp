@@ -44,6 +44,7 @@
 #include "Shlobj.h"
 #include "DatenverzeichnisDlg.h"
 #include "UstVorauszahlungenDlg.h"
+#include "MacPaket.h"
 
 //#if defined(NDEBUG)
 //#include "CrashRpt.h"
@@ -1530,6 +1531,22 @@ void CEasyCashView::CaptionBoxCheckOnUpdate()
 	CEasyCashDoc *pDoc = GetDocument();
 
 	if (theApp.IsCaptionBoxShown()) return;
+
+	// Läuft EC&T unter macOS in einem veralteten Mac-Paket? Der Plugin-Manager aktualisiert nur die
+	// Windows-Programmdateien, nicht die CrossOver-Schicht im App-Bundle. Nur einmal pro Sitzung melden.
+	static BOOL bMacPaketGeprueft = FALSE;
+	if (!bMacPaketGeprueft)
+	{
+		bMacPaketGeprueft = TRUE;
+		CString csMacPaketVersion;
+		if (IstMacPaketVeraltet(csMacPaketVersion))
+		{
+			CString csTemp;
+			csTemp.Format("Achtung: Das installierte Mac-Paket ist veraltet (Version %s, benötigt wird mindestens " MAC_PAKET_MINDESTVERSION "). Updates über den Plugin-Manager erneuern nur die Windows-Programmdateien, nicht die CrossOver-Schicht des Mac-Pakets. Das kann zu Abstürzen führen, z.B. beim Drucken. Bitte das aktuelle Mac-Paket herunterladen und neu installieren.", (LPCTSTR)csMacPaketVersion);
+			theApp.CaptionBox(csTemp, ID_MAC_PAKET_DOWNLOAD, "Mac-Paket herunterladen", "Download-Seite für das aktuelle Mac-Paket im Browser öffnen");
+			return;
+		}
+	}
 
 	// Zeichenkodierung der easyct.ini falsch oder repariert?
 	if (!IniKodierungsHinweis.IsEmpty())

@@ -23,6 +23,7 @@
 #include "WebUpdate.h"
 #include "ToolBarEx.h"
 #include "OutputWnd.h"
+#include "ZweiKnopfCaptionBar.h"
 
 class CPluginElement : public CObject
 {
@@ -122,7 +123,7 @@ public:
 // Implementation
 public:
 	virtual ~CMainFrame();
-	inline CMFCCaptionBar *GetCaptionBar() { return &m_wndCaptionBar; };
+	inline CZweiKnopfCaptionBar *GetCaptionBar() { return &m_wndCaptionBar; };
 	BOOL CreateCaptionBar();
 #ifdef _DEBUG
 	virtual void AssertValid() const;
@@ -162,7 +163,7 @@ protected:  // control bar embedded members
 	CToolBar			m_wndToolBar;
 	CToolBarWithCombo   m_wndFindToolBar;		// Find Toolbar
 	CToolBar			m_wndPluginToolBar; 	// Plugin Toolbar
-	CMFCCaptionBar		m_wndCaptionBar;
+	CZweiKnopfCaptionBar	m_wndCaptionBar;
 	COutputWnd			m_wndOutput;
 
 	CImageList m_ToolbarImages;
@@ -190,6 +191,9 @@ protected:
 	afx_msg void OnSpendePayPal();
 	afx_msg void OnSpendeBitcoin();
 	//}}AFX_MSG
+	afx_msg LRESULT OnProgrammUpdateGeprueft(WPARAM wParam, LPARAM lParam);
+	afx_msg LRESULT OnProgrammUpdateHeruntergeladen(WPARAM wParam, LPARAM lParam);
+	afx_msg LRESULT OnProgrammUpdateBeenden(WPARAM wParam, LPARAM lParam);
 	DECLARE_MESSAGE_MAP()
 
 	BOOL CreateRibbonBar ();

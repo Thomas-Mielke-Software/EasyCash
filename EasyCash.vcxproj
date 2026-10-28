@@ -487,6 +487,18 @@ copy ..\EasyCash\Release\crashrpt_lang.ini .\Release
       <Optimization Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Disabled</Optimization>
       <Optimization Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Disabled</Optimization>
     </ClCompile>
+    <ClCompile Include="ProgrammUpdate.cpp">
+      <Optimization Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Disabled</Optimization>
+      <Optimization Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Disabled</Optimization>
+    </ClCompile>
+    <ClCompile Include="ZweiKnopfCaptionBar.cpp">
+      <Optimization Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Disabled</Optimization>
+      <Optimization Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Disabled</Optimization>
+    </ClCompile>
+    <ClCompile Include="MacPaket.cpp">
+      <Optimization Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Disabled</Optimization>
+      <Optimization Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Disabled</Optimization>
+    </ClCompile>
     <ClCompile Include="WinVer.cpp">
       <Optimization Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Disabled</Optimization>
       <Optimization Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Disabled</Optimization>
@@ -568,6 +580,8 @@ copy ..\EasyCash\Release\crashrpt_lang.ini .\Release
     <ClInclude Include="voranmeldezeitraumdlg.h" />
     <ClInclude Include="VoranmeldungszeitraumDroplist.h" />
     <ClInclude Include="WebUpdate.h" />
+    <ClInclude Include="ProgrammUpdate.h" />
+    <ClInclude Include="ZweiKnopfCaptionBar.h" />
     <ClInclude Include="XFileOpenListView.h" />
     <ClInclude Include="XFolderDialog.h" />
     <ClInclude Include="XFolderDialogRes.h" />
