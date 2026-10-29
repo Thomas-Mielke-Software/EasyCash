@@ -9,6 +9,7 @@
 // und v4.x (UTF-8) geteilt.
 
 #include "stdafx.h"
+#include <afxpriv.h>
 #include "MacPaket.h"
 
 #ifdef _DEBUG
@@ -203,4 +204,59 @@ static int VergleicheVersionen(LPCSTR szA, LPCSTR szB)
 BOOL IstMacPaketVeraltet(CString& csVersion)
 {
 	return GetMacPaketVersion(csVersion) && VergleicheVersionen(CStringA(csVersion), MAC_PAKET_MINDESTVERSION) < 0;
+}
+
+// Nur Zugriffsverletzungen innerhalb von comdlg32.dll unter CrossOver/macOS abfangen
+static int CrossOverDruckdialogFilter(EXCEPTION_POINTERS* pEP)
+{
+	if (pEP->ExceptionRecord->ExceptionCode != EXCEPTION_ACCESS_VIOLATION || !LaeuftUnterMacOS())
+		return EXCEPTION_CONTINUE_SEARCH;
+
+	HMODULE hComdlg32 = GetModuleHandleA("comdlg32.dll");
+	MEMORY_BASIC_INFORMATION mbi;
+	if (hComdlg32 && VirtualQuery(pEP->ExceptionRecord->ExceptionAddress, &mbi, sizeof(mbi)) &&
+		mbi.AllocationBase == (PVOID)hComdlg32)
+		return EXCEPTION_EXECUTE_HANDLER;
+	return EXCEPTION_CONTINUE_SEARCH;
+}
+
+// __try/__except darf nicht in Funktionen mit C++-Objekten stehen, deshalb eine eigene Funktion
+static BOOL RufeDruckdialogAuf(PFN_DRUCKDIALOG pfnDruckdialog, void* pKontext, INT_PTR* pnErgebnis)
+{
+	__try
+	{
+		*pnErgebnis = pfnDruckdialog(pKontext);
+		return TRUE;
+	}
+	__except (CrossOverDruckdialogFilter(GetExceptionInformation()))
+	{
+		return FALSE;
+	}
+}
+
+// Zugriff auf das geschuetzte CDialog::PostModal(), das wegen des Absturzes nicht mehr aufgerufen wurde
+class CPrintDialogPostModal : public CPrintDialog
+{
+public:
+	static void (CDialog::*PostModalZeiger())() { return &CPrintDialogPostModal::PostModal; }
+};
+
+BOOL DruckdialogMitCrossOverSchutz(CPrintDialog* pPD, PFN_DRUCKDIALOG pfnDruckdialog, void* pKontext, INT_PTR& nErgebnis)
+{
+	nErgebnis = IDCANCEL;
+	if (RufeDruckdialogAuf(pfnDruckdialog, pKontext, &nErgebnis))
+		return FALSE;
+
+	// Aufraeumen, was CPrintDialog::DoModal() nach PrintDlgA sonst erledigt haette
+	(pPD->*CPrintDialogPostModal::PostModalZeiger())();
+	pPD->m_pd.hDC = NULL;
+	if (AfxGetMainWnd())
+		AfxGetMainWnd()->EnableWindow(TRUE);
+
+	AfxMessageBox("Der Druck wurde abgebrochen, weil die CrossOver-Schicht des Mac-Pakets im macOS-Druckdialog abgest\xfcrzt ist. "
+		"Das passiert, wenn dort \"Als PDF sichern\" (oder eine andere PDF-Option) gew\xe4hlt wird.\n\n"
+		"Bitte im Druckdialog einen Drucker ausw\xe4hlen. Um ein PDF zu erzeugen, kann unter macOS ein virtueller PDF-Drucker "
+		"(z.B. PDFwriter) installiert und dann wie ein normaler Drucker ausgew\xe4hlt werden.\n\n"
+		"Sicherheitshalber bitte die Buchungsdaten speichern und EC&T neu starten.", MB_ICONEXCLAMATION | MB_OK);
+	return TRUE;
 }

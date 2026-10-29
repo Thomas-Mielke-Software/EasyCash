@@ -5916,8 +5916,16 @@ BOOL CEasyCashView::OnPreparePrinting(CPrintInfo* pInfo)
 		}
 	}
 
-	// default preparation
-	return DoPreparePrinting(pInfo);
+	// default preparation; der Druckdialog ist unter CrossOver/macOS gegen Abstürze geschützt (siehe MacPaket.h)
+	struct DruckKontext { CEasyCashView *pView; CPrintInfo *pInfo; } kontext = { this, pInfo };
+	INT_PTR nErgebnis;
+	if (DruckdialogMitCrossOverSchutz(pInfo->m_pPD, [](void *pKontext) -> INT_PTR
+		{
+			DruckKontext *pK = (DruckKontext *)pKontext;
+			return pK->pView->DoPreparePrinting(pK->pInfo);
+		}, &kontext, nErgebnis))
+		return FALSE;
+	return (BOOL)nErgebnis;
 }
 
 void CEasyCashView::OnBeginPrinting(CDC* /*pDC*/, CPrintInfo* /*pInfo*/)
