@@ -1100,6 +1100,12 @@ void CEasyCashApp::OnMacPaketDownload()
 	CaptionBoxHide();
 }
 
+// m_hDevNames vor dem Druckdialog für CrossOver/macOS vergrößern (siehe MacPaket.h)
+void CEasyCashApp::DruckerDevNamesVorbereiten()
+{
+	DevNamesFuerCrossOverVergroessern(m_hDevNames);
+}
+
 BOOL CEasyCashApp::IsCaptionBoxShown()
 {
 	if (m_pMainWnd && ((CMainFrame*)m_pMainWnd)->GetCaptionBar() && IsWindow(((CMainFrame*)m_pMainWnd)->GetCaptionBar()->m_hWnd))

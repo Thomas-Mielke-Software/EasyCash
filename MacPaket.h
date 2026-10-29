@@ -29,3 +29,10 @@ BOOL IstMacPaketVeraltet(CString& csVersion);
 // der Rueckgabewert von pfnDruckdialog.
 typedef INT_PTR (*PFN_DRUCKDIALOG)(void* pKontext);
 BOOL DruckdialogMitCrossOverSchutz(CPrintDialog* pPD, PFN_DRUCKDIALOG pfnDruckdialog, void* pKontext, INT_PTR& nErgebnis);
+
+// Ursache dieses Absturzes: MFCs CWinApp::DoPrintDialog() uebergibt hDevNames gesperrt an PrintDlgA
+// (UpdatePrinterSelection() sperrt es ohne Unlock), und CrossOvers nativer Druckdialog vergroessert
+// hDevNames mit GlobalReAlloc() ohne GMEM_MOVEABLE. Bei "Als PDF sichern" wird der Port
+// ("PDF:file:///...") laenger, der Realloc scheitert, hDevNames wird NULL. Deshalb unter macOS vorab
+// genug Platz in hDevNames reservieren, dann muss CrossOver gar nicht vergroessern.
+void DevNamesFuerCrossOverVergroessern(HGLOBAL& hDevNames);

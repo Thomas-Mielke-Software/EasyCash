@@ -5917,6 +5917,7 @@ BOOL CEasyCashView::OnPreparePrinting(CPrintInfo* pInfo)
 	}
 
 	// default preparation; der Druckdialog ist unter CrossOver/macOS gegen Abstürze geschützt (siehe MacPaket.h)
+	theApp.DruckerDevNamesVorbereiten();	// sonst stürzt "Als PDF sichern" im macOS-Druckdialog ab
 	struct DruckKontext { CEasyCashView *pView; CPrintInfo *pInfo; } kontext = { this, pInfo };
 	INT_PTR nErgebnis;
 	if (DruckdialogMitCrossOverSchutz(pInfo->m_pPD, [](void *pKontext) -> INT_PTR
