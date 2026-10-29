@@ -6101,7 +6101,10 @@ BOOL CEasyCashView::DruckePlugin(BOOL bVorschau)
 	CPrintDialog dlg(FALSE,
 		PD_ALLPAGES | PD_RETURNDC | PD_NOPAGENUMS | PD_NOSELECTION
 		| PD_USEDEVMODECOPIESANDCOLLATE, this);
-	if (dlg.DoModal() != IDOK)
+	// Druckdialog unter CrossOver/macOS gegen Abstürze geschützt (siehe MacPaket.h)
+	INT_PTR nDruckdialog;
+	if (DruckdialogMitCrossOverSchutz(&dlg, [](void *pKontext) -> INT_PTR { return ((CPrintDialog *)pKontext)->DoModal(); },
+		&dlg, nDruckdialog) || nDruckdialog != IDOK)
 	{
 		if (hdcAbbild) { SelectObject(hdcAbbild, hbmAlt); DeleteObject(hbmAbbild); DeleteDC(hdcAbbild); }
 		return TRUE;   // Abbruch durch den Anwender = behandelt
@@ -6455,8 +6458,16 @@ BOOL CEasyCashView::OnPreparePrinting(CPrintInfo* pInfo)
 		}
 	}
 
-	// default preparation
-	return DoPreparePrinting(pInfo);
+	// default preparation; der Druckdialog ist unter CrossOver/macOS gegen Abstürze geschützt (siehe MacPaket.h)
+	struct DruckKontext { CEasyCashView *pView; CPrintInfo *pInfo; } kontext = { this, pInfo };
+	INT_PTR nErgebnis;
+	if (DruckdialogMitCrossOverSchutz(pInfo->m_pPD, [](void *pKontext) -> INT_PTR
+		{
+			DruckKontext *pK = (DruckKontext *)pKontext;
+			return pK->pView->DoPreparePrinting(pK->pInfo);
+		}, &kontext, nErgebnis))
+		return FALSE;
+	return (BOOL)nErgebnis;
 }
 
 void CEasyCashView::OnBeginPrinting(CDC* /*pDC*/, CPrintInfo* /*pInfo*/)
