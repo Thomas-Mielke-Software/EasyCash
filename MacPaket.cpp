@@ -206,6 +206,20 @@ BOOL IstMacPaketVeraltet(CString& csVersion)
 	return GetMacPaketVersion(csVersion) && VergleicheVersionen(CStringA(csVersion), MAC_PAKET_MINDESTVERSION) < 0;
 }
 
+// Platz fuer Treiber, Geraet und Port in DEVNAMES; CrossOver erlaubt Ports bis PATH_MAX (1024 Zeichen)
+#define DEVNAMES_RESERVE 8192
+
+void DevNamesFuerCrossOverVergroessern(HGLOBAL& hDevNames)
+{
+	if (!hDevNames || !LaeuftUnterMacOS() || GlobalSize(hDevNames) >= DEVNAMES_RESERVE)
+		return;
+
+	// GMEM_MOVEABLE, weil hDevNames durch MFC schon gesperrt sein kann
+	HGLOBAL hNeu = GlobalReAlloc(hDevNames, DEVNAMES_RESERVE, GMEM_MOVEABLE);
+	if (hNeu)
+		hDevNames = hNeu;
+}
+
 // Nur Zugriffsverletzungen innerhalb von comdlg32.dll unter CrossOver/macOS abfangen
 static int CrossOverDruckdialogFilter(EXCEPTION_POINTERS* pEP)
 {

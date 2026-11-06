@@ -76,6 +76,7 @@ public:
 	CDocument* GenericGetActiveDocument(CRuntimeClass* pClass);
 
 	BOOL m_bCrashReportingAktiv;
+	void DruckerDevNamesVorbereiten();
 };
 
 
