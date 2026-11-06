@@ -1231,9 +1231,12 @@ void CEasyCashView::OnUpdate(CView* pSender, LPARAM lHint, CObject* pHint)
 }
 
 // Kodierungsprüfung der easyct.ini: Editoren speichern die Datei gern als UTF-8 (mit/ohne BOM) oder UTF-16,
-// GetPrivateProfileStringA erwartet aber Windows-1252. [Allgemein] EncodingTest enthält dafür "äöüÄÖÜß" als Testwert.
-#define INI_ENCODING_TEST_1252	"\xE4\xF6\xFC\xC4\xD6\xDC\xDF"						// "äöüÄÖÜß" in Windows-1252
-#define INI_ENCODING_TEST_UTF8	"\xC3\xA4\xC3\xB6\xC3\xBC\xC3\x84\xC3\x96\xC3\x9C\xC3\x9F"	// "äöüÄÖÜß" in UTF-8
+// GetPrivateProfileStringA erwartet aber Windows-1252. [Allgemein] EncodingTest enthält dafür "<äöüÄÖÜß>" als Testwert.
+#define INI_ENCODING_TEST_1252	"<\xE4\xF6\xFC\xC4\xD6\xDC\xDF>"						// "<äöüÄÖÜß>" in Windows-1252
+#define INI_ENCODING_TEST_UTF8	"<\xC3\xA4\xC3\xB6\xC3\xBC\xC3\x84\xC3\x96\xC3\x9C\xC3\x9F>"	// "<äöüÄÖÜß>" in UTF-8
+// alter Testwert ohne Klammern: gilt unversehrt weiter und wird beim Start aktualisiert
+#define INI_ENCODING_TEST_ALT_1252	"\xE4\xF6\xFC\xC4\xD6\xDC\xDF"
+#define INI_ENCODING_TEST_ALT_UTF8	"\xC3\xA4\xC3\xB6\xC3\xBC\xC3\x84\xC3\x96\xC3\x9C\xC3\x9F"
 
 static CString IniKodierungsHinweis;	// wird in CaptionBoxCheckOnUpdate() angezeigt
 static BOOL IniReparaturAbgelehnt = FALSE;
@@ -1299,12 +1302,15 @@ static void PruefeIniKodierung(LPCSTR pszIniDatei)
 		art = KOD_UTF16BE;
 	else
 	{
-		GetPrivateProfileString("Allgemein", "EncodingTest", "", buffer, sizeof(buffer), pszIniDatei);
-		if (!strcmp(buffer, INI_ENCODING_TEST_1252))
+		// Ein Wert aus lauter Leerzeichen wird als leer gelesen; nur ein wirklich fehlender Schluessel liefert den Default
+		const char szFehlt[] = "<fehlt>";
+		GetPrivateProfileString("Allgemein", "EncodingTest", szFehlt, buffer, sizeof(buffer), pszIniDatei);
+		BOOL bTestwertFehlt = !strcmp(buffer, szFehlt);
+		if (!strcmp(buffer, INI_ENCODING_TEST_1252) || !strcmp(buffer, INI_ENCODING_TEST_ALT_1252))
 			art = KOD_OK;
-		else if (!strcmp(buffer, INI_ENCODING_TEST_UTF8) || IniEnthaeltUtf8(inhalt))
+		else if (!strcmp(buffer, INI_ENCODING_TEST_UTF8) || !strcmp(buffer, INI_ENCODING_TEST_ALT_UTF8) || IniEnthaeltUtf8(inhalt))
 			art = KOD_UTF8;
-		else if (*buffer)
+		else if (!bTestwertFehlt)
 			art = KOD_ZEICHEN_VERLOREN;	// Testwert vorhanden, aber verstümmelt (z.B. '?' statt Umlaute)
 	}
 
@@ -1375,9 +1381,13 @@ static void PruefeIniKodierung(LPCSTR pszIniDatei)
 			IniKodierungsHinweis = "Die Einstellungsdatei '" + csDatei + "' war als " + csKodierung + " gespeichert und wurde automatisch nach Windows-1252 umgewandelt. Sicherungskopie: '" + csSicherung + "'.";
 	}
 	else if (art == KOD_ZEICHEN_VERLOREN)
-		IniKodierungsHinweis = "Die Einstellungsdatei '" + csDatei + "' wurde mit einer falschen Zeichenkodierung gespeichert, Umlaute sind dabei verloren gegangen. Bitte Einstellungen und Konten auf verstümmelte Umlaute prüfen und die Datei künftig als Windows-1252 (ANSI) speichern.";
+	{
+		IniKodierungsHinweis = "Die Einstellungsdatei '" + csDatei + "' wurde mit einer falschen Zeichenkodierung gespeichert. Die Umlaute sind dabei unwiderruflich verloren gegangen und können nicht automatisch wiederhergestellt werden. Abhilfe schafft nur, die easyct.ini aus einem Backup von vor der Beschädigung zurückzuspielen; Änderungen seit diesem Backup müssen danach neu eingetragen werden. Bitte die Datei künftig als Windows-1252 (ANSI) speichern.";
+		// Testwert absichtlich verstümmelt lassen: die Meldung soll bei jedem Start erscheinen, bis die Datei ersetzt ist
+		return;
+	}
 
-	// Kodierungsangabe und Testwert eintragen (Testwert nach Verlust neu setzen, damit spätere Fehler wieder erkannt werden)
+	// Kodierungsangabe und Testwert eintragen, falls noch nicht vorhanden; ein alter Testwert ohne Klammern wird aktualisiert
 	GetPrivateProfileString("Allgemein", "Encoding", "", buffer, sizeof(buffer), pszIniDatei);
 	if (!*buffer)
 		WritePrivateProfileString("Allgemein", "Encoding", "Windows-1252", pszIniDatei);
