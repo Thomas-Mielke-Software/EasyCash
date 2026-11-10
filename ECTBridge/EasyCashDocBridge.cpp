@@ -165,6 +165,20 @@ void CEasyCashDocBridge::SyncNativeToManaged()
     LinkedListToManagedList(Dauerbuchungen, engine->Dauerbuchungen);
 
     // Dokument-Felder synchronisieren
+    MirrorDokumentfelderInEngine();
+
+    // Sortieren — die Pointer-Map bleibt korrekt, weil sie auf
+    // Buchung^-Referenzen zeigt, nicht auf Indizes.
+    engine->Sort();
+
+    TRACE("SyncNativeToManaged: %d Buchungen, %d Dauerbuchungen → Engine (Pointer-Map gefüllt)\n",
+          engine->Buchungen->Count, engine->Dauerbuchungen->Count);
+}
+
+void CEasyCashDocBridge::MirrorDokumentfelderInEngine()
+{
+    auto engine = GetEngine(this);
+
     engine->Buchungszaehler             = Buchungszaehler;
     engine->LaufendeBelegnrEinnahmen    = nLaufendeBuchungsnummerFuerEinnahmen;
     engine->LaufendeBelegnrAusgaben     = nLaufendeBuchungsnummerFuerAusgaben;
@@ -181,13 +195,6 @@ void CEasyCashDocBridge::SyncNativeToManaged()
     // Dokument-Erweiterungen
     engine->Erweiterungen = ErweiterungStore::AusPipeFormat(
         ToManaged(Erweiterung));
-
-    // Sortieren — die Pointer-Map bleibt korrekt, weil sie auf
-    // Buchung^-Referenzen zeigt, nicht auf Indices.
-    engine->Sort();
-
-    TRACE("SyncNativeToManaged: %d Buchungen, %d Dauerbuchungen → Engine (Pointer-Map gefüllt)\n",
-          engine->Buchungen->Count, engine->Dauerbuchungen->Count);
 }
 
 // ══════════════════════════════════════════════════════════
@@ -380,4 +387,52 @@ extern "C" ECTBRIDGE_API void ECT_SpiegleNativeBuchungInEngine(CBuchung* pNative
     }
     TRACE1("ECT_Spiegle: CBuchung* 0x%p in keiner Bridge gefunden -- skip\n",
            pNative);
+}
+
+BOOL CEasyCashDocBridge::EntferneBuchungAusEngine(CBuchung* pNative)
+{
+    if (!pNative || !m_pEngineHost) return FALSE;
+    ECTEngine::Buchung^ b = m_pEngineHost->Lookup(pNative);
+    if (b == nullptr) return FALSE;
+    GetEngine(this)->Buchungen->Remove(b);   // Reference-Equality
+    m_pEngineHost->UnregisterPointer(pNative);
+    return TRUE;
+}
+
+// ----------------------------------------------------------
+// Mirror-Helfer fuer CDokumentCtrl (EasyCTX). pDoc wird gegen die
+// Bridge-Liste geprueft statt blind gecastet -- im USE_ECTIFACE-Build
+// oder bei einem fremden Doc-Typ passiert dann einfach nichts.
+// ----------------------------------------------------------
+
+static CEasyCashDocBridge* FindeBridge(CEasyCashDoc* pDoc)
+{
+    if (!pDoc) return NULL;
+    for (int i = 0; i < MAX_BRIDGES; i++)
+        if (g_bridges[i] && static_cast<CEasyCashDoc*>(g_bridges[i]) == pDoc)
+            return g_bridges[i];
+    return NULL;
+}
+
+extern "C" ECTBRIDGE_API void ECT_SpiegleNativeDokumentfelderInEngine(CEasyCashDoc* pDoc)
+{
+    CEasyCashDocBridge* pBridge = FindeBridge(pDoc);
+    if (!pBridge || !pBridge->m_pEngineHost)
+    {
+        TRACE1("ECT_SpiegleDokumentfelder: Doc 0x%p ist keine Bridge -- skip\n", pDoc);
+        return;
+    }
+    pBridge->MirrorDokumentfelderInEngine();
+}
+
+extern "C" ECTBRIDGE_API void ECT_EntferneNativeBuchungAusEngine(CEasyCashDoc* pDoc, CBuchung* pNative)
+{
+    CEasyCashDocBridge* pBridge = FindeBridge(pDoc);
+    if (!pBridge)
+    {
+        TRACE1("ECT_EntferneBuchung: Doc 0x%p ist keine Bridge -- skip\n", pDoc);
+        return;
+    }
+    if (!pBridge->EntferneBuchungAusEngine(pNative))
+        TRACE1("ECT_EntferneBuchung: CBuchung* 0x%p nicht in der Engine\n", pNative);
 }

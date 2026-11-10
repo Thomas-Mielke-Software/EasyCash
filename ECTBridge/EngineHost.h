@@ -80,6 +80,20 @@ namespace ECTBridge
             m_pointerOrder->Add(key);
         }
 
+        /// Entfernt einen nativen Pointer aus der Map (z.B. bevor die
+        /// CBuchung nativ geloescht wird). Sonst wuerde der naechste
+        /// SyncManagedToNative() den freigegebenen Pointer ueber die
+        /// inverse Map wiederverwenden.
+        void UnregisterPointer(CBuchung* pNative)
+        {
+            System::IntPtr key((void*)pNative);
+            System::Collections::Generic::Dictionary<
+                System::IntPtr, ECTEngine::Buchung^>^ map = m_pointerMap;
+            map->Remove(key);
+            System::Collections::Generic::List<System::IntPtr>^ order = m_pointerOrder;
+            order->Remove(key);
+        }
+
         ECTEngine::Buchung^ Lookup(CBuchung* pNative)
         {
             System::IntPtr key((void*)pNative);

@@ -280,6 +280,11 @@ void CDokumentCtrl::SetJahr(short nNewValue)
 	{
 		pDoc->nJahr = nNewValue;	
 
+		// Engine vor SetModifiedFlag informieren: dessen Wiederherstellungs-Save
+		// beginnt mit SyncManagedToNative() und würde den neuen Wert sonst
+		// sofort mit dem Engine-Stand ueberschreiben.
+		ECT_SpiegleNativeDokumentfelderInEngine(pDoc);
+
 		pDoc->SetModifiedFlag("Buchungsjahr wurde geändert");
 	}
 }
@@ -418,6 +423,13 @@ void CDokumentCtrl::LoescheBuchung(long BuchungID)
 		CBuchung **ppb = &pDoc->Einnahmen;
 		CBuchung *pb = (CBuchung *)BuchungID;
 
+		// Zuerst aus Engine + Pointer-Map austragen. Sonst verwendet der
+		// naechste SyncManagedToNative() (z.B. im Wiederherstellungs-Save
+		// von SetModifiedFlag unten) den gleich freigegebenen Pointer über
+		// die inverse Map wieder: Schreibzugriff auf freien Speicher, und die
+		// gelöschte Buchung wäre wieder da.
+		ECT_EntferneNativeBuchungAusEngine(pDoc, pb);
+
 		// Einnahmen nach zu löschender Buchung durchsuchen
 		BOOL bFound = FALSE;
 		while (*ppb)
@@ -479,6 +491,11 @@ void CDokumentCtrl::SetLaufendeBuchungsnummerEinnahmen(long nNewValue)
 	{
 		pDoc->nLaufendeBuchungsnummerFuerEinnahmen = nNewValue;	
 
+		// Engine vor SetModifiedFlag informieren: dessen Wiederherstellungs-Save
+		// beginnt mit SyncManagedToNative() und wuerde den neuen Wert sonst
+		// sofort mit dem Engine-Stand ueberschreiben.
+		ECT_SpiegleNativeDokumentfelderInEngine(pDoc);
+
 		pDoc->SetModifiedFlag("Laufende Buchungsnummer für Einnahmen wurde geändert");
 	}
 }
@@ -500,6 +517,11 @@ void CDokumentCtrl::SetLaufendeBuchungsnummerAusgaben(long nNewValue)
 	if (pDoc && pDoc->IsKindOf(RUNTIME_CLASS(CEasyCashDoc)))
 	{
 		pDoc->nLaufendeBuchungsnummerFuerAusgaben = nNewValue;	
+
+		// Engine vor SetModifiedFlag informieren: dessen Wiederherstellungs-Save
+		// beginnt mit SyncManagedToNative() und wuerde den neuen Wert sonst
+		// sofort mit dem Engine-Stand ueberschreiben.
+		ECT_SpiegleNativeDokumentfelderInEngine(pDoc);
 
 		pDoc->SetModifiedFlag("Laufende Buchungsnummer für Ausgaben wurde geändert");
 	}
@@ -524,6 +546,7 @@ void CDokumentCtrl::SetWaehrung(LPCTSTR lpszNewValue)
 	if (pDoc && pDoc->IsKindOf(RUNTIME_CLASS(CEasyCashDoc)))
 	{
 		pDoc->csWaehrung = lpszNewValue;
+		ECT_SpiegleNativeDokumentfelderInEngine(pDoc);
 	}	
 
 	SetModifiedFlag();
@@ -546,6 +569,7 @@ void CDokumentCtrl::SetAbschreibungGenauigkeit(long nNewValue)
 	if (pDoc && pDoc->IsKindOf(RUNTIME_CLASS(CEasyCashDoc)))
 	{
 		pDoc->AbschreibungGenauigkeit = nNewValue;
+		ECT_SpiegleNativeDokumentfelderInEngine(pDoc);
 	}	
 
 	SetModifiedFlag();
@@ -597,6 +621,11 @@ void CDokumentCtrl::SetLaufendeBuchungsnummerBank(long nNewValue)
 	{
 		pDoc->nLaufendeBuchungsnummerFuerBank = nNewValue;	
 
+		// Engine vor SetModifiedFlag informieren: dessen Wiederherstellungs-Save
+		// beginnt mit SyncManagedToNative() und wuerde den neuen Wert sonst
+		// sofort mit dem Engine-Stand ueberschreiben.
+		ECT_SpiegleNativeDokumentfelderInEngine(pDoc);
+
 		pDoc->SetModifiedFlag("Laufende Buchungsnummer für Bank wurde geändert");
 	}
 }
@@ -618,6 +647,11 @@ void CDokumentCtrl::SetLaufendeBuchungsnummerKasse(long nNewValue)
 	if (pDoc && pDoc->IsKindOf(RUNTIME_CLASS(CEasyCashDoc)))
 	{
 		pDoc->nLaufendeBuchungsnummerFuerKasse = nNewValue;	
+
+		// Engine vor SetModifiedFlag informieren: dessen Wiederherstellungs-Save
+		// beginnt mit SyncManagedToNative() und wuerde den neuen Wert sonst
+		// sofort mit dem Engine-Stand ueberschreiben.
+		ECT_SpiegleNativeDokumentfelderInEngine(pDoc);
 
 		pDoc->SetModifiedFlag("Laufende Buchungsnummer für Kasse wurde geändert");
 	}
@@ -664,6 +698,11 @@ void CDokumentCtrl::SpeichereBenutzerdefWert(LPCTSTR PluginName, LPCTSTR Schlues
 	if (pDoc && pDoc->IsKindOf(RUNTIME_CLASS(CEasyCashDoc)))
 	{
 		SetErweiterungKey(pDoc->Erweiterung, PluginName, SchluesselName, Wert);
+
+		// Engine vor SetModifiedFlag informieren: dessen Wiederherstellungs-Save
+		// beginnt mit SyncManagedToNative() und wuerde den neuen Wert sonst
+		// sofort mit dem Engine-Stand ueberschreiben.
+		ECT_SpiegleNativeDokumentfelderInEngine(pDoc);
 		pDoc->SetModifiedFlag((CString)PluginName + " hat Daten in der Buchungsdatei hinterlegt");
 	}
 }

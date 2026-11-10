@@ -1,4 +1,4 @@
-<!-- Diese Datei am Besten mit "git update-index --assume-unchanged" vom Tracking ausschließen, da die Einstellungen hier benutzerspezifisch sind -->
+<!-- Diese Datei am Besten per git update-index mit der Option assume-unchanged vom Tracking ausschließen, da die Einstellungen hier benutzerspezifisch sind -->
 <Project>
   <ItemDefinitionGroup>
     <ClCompile>

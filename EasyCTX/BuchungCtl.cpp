@@ -624,7 +624,11 @@ void CBuchungCtrl::SpeichereBenutzerdefWert(LPCTSTR PluginName, LPCTSTR Schluess
 {
 	CBuchung* pBuch = (CBuchung*)m_ID;
 	if (pBuch && pBuch->IsKindOf(RUNTIME_CLASS(CBuchung)))
+	{
 		SetErweiterungKey(pBuch->Erweiterung, PluginName, SchluesselName, Wert);
+
+		ECT_SpiegleNativeBuchungInEngine(pBuch);
+	}
 }
 
 long CBuchungCtrl::GetAbschreibungGenauigkeit() 

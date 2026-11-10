@@ -85,6 +85,23 @@ public:
     /// </summary>
     BOOL MirrorBuchungInEngine(CBuchung* pNative);
 
+    /// <summary>
+    /// Spiegelt NUR die skalaren Dokument-Felder (Jahr, laufende
+    /// Belegnummern, Waehrung, AfA-Genauigkeit, Erweiterung usw.) in
+    /// die Engine -- keine Listen. Fuer OCX-Setter, die native
+    /// Dokument-Felder aendern: ohne Spiegelung ueberschreibt der
+    /// naechste SyncManagedToNative() (z.B. im Wiederherstellungs-
+    /// Save von SetModifiedFlag) den neuen Wert mit dem Engine-Stand.
+    /// </summary>
+    void MirrorDokumentfelderInEngine();
+
+    /// <summary>
+    /// Entfernt die zu pNative gehoerende managed Buchung aus der
+    /// Engine und den Pointer aus der Map. Aufzurufen BEVOR die
+    /// CBuchung nativ geloescht wird. TRUE, wenn gefunden.
+    /// </summary>
+    BOOL EntferneBuchungAusEngine(CBuchung* pNative);
+
     // ──────────────────────────────────────────────
     // EngineHost — public, weil die freien /clr-Hilfsfunktionen
     // (siehe unten) darauf zugreifen müssen. Das ist sauberer als
@@ -111,6 +128,17 @@ public:
 // korrekten dllexport/dllimport-Wechsel.
 
 extern "C" ECTBRIDGE_API void ECT_SpiegleNativeBuchungInEngine(CBuchung* pNative);
+
+// Gegenstueck fuer die Dokument-Setter (CDokumentCtrl): spiegelt die
+// skalaren Dokument-Felder inkl. Erweiterung in die Engine. Tut nichts,
+// wenn pDoc kein registriertes Bridge-Doc ist (USE_ECTIFACE-Build).
+extern "C" ECTBRIDGE_API void ECT_SpiegleNativeDokumentfelderInEngine(CEasyCashDoc* pDoc);
+
+// Fuer CDokumentCtrl::LoescheBuchung: VOR dem nativen delete aufrufen,
+// damit Engine und Pointer-Map die Buchung vergessen. Ohne das holt der
+// naechste SyncManagedToNative() die Buchung zurueck und schreibt dabei
+// in den bereits freigegebenen Speicher.
+extern "C" ECTBRIDGE_API void ECT_EntferneNativeBuchungAusEngine(CEasyCashDoc* pDoc, CBuchung* pNative);
 
 // ══════════════════════════════════════════════════════════
 // Freie Inline-Funktionen für /clr-Code
