@@ -54,6 +54,15 @@
     <OutDir>.\$(Configuration)\</OutDir>
     <IntDir>.\$(Configuration)\</IntDir>
     <TargetName>ECTBridge</TargetName>
+    <!-- Managed Incremental Build AUS: Sonst vergleicht MSBuild nur eine
+         Metadaten-Zusammenfassung (.metagen) der ECTEngine/ECTViews-DLL, und
+         die enthaelt die Assembly-Version nur als "4.0.*". Nach einem
+         Versions-Bump (bump-version.ps1) wurden deshalb nur die geaenderten
+         .cpp neu uebersetzt, die anderen .obj referenzierten noch die alte
+         Engine-Version: LNK2034/LNK2020 beim Linken. Ohne MIB haengt jede
+         /clr-Datei direkt an der DLL und wird bei jeder Engine-Aenderung
+         neu uebersetzt. -->
+    <EnableManagedIncrementalBuild>false</EnableManagedIncrementalBuild>
   </PropertyGroup>
   <!-- ═══════════════════════════════════════════════════════════════ -->
   <!-- Debug Build Settings                                             -->
