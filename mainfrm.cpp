@@ -908,24 +908,28 @@ void CMainFrame::ShowPlugins(char *szName)
 
 
 // ----------------------------------------------------------
-// Schnellzugriffsleiste (QAT) nach einem Menue-Umbau neu an die Ribbon-
+// Schnellzugriffsleiste (QAT) nach einem Menü-Umbau neu an die Ribbon-
 // Elemente binden.
 //
-// Die QAT haelt KOPIEN der Ribbon-Knoepfe, die ueber m_pOriginal auf das
-// Original zeigen -- bei Split-Knoepfen zeigt zudem jede Kopie eines
+// Die QAT hält KOPIEN der Ribbon-Knöpfe, die über m_pOriginal auf das
+// Original zeigen -- bei Split-Knöpfen zeigt zudem jede Kopie eines
 // Untereintrags auf den Original-Untereintrag (CMFCRibbonButton::SetOriginal).
-// RemoveAllSubItems() loescht diese Untereintraege, die Kopien in der QAT
-// zeigen danach ins Leere, und das naechste Layout der Leiste (z.B. WM_SIZE
-// beim Beenden) stuerzt in CMFCRibbonButton::GetImageSize ab
+// RemoveAllSubItems() löscht diese Untereinträge, die Kopien in der QAT
+// zeigen danach ins Leere, und das nächste Layout der Leiste (z.B. WM_SIZE
+// beim Beenden) stürzt in CMFCRibbonButton::GetImageSize ab
 // (AfxDynamicDownCast auf m_pOriginal, Crashdump EasyCT 3.4.0.1). Betroffen
-// sind alle dynamisch befuellten Knoepfe (Formular, Konto/Betrieb/
-// Bestandskonto-Filter, Plugins), sobald der Anwender sie -- oder einzelne
-// Untereintraege -- in die QAT aufgenommen hat.
+// sind alle dynamisch befüllten Knöpfe (Formular, Konto/Betrieb/
+// Bestandskonto-Filter, Plugins), sobald der Anwender sie in die QAT
+// aufgenommen hat.
 //
 // MFC bindet die Kopien nur in SetQuickAccessCommands neu, darum wird das
-// hier nachgeholt -- aber nur, wenn die QAT betroffen ist: eine Kopie des
-// umgebauten Knopfs, oder eine Kopie, deren Original nicht mehr das ist,
-// was FindByID liefert (z.B. ein einzeln aufgenommener Untereintrag).
+// hier nachgeholt -- aber nur, wenn die QAT betroffen ist:
+// - eine Kopie des umgebauten Knopfs, oder
+// - eine Kopie, deren Original nicht mehr das ist, was FindByID liefert.
+//   Das betrifft ID_FORMULAR_INFO/ID_FORMULAR_NEU: Sie stehen im
+//   Anpassen-Menü der QAT (Add_QAT), existieren im Ribbon aber nur als
+//   Untereinträge des Formular-Knopfs. Ihre QAT-Kopien zeigen also direkt
+//   auf einen Eintrag, den UpdateFormularMenu() bei jedem Umbau löscht.
 // m_pOriginal wird dabei NUR verglichen, nie dereferenziert.
 // Befehle, deren Element es nach dem Umbau nicht mehr gibt, fallen dabei
 // aus der QAT heraus (wie beim Laden des QAT-Zustands auch).
@@ -942,7 +946,7 @@ void CMainFrame::QATNachMenueUmbauNeuBinden(CMFCRibbonBaseElement* pUmgebaut)
 		CMFCRibbonBaseElement* pKopie = pQAT->GetButton(i);
 		UINT nID = pKopie ? pKopie->GetID() : 0;
 		if (nID == 0 || nID == (UINT)-1) continue;	// Trenner, Anpassen-Knopf
-		CMFCRibbonBaseElement* pOriginal = pKopie->GetOriginal();	// kann schon geloescht sein!
+		CMFCRibbonBaseElement* pOriginal = pKopie->GetOriginal();	// kann schon gelöscht sein!
 		if ((pUmgebaut && pOriginal == pUmgebaut) || pOriginal != m_wndRibbonBar.FindByID(nID, FALSE, TRUE))
 			bNeuBinden = TRUE;
 	}
