@@ -101,6 +101,7 @@ public:
 	// Buchungsvorlagen (Buchungsposten) neu auf -- Nummer vorangestellt.
 	void UpdateBuchungsvorlagenMenu();
 #endif
+	void QATNachMenueUmbauNeuBinden(CMFCRibbonBaseElement* pUmgebaut);	// nach RemoveAllSubItems()-Umbau aufrufen, siehe mainfrm.cpp
 	void DockControlBarLeftOf(CToolBar* Bar, CToolBar* LeftOf);
 	void LoadBitmap(CBitmap **ppcbm, char* filename);
 	void AttachToolbarImages (UINT inNormalImageID, UINT inDisabledImageID, UINT inHotImageID);
