@@ -658,6 +658,8 @@ void CEasyCashView::UpdateFormularMenu()
 		if (pBtnAnsichtFormulare) pBtnAnsichtFormulare->AddSubItem(new CMFCRibbonButton(ID_FORMULAR_MENUUPDATE, "<Formular-Menü aktualisieren>"));
 	}
 
+	((CMainFrame*)AfxGetMainWnd())->QATNachMenueUmbauNeuBinden(pBtnAnsichtFormulare);
+
 	ASSERT(m_csaFormulare.GetSize() == m_csaFormularnamen.GetSize());
 	ASSERT(m_csaFormulare.GetSize() == m_csaFormularfilter.GetSize());
 	TRACE3("m_csaFormulare: %d  m_csaFormularnamen: %d  m_csaFormularfilter: %d\r\n", m_csaFormulare.GetSize(), m_csaFormularnamen.GetSize(), m_csaFormularfilter.GetSize());
@@ -697,6 +699,7 @@ void CEasyCashView::UpdateBetriebeMenu()
 			apBtn->SetToolTipText(m_csaBetriebeUnternehmensarten[i]);
 			m_pBtnFilterBetrieb->AddSubItem(apBtn.release());
 		}
+		((CMainFrame*)AfxGetMainWnd())->QATNachMenueUmbauNeuBinden(m_pBtnFilterBetrieb);
 	}
 }
 
@@ -722,6 +725,7 @@ void CEasyCashView::UpdateBestandskontenMenu()
 			apBtn->SetToolTipText("Vorjahressaldo: " + m_csaBestandskontenSalden[i]);
 			m_pBtnFilterBestandskonto->AddSubItem(apBtn.release());
 		}
+		((CMainFrame*)AfxGetMainWnd())->QATNachMenueUmbauNeuBinden(m_pBtnFilterBestandskonto);
 	}
 }
 
@@ -998,6 +1002,7 @@ void CEasyCashView::OnUpdate(CView* pSender, LPARAM lHint, CObject* pHint)
 
 		for (i = 0; i < m_KontenMitBuchungen.GetSize(); i++)
 			pBtnFilterKonto->AddSubItem(new CMFCRibbonButton(ID_VIEW_JOURNAL_FUER_KONTO_BASE + i, (LPCTSTR)m_KontenMitBuchungen[i]));
+		((CMainFrame*)AfxGetMainWnd())->QATNachMenueUmbauNeuBinden(pBtnFilterKonto);
 	}
 	
 #define SPACES_ZU_ITEMS_HINZUFUEGEN 20

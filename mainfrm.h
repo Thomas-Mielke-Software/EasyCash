@@ -95,6 +95,7 @@ public:
 public:
 	void ShowPlugins(char *szName);
 	void ShowPluginsRibbonMenu(CMFCRibbonButton *pAnsichtPluginsButton, char *szName = NULL, int nIndex = 0);
+	void QATNachMenueUmbauNeuBinden(CMFCRibbonBaseElement* pUmgebaut);	// nach RemoveAllSubItems()-Umbau aufrufen, siehe mainfrm.cpp
 	void DockControlBarLeftOf(CToolBar* Bar, CToolBar* LeftOf);
 	void LoadBitmap(CBitmap **ppcbm, char* filename);
 	void AttachToolbarImages (UINT inNormalImageID, UINT inDisabledImageID, UINT inHotImageID);

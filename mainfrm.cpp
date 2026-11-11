@@ -907,6 +907,53 @@ void CMainFrame::ShowPlugins(char *szName)
 */}
 
 
+// ----------------------------------------------------------
+// Schnellzugriffsleiste (QAT) nach einem Menue-Umbau neu an die Ribbon-
+// Elemente binden.
+//
+// Die QAT haelt KOPIEN der Ribbon-Knoepfe, die ueber m_pOriginal auf das
+// Original zeigen -- bei Split-Knoepfen zeigt zudem jede Kopie eines
+// Untereintrags auf den Original-Untereintrag (CMFCRibbonButton::SetOriginal).
+// RemoveAllSubItems() loescht diese Untereintraege, die Kopien in der QAT
+// zeigen danach ins Leere, und das naechste Layout der Leiste (z.B. WM_SIZE
+// beim Beenden) stuerzt in CMFCRibbonButton::GetImageSize ab
+// (AfxDynamicDownCast auf m_pOriginal, Crashdump EasyCT 3.4.0.1). Betroffen
+// sind alle dynamisch befuellten Knoepfe (Formular, Konto/Betrieb/
+// Bestandskonto-Filter, Plugins), sobald der Anwender sie -- oder einzelne
+// Untereintraege -- in die QAT aufgenommen hat.
+//
+// MFC bindet die Kopien nur in SetQuickAccessCommands neu, darum wird das
+// hier nachgeholt -- aber nur, wenn die QAT betroffen ist: eine Kopie des
+// umgebauten Knopfs, oder eine Kopie, deren Original nicht mehr das ist,
+// was FindByID liefert (z.B. ein einzeln aufgenommener Untereintrag).
+// m_pOriginal wird dabei NUR verglichen, nie dereferenziert.
+// Befehle, deren Element es nach dem Umbau nicht mehr gibt, fallen dabei
+// aus der QAT heraus (wie beim Laden des QAT-Zustands auch).
+// ----------------------------------------------------------
+void CMainFrame::QATNachMenueUmbauNeuBinden(CMFCRibbonBaseElement* pUmgebaut)
+{
+	if (!m_wndRibbonBar.GetSafeHwnd()) return;
+	CMFCRibbonQuickAccessToolBar* pQAT = m_wndRibbonBar.GetQuickAccessToolbar();
+	if (!pQAT) return;
+
+	BOOL bNeuBinden = FALSE;
+	for (int i = 0; i < pQAT->GetCount() && !bNeuBinden; i++)
+	{
+		CMFCRibbonBaseElement* pKopie = pQAT->GetButton(i);
+		UINT nID = pKopie ? pKopie->GetID() : 0;
+		if (nID == 0 || nID == (UINT)-1) continue;	// Trenner, Anpassen-Knopf
+		CMFCRibbonBaseElement* pOriginal = pKopie->GetOriginal();	// kann schon geloescht sein!
+		if ((pUmgebaut && pOriginal == pUmgebaut) || pOriginal != m_wndRibbonBar.FindByID(nID, FALSE, TRUE))
+			bNeuBinden = TRUE;
+	}
+	if (!bNeuBinden) return;
+
+	TRACE("QATNachMenueUmbauNeuBinden: Schnellzugriffsleiste wird neu gebunden\n");
+	CList<UINT,UINT> lstBefehle;
+	m_wndRibbonBar.GetQuickAccessCommands(lstBefehle);
+	m_wndRibbonBar.SetQuickAccessCommands(lstBefehle);
+}
+
 void CMainFrame::ShowPluginsRibbonMenu(CMFCRibbonButton *pAnsichtPluginsButton, char *szName, int nIndex)
 {
 	if (!pAnsichtPluginsButton) return;
@@ -930,6 +977,7 @@ void CMainFrame::ShowPluginsRibbonMenu(CMFCRibbonButton *pAnsichtPluginsButton, 
 
 			RegCloseKey(hKey);
 		}
+		QATNachMenueUmbauNeuBinden(pAnsichtPluginsButton);
 	}
 	else
 	{	// sonst das spezifizierte plugin anzeigen
