@@ -1,4 +1,4 @@
-// NavigationViewModel.cs - Hauptlogik des Navigationsfensters.
+﻿// NavigationViewModel.cs - Hauptlogik des Navigationsfensters.
 //
 // Refaktoriert die OnViewUpdate-Logik aus easycashview.cpp (Zeilen
 // 1051-1267), die eigentlich nicht in den View, sondern in CNavigation
@@ -27,7 +27,7 @@ namespace ECTViews.Journal
     public class NavigationViewModel : ViewModelBase
     {
         private static readonly string[] cpMonat = {
-            "Januar", "Februar", "M�rz", "April", "Mai", "Juni",
+            "Januar", "Februar", "März", "April", "Mai", "Juni",
             "Juli", "August", "September", "Oktober", "November", "Dezember"
         };
 
@@ -95,6 +95,13 @@ namespace ECTViews.Journal
             Gruppen.Add(ausgaben);
         }
 
+        // Alphabetisch, aber neutrale '/'-Konten (nur Formularfelder, nicht
+        // gewinnwirksam) ans Ende -- '/' sortiert sonst vor alle Buchstaben
+        // und die Hilfskonten stuenden ganz oben.
+        private static IEnumerable<string> NavigationsReihenfolge(IEnumerable<string> konten)
+            => konten.OrderBy(k => k.StartsWith("/") ? 1 : 0)
+                     .ThenBy(k => k, StringComparer.CurrentCulture);
+
         // Modus 1/3: Konten/Anlagen -> "Einnahmen" und "Ausgaben" mit
         // je den Konten als Items
         private void BaueGruppenNachKonten(bool nurAusgabenAfA)
@@ -126,7 +133,7 @@ namespace ECTViews.Journal
             if (einnahmenKonten.Count > 0 || unzugewieseneEinnahmen)
             {
                 var grpE = new NavigationGruppe { Header = "Einnahmen" };
-                foreach (var k in einnahmenKonten.OrderBy(k => k))
+                foreach (var k in NavigationsReihenfolge(einnahmenKonten))
                     grpE.Items.Add(new NavigationItem
                     {
                         Text = k,
@@ -144,7 +151,7 @@ namespace ECTViews.Journal
             if (ausgabenKonten.Count > 0 || unzugewieseneAusgaben)
             {
                 var grpA = new NavigationGruppe { Header = "Ausgaben" };
-                foreach (var k in ausgabenKonten.OrderBy(k => k))
+                foreach (var k in NavigationsReihenfolge(ausgabenKonten))
                     grpA.Items.Add(new NavigationItem
                     {
                         Text = k,
@@ -203,6 +210,7 @@ namespace ECTViews.Journal
                 string bk = rest.Substring(0, letzteDoppel);
                 if (!int.TryParse(rest.Substring(letzteDoppel + 1), out int monat))
                     return;
+                WechsleMonatsFilterFallsNoetig(monat);
                 _journal.ScrolleZuBestandskontoMonat(bk, monat);
                 return;
             }
@@ -217,12 +225,43 @@ namespace ECTViews.Journal
                 && int.TryParse(nutzlast, out int monatDt)
                 && monatDt >= 1 && monatDt <= 12)
             {
+                WechsleMonatsFilterFallsNoetig(monatDt);
                 _journal.ScrolleZuMonat(monatDt, istEinnahme);
                 return;
             }
 
             // Sonst: Nutzlast ist Kontoname (kann leer sein = "unzugewiesen")
             _journal.ScrolleZuKonto(nutzlast, istEinnahme);
+        }
+
+        // Ist ein Monats- oder Quartalsfilter aktiv und liegt der angeklickte
+        // Monat ausserhalb, wird der Filter auf diesen Monat (bzw. bei einem
+        // Quartalsfilter auf dessen Quartal) umgestellt -- sonst fuehrte der
+        // Klick nur zur "zeitlich naechsten" Buchung des gefilterten Zeitraums
+        // und schien wirkungslos. Ohne aktiven Filter bleibt es beim reinen
+        // Scrollen wie im Original (CNavigation::OnNMClick).
+        // Der Wechsel laeuft synchron ueber die native View, die das Journal
+        // dabei neu aufbaut -- das anschliessende Scrollen trifft also schon
+        // die neuen Zeilen.
+        private void WechsleMonatsFilterFallsNoetig(int monat)
+        {
+            int neu = NeuerMonatsFilter(_journal.AktuellerFilter.MonatsFilter, monat);
+            if (neu != 0)
+                _journal.MeldeMonatsFilterWechsel(neu);
+        }
+
+        /// <summary>
+        /// Liefert den Monats-Filter, auf den ein Klick auf <paramref name="monat"/>
+        /// umstellen soll, oder 0, wenn der Filter bleiben kann (kein Filter
+        /// aktiv bzw. der Monat liegt schon im gefilterten Zeitraum).
+        /// </summary>
+        internal static int NeuerMonatsFilter(int aktuellerFilter, int monat)
+        {
+            if (aktuellerFilter <= 0 || monat < 1 || monat > 12) return 0;
+            if (aktuellerFilter <= 12)
+                return aktuellerFilter == monat ? 0 : monat;
+            int quartal = (monat - 1) / 3 + 1;
+            return aktuellerFilter - 12 == quartal ? 0 : quartal + 12;
         }
     }
 

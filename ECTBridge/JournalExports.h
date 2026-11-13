@@ -173,6 +173,24 @@ typedef void (*ECT_JournalZoomAenderungCallback)(int deltaProzent);
 ECTBRIDGE_API void ECT_JournalRegistriereZoomAenderung(
     ECT_JournalZoomAenderungCallback pfn);
 
+/// <summary>
+/// Callback-Typ fuer den Wunsch, den Monats-Filter umzustellen: Klick auf
+/// einen Monat in der WPF-Navigation, waehrend ein Monats-/Quartalsfilter
+/// aktiv ist. nMonatsFilter wie m_MonatsFilterDisplay (1-12 Monat,
+/// 13-16 Quartal).
+/// </summary>
+typedef void (*ECT_JournalMonatsFilterCallback)(int nMonatsFilter);
+
+/// <summary>
+/// Registriert den Callback fuer Monatsfilter-Wechsel aus der Navigation.
+/// Der Aufrufer (easycashview.cpp) setzt m_MonatsFilterDisplay, baut alle
+/// Ansichten neu auf (UpdateAllViews -> ECT_JournalAktualisiere) und meldet
+/// den Wechsel in der Statuszeile. NULL deregistriert; ohne Registrierung
+/// scrollt die Navigation wie bisher nur.
+/// </summary>
+ECTBRIDGE_API void ECT_JournalRegistriereMonatsFilterWechsel(
+    ECT_JournalMonatsFilterCallback pfn);
+
 // ----------------------------------------------------------
 // WYSIWYG-Druck des Journals (WPF, FixedDocument)
 // ----------------------------------------------------------

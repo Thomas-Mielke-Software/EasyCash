@@ -348,7 +348,15 @@ robuster in hosted-WPF-Szenarien.
   Modi: 0px breit über `MinWidth=MaxWidth=0`-Binding an
   `JournalViewModel.SaldoSpaltenBreite`)
 - Navigation rechts (passt zum CExtSplitter-Layout: Pane 0 = View,
-  Pane 1 = Navigation)
+  Pane 1 = Navigation). Klick auf einen Monat scrollt nur (wie nativ);
+  liegt er aber AUSSERHALB eines aktiven Monats-/Quartalsfilters, wird der
+  Filter umgestellt (`MonatsFilterAendern` ->
+  `ECT_JournalRegistriereMonatsFilterWechsel` ->
+  `CEasyCashView::JournalWpfMonatsFilterWechsel`, Hinweis in der Statuszeile)
+- **Betragsspalten nach Inhalt** (Netto/USt-Betrag/Brutto/Saldo, im
+  Anlagenverzeichnis alle Geldspalten): `BerechneBetragsSpalten()` misst den
+  längsten angezeigten Betrag (Consolas, darum genügt die Zeichenanzahl) und
+  die Spaltenköpfe; der Druck übernimmt die Breiten normiert
 - **Schriftgrößen/Zoom (Stand 2026-07-13)**: alle "festen" Spaltenbreiten
   (Icon/Datum/Brutto/AfA + Saldo/Steuer), Icon-Größen und die
   Abschnittstitel-Schriften kommen als skalierende VM-Properties

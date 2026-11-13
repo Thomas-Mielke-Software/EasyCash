@@ -67,7 +67,7 @@ namespace ECTViews.EinstellungenUi.Pages
 
         private void OnIrgendwoGescrollt(object sender, ScrollChangedEventArgs e)
         {
-            if (_bandFeld != null && !_aktiv) ZeichneBaender();
+            if ((_bandFeld != null || _bandKonto != null) && !_aktiv) ZeichneBaender();
         }
 
         private KontenPageViewModel VM => DataContext as KontenPageViewModel;
@@ -218,7 +218,13 @@ namespace ECTViews.EinstellungenUi.Pages
             if (_aktiv) { BeendeDrag(e.GetPosition(this)); return; }
             // Kein Drag -> reiner Klick auf ein Konto: jetzt selektieren
             // (die Auto-Selektion war in OnKontoDown unterdrueckt).
-            if (_klickKandidat != null && VM != null) VM.SelektiertesKonto = _klickKandidat;
+            if (_klickKandidat != null && VM != null)
+            {
+                if (ReferenceEquals(VM.SelektiertesKonto, _klickKandidat))
+                    ZeigeKonto(_klickKandidat);   // erneuter Klick: Baender wieder vom Konto aus
+                else
+                    VM.SelektiertesKonto = _klickKandidat;   // -> OnKontoSelektiert
+            }
             ResetKandidat();
         }
 
@@ -226,7 +232,7 @@ namespace ECTViews.EinstellungenUi.Pages
         private void StarteDrag(IInputElement quelleZumCapturen)
         {
             _aktiv = true;
-            _bandFeld = null; ZeichneBaender();   // Bands waehrend des Drags ausblenden
+            _bandFeld = null; _bandKonto = null; ZeichneBaender();   // Bands waehrend des Drags ausblenden
             Mouse.Capture(quelleZumCapturen);
 
             // Ghost erzeugen (Schnappschuss der Quelle), schwebt im Overlay.
@@ -705,7 +711,15 @@ namespace ECTViews.EinstellungenUi.Pages
             if (_aktiv) return;   // waehrend Drag&Drop NICHT auto-zentrieren (sonst hakelig)
             var kontoVm = KontenListe.SelectedItem as EUKontoVM;
             if (kontoVm == null) return;
-            _bandFeld = null; ZeichneBaender();   // Fokus wechselt zum Konto -> Bands weg
+            ZeigeKonto(kontoVm);
+        }
+
+        /// <summary>Konto in den Mittelpunkt: Konto + seine Felder zentrieren
+        /// und die Rubber-Bands vom Konto zu allen zugeordneten Feldern zeigen.</summary>
+        private void ZeigeKonto(EUKontoVM kontoVm)
+        {
+            _bandFeld = null;
+            _bandKonto = kontoVm;   // vor dem Abwaehlen der Felder setzen (s. OnFeldSelektiert)
             ZentriereInListe(KontenListe, kontoVm);
 
             // Ziel-Feld je Formular DIREKT aus dem Konto-Modell bestimmen
@@ -729,6 +743,12 @@ namespace ECTViews.EinstellungenUi.Pages
                     if (it is FormularfeldVM f && !f.IstKeine && f.Id == zielId) { ziel = f; break; }
                 if (ziel != null) ZentriereInListe(lb, ziel);
             }
+
+            // Baender NACH dem Zentrieren zeichnen (gleiche Prioritaet, spaeter
+            // eingereiht -> laeuft nach den Scroll-Aufrufen und deren Layout;
+            // weitere Scroll-Bewegungen zieht OnIrgendwoGescrollt nach).
+            Dispatcher.BeginInvoke(new Action(ZeichneBaender),
+                System.Windows.Threading.DispatcherPriority.Background);
         }
 
         private void ZentriereInListe(ListBox lb, object item)
@@ -753,11 +773,16 @@ namespace ECTViews.EinstellungenUi.Pages
         // =================================================================
         // Rubber-Bands: vom zuletzt fokussierten Formularfeld geschwungene
         // Verbindungslinien zu ALLEN damit verknuepften Konten (ein Feld kann
-        // mit mehreren Konten verbunden sein).
+        // mit mehreren Konten verbunden sein) -- bzw. vom zuletzt geklickten
+        // Konto zu seinen Feldern in allen Formularen (_bandKonto).
+        // Start/Ende liegen auf den Verknuepfungs-Anschluessen (Punkte am
+        // Konto je Formular, Punkt/Plakette vor dem Feld), solange diese im
+        // sichtbaren Bereich sind; sonst am Rand des Ausschnitts geklemmt.
         // =================================================================
         private FormularfeldVM _bandFeld;
         private ListBox        _bandListe;
         private string         _bandKatName;
+        private EUKontoVM      _bandKonto;
 
         private void OnFeldSelektiert(object sender, SelectionChangedEventArgs e)
         {
@@ -768,10 +793,15 @@ namespace ECTViews.EinstellungenUi.Pages
             var kat  = lb?.DataContext as FormularKategorieVM;
             if (lb == null || feld == null || kat == null || feld.IstKeine)
             {
+                // Abwaehlen (feld == null) passiert auch programmatisch beim
+                // Konto-Klick -- die Konto-Baender bleiben dann stehen. Ein
+                // Klick auf "<keine Feldzuweisung>" raeumt alles ab.
                 _bandFeld = null;
+                if (feld != null) _bandKonto = null;
                 ZeichneBaender();
                 return;
             }
+            _bandKonto   = null;
             _bandFeld    = feld;
             _bandListe   = lb;
             _bandKatName = kat.Name;
@@ -842,6 +872,7 @@ namespace ECTViews.EinstellungenUi.Pages
             var lb = FindeNachkommen<ListBox>(FormulareListe)
                 .FirstOrDefault(l => ReferenceEquals(l.DataContext, kat));
             if (lb == null) return;
+            _bandKonto   = null;
             _bandFeld    = feld;
             _bandListe   = lb;
             _bandKatName = kat.Name;
@@ -856,32 +887,116 @@ namespace ECTViews.EinstellungenUi.Pages
             if (BandLayer == null) return;
             BandLayer.Children.Clear();
             var vm = VM;
-            if (_bandFeld == null || _bandListe == null || vm == null || _aktiv) return;
+            if (vm == null || _aktiv) return;
 
-            // Endpunkt am Feld (linke Kante, vertikal zentriert -- Konten liegen links).
-            if (!TryRechtImThis(_bandListe, _bandFeld, out Rect feldRect)) return;
-            Rect feldVp = ViewportRect(_bandListe);
-            double feldX = feldRect.Left;
-            double feldY = Clamp(feldRect.Top + feldRect.Height / 2.0, feldVp.Top, feldVp.Bottom);
-
-            Rect kontoVp = ViewportRect(KontenListe);
-
-            foreach (var kvm in vm.Konten)
+            if (_bandFeld != null && _bandListe != null)
             {
-                if (kvm.Modell.IstEinnahme != _bandFeld.IstEinnahme) continue;
-                if (!kvm.Modell.Feldzuweisungen.TryGetValue(_bandKatName, out var id)
-                    || id != _bandFeld.Id) continue;
-
-                if (!TryRechtImThis(KontenListe, kvm, out Rect kRect)) continue;
-                double kX = kRect.Right;
-                double kY = Clamp(kRect.Top + kRect.Height / 2.0, kontoVp.Top, kontoVp.Bottom);
-
-                BandLayer.Children.Add(ErzeugeBand(new Point(kX, kY), new Point(feldX, feldY)));
-                BandLayer.Children.Add(ErzeugePunkt(new Point(kX, kY)));
+                // Feld -> alle damit verknuepften Konten.
+                if (!TryFeldAnschluss(_bandListe, _bandFeld, out Point feldP, out bool feldSichtbar))
+                    return;
+                int baender = 0;
+                foreach (var kvm in vm.Konten)
+                {
+                    if (kvm.Modell.IstEinnahme != _bandFeld.IstEinnahme) continue;
+                    if (!kvm.Modell.Feldzuweisungen.TryGetValue(_bandKatName, out var id)
+                        || id != _bandFeld.Id) continue;
+                    if (!TryKontoAnschluss(kvm, _bandKatName, out Point kP, out bool kSichtbar))
+                        continue;
+                    ZeichneBand(kP, kSichtbar, feldP, true);   // Feldpunkt einmal unten
+                    baender++;
+                }
+                if (baender > 0 && !feldSichtbar)
+                    BandLayer.Children.Add(ErzeugePunkt(feldP));
+                return;
             }
-            // Feld-Endpunkt einmal markieren (falls mind. eine Verbindung gezeichnet).
-            if (BandLayer.Children.Count > 0)
-                BandLayer.Children.Add(ErzeugePunkt(new Point(feldX, feldY)));
+
+            if (_bandKonto != null)
+            {
+                // Konto -> sein Feld in jedem Formular.
+                foreach (var lb in FindeNachkommen<ListBox>(FormulareListe))
+                {
+                    if (!(lb.DataContext is FormularKategorieVM kat)) continue;
+                    if (!_bandKonto.Modell.Feldzuweisungen.TryGetValue(kat.Name, out var id)
+                        || string.IsNullOrEmpty(id)) continue;
+                    FormularfeldVM ziel = null;
+                    foreach (var it in lb.Items)
+                        if (it is FormularfeldVM f && !f.IstKeine && f.Id == id
+                            && f.IstEinnahme == _bandKonto.Modell.IstEinnahme) { ziel = f; break; }
+                    if (ziel == null) continue;   // Feld fehlt in der gewaehlten Variante
+                    if (!TryKontoAnschluss(_bandKonto, kat.Name, out Point kP, out bool kSichtbar))
+                        continue;
+                    if (!TryFeldAnschluss(lb, ziel, out Point feldP, out bool feldSichtbar))
+                        continue;
+                    ZeichneBand(kP, kSichtbar, feldP, feldSichtbar);
+                }
+            }
+        }
+
+        // Band + Endpunkt-Markierungen. Liegt ein Ende auf einem sichtbaren
+        // Anschluss, markiert dieser selbst das Ende (ein Punkt darueber
+        // verdeckte z.B. die Zahl der Plakette); am Ausschnittsrand geklemmte
+        // Enden bekommen den bisherigen Punkt.
+        private void ZeichneBand(Point von, bool vonSichtbar, Point bis, bool bisSichtbar)
+        {
+            BandLayer.Children.Add(ErzeugeBand(von, bis));
+            if (!vonSichtbar) BandLayer.Children.Add(ErzeugePunkt(von));
+            if (!bisSichtbar) BandLayer.Children.Add(ErzeugePunkt(bis));
+        }
+
+        /// <summary>Startpunkt am Konto: Mitte seines Anschlusses fuer das
+        /// Formular, wenn sichtbar; sonst rechte Kante des Eintrags, auf den
+        /// Ausschnitt geklemmt.</summary>
+        private bool TryKontoAnschluss(EUKontoVM konto, string formularName, out Point p, out bool sichtbar)
+        {
+            p = default(Point); sichtbar = false;
+            if (!TryRechtImThis(KontenListe, konto, out Rect kRect)) return false;
+            Rect vp = ViewportRect(KontenListe);
+            var c = KontenListe.ItemContainerGenerator.ContainerFromItem(konto) as ListBoxItem;
+            var anschluss = c == null ? null : FindeNachkommen<FrameworkElement>(c).FirstOrDefault(
+                fe => "Anschluss".Equals(fe.Tag)
+                      && fe.DataContext is KontoAnschlussVM a && a.FormularName == formularName);
+            if (anschluss != null && anschluss.ActualWidth > 0
+                && TryMitteImThis(anschluss, 0.5, out Point m) && vp.Contains(m))
+            {
+                p = m; sichtbar = true; return true;
+            }
+            p = new Point(kRect.Right, Clamp(kRect.Top + kRect.Height / 2.0, vp.Top, vp.Bottom));
+            return true;
+        }
+
+        /// <summary>Endpunkt am Feld: linke Kante seines Anschlusses (Punkt
+        /// bzw. Plakette), wenn sichtbar; sonst linke Kante des Eintrags,
+        /// auf den Ausschnitt geklemmt.</summary>
+        private bool TryFeldAnschluss(ListBox lb, FormularfeldVM feld, out Point p, out bool sichtbar)
+        {
+            p = default(Point); sichtbar = false;
+            if (!TryRechtImThis(lb, feld, out Rect fRect)) return false;
+            Rect vp = ViewportRect(lb);
+            var c = lb.ItemContainerGenerator.ContainerFromItem(feld) as ListBoxItem;
+            var anschluss = c == null ? null : FindeNachkommen<FrameworkElement>(c)
+                .FirstOrDefault(fe => "Anschluss".Equals(fe.Tag));
+            if (anschluss != null && anschluss.ActualWidth > 0
+                && TryMitteImThis(anschluss, 0.0, out Point m) && vp.Contains(m))
+            {
+                p = m; sichtbar = true; return true;
+            }
+            p = new Point(fRect.Left, Clamp(fRect.Top + fRect.Height / 2.0, vp.Top, vp.Bottom));
+            return true;
+        }
+
+        /// <summary>Punkt auf halber Hoehe des Elements, waagerecht bei
+        /// <paramref name="xAnteil"/> (0 = linke Kante, 0.5 = Mitte), in
+        /// Page-Koordinaten.</summary>
+        private bool TryMitteImThis(FrameworkElement el, double xAnteil, out Point p)
+        {
+            p = default(Point);
+            try
+            {
+                p = el.TransformToAncestor(this).Transform(
+                    new Point(el.ActualWidth * xAnteil, el.ActualHeight / 2.0));
+                return true;
+            }
+            catch { return false; }
         }
 
         private static readonly Color BandFarbe = Color.FromRgb(0x2E, 0x7D, 0x32);

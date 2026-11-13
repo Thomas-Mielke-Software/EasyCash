@@ -45,6 +45,18 @@ void ECT_JournalRegistriereZoomAenderung(ECT_JournalZoomAenderungCallback pfn)
 }
 
 // ----------------------------------------------------------
+// Monatsfilter-Wechsel-Callback (Klick auf einen Monat in der
+// WPF-Navigation bei aktivem Monats-/Quartalsfilter). Analog zum
+// Zoom-Callback; im OCX-Kontext bleibt er NULL.
+// ----------------------------------------------------------
+static ECT_JournalMonatsFilterCallback g_pfnMonatsFilterWechsel = NULL;
+
+void ECT_JournalRegistriereMonatsFilterWechsel(ECT_JournalMonatsFilterCallback pfn)
+{
+    g_pfnMonatsFilterWechsel = pfn;
+}
+
+// ----------------------------------------------------------
 // Druck-Anforderungs-Callback (Strg+P im WPF-Journal). Analog zum
 // Zoom-Callback: easycashview.cpp registriert seinen OnFilePrint2-
 // Umleiter; im OCX-Kontext bleibt er NULL.
@@ -227,6 +239,14 @@ public:
             g_pfnZoomAenderung(deltaProzent);
     }
 
+    // Reicht den Monatsfilter-Wunsch der Navigation an die native View
+    // weiter (m_MonatsFilterDisplay + UpdateAllViews + Statuszeile).
+    void OnMonatsFilterWechsel(int nMonatsFilter)
+    {
+        if (g_pfnMonatsFilterWechsel)
+            g_pfnMonatsFilterWechsel(nMonatsFilter);
+    }
+
     // Reicht den Druckwunsch (Strg+P im Journal) an den nativen
     // Druckbefehl weiter (OnFilePrint2 -> Wine-Guard -> ECT_JournalDrucken).
     void OnDruckAnforderung()
@@ -291,6 +311,8 @@ HWND ECT_JournalEinbetten(
                 handler, &JournalEventHandler::OnAfaAbgang);
             vm->ZoomAendern += gcnew System::Action<int>(
                 handler, &JournalEventHandler::OnZoomAenderung);
+            vm->MonatsFilterAendern += gcnew System::Action<int>(
+                handler, &JournalEventHandler::OnMonatsFilterWechsel);
             vm->DruckAnfordern += gcnew System::Action(
                 handler, &JournalEventHandler::OnDruckAnforderung);
         }

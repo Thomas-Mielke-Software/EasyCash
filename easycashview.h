@@ -197,6 +197,11 @@ private:
 	// registriert wird (ECT_JournalRegistriereZoomAenderung).
 	static void JournalWpfZoomAenderung(int deltaProzent);
 
+	// Callback fuer Monatsfilter-Wechsel aus der WPF-Navigation (Klick auf
+	// einen Monat bei aktivem Monats-/Quartalsfilter). Statisch wie der
+	// Zoom-Callback (ECT_JournalRegistriereMonatsFilterWechsel).
+	static void JournalWpfMonatsFilterWechsel(int nMonatsFilter);
+
 	// Callback fuer den Druckwunsch aus dem WPF-Journal (Strg+P).
 	// Leitet auf OnFilePrint2 der aktiven View um, damit alle
 	// Druckpfade an einer Stelle starten (Wine-Guard etc.).

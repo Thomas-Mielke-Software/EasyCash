@@ -9245,6 +9245,45 @@ void CEasyCashView::JournalWpfDruckAnforderung()
 	if (!pView) return;
 	pView->OnFilePrint2();
 }
+
+// Monatsfilter-Wechsel aus der WPF-Navigation: Klick auf einen Monat, der
+// außerhalb des aktiven Monats-/Quartalsfilters liegt (früher scrollte das
+// nur zur zeitlich nächsten Buchung des gefilterten Zeitraums und wirkte
+// darum wirkungslos). Statischer Callback (registriert in ZeigeJournalWpf),
+// aktive View wie beim Zoom-Callback. Ohne aktiven Filter kommt hier nichts
+// an -- dann scrollt die Navigation wie im Original nur.
+void CEasyCashView::JournalWpfMonatsFilterWechsel(int nMonatsFilter)
+{
+	if (nMonatsFilter < 1 || nMonatsFilter > 16) return;
+	CMDIFrameWnd* pFrame = DYNAMIC_DOWNCAST(CMDIFrameWnd, AfxGetMainWnd());
+	if (!pFrame) return;
+	CMDIChildWnd* pChild = pFrame->MDIGetActive();
+	if (!pChild) return;
+	CEasyCashView* pView = DYNAMIC_DOWNCAST(CEasyCashView, pChild->GetActiveView());
+	if (!pView)
+	{
+		CDocument* pDoc = pChild->GetActiveDocument();
+		POSITION pos = pDoc ? pDoc->GetFirstViewPosition() : NULL;
+		while (pos && !pView)
+			pView = DYNAMIC_DOWNCAST(CEasyCashView, pDoc->GetNextView(pos));
+	}
+	if (!pView || pView->m_MonatsFilterDisplay == nMonatsFilter) return;
+
+	pView->m_MonatsFilterDisplay = nMonatsFilter;
+	pView->GetDocument()->UpdateAllViews(NULL);   // -> AktualisiereJournalFilter
+
+	static const char* const cpMonate[12] = {
+		"Januar", "Februar", "März", "April", "Mai", "Juni",
+		"Juli", "August", "September", "Oktober", "November", "Dezember" };
+	CString csZeitraum, csMsg;
+	if (nMonatsFilter > 12)
+		csZeitraum.Format("%d. Quartal %d", nMonatsFilter - 12, pView->GetDocument()->nJahr);
+	else
+		csZeitraum.Format("%s %d", cpMonate[nMonatsFilter - 1], pView->GetDocument()->nJahr);
+	csMsg.Format("Journal-Filter auf %s umgestellt (zurück zur Darstellung aller Monate mit Knopf 'Monat' im Filter-Bereich)",
+		(LPCSTR)csZeitraum);
+	((CMainFrame*)AfxGetMainWnd())->SetStatus(csMsg);
+}
 #endif
 
 // Filter auf nächstes Konto
@@ -9512,6 +9551,10 @@ void CEasyCashView::ZeigeJournalWpf(int nAnzeigeModus)
 	// Zoom-Tasten aus dem WPF-Journal (Strg-'+'/'-') zurueck in den
 	// nativen Zoom-Mechanismus routen.
 	ECT_JournalRegistriereZoomAenderung(&CEasyCashView::JournalWpfZoomAenderung);
+
+	// Klick auf einen Monat in der Navigation bei aktivem Monatsfilter
+	// stellt den Filter um (statt nur zu scrollen).
+	ECT_JournalRegistriereMonatsFilterWechsel(&CEasyCashView::JournalWpfMonatsFilterWechsel);
 
 	// Strg+P aus dem WPF-Journal auf den normalen Druckbefehl umleiten.
 	ECT_JournalRegistriereDruckAnforderung(&CEasyCashView::JournalWpfDruckAnforderung);

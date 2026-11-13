@@ -69,7 +69,80 @@ namespace ECTViews.EinstellungenUi.Pages
 
             foreach (var g in EUKonten.FormularGruppen)
                 Formulare.Add(new FormularKategorieVM(
-                    g, FeldGewaehlt, () => MarkiereZugewieseneFelder(_selektiertesKonto)));
+                    g, FeldGewaehlt, () =>
+                    {
+                        MarkiereZugewieseneFelder(_selektiertesKonto);
+                        AktualisiereVerknuepfungen();   // andere Variante -> andere Felder
+                    }));
+
+            AktualisiereVerknuepfungen();
+        }
+
+        // -----------------------------------------------------------------
+        // Verknuepfungs-Uebersicht (Anwender-Feedback: in der alten Version
+        // sah man auf einen Blick, welches Konto keinem Feld zugeordnet ist).
+        //  - je Konto ein "Anschluss" pro Formular-Spalte (gefuellt =
+        //    verknuepft, Ring = keine Zuordnung, bernsteinfarben = Feld fehlt
+        //    in der gewaehlten Formularversion),
+        //  - je Feld die Anzahl verknuepfter Konten (Punkt = eines, Plakette
+        //    mit Zahl = mehrere), am "<keine Feldzuweisung>"-Eintrag die
+        //    Zahl der in diesem Formular unverknuepften Konten,
+        //  - ueber der Konten-Liste die Zahl der Konten ganz ohne Zuordnung.
+        // Die Rubber-Bands (Code-Behind) setzen genau an diesen Anschluessen an.
+        // Neu berechnet nach jeder Aenderung an Konten/Zuordnungen/Variante.
+        // -----------------------------------------------------------------
+        private int _anzahlKontenOhneZuordnung;
+        public int AnzahlKontenOhneZuordnung
+        {
+            get => _anzahlKontenOhneZuordnung;
+            private set
+            {
+                if (SetProperty(ref _anzahlKontenOhneZuordnung, value))
+                    OnPropertyChanged(nameof(OhneZuordnungText));
+            }
+        }
+
+        public string OhneZuordnungText => AnzahlKontenOhneZuordnung == 1
+            ? "1 Konto ist keinem Formularfeld zugeordnet"
+            : $"{AnzahlKontenOhneZuordnung} Konten sind keinem Formularfeld zugeordnet";
+
+        public void AktualisiereVerknuepfungen()
+        {
+            int ohne = 0;
+            foreach (var k in Konten)
+            {
+                k.AktualisiereAnschluesse(Formulare);
+                if (k.IstOhneZuordnung) ohne++;
+            }
+            AnzahlKontenOhneZuordnung = ohne;
+
+            foreach (var kat in Formulare)
+            {
+                var zaehler = new Dictionary<string, int>();
+                int ohneInFormular = 0;
+                foreach (var k in Konten)
+                {
+                    if (k.Modell.Feldzuweisungen.TryGetValue(kat.Name, out var id)
+                        && !string.IsNullOrEmpty(id))
+                    {
+                        string schluessel = (k.Modell.IstEinnahme ? "E:" : "A:") + id;
+                        zaehler.TryGetValue(schluessel, out int n);
+                        zaehler[schluessel] = n + 1;
+                    }
+                    else
+                        ohneInFormular++;
+                }
+                foreach (var feld in kat.Felder)
+                {
+                    if (feld.IstKeine)
+                        feld.AnzahlKonten = ohneInFormular;
+                    else
+                    {
+                        zaehler.TryGetValue((feld.IstEinnahme ? "E:" : "A:") + feld.Id, out int n);
+                        feld.AnzahlKonten = n;
+                    }
+                }
+            }
         }
 
         /// <summary>
@@ -93,6 +166,7 @@ namespace ECTViews.EinstellungenUi.Pages
                 Konten.Add(new EUKontoVM(k, GruppeEinnahmen, PersistiereReihenfolge, IstNameVergeben));
             foreach (var k in EUKonten.AusgabenKonten)
                 Konten.Add(new EUKontoVM(k, GruppeAusgaben, PersistiereReihenfolge, IstNameVergeben));
+            AktualisiereVerknuepfungen();
 
             // Selektion (und damit die Feld-Hervorhebung) wiederherstellen.
             SelektiertesKonto = Konten.FirstOrDefault(
@@ -177,6 +251,7 @@ namespace ECTViews.EinstellungenUi.Pages
                 ? $"Verknüpfung von Konto \"{konto.Name}\" im Formular \"{formularName}\" gelöst."
                 : $"Konto \"{konto.Name}\" mit Feld \"{feld.Bezeichnung}\" verknüpft.");
 
+            AktualisiereVerknuepfungen();
             SelektiertesKonto = konto;
             MarkiereZugewieseneFelder(konto);
         }
@@ -265,6 +340,7 @@ namespace ECTViews.EinstellungenUi.Pages
                 Konten.Add(vm);                                              // ans Ende der Ausgaben
 
             PersistiereReihenfolge();   // vergibt die Slot-Indizes neu + schreibt
+            AktualisiereVerknuepfungen();
             SelektiertesKonto = vm;
             Statusleiste.Melde(einnahme
                 ? "Neues Einnahmenkonto angelegt -- bitte benennen."
@@ -286,6 +362,7 @@ namespace ECTViews.EinstellungenUi.Pages
             SelektiertesKonto = Konten.Count == 0
                 ? null
                 : Konten[System.Math.Min(idx, Konten.Count - 1)];
+            AktualisiereVerknuepfungen();
             Statusleiste.Melde($"Konto \"{name}\" gelöscht.");
         }
 
@@ -348,6 +425,71 @@ namespace ECTViews.EinstellungenUi.Pages
                 _onGeaendert?.Invoke();
                 Statusleiste.Melde($"Konto in \"{neu}\" umbenannt.");
             }
+        }
+
+        // --- Verknuepfungs-Anschluesse (einer je Formular-Spalte) -------------
+        private IReadOnlyList<KontoAnschlussVM> _anschluesse = new KontoAnschlussVM[0];
+        public IReadOnlyList<KontoAnschlussVM> Anschluesse
+        {
+            get => _anschluesse;
+            private set => SetProperty(ref _anschluesse, value);
+        }
+
+        private bool _istOhneZuordnung;
+        /// <summary>Konto ist in KEINEM Formular einem Feld zugeordnet.</summary>
+        public bool IstOhneZuordnung
+        {
+            get => _istOhneZuordnung;
+            private set => SetProperty(ref _istOhneZuordnung, value);
+        }
+
+        private string _zuordnungsText = "";
+        /// <summary>Tooltip: Zuordnung je Formular in Klartext.</summary>
+        public string ZuordnungsText
+        {
+            get => _zuordnungsText;
+            private set => SetProperty(ref _zuordnungsText, value);
+        }
+
+        public void AktualisiereAnschluesse(IEnumerable<FormularKategorieVM> formulare)
+        {
+            var liste = new List<KontoAnschlussVM>();
+            var text = new System.Text.StringBuilder();
+            bool irgendeine = false;
+            foreach (var kat in formulare)
+            {
+                string zeile;
+                AnschlussZustand zustand;
+                if (!Modell.Feldzuweisungen.TryGetValue(kat.Name, out var id) || string.IsNullOrEmpty(id))
+                {
+                    zustand = AnschlussZustand.Offen;
+                    zeile = $"{kat.Name}: keine Zuordnung";
+                }
+                else
+                {
+                    irgendeine = true;
+                    var feld = kat.Felder.FirstOrDefault(
+                        f => !f.IstKeine && f.Id == id && f.IstEinnahme == Modell.IstEinnahme);
+                    if (feld != null)
+                    {
+                        zustand = AnschlussZustand.Verknuepft;
+                        zeile = $"{kat.Name}: Kz {id} {feld.Bezeichnung}";
+                    }
+                    else
+                    {
+                        zustand = AnschlussZustand.FehltInVariante;
+                        zeile = $"{kat.Name}: Kz {id} (in der gewählten Formularversion nicht vorhanden)";
+                    }
+                }
+                liste.Add(new KontoAnschlussVM(kat.Name, zustand));
+                if (text.Length > 0) text.AppendLine();
+                text.Append(zeile);
+            }
+            Anschluesse = liste;
+            IstOhneZuordnung = !irgendeine && liste.Count > 0;
+            ZuordnungsText = IstOhneZuordnung
+                ? "Keinem Formularfeld zugeordnet -- der Betrag dieses Kontos erscheint in keinem Formular.\n" + text
+                : text.ToString();
         }
 
         /// <summary>Unterkategorie des Kontos -- strukturiert/rueckt die Konten
@@ -451,6 +593,60 @@ namespace ECTViews.EinstellungenUi.Pages
         {
             get => _istAusgegraut;
             set => SetProperty(ref _istAusgegraut, value);
+        }
+
+        // --- Anschluss (linker Rand) ------------------------------------------
+        // Echte Felder: Anzahl der damit verknuepften Konten. Der
+        // "<keine Feldzuweisung>"-Eintrag: Anzahl der in diesem Formular
+        // unverknuepften Konten.
+        private int _anzahlKonten;
+        public int AnzahlKonten
+        {
+            get => _anzahlKonten;
+            set
+            {
+                if (!SetProperty(ref _anzahlKonten, value)) return;
+                OnPropertyChanged(nameof(AnschlussArt));
+                OnPropertyChanged(nameof(AnschlussText));
+                OnPropertyChanged(nameof(AnschlussTooltip));
+            }
+        }
+
+        /// <summary>Darstellung des Anschlusses (XAML-DataTrigger):
+        /// "Offen" (Ring), "Einfach" (Punkt), "Mehrfach" (Plakette mit Zahl),
+        /// "Unverknuepft" (bernsteinfarbene Plakette am &lt;keine&gt;-Eintrag),
+        /// "Leer" (nichts).</summary>
+        public string AnschlussArt =>
+            IstKeine ? (AnzahlKonten > 0 ? "Unverknuepft" : "Leer")
+            : AnzahlKonten == 0 ? "Offen"
+            : AnzahlKonten == 1 ? "Einfach"
+            : "Mehrfach";
+
+        public string AnschlussText => AnzahlKonten > 0 ? AnzahlKonten.ToString() : "";
+
+        public string AnschlussTooltip =>
+            IstKeine
+                ? (AnzahlKonten == 1
+                    ? "1 Konto ist in diesem Formular keinem Feld zugeordnet"
+                    : $"{AnzahlKonten} Konten sind in diesem Formular keinem Feld zugeordnet")
+            : AnzahlKonten == 0 ? "Mit keinem Konto verknüpft"
+            : AnzahlKonten == 1 ? "Mit 1 Konto verknüpft"
+            : $"Mit {AnzahlKonten} Konten verknüpft";
+    }
+
+    public enum AnschlussZustand { Offen, Verknuepft, FehltInVariante }
+
+    /// <summary>Ein Verknuepfungs-Anschluss eines Kontos fuer EINE
+    /// Formular-Spalte (Reihenfolge = Spalten-Reihenfolge). Die Rubber-Bands
+    /// beginnen an diesem Punkt.</summary>
+    public class KontoAnschlussVM
+    {
+        public string FormularName { get; }
+        public AnschlussZustand Zustand { get; }
+        public KontoAnschlussVM(string formularName, AnschlussZustand zustand)
+        {
+            FormularName = formularName;
+            Zustand = zustand;
         }
     }
 }

@@ -93,8 +93,16 @@ namespace ECTViews.Journal
 
         public double IconSpaltenBreite   => 28.0  * Skala;
         public double DatumSpaltenBreite  => 90.0  * Skala;
-        public double BruttoSpaltenBreite => 110.0 * Skala;
         public double AfaSpaltenBreite    => 60.0  * Skala;
+
+        // Brutto-Spalte (im Anlagenverzeichnis: alle Geldspalten) -- nach
+        // Inhalt gemessen, siehe BerechneBetragsSpalten().
+        private double _bruttoSpaltenBreite = 110.0;
+        public double BruttoSpaltenBreite
+        {
+            get => _bruttoSpaltenBreite;
+            private set => SetProperty(ref _bruttoSpaltenBreite, value);
+        }
 
         // Abschnittstitel: 15/17 bei Basis-Schriftgroesse 13, zoomen mit.
         public double TitelSchriftgroesse      => 15.0 * Skala;
@@ -136,16 +144,105 @@ namespace ECTViews.Journal
             OnPropertyChanged(nameof(IconSpaltenBreite));
             OnPropertyChanged(nameof(IconGroesse));
             OnPropertyChanged(nameof(DatumSpaltenBreite));
-            OnPropertyChanged(nameof(BruttoSpaltenBreite));
             OnPropertyChanged(nameof(AfaSpaltenBreite));
             OnPropertyChanged(nameof(TitelSchriftgroesse));
             OnPropertyChanged(nameof(HauptTitelSchriftgroesse));
 
-            SaldoSpaltenBreite     = _zeigeSaldo  ? SaldoBreite         * Skala : 0.0;
-            NettoSpaltenBreite     = _zeigeSteuer ? SteuerNettoBreite   * Skala : 0.0;
             UStSatzSpaltenBreite   = _zeigeSteuer ? SteuerSatzBreite    * Skala : 0.0;
-            UStBetragSpaltenBreite = _zeigeSteuer ? SteuerBetragBreite  * Skala : 0.0;
             BelegSpaltenBreite     = BerechneBelegSpaltenBreite();
+            BerechneBetragsSpalten();
+        }
+
+        // ----------------------------------------------------------
+        // Betragsspalten nach Inhalt (Netto, USt-Betrag, Brutto, Saldo;
+        // im Anlagenverzeichnis alle Geldspalten): Breite des laengsten
+        // tatsaechlich angezeigten Textes aus Zeilen, Summen und
+        // Spaltenkopf. Frueher fest auf 100/110 DIP (Basis 13) und damit
+        // auf Millionenbetraege ausgelegt -- bei ueblichen vier- bis
+        // fuenfstelligen Betraegen deutlich zu breit (Anwender-Feedback).
+        // Gemessen wird nur EIN Text je Spalte: Betraege stehen in
+        // Consolas (Monospace), da entscheidet die Zeichenanzahl; nur die
+        // Spaltenkoepfe (Proportionalschrift) werden einzeln gemessen.
+        // Aufruf am Ende von Aktualisiere() und bei Zoom (Skalierung).
+        // ----------------------------------------------------------
+        private const double BetragsSpaltenRand = 8.0 + 4.0;  // Margin 4+4 + Luft
+
+        private void BerechneBetragsSpalten()
+        {
+            var buchungen = Zeilen.OfType<JournalBuchungRow>().ToList();
+            var summen    = Zeilen.OfType<JournalFooterRow>().ToList();
+
+            NettoSpaltenBreite = _zeigeSteuer
+                ? SpaltenBreiteFuer(new[] { "Netto" },
+                    buchungen.Select(b => b.NettoText)
+                        .Concat(summen.Select(f => f.NettoSummeText)))
+                : 0.0;
+            UStBetragSpaltenBreite = _zeigeSteuer
+                ? SpaltenBreiteFuer(new[] { "USt-Betr", "VSt-Betr" },
+                    buchungen.Select(b => b.MwstBetragText)
+                        .Concat(summen.Select(f => f.SteuerSummeText)))
+                : 0.0;
+            SaldoSpaltenBreite = _zeigeSaldo
+                ? SpaltenBreiteFuer(new[] { "Saldo" },
+                    buchungen.Select(b => b.SaldoText)
+                        .Concat(summen.Select(f => f.SaldoSummeText)))
+                : 0.0;
+
+            if (AktuellerFilter.AnzeigeModus == JournalAnzeigeModus.Anlagenverzeichnis)
+            {
+                // Alle fuenf Geldspalten teilen sich BruttoSpaltenBreite.
+                var anlagen = buchungen.OfType<JournalAnlagenRow>().ToList();
+                var aSummen = Zeilen.OfType<JournalAnlagenFooterRow>().ToList();
+                BruttoSpaltenBreite = SpaltenBreiteFuer(
+                    new[] { "Ansch.kosten", "Buchw.Beginn", "AfA", "Abgänge", "Buchw.Ende" },
+                    anlagen.SelectMany(a => new[] {
+                            a.AnschKostenText, a.BuchwBeginnText, a.AfaJahresbetragText,
+                            a.AbgangText, a.BuchwEndeText })
+                        .Concat(aSummen.SelectMany(s => new[] {
+                            s.AnschKostenSummeText, s.AfaSummeText,
+                            s.AbgangSummeText, s.BuchwEndeSummeText })));
+            }
+            else
+            {
+                BruttoSpaltenBreite = SpaltenBreiteFuer(new[] { "Brutto" },
+                    buchungen.Select(b => b.BruttoText)
+                        .Concat(summen.Select(f => f.BruttoSummeText)));
+            }
+        }
+
+        private double SpaltenBreiteFuer(IEnumerable<string> koepfe, IEnumerable<string> betraege)
+        {
+            string laengster = null;
+            foreach (var t in betraege)
+                if (!string.IsNullOrEmpty(t) && (laengster == null || t.Length > laengster.Length))
+                    laengster = t;
+
+            double breite = Miss(laengster, "Consolas", System.Windows.FontWeights.Bold);
+            foreach (var k in koepfe)
+                breite = Math.Max(breite, Miss(k, Schriftart, System.Windows.FontWeights.SemiBold));
+            return Math.Ceiling(breite + BetragsSpaltenRand);
+        }
+
+        private double Miss(string text, string schrift, System.Windows.FontWeight gewicht)
+        {
+            if (string.IsNullOrEmpty(text)) return 0.0;
+            try
+            {
+                var tf = new System.Windows.Media.Typeface(
+                    new System.Windows.Media.FontFamily(
+                        string.IsNullOrEmpty(schrift) ? "Segoe UI" : schrift),
+                    System.Windows.FontStyles.Normal, gewicht,
+                    System.Windows.FontStretches.Normal);
+                var ft = new System.Windows.Media.FormattedText(
+                    text, CultureInfo.CurrentCulture,
+                    System.Windows.FlowDirection.LeftToRight, tf, Schriftgroesse,
+                    System.Windows.Media.Brushes.Black, 1.0);
+                return ft.WidthIncludingTrailingWhitespace;
+            }
+            catch
+            {
+                return text.Length * Schriftgroesse * 0.6;   // grobe Heuristik
+            }
         }
 
         // Maximale Breite der Belegspalte (1/4 der ListBox-Breite). Wird
@@ -184,10 +281,11 @@ namespace ECTViews.Journal
         // Aktualisiere() auf 0 gesetzt, wenn keine angezeigte Buchung einen
         // USt-Betrag != 0 hat -- dann faellt der frei werdende Platz der
         // (Star-)Beschreibungsspalte zu, statt verschenkt zu werden.
+        // Netto/USt-Betrag/Saldo werden nach Inhalt gemessen
+        // (BerechneBetragsSpalten); die Konstanten sind nur Startwerte.
         private const double SteuerNettoBreite = 100.0;
         private const double SteuerSatzBreite  = 60.0;
         private const double SteuerBetragBreite = 100.0;
-        private const double SaldoBreite = 110.0;
 
         // Sichtbarkeits-Entscheidung der Saldo-Spalte (Bestandskonten-Modus),
         // festgehalten fuer die Neu-Skalierung beim Zoomen.
@@ -463,6 +561,21 @@ namespace ECTViews.Journal
         public void MeldeZoomAenderung(int deltaProzent) => ZoomAendern?.Invoke(deltaProzent);
 
         /// <summary>
+        /// Wunsch, den Monats-Filter umzustellen (Klick auf einen Monat in der
+        /// Navigation, waehrend ein Monats-/Quartalsfilter aktiv ist). Wert wie
+        /// <see cref="JournalFilter.MonatsFilter"/> (1-12 Monat, 13-16 Quartal).
+        /// Der Filter gehoert der nativen View (m_MonatsFilterDisplay: Ribbon-
+        /// Haekchen, Druck, Berichte) -- die Bridge reicht den Wunsch darum
+        /// dorthin weiter; die native Seite stellt um, baut alle Ansichten neu
+        /// auf und meldet den Wechsel in der Statuszeile.
+        /// Ohne nativen Abnehmer (z.B. OCX-Kontext) bleibt der Filter, wie er
+        /// ist, und die Navigation scrollt nur.
+        /// </summary>
+        public event Action<int> MonatsFilterAendern;
+        public void MeldeMonatsFilterWechsel(int neuerFilter)
+            => MonatsFilterAendern?.Invoke(neuerFilter);
+
+        /// <summary>
         /// Druckwunsch aus der View (Strg+P im Journal). Wird von der Bridge
         /// an den nativen Druckbefehl (OnFilePrint2) weitergereicht, damit
         /// alle Druckpfade an einer Stelle starten (Wine-Guard etc.).
@@ -685,6 +798,9 @@ namespace ECTViews.Journal
                     BaueAnzeigeAnlagenverzeichnis();
                     break;
             }
+
+            // Betragsspalten erst jetzt messen -- die Zeilen stehen.
+            BerechneBetragsSpalten();
 
             // Selektion wiederherstellen via Uuid-Match - überlebt jeden
             // SyncNativeToManaged-Zyklus, weil die Bridge die Uuid native

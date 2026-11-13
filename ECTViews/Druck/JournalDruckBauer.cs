@@ -214,16 +214,22 @@ namespace ECTViews.Druck
             double bildschirmSkala = (vm.Schriftgroesse > 0)
                 ? vm.Schriftgroesse / Basis : 1.0;
             double belegBasis = vm.BelegSpaltenBreite / bildschirmSkala;
+            double Normiert(double bildschirmBreite, double festBasis)
+                => (bildschirmBreite > 0 ? bildschirmBreite / bildschirmSkala : festBasis) * S;
 
             l.IconBetrieb = betriebIcons ? 24.0 * S : 0;
             l.IconBK      = bkIcons ? 24.0 * S : 0;
             l.Datum       = 90.0 * S;
             l.Beleg       = l.ZeigeBeleg ? belegBasis * S : 0;
-            l.Netto       = l.ZeigeSteuer ? 100.0 * S : 0;
+            // Betragsspalten: die im ViewModel nach Inhalt gemessenen Breiten
+            // (laengster angezeigter Betrag) auf die Druck-Skala normieren --
+            // Ansicht und Druck bleiben so gleich proportioniert. Fallback auf
+            // die frueheren Festbreiten, falls das VM (noch) nichts gemessen hat.
+            l.Netto       = l.ZeigeSteuer ? Normiert(vm.NettoSpaltenBreite, 100.0) : 0;
             l.Satz        = l.ZeigeSteuer ? 60.0 * S : 0;
-            l.Betrag      = l.ZeigeSteuer ? 100.0 * S : 0;
-            l.Brutto      = 110.0 * S;
-            l.Saldo       = l.ZeigeSaldo ? 110.0 * S : 0;
+            l.Betrag      = l.ZeigeSteuer ? Normiert(vm.UStBetragSpaltenBreite, 100.0) : 0;
+            l.Brutto      = Normiert(vm.BruttoSpaltenBreite, 110.0);
+            l.Saldo       = l.ZeigeSaldo ? Normiert(vm.SaldoSpaltenBreite, 110.0) : 0;
             l.Afa         = l.ZeigeAfa ? 60.0 * S : 0;
             l.IconGroesse = DruckSchrift * 4.0 / 3.0;
 
