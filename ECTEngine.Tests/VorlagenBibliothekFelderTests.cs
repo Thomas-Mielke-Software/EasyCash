@@ -70,6 +70,31 @@ namespace ECTEngine.Tests
                 + Environment.NewLine + string.Join(Environment.NewLine, fehler));
         }
 
+        /// <summary>Dieselbe Prüfung für die Konto-Vorschläge des
+        /// Vorlagen-Editors (KontoVorschlaege.cs).</summary>
+        [Fact]
+        public void JederKontoVorschlag_PasstZuDenEchtenFormularfeldern()
+        {
+            if (FindeRepoWurzel() == null) return;
+            var formulare = LadeFormularfelder();
+            var fehler = new List<string>();
+
+            foreach (var v in KontoVorschlaege.Alle)
+            {
+                var spez = KontoFeldSpezifikation.Parse(v.Spezifikation, out string parseFehler);
+                Assert.True(spez != null, v.Spezifikation + ": " + parseFehler);
+                foreach (var land in spez.Laender)
+                    Assert.False(string.IsNullOrWhiteSpace(spez.NameFuerLand(land)),
+                        v.Spezifikation + ": kein $name für " + land);
+                PruefeSpezifikation(formulare, fehler, v.Spezifikation, v.IstEinnahme,
+                    "Konto-Vorschlag " + v.Spezifikation.Substring(0, Math.Min(60, v.Spezifikation.Length)));
+            }
+
+            Assert.True(fehler.Count == 0,
+                "Konto-Vorschläge passen nicht zu den Formularen:"
+                + Environment.NewLine + string.Join(Environment.NewLine, fehler));
+        }
+
         private static void PruefeSpezifikation(
             IReadOnlyDictionary<string, Dictionary<string, string>> formulare,
             List<string> fehler, string konto, bool istEinnahme, string wo)

@@ -313,4 +313,281 @@
     </Abschnitt>
 
   </Abschnitt>
+
+  <!--
+    Ab hier: Vorlagen, die den Buchen-Dialog erweitern (Format-Version 2):
+    ZUSATZ-FELDER (<Felder>) fragen beim Buchen weitere Angaben ab, deren
+    Wert als Platzhalter in Formeln und Texten steht; <OriginalFelder>
+    sperrt, verbirgt oder benennt die festen Felder des Dialogs um. Siehe
+    ECTEngine/VorlagenFelder.cs und die Anleitung ECTViews/Hilfe/
+    Buchungsvorlagen.md, die genau diese Vorlagen als Beispiele durchgeht.
+
+    Feste Steuer- und Pauschalsätze (19 %, 70/30, 14 Euro, 0,30 Euro) stehen
+    sichtbar in den Vorlagen und lassen sich nach der Übernahme im
+    Vorlagen-Editor anpassen. Wo ein Betrag aufgeteilt wird, nimmt die
+    Basis-Buchung den RUNDUNGSREST ("Basis bucht $rest"), damit die Summe
+    aller Buchungen centgenau dem eingegebenen Betrag entspricht.
+  -->
+  <Abschnitt Titel="Aufteilen einer Rechnung">
+
+    <Eintrag Titel="Rechnung mit zwei Steuersätzen (z.B. 19 % und 7 %)"
+             Stichworte="zwei Steuersätze, gemischt, ermäßigt, 7 %, 19 %, Mehrwertsteuer, aufteilen, Zusatz-Feld, Österreich">
+      <ECTBuchungsvorlage Version="2">
+        <Name>Rechnung mit zwei Steuersätzen</Name>
+        <Typ>A</Typ>
+        <MwSt>19000</MwSt>
+        <AfaJahre>1</AfaJahre>
+        <Konto></Konto>
+        <Notiz>Für Rechnungen, auf denen ein Teil mit einem anderen Steuersatz berechnet ist. Im Betragsfeld den GESAMTEN Rechnungsbetrag eingeben und bei "davon zum zweiten Steuersatz" den Bruttobetrag dieses Teils. Daraus entstehen zwei Buchungen auf dasselbe Konto: der Teil zum zweiten Satz und der Rest zum Satz des MWSt-Felds. Das Konto wählt man beim Buchen. Der zweite Satz ist mit dem zweiten MWSt-Satz aus den Einstellungen vorbelegt; den Regelsatz dieser Vorlage (19 %) ändert man bei Bedarf im Vorlagen-Editor.</Notiz>
+        <Degressiv>false</Degressiv>
+        <AfaSatz>0</AfaSatz>
+        <BasisBetrag>$rest</BasisBetrag>
+        <Zeilen>
+          <Zeile Typ="" Konto="$konto" MwSt="$satz2" Betrag="$betrag2" Text="$beschreibung ($satz2 %)" Beleg="" Betrieb="" Bestandskonto="" Darstellung="" />
+        </Zeilen>
+        <EingabeBetrag></EingabeBetrag>
+        <BasisText></BasisText>
+        <BasisBeleg></BasisBeleg>
+        <BasisBestandskonto></BasisBestandskonto>
+        <BasisBetrieb></BasisBetrieb>
+        <OriginalFelder>
+          <Feld Name="Betrag" Zustand="" Bezeichnung="Rechnungsbetrag" />
+        </OriginalFelder>
+        <Felder>
+          <Feld Name="betrag2" Bezeichnung="davon zum zweiten Steuersatz" Typ="betrag" Box="betrag" Vorbelegung="" Pflicht="false" Merken="false" Optionen="" />
+          <Feld Name="satz2" Bezeichnung="Zweiter Steuersatz" Typ="mwst" Box="betrag" Vorbelegung="$vat2" Pflicht="true" Merken="true" Optionen="" />
+        </Felder>
+      </ECTBuchungsvorlage>
+    </Eintrag>
+
+    <Eintrag Titel="Ausgabe auf zwei Betriebe aufteilen"
+             Stichworte="zwei Betriebe, Betrieb, aufteilen, Anteil, Prozent, anteilig, Zusatz-Feld, Österreich">
+      <ECTBuchungsvorlage Version="2">
+        <Name>Ausgabe auf zwei Betriebe</Name>
+        <Typ>A</Typ>
+        <MwSt>19000</MwSt>
+        <AfaJahre>1</AfaJahre>
+        <Konto></Konto>
+        <Notiz>Teilt eine Ausgabe auf zwei Betriebe auf. Den ersten Betrieb und das Konto wählt man wie gewohnt; die zusätzliche Liste "Zweiter Betrieb" und das Feld "Anteil des zweiten Betriebs" (in Prozent des Rechnungsbetrags) bestimmen die zweite Buchung. Beide Buchungen laufen auf dasselbe Konto mit demselben Steuersatz. Betrieb und Anteil merkt sich die Vorlage für das nächste Mal. Setzt mindestens zwei angelegte Betriebe voraus.</Notiz>
+        <Degressiv>false</Degressiv>
+        <AfaSatz>0</AfaSatz>
+        <BasisBetrag>$rest</BasisBetrag>
+        <Zeilen>
+          <Zeile Typ="" Konto="$konto" MwSt="" Betrag="$brutto*$anteil2/100" Text="" Beleg="" Betrieb="$betrieb2" Bestandskonto="" Darstellung="" />
+        </Zeilen>
+        <EingabeBetrag></EingabeBetrag>
+        <BasisText></BasisText>
+        <BasisBeleg></BasisBeleg>
+        <BasisBestandskonto></BasisBestandskonto>
+        <BasisBetrieb></BasisBetrieb>
+        <OriginalFelder />
+        <Felder>
+          <Feld Name="betrieb2" Bezeichnung="Zweiter Betrieb" Typ="betrieb" Box="betrieb" Vorbelegung="" Pflicht="true" Merken="true" Optionen="" />
+          <Feld Name="anteil2" Bezeichnung="Anteil des zweiten Betriebs" Typ="prozent" Box="betrag" Vorbelegung="50" Pflicht="true" Merken="true" Optionen="" />
+        </Felder>
+      </ECTBuchungsvorlage>
+    </Eintrag>
+
+    <Eintrag Titel="Wareneinkauf: Warenwert, Versandkosten und Skonto getrennt"
+             Stichworte="Wareneinkauf, Warenwert, Versand, Versandkosten, Porto, Skonto, Nachlass, aufteilen, Zusatz-Feld, Österreich">
+      <ECTBuchungsvorlage Version="2">
+        <Name>Wareneinkauf mit Versand und Skonto</Name>
+        <Typ>A</Typ>
+        <MwSt>19000</MwSt>
+        <AfaJahre>1</AfaJahre>
+        <Konto>$de:E/Ü-Rechnung=1100|$name=Wareneinkauf||at:Beilage E1a=9100|$name=Wareneinkauf||</Konto>
+        <Notiz>Bucht eine Lieferantenrechnung in bis zu drei Buchungen mit eigenem Beschreibungstext: Warenwert, Versandkosten und abgezogenes Skonto. Im Betragsfeld den Rechnungsbetrag VOR Skonto eingeben, darunter die enthaltenen Versandkosten und das beim Bezahlen abgezogene Skonto; leere Felder erzeugen keine Buchung. Das Skonto wird als Minderung (negativer Betrag) gebucht, die Summe aller Buchungen ist also der tatsächlich gezahlte Betrag. Alle drei laufen auf das Wareneinkaufs-Konto; wer Versand oder Skonto auf eigenen Konten führen will, trägt diese im Vorlagen-Editor bei der jeweiligen Zusatz-Zeile ein. Im Beschreibungsfeld den Vorlagennamen durch Lieferant/Rechnung ersetzen.</Notiz>
+        <Degressiv>false</Degressiv>
+        <AfaSatz>0</AfaSatz>
+        <BasisBetrag>$brutto-$versand</BasisBetrag>
+        <Zeilen>
+          <Zeile Typ="" Konto="$konto" MwSt="" Betrag="$versand" Text="$beschreibung (Versandkosten)" Beleg="" Betrieb="" Bestandskonto="" Darstellung="" />
+          <Zeile Typ="" Konto="$konto" MwSt="" Betrag="-$skonto" Text="$beschreibung (Skonto)" Beleg="" Betrieb="" Bestandskonto="" Darstellung="" />
+        </Zeilen>
+        <EingabeBetrag></EingabeBetrag>
+        <BasisText>$beschreibung (Warenwert)</BasisText>
+        <BasisBeleg></BasisBeleg>
+        <BasisBestandskonto></BasisBestandskonto>
+        <BasisBetrieb></BasisBetrieb>
+        <OriginalFelder>
+          <Feld Name="Betrag" Zustand="" Bezeichnung="Rechnungsbetrag" />
+        </OriginalFelder>
+        <Felder>
+          <Feld Name="versand" Bezeichnung="davon Versandkosten" Typ="betrag" Box="betrag" Vorbelegung="" Pflicht="false" Merken="false" Optionen="" />
+          <Feld Name="skonto" Bezeichnung="abgezogenes Skonto" Typ="betrag" Box="betrag" Vorbelegung="" Pflicht="false" Merken="false" Optionen="" />
+        </Felder>
+      </ECTBuchungsvorlage>
+    </Eintrag>
+
+  </Abschnitt>
+
+  <Abschnitt Titel="Geldverkehr">
+
+    <Eintrag Titel="Umbuchung zwischen zwei Bestandskonten (z.B. PayPal an Bank)"
+             Stichworte="Umbuchung, Geldtransit, Übertrag, PayPal, Bank, Kasse, Bestandskonto, Auszahlung, Zusatz-Feld, Österreich">
+      <ECTBuchungsvorlage Version="2">
+        <Name>Umbuchung zwischen Bestandskonten</Name>
+        <Typ>A</Typ>
+        <MwSt>0</MwSt>
+        <AfaJahre>1</AfaJahre>
+        <Konto>/Umbuchung zwischen Bestandskonten</Konto>
+        <Notiz>Überträgt Geld von einem Bestandskonto auf ein anderes, z.B. die Auszahlung des PayPal-Guthabens aufs Bankkonto oder eine Bareinzahlung. Oben das Konto wählen, von dem abgebucht wird, in der zusätzlichen Liste "Gutschrift auf" das Zielkonto. Es entstehen zwei Buchungen über denselben Betrag: eine Ausgabe auf dem einen und eine Einnahme auf dem anderen Bestandskonto. Beide laufen über ein neutrales "/"-Konto und berühren weder Gewinn noch Umsatzsteuer; Konto, MWSt. und Abschreibung sind deshalb ausgeblendet.</Notiz>
+        <Degressiv>false</Degressiv>
+        <AfaSatz>0</AfaSatz>
+        <BasisBetrag></BasisBetrag>
+        <Zeilen>
+          <Zeile Typ="E" Konto="$konto" MwSt="0" Betrag="$brutto" Text="" Beleg="" Betrieb="" Bestandskonto="$zielkonto" Darstellung="" />
+        </Zeilen>
+        <EingabeBetrag></EingabeBetrag>
+        <BasisText></BasisText>
+        <BasisBeleg></BasisBeleg>
+        <BasisBestandskonto></BasisBestandskonto>
+        <BasisBetrieb></BasisBetrieb>
+        <OriginalFelder>
+          <Feld Name="Konto" Zustand="ausgeblendet" Bezeichnung="" />
+          <Feld Name="MWSt" Zustand="ausgeblendet" Bezeichnung="" />
+          <Feld Name="AfA" Zustand="ausgeblendet" Bezeichnung="" />
+          <Feld Name="Bestandskonto" Zustand="" Bezeichnung="Abbuchung von" />
+        </OriginalFelder>
+        <Felder>
+          <Feld Name="zielkonto" Bezeichnung="Gutschrift auf" Typ="bestandskonto" Box="bestandskonto" Vorbelegung="" Pflicht="true" Merken="true" Optionen="" />
+        </Felder>
+      </ECTBuchungsvorlage>
+    </Eintrag>
+
+    <Eintrag Titel="Darlehensrate: Zinsen und Tilgung"
+             Stichworte="Darlehen, Kredit, Rate, Zinsen, Schuldzinsen, Tilgung, Annuität, aufteilen, Zusatz-Feld, Österreich">
+      <ECTBuchungsvorlage Version="2">
+        <Name>Darlehensrate</Name>
+        <Typ>A</Typ>
+        <MwSt>0</MwSt>
+        <AfaJahre>1</AfaJahre>
+        <Konto>$de:E/Ü-Rechnung=1234|$name=Schuldzinsen||at:Beilage E1a=9220|$name=Zinsen und ähnliche Aufwendungen||</Konto>
+        <Notiz>Teilt eine Darlehensrate in Zinsen und Tilgung. Im Feld "Rate" den abgebuchten Gesamtbetrag eingeben, darunter den Zinsanteil laut Kontoauszug oder Tilgungsplan. Die Zinsen werden als Betriebsausgabe gebucht, die Tilgung über das neutrale Konto "/Darlehenstilgung", das den Gewinn nicht berührt. Das Zins-Konto ist in Deutschland mit "Übrige Schuldzinsen" verknüpft; für ein Darlehen zur Finanzierung von Anlagevermögen im Vorlagen-Editor ein Konto mit dem EÜR-Feld 1232 eintragen.</Notiz>
+        <Degressiv>false</Degressiv>
+        <AfaSatz>0</AfaSatz>
+        <BasisBetrag>$zinsen</BasisBetrag>
+        <Zeilen>
+          <Zeile Typ="" Konto="/Darlehenstilgung" MwSt="0" Betrag="$brutto-$zinsen" Text="$beschreibung (Tilgung)" Beleg="" Betrieb="" Bestandskonto="" Darstellung="" />
+        </Zeilen>
+        <EingabeBetrag></EingabeBetrag>
+        <BasisText>$beschreibung (Zinsen)</BasisText>
+        <BasisBeleg></BasisBeleg>
+        <BasisBestandskonto></BasisBestandskonto>
+        <BasisBetrieb></BasisBetrieb>
+        <OriginalFelder>
+          <Feld Name="Betrag" Zustand="" Bezeichnung="Rate" />
+          <Feld Name="MWSt" Zustand="ausgeblendet" Bezeichnung="" />
+          <Feld Name="AfA" Zustand="ausgeblendet" Bezeichnung="" />
+        </OriginalFelder>
+        <Felder>
+          <Feld Name="zinsen" Bezeichnung="davon Zinsen" Typ="betrag" Box="betrag" Vorbelegung="" Pflicht="true" Merken="false" Optionen="" />
+        </Felder>
+      </ECTBuchungsvorlage>
+    </Eintrag>
+
+  </Abschnitt>
+
+  <Abschnitt Titel="Reise und Bewirtung">
+
+    <Abschnitt Titel="Deutschland">
+
+      <Eintrag Titel="Bewirtungskosten (70 % abziehbar) mit Anlass und Teilnehmern"
+               Stichworte="Bewirtung, Geschäftsessen, Restaurant, Trinkgeld, 70 %, 30 %, nicht abziehbar, Anlass, Teilnehmer, Zusatz-Feld">
+        <ECTBuchungsvorlage Version="2">
+          <Name>Bewirtungskosten</Name>
+          <Typ>A</Typ>
+          <MwSt>19000</MwSt>
+          <AfaJahre>1</AfaJahre>
+          <Konto>$de:E/Ü-Rechnung=1175|$name=Bewirtungskosten (abziehbar)||</Konto>
+          <Notiz>Geschäftliche Bewirtung: 70 % der Aufwendungen sind als Betriebsausgabe abziehbar, 30 % nicht (§4 Abs. 5 Nr. 2 EStG). Im Feld "Gezahlt (inkl. Trinkgeld)" den gesamten gezahlten Betrag eingeben, bei "davon Trinkgeld" das Trinkgeld. Anlass und bewirtete Personen sind Pflichtangaben und landen in der Beschreibung. Der Rechnungsbetrag wird mit dem Steuersatz des MWSt-Felds gebucht (die Vorsteuer bleibt auch für den nicht abziehbaren Anteil erhalten), das Trinkgeld ohne Steueranteil. Der nicht abziehbare Anteil läuft über ein neutrales "/"-Konto und mindert den Gewinn nicht. Die Sätze 70/30 stehen in den Formeln der Zusatz-Zeilen. Bitte prüfen, ob die Aufteilung zum eigenen Fall passt (z.B. Bewirtung von Arbeitnehmern).</Notiz>
+          <Degressiv>false</Degressiv>
+          <AfaSatz>0</AfaSatz>
+          <BasisBetrag>$rest</BasisBetrag>
+          <Zeilen>
+            <Zeile Typ="" Konto="$de:E/Ü-Rechnung=1165|$name=/Bewirtungskosten (nicht abziehbar)||" MwSt="" Betrag="($brutto-$trinkgeld)*0,3" Text="Bewirtung $anlass ($personen), nicht abziehbarer Anteil" Beleg="" Betrieb="" Bestandskonto="" Darstellung="" />
+            <Zeile Typ="" Konto="$de:E/Ü-Rechnung=1175|$name=Bewirtungskosten (abziehbar)||" MwSt="0" Betrag="$trinkgeld*0,7" Text="Bewirtung $anlass ($personen), Trinkgeld" Beleg="" Betrieb="" Bestandskonto="" Darstellung="" />
+            <Zeile Typ="" Konto="$de:E/Ü-Rechnung=1165|$name=/Bewirtungskosten (nicht abziehbar)||" MwSt="0" Betrag="$trinkgeld*0,3" Text="Bewirtung $anlass ($personen), Trinkgeld, nicht abziehbarer Anteil" Beleg="" Betrieb="" Bestandskonto="" Darstellung="" />
+          </Zeilen>
+          <EingabeBetrag></EingabeBetrag>
+          <BasisText>Bewirtung $anlass ($personen)</BasisText>
+          <BasisBeleg></BasisBeleg>
+          <BasisBestandskonto></BasisBestandskonto>
+          <BasisBetrieb></BasisBetrieb>
+          <OriginalFelder>
+            <Feld Name="Betrag" Zustand="" Bezeichnung="Gezahlt (inkl. Trinkgeld)" />
+            <Feld Name="AfA" Zustand="ausgeblendet" Bezeichnung="" />
+          </OriginalFelder>
+          <Felder>
+            <Feld Name="anlass" Bezeichnung="Anlass" Typ="text" Box="beschreibung" Vorbelegung="" Pflicht="true" Merken="false" Optionen="" />
+            <Feld Name="personen" Bezeichnung="Bewirtete Personen" Typ="text" Box="beschreibung" Vorbelegung="" Pflicht="true" Merken="false" Optionen="" />
+            <Feld Name="trinkgeld" Bezeichnung="davon Trinkgeld" Typ="betrag" Box="betrag" Vorbelegung="" Pflicht="false" Merken="false" Optionen="" />
+          </Felder>
+        </ECTBuchungsvorlage>
+      </Eintrag>
+
+      <Eintrag Titel="Verpflegungsmehraufwand (Pauschalen nach Abwesenheitstagen)"
+               Stichworte="Verpflegungsmehraufwand, Verpflegungspauschale, Spesen, Dienstreise, Geschäftsreise, Abwesenheit, 14 Euro, 28 Euro, Reisekosten, Zusatz-Feld">
+        <ECTBuchungsvorlage Version="2">
+          <Name>Verpflegungsmehraufwand</Name>
+          <Typ>A</Typ>
+          <MwSt>0</MwSt>
+          <AfaJahre>1</AfaJahre>
+          <Konto>$de:E/Ü-Rechnung=1171|$name=Verpflegungsmehraufwand||</Konto>
+          <Notiz>Berechnet die Verpflegungspauschalen einer Geschäftsreise aus der Zahl der Tage; einen Betrag gibt man nicht ein. Angesetzt sind die Inlandssätze 14 Euro (An- und Abreisetag sowie Tage mit mehr als 8 Stunden Abwesenheit) und 28 Euro (Tage mit 24 Stunden Abwesenheit). Die Sätze stehen in der Vorlage unter "Betrag (Formel)" und sind dort anzupassen, wenn sie sich ändern oder Auslandssätze gelten. Im Feld "Reise (Ziel, Anlass)" die Reise benennen. Die Pauschale enthält keine Vorsteuer.</Notiz>
+          <Degressiv>false</Degressiv>
+          <AfaSatz>0</AfaSatz>
+          <BasisBetrag></BasisBetrag>
+          <Zeilen />
+          <EingabeBetrag>$tage8*14 + $tage24*28</EingabeBetrag>
+          <BasisText>Verpflegungsmehraufwand $beschreibung</BasisText>
+          <BasisBeleg></BasisBeleg>
+          <BasisBestandskonto></BasisBestandskonto>
+          <BasisBetrieb></BasisBetrieb>
+          <OriginalFelder>
+            <Feld Name="Beschreibung" Zustand="" Bezeichnung="Reise (Ziel, Anlass)" />
+            <Feld Name="Betrag" Zustand="gesperrt" Bezeichnung="Pauschale" />
+            <Feld Name="MWSt" Zustand="ausgeblendet" Bezeichnung="" />
+            <Feld Name="AfA" Zustand="ausgeblendet" Bezeichnung="" />
+          </OriginalFelder>
+          <Felder>
+            <Feld Name="tage8" Bezeichnung="An-/Abreisetage und Tage über 8 Std." Typ="zahl" Box="betrag" Vorbelegung="" Pflicht="false" Merken="false" Optionen="" />
+            <Feld Name="tage24" Bezeichnung="Tage mit 24 Std. Abwesenheit" Typ="zahl" Box="betrag" Vorbelegung="" Pflicht="false" Merken="false" Optionen="" />
+          </Felder>
+        </ECTBuchungsvorlage>
+      </Eintrag>
+
+      <Eintrag Titel="Fahrtkosten mit privatem Pkw (Kilometerpauschale)"
+               Stichworte="Fahrtkosten, Kilometer, Kilometerpauschale, km, privater Pkw, Privatfahrzeug, 0,30, Dienstreise, Reisekosten, Zusatz-Feld">
+        <ECTBuchungsvorlage Version="2">
+          <Name>Fahrtkosten privater Pkw</Name>
+          <Typ>A</Typ>
+          <MwSt>0</MwSt>
+          <AfaJahre>1</AfaJahre>
+          <Konto>$de:E/Ü-Rechnung=1147|$name=Fahrtkosten privater Pkw||</Konto>
+          <Notiz>Betriebliche Fahrt mit einem Fahrzeug, das nicht zum Betriebsvermögen gehört: gebucht wird die Kilometerpauschale aus den gefahrenen Kilometern (Hin- und Rückweg), einen Betrag gibt man nicht ein. Angesetzt sind 0,30 Euro je Kilometer; der Satz steht in der Vorlage unter "Betrag (Formel)" und ist dort anzupassen, wenn ein anderer gilt. Im Feld "Fahrt (Ziel, Anlass)" die Fahrt benennen; die Kilometer stehen anschließend mit in der Beschreibung. Die Pauschale enthält keine Vorsteuer.</Notiz>
+          <Degressiv>false</Degressiv>
+          <AfaSatz>0</AfaSatz>
+          <BasisBetrag></BasisBetrag>
+          <Zeilen />
+          <EingabeBetrag>$km*0,30</EingabeBetrag>
+          <BasisText>Fahrtkosten $beschreibung ($km km)</BasisText>
+          <BasisBeleg></BasisBeleg>
+          <BasisBestandskonto></BasisBestandskonto>
+          <BasisBetrieb></BasisBetrieb>
+          <OriginalFelder>
+            <Feld Name="Beschreibung" Zustand="" Bezeichnung="Fahrt (Ziel, Anlass)" />
+            <Feld Name="Betrag" Zustand="gesperrt" Bezeichnung="Pauschale" />
+            <Feld Name="MWSt" Zustand="ausgeblendet" Bezeichnung="" />
+            <Feld Name="AfA" Zustand="ausgeblendet" Bezeichnung="" />
+          </OriginalFelder>
+          <Felder>
+            <Feld Name="km" Bezeichnung="Gefahrene Kilometer" Typ="zahl" Box="betrag" Vorbelegung="" Pflicht="true" Merken="false" Optionen="" />
+          </Felder>
+        </ECTBuchungsvorlage>
+      </Eintrag>
+
+    </Abschnitt>
+
+  </Abschnitt>
 </ECTVorlagenBibliothek>

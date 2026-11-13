@@ -5,8 +5,9 @@
 // Strings, die vom FormelParser interpretiert werden -- keine
 // ausführbaren Anteile (siehe Design-Entscheidung "kein C#-Scripting").
 //
-// Format (Version 1):
-//   <ECTBuchungsvorlage Version="1">
+// Format (Version 2; Vorlagen OHNE Dialog-Erweiterung werden weiter als
+// Version 1 geschrieben, damit ältere Programmstände sie lesen können):
+//   <ECTBuchungsvorlage Version="2">
 //     <Name>Reverse Charge §13b</Name>
 //     <Typ>A</Typ>                  (E = Einnahme, A = Ausgabe)
 //     <MwSt>19000</MwSt>            (x1000)
@@ -21,6 +22,20 @@
 //              Text="..." Beleg="" Betrieb="" Bestandskonto=""
 //              Darstellung=""/>       (Typ leer = wie Basis)
 //     </Zeilen>
+//     [ab hier Version 2: Erweiterung des Buchen-Dialogs]
+//     <EingabeBetrag>$tage*14</EingabeBetrag>   (Betrag bei gesperrtem Feld)
+//     <BasisText>Bewirtung $anlass</BasisText>
+//     <BasisBeleg></BasisBeleg>
+//     <BasisBestandskonto></BasisBestandskonto>
+//     <BasisBetrieb></BasisBetrieb>
+//     <OriginalFelder>
+//       <Feld Name="Betrag" Zustand="ausgeblendet" Bezeichnung=""/>
+//     </OriginalFelder>
+//     <Felder>
+//       <Feld Name="anteil2" Bezeichnung="Anteil Betrieb 2" Typ="prozent"
+//             Box="betrag" Vorbelegung="50" Pflicht="true" Merken="false"
+//             Optionen=""/>
+//     </Felder>
 //   </ECTBuchungsvorlage>
 //
 // "Typ" ist überall einheitlich E/A (kein bool); beim Import werden die
@@ -38,7 +53,14 @@ namespace ECTEngine
     public static class PresetXml
     {
         public const string WurzelElement = "ECTBuchungsvorlage";
-        public const int AktuelleVersion = 1;
+        public const int AktuelleVersion = 2;
+
+        /// <summary>Version, die eine Vorlage mindestens braucht: 2, sobald
+        /// sie den Buchen-Dialog erweitert (ein älteres Programm ließe die
+        /// Zusatz-Felder stillschweigend weg und scheiterte dann an den
+        /// Formeln, die sie verwenden).</summary>
+        private static int NoetigeVersion(Preset p)
+            => p.Erweiterung.IstLeer ? 1 : 2;
 
         /// <summary>Serialisiert ein Preset (inkl. Zusatz-Zeilen) als XML.</summary>
         public static string Exportiere(Preset p)
@@ -46,7 +68,7 @@ namespace ECTEngine
             if (p == null) throw new ArgumentNullException(nameof(p));
 
             var wurzel = new XElement(WurzelElement,
-                new XAttribute("Version", AktuelleVersion),
+                new XAttribute("Version", NoetigeVersion(p)),
                 new XElement("Name", p.Text),
                 new XElement("Typ", p.Ausgabe ? "A" : "E"),
                 new XElement("MwSt", p.Mwst.ToString(CultureInfo.InvariantCulture)),
@@ -72,6 +94,38 @@ namespace ECTEngine
                     new XAttribute("Darstellung", z.Darstellung)));
             }
             wurzel.Add(zeilen);
+
+            var e = p.Erweiterung;
+            if (!e.IstLeer)
+            {
+                wurzel.Add(
+                    new XElement("EingabeBetrag", e.EingabeBetragFormel),
+                    new XElement("BasisText", e.BasisTextTemplate),
+                    new XElement("BasisBeleg", e.BasisBelegTemplate),
+                    new XElement("BasisBestandskonto", e.BasisBestandskonto),
+                    new XElement("BasisBetrieb", e.BasisBetrieb));
+
+                var regeln = new XElement("OriginalFelder");
+                foreach (var r in e.OriginalFelder)
+                    regeln.Add(new XElement("Feld",
+                        new XAttribute("Name", r.Feld),
+                        new XAttribute("Zustand", OriginalFeldRegel.ZustandName(r.Zustand)),
+                        new XAttribute("Bezeichnung", r.Bezeichnung)));
+                wurzel.Add(regeln);
+
+                var felder = new XElement("Felder");
+                foreach (var f in e.Felder)
+                    felder.Add(new XElement("Feld",
+                        new XAttribute("Name", f.Name),
+                        new XAttribute("Bezeichnung", f.Bezeichnung),
+                        new XAttribute("Typ", f.TypName),
+                        new XAttribute("Box", f.Box),
+                        new XAttribute("Vorbelegung", f.Vorbelegung),
+                        new XAttribute("Pflicht", f.Pflicht ? "true" : "false"),
+                        new XAttribute("Merken", f.Merken ? "true" : "false"),
+                        new XAttribute("Optionen", f.Optionen)));
+                wurzel.Add(felder);
+            }
 
             return new XDocument(
                 new XDeclaration("1.0", "utf-8", null), wurzel).ToString();
@@ -132,6 +186,46 @@ namespace ECTEngine
                     $"Zu viele Zeilen ({zeilen.Count}); maximal " +
                     $"{Einstellungen.MaxPresetZeilen - 1} Zusatz-Zeilen möglich.");
 
+            // Erweiterung des Buchen-Dialogs (ab Version 2). Unbekannte
+            // Original-Felder werden ignoriert, ein ungültiger Platzhalter
+            // dagegen abgelehnt -- er käme in keiner Formel an.
+            var regeln = new List<OriginalFeldRegel>();
+            var regelnElement = wurzel.Element("OriginalFelder");
+            if (regelnElement != null)
+            {
+                foreach (var r in regelnElement.Elements("Feld"))
+                {
+                    string feld = r.Attribute("Name")?.Value ?? "";
+                    if (OriginalFeld.Finde(feld) == null) continue;
+                    regeln.Add(new OriginalFeldRegel(feld,
+                        OriginalFeldRegel.ZustandAusName(r.Attribute("Zustand")?.Value),
+                        r.Attribute("Bezeichnung")?.Value));
+                }
+            }
+
+            var felder = new List<PresetFeld>();
+            var felderElement = wurzel.Element("Felder");
+            if (felderElement != null)
+            {
+                foreach (var f in felderElement.Elements("Feld"))
+                {
+                    string FAttr(string attr) => f.Attribute(attr)?.Value ?? "";
+                    var feld = new PresetFeld(FAttr("Name"), FAttr("Bezeichnung"),
+                        FAttr("Typ"), FAttr("Box"), FAttr("Vorbelegung"),
+                        IstWahr(FAttr("Pflicht")), IstWahr(FAttr("Merken")),
+                        FAttr("Optionen"));
+                    string nameFehler = VorlagenFelder.PruefeName(feld.Name);
+                    if (nameFehler.Length > 0)
+                        throw new FormatException(
+                            "Zusatz-Feld \"" + feld.AnzeigeBezeichnung + "\": " + nameFehler);
+                    felder.Add(feld);
+                }
+            }
+            if (felder.Count > VorlagenFelder.MaxFelder)
+                throw new FormatException(
+                    $"Zu viele Zusatz-Felder ({felder.Count}); maximal " +
+                    $"{VorlagenFelder.MaxFelder} möglich.");
+
             var name = Wert("Name");
             if (string.IsNullOrWhiteSpace(name))
                 throw new FormatException("Die Vorlage hat keinen Namen.");
@@ -157,7 +251,16 @@ namespace ECTEngine
                 string.Equals(Wert("Degressiv"), "true", StringComparison.OrdinalIgnoreCase),
                 LiesInt(Wert("AfaSatz"), 0),
                 zeilen,
-                Wert("BasisBetrag"));
+                Wert("BasisBetrag"),
+                new VorlagenErweiterung(felder, regeln,
+                    Wert("EingabeBetrag"), Wert("BasisText"), Wert("BasisBeleg"),
+                    Wert("BasisBestandskonto"), Wert("BasisBetrieb")));
+        }
+
+        private static bool IstWahr(string s)
+        {
+            s = (s ?? "").Trim().ToLowerInvariant();
+            return s == "true" || s == "1" || s == "ja";
         }
 
         /// <summary>Normalisiert einen Typ-Wert auf "E", "A" oder ""

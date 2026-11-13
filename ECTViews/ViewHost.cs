@@ -91,7 +91,8 @@ namespace ECTViews
         /// <summary>
         /// True, wenn der WPF-Tastaturfokus gerade in einem Texteingabe-
         /// Element steht (TextBox/RichTextBox/PasswordBox oder das
-        /// Editierfeld einer aufklappbaren ComboBox).
+        /// Editierfeld einer aufklappbaren ComboBox) oder in einer
+        /// Dokument-Ansicht mit markierbarem Text (Anleitung, Seitenansicht).
         ///
         /// Aufgerufen aus <c>CMainFrame::PreTranslateMessage</c> über
         /// <c>ECT_WpfTextfeldHatFokus</c>: die Accelerator-Tabelle
@@ -118,7 +119,30 @@ namespace ECTViews
 
             // Sicherheitsnetz: manche ComboBox-Stile lassen den Fokus auf
             // der ComboBox selbst stehen.
-            return fokus is System.Windows.Controls.ComboBox cb && cb.IsEditable;
+            if (fokus is System.Windows.Controls.ComboBox cb && cb.IsEditable) return true;
+
+            // Lese-Ansichten mit markierbarem Text (Anleitung = FlowDocumentReader,
+            // Seitenansicht = DocumentViewer): Strg+C muss dort kopieren, und
+            // Strg+A soll markieren statt eine Ausgabe zu buchen. Der Fokus
+            // steht dabei auf einem inneren Teil des Viewers (oder einem
+            // ContentElement des Dokuments), darum die Vorfahren absuchen.
+            return LiegtInDokumentAnsicht(fokus as System.Windows.DependencyObject);
+        }
+
+        private static bool LiegtInDokumentAnsicht(System.Windows.DependencyObject d)
+        {
+            for (int i = 0; d != null && i < 64; i++)
+            {
+                if (d is System.Windows.Controls.FlowDocumentReader
+                    || d is System.Windows.Controls.FlowDocumentScrollViewer
+                    || d is System.Windows.Controls.Primitives.DocumentViewerBase)
+                    return true;
+
+                d = d is System.Windows.Media.Visual || d is System.Windows.Media.Media3D.Visual3D
+                    ? System.Windows.Media.VisualTreeHelper.GetParent(d)
+                    : System.Windows.LogicalTreeHelper.GetParent(d);
+            }
+            return false;
         }
 
         /// <summary>
@@ -256,21 +280,34 @@ namespace ECTViews
         {
             EnsureWpfInitialized();
 
-            // Gruppen-Kontext auflösen: Basis, Mitglieder, Vorlage
+            // Vorlagen-Kontext auflösen: Basis, Mitglieder, Vorlage.
+            // Zwei Fälle öffnen den Dialog MIT Vorlage:
+            //   - Mitglied einer Buchungsgruppe, deren (mehrzeilige) Vorlage
+            //     noch im gemerkten Platz steht;
+            //   - Einzelbuchung, die mit einer erweiterten Vorlage gebucht
+            //     wurde (Zusatz-Felder, Feld-Regeln; auch eine Gruppe, deren
+            //     Zusatz-Zeilen alle entfallen sind).
+            // In beiden Fällen muss es DIESELBE Vorlage noch geben: die
+            // Buchung merkt sich deren feste Kennung (VorlageId), gefunden
+            // wird sie auch umbenannt oder umnummeriert
+            // (Einstellungen.FindeVorlagenSlot). Gibt es sie nicht mehr,
+            // passen die gemerkten Feldwerte nicht -- dann
+            // Einzel-Bearbeitung mit Hinweis.
             Buchung basis = null;
             List<Buchung> zusatz = null;
             Preset vorlage = null;
             int slot = -1;
             Buchung basisKandidat = null;   // auch bei nicht auflösbarer Vorlage
+            bool bezugVeraltet = false;
             string uuid = angeklickt.GruppenUuid;
             if (uuid != null)
             {
                 var alle = doc.Buchungen.Where(b => b.GruppenUuid == uuid).ToList();
                 basisKandidat = alle.FirstOrDefault(b => b.GruppenRolle == 0);
-                slot = basisKandidat?.GruppenVorlage ?? -1;
-                if (basisKandidat != null && slot >= 0
-                    && slot < Einstellungen.Presets.Count
-                    && Einstellungen.Presets[slot].IstMehrzeilig)
+                slot = Einstellungen.FindeVorlagenSlot(basisKandidat);
+                if (basisKandidat != null
+                    && IstVorlageDerBuchung(basisKandidat, slot, mehrzeilig: true,
+                                            out bezugVeraltet))
                 {
                     basis = basisKandidat;
                     vorlage = Einstellungen.Presets[slot];
@@ -278,6 +315,20 @@ namespace ECTViews
                                  .OrderBy(b => b.GruppenRolle).ToList();
                 }
             }
+            else if (angeklickt.GruppenVorlage >= 0)
+            {
+                slot = Einstellungen.FindeVorlagenSlot(angeklickt);
+                if (IstVorlageDerBuchung(angeklickt, slot, mehrzeilig: false,
+                                         out bezugVeraltet))
+                {
+                    basis = angeklickt;
+                    vorlage = Einstellungen.Presets[slot];
+                }
+            }
+
+            // "Umwandeln in" eine andere Vorlage braucht die alte nicht --
+            // dann stört auch ein veralteter Bezug nicht.
+            if (umwandelVorlagenSlot >= 0) bezugVeraltet = false;
 
             if (vorlage == null)
             {
@@ -296,7 +347,8 @@ namespace ECTViews
                 var vmEinzel = ZeigeBearbeitenInternal(
                     doc, ziel, ownerHwnd,
                     abgangErlaubt: umwandelVorlagenSlot < 0,
-                    vorgewaehltesPreset: umwandelVorlagenSlot);
+                    vorgewaehltesPreset: umwandelVorlagenSlot,
+                    bezugVeraltet: bezugVeraltet);
                 var buchungenEinzel = vmEinzel.Bestaetigt
                     ? vmEinzel.ErgebnisBuchungen : null;
                 return new BuchungBearbeitenKombiErgebnis
@@ -313,11 +365,17 @@ namespace ECTViews
                 };
             }
 
-            // Gruppen-Bearbeitung: Dialog auf der Basis öffnen, Gruppe laden
-            var vm = new BuchungViewModel(doc, basis);
-            vm.LadeGruppeFuerBearbeitung(vorlage, slot, zusatz, uuid);
-            // "Umwandeln in": Gruppe beim Öffnen auf die neue Vorlage
-            // umstellen (die Gruppen-UUID bleibt dabei erhalten).
+            // Bearbeitung mit Vorlage: Dialog auf der Basis öffnen, Vorlage
+            // samt den gemerkten Eingaben laden. "Abgang buchen" gibt es
+            // hier nur für die Einzelbuchung (eine Gruppen-Basis hat ihn
+            // noch nie angeboten).
+            var vm = new BuchungViewModel(doc, basis)
+            {
+                AbgangErlaubt = uuid == null && umwandelVorlagenSlot < 0
+            };
+            vm.LadeVorlageFuerBearbeitung(vorlage, slot, zusatz, uuid);
+            // "Umwandeln in": beim Öffnen auf die neue Vorlage umstellen
+            // (die Gruppen-UUID bleibt dabei erhalten).
             vm.VorgewaehltesPreset = umwandelVorlagenSlot;
             BefuelleListen(vm);
             var view = new BuchungView(vm);
@@ -326,26 +384,70 @@ namespace ECTViews
 
             view.ShowDialog();
 
+            var buchungen = vm.Bestaetigt ? vm.ErgebnisBuchungen : null;
             return new BuchungBearbeitenKombiErgebnis
             {
-                Buchungen = vm.Bestaetigt ? vm.ErgebnisBuchungen : null,
-                AbgangGewuenscht = false,
-                WarGruppenBearbeitung = true,
+                Buchungen = buchungen,
+                AbgangGewuenscht = vm.AbgangGewuenscht,
+                // Eine Einzelbuchung zählt als Gruppen-Bearbeitung, sobald
+                // aus ihr mehrere Buchungen geworden sind (ein bisher leeres
+                // Zusatz-Feld hat jetzt eine Zeile erzeugt).
+                WarGruppenBearbeitung = uuid != null
+                    || (buchungen != null && buchungen.Count > 1),
                 ErsetzteBasis = basis
             };
         }
 
+        /// <summary>
+        /// Taugt die Vorlage im Platz <paramref name="slot"/> (Ergebnis von
+        /// <see cref="Einstellungen.FindeVorlagenSlot"/>) zum Bearbeiten von
+        /// <paramref name="buchung"/>? Name und Nummer dürfen sich seit dem
+        /// Buchen geändert haben -- das klärt die Kennung.
+        /// </summary>
+        /// <param name="mehrzeilig">True: für eine Buchungsgruppe muss es
+        /// eine Vorlage mit Zusatz-Zeilen sein; false: für eine
+        /// Einzelbuchung genügt eine erweiterte Vorlage.</param>
+        /// <param name="veraltet">True, wenn die Buchung auf eine Vorlage
+        /// verweist, die es so nicht (mehr) gibt.</param>
+        private static bool IstVorlageDerBuchung(Buchung buchung, int slot,
+            bool mehrzeilig, out bool veraltet)
+        {
+            veraltet = false;
+            if (slot < 0)
+            {
+                // Kennung gemerkt, aber keine Vorlage trägt sie mehr
+                veraltet = buchung != null && buchung.GruppenVorlage >= 0;
+                return false;
+            }
+
+            bool passt = slot < Einstellungen.Presets.Count;
+            if (passt)
+            {
+                var p = Einstellungen.Presets[slot];
+                passt = !p.IstLeer && (mehrzeilig ? p.IstMehrzeilig : p.IstErweitert);
+            }
+            veraltet = !passt;
+            return passt;
+        }
+
         private static BuchungViewModel ZeigeBearbeitenInternal(
             BuchungsDocument doc, Buchung buchung, IntPtr ownerHwnd, bool abgangErlaubt,
-            int vorgewaehltesPreset = -1)
+            int vorgewaehltesPreset = -1, bool bezugVeraltet = false)
         {
             EnsureWpfInitialized();
 
             var vm = new BuchungViewModel(doc, buchung)
             {
                 AbgangErlaubt = abgangErlaubt,
-                VorgewaehltesPreset = vorgewaehltesPreset
+                VorgewaehltesPreset = vorgewaehltesPreset,
+                VorlagenBezugVeraltet = bezugVeraltet
             };
+            if (bezugVeraltet)
+                vm.VorlagenHinweis =
+                    "Diese Buchung wurde mit einer Buchungsvorlage erfasst, die es "
+                    + "so nicht mehr gibt (gelöscht, umbenannt oder der Platz ist "
+                    + "anders belegt). Sie wird deshalb als einzelne Buchung "
+                    + "bearbeitet -- ohne die Zusatz-Felder der Vorlage.";
             BefuelleListen(vm);
             var view = new BuchungView(vm);
 

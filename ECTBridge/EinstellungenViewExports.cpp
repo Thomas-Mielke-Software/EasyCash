@@ -8,6 +8,7 @@
 #include "stdafx.h"
 #include "EinstellungenViewExports.h"
 #include "EasyCashDocBridge.h"      // CEasyCashDocBridge + GetEngine(bridge)
+#include "AppProfilShared.h"        // Fensterpositionen (Anleitung) im Profil
 
 #using "ECTEngine.dll"
 #using "ECTViews.dll"
@@ -51,6 +52,9 @@ HWND ECT_EinstellungenEinbetten(
 {
     try
     {
+        // Die Anleitung (Buchungsvorlagen) merkt sich ihre Position
+        ECTBridge_RegistriereAppProfil();
+
         // Falls ein Dokument offen ist: native Daten in die managed Engine
         // spiegeln und die BuchungsDocument^-Instanz an die WPF-Seite geben.
         // Die "Aktuelles Dokument"-Seite schreibt dann direkt in diese Engine.

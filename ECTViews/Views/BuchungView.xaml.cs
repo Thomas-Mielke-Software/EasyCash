@@ -36,8 +36,124 @@ namespace ECTViews.Views
             PreviewKeyUp += OnFensterPreviewKeyUp;
             Deactivated += (s, e) => VersteckeAltHinweise();
             Deactivated += (s, e) => SchliessePopups();
-            LocationChanged += (s, e) => SchliessePopups();
+            // Verschiebt der ANWENDER das Fenster, gehen die Popups zu (sie
+            // folgen dem Fenster nicht). Rueckt das Fenster dagegen selbst
+            // nach oben, weil es gewachsen ist, bleiben sie -- siehe
+            // HalteImArbeitsbereich.
+            LocationChanged += (s, e) => { if (!_rueckeSelbst) SchliessePopups(); };
             PreviewMouseDown += OnFensterPreviewMouseDown;
+
+            // Fensterhoehe an den Arbeitsbereich binden (siehe unten).
+            SourceInitialized += (s, e) => BegrenzeAufArbeitsbereich();
+            Loaded += (s, e) => BegrenzeAufArbeitsbereich();
+            LocationChanged += (s, e) => BegrenzeAufArbeitsbereich();
+            SizeChanged += (s, e) => HalteImArbeitsbereich();
+        }
+
+        // ----------------------------------------------------------
+        // Fensterhoehe und Scrollbereich
+        //
+        // Der Dialog passt seine Hoehe dem Inhalt an (SizeToContent=Height):
+        // laedt der Anwender eine Buchungsvorlage mit Zusatz-Feldern, waechst
+        // das Fenster. Zwei Dinge fehlen WPF dabei von Haus aus:
+        //   - eine Obergrenze: ohne MaxHeight wuechse das Fenster ueber den
+        //     Bildschirm hinaus, statt den Scrollbalken zu zeigen;
+        //   - das Nachruecken: das Fenster waechst nach UNTEN. Steht es
+        //     schon tief, muss es nach oben rutschen, damit die Knoepfe am
+        //     unteren Rand sichtbar bleiben.
+        // Hat der Anwender die Hoehe von Hand gezogen, schaltet WPF
+        // SizeToContent ab -- dann bleibt die Groesse, und der Scrollbalken
+        // uebernimmt.
+        // ----------------------------------------------------------
+
+        /// <summary>Arbeitsbereich (ohne Taskleiste) des Monitors, auf dem
+        /// das Fenster steht, in WPF-Einheiten.</summary>
+        private Rect Arbeitsbereich()
+        {
+            var hwnd = new System.Windows.Interop.WindowInteropHelper(this).Handle;
+            if (hwnd == IntPtr.Zero)
+                return SystemParameters.WorkArea;   // Fenster noch nicht erzeugt
+
+            // Screen liefert Geraete-Pixel, WPF rechnet in 1/96 Zoll.
+            var px = System.Windows.Forms.Screen.FromHandle(hwnd).WorkingArea;
+            var dpi = System.Windows.Media.VisualTreeHelper.GetDpi(this);
+            return new Rect(
+                new Point(px.Left / dpi.DpiScaleX, px.Top / dpi.DpiScaleY),
+                new Point(px.Right / dpi.DpiScaleX, px.Bottom / dpi.DpiScaleY));
+        }
+
+        private void BegrenzeAufArbeitsbereich()
+        {
+            double hoehe = Arbeitsbereich().Height;
+            if (hoehe > MinHeight && Math.Abs(MaxHeight - hoehe) > 0.5)
+                MaxHeight = hoehe;
+        }
+
+        // True, solange das Fenster sich selbst verschiebt (nicht der Anwender).
+        private bool _rueckeSelbst;
+
+        private void HalteImArbeitsbereich()
+        {
+            if (WindowState != WindowState.Normal || double.IsNaN(Top)) return;
+            var bereich = Arbeitsbereich();
+            if (Top + ActualHeight <= bereich.Bottom) return;
+
+            _rueckeSelbst = true;
+            try { Top = Math.Max(bereich.Top, bereich.Bottom - ActualHeight); }
+            finally { _rueckeSelbst = false; }
+
+            // Typischer Ausloeser ist das Laden einer Vorlage mit
+            // Zusatz-Feldern -- genau dann erscheint auch ihre Notiz. Den
+            // Balloon an der neuen Fensterposition neu aufbauen statt ihn
+            // (wie beim Verschieben von Hand) zu schliessen.
+            if (NotizBalloon.IsOpen)
+            {
+                NotizBalloon.IsOpen = false;
+                NotizBalloon.IsOpen = true;
+            }
+        }
+
+        /// <summary>Beim Scrollen blieben Vorlagen-Liste und Notiz-Balloon an
+        /// ihrer alten Bildschirmposition stehen (Popups folgen ihrem
+        /// Bezugselement nicht) -- also schliessen.</summary>
+        private void OnFelderScrollChanged(object sender, ScrollChangedEventArgs e)
+        {
+            if (Math.Abs(e.VerticalChange) > 0.5)
+                SchliessePopups();
+        }
+
+        /// <summary>
+        /// Mausrad ueber einer der inneren Listen (Bestandskonto, Betrieb,
+        /// Zusatz-Feld-Listen): eine WPF-Liste verschluckt das Mausrad auch
+        /// dann, wenn sie selbst schon am Anschlag steht -- der Dialog liesse
+        /// sich mit dem Zeiger ueber einer Liste nicht weiterrollen. Darum
+        /// rollt hier der aeussere Scrollbereich, sobald die innere Liste in
+        /// der gewuenschten Richtung nichts mehr zu rollen hat.
+        /// </summary>
+        private void OnFelderPreviewMouseWheel(object sender, MouseWheelEventArgs e)
+        {
+            // Innersten Scrollbereich zwischen Mauszeiger und FelderScroll
+            // suchen. Kommt das Ereignis aus einem Popup (Vorlagen-Liste),
+            // endet der visuelle Baum vorher -- dann nicht eingreifen.
+            ScrollViewer innen = null;
+            var element = e.OriginalSource as DependencyObject;
+            while (element != null && !ReferenceEquals(element, FelderScroll))
+            {
+                if (innen == null && element is ScrollViewer sv) innen = sv;
+                element = element is System.Windows.Media.Visual
+                       || element is System.Windows.Media.Media3D.Visual3D
+                    ? System.Windows.Media.VisualTreeHelper.GetParent(element)
+                    : LogicalTreeHelper.GetParent(element);
+            }
+            if (element == null || innen == null) return;
+
+            bool innenKannRollen = e.Delta > 0
+                ? innen.VerticalOffset > 0
+                : innen.VerticalOffset < innen.ScrollableHeight;
+            if (innenKannRollen) return;
+
+            FelderScroll.ScrollToVerticalOffset(FelderScroll.VerticalOffset - e.Delta / 3.0);
+            e.Handled = true;
         }
 
         /// <summary>Schliesst Vorlagen-Liste und Notiz-Balloon.</summary>
@@ -90,6 +206,11 @@ namespace ECTViews.Views
             viewModel.RequestClose += () => Close();
             viewModel.PresetNotizAnzeigen += ZeigeNotizBalloon;
             viewModel.RequestFokus += OnRequestFokus;
+            viewModel.PropertyChanged += (s, e) =>
+            {
+                if (e.PropertyName == nameof(BuchungViewModel.AbgelehnteBuchenVersuche))
+                    OnBuchenAbgelehnt(viewModel.AbgelehnteBuchenVersuche);
+            };
 
             // Ad-hoc-Kontoselektor: fehlt das per Feld-Spezifikation
             // ("$de:Formular=Id|...||") geforderte Konto, fragt der
@@ -155,6 +276,162 @@ namespace ECTViews.Views
                 box.Focus();
                 box.SelectAll();
             }), DispatcherPriority.Background);
+        }
+
+        // ------------------------------------------------------------------
+        // Abgelehnter Buchen-Versuch: Fokus auf das erste Feld mit Fehler,
+        // ab dem zweiten Versuch blinken die Fehlertexte (normal/fett).
+        // ------------------------------------------------------------------
+
+        public static readonly DependencyProperty FehlerFettProperty =
+            DependencyProperty.Register(nameof(FehlerFett), typeof(bool), typeof(BuchungView),
+                new PropertyMetadata(false));
+
+        /// <summary>Fehlertexte fett (ErrorStyle bindet daran).</summary>
+        public bool FehlerFett
+        {
+            get => (bool)GetValue(FehlerFettProperty);
+            set => SetValue(FehlerFettProperty, value);
+        }
+
+        private DispatcherTimer _blinkTimer;
+        private int _blinkSchritte;
+
+        private void OnBuchenAbgelehnt(int versuche)
+        {
+            if (versuche <= 0)
+            {
+                // frische Maske (Weiterbuchen): wieder normal
+                _blinkTimer?.Stop();
+                FehlerFett = false;
+                return;
+            }
+
+            // Erst nach dem Layout-Durchgang: die Fehlertexte sind eben
+            // erst sichtbar geworden.
+            Dispatcher.BeginInvoke(new Action(FokussiereErstenFehler),
+                DispatcherPriority.Loaded);
+
+            // Beim ersten Mal reicht der rote Text. Danach dreimal fett
+            // aufblinken und fett stehen bleiben -- sonst wirkt der Klick
+            // wie verschluckt, wenn der Fehler schon zu sehen war.
+            if (versuche >= 2) StarteBlinken();
+        }
+
+        private void StarteBlinken()
+        {
+            if (_blinkTimer == null)
+            {
+                _blinkTimer = new DispatcherTimer(DispatcherPriority.Normal, Dispatcher)
+                {
+                    Interval = TimeSpan.FromMilliseconds(180)
+                };
+                _blinkTimer.Tick += (s, e) =>
+                {
+                    // Schritte 1..5: fett, normal, fett, normal, fett
+                    _blinkSchritte++;
+                    FehlerFett = _blinkSchritte % 2 == 1;
+                    if (_blinkSchritte >= 5) _blinkTimer.Stop();
+                };
+            }
+            _blinkTimer.Stop();
+            _blinkSchritte = 0;
+            FehlerFett = false;
+            _blinkTimer.Start();
+        }
+
+        /// <summary>
+        /// Setzt den Fokus auf das Eingabefeld des obersten sichtbaren
+        /// Fehlertexts und rollt Feld und Fehlertext ins Bild. Fehlertexte
+        /// stehen im Dialog immer UNTER ihrem Feld (in derselben Box bzw.
+        /// demselben Zusatz-Feld-Template); gesucht wird darum das erste
+        /// Eingabe-Element im nächsten umschließenden Container. Ohne
+        /// eigenes Feld (Fehler der Vorschau-Zeilen, der Gruppe, versteckter
+        /// Felder) wird nur der Text ins Bild gerollt.
+        /// </summary>
+        private void FokussiereErstenFehler()
+        {
+            var stil = TryFindResource("ErrorStyle") as Style;
+            if (stil == null || !(Content is FrameworkElement wurzel)) return;
+
+            TextBlock erster = null;
+            double ersterY = double.MaxValue;
+            foreach (var tb in AlleImBaum<TextBlock>(wurzel))
+            {
+                if (tb.Style != stil || !tb.IsVisible || string.IsNullOrEmpty(tb.Text)) continue;
+                double y;
+                try { y = tb.TransformToAncestor(wurzel).Transform(new Point(0, 0)).Y; }
+                catch (InvalidOperationException) { continue; }
+                // Fehler außerhalb des Scrollbereichs (ausgeblendete Felder)
+                // nur, wenn es sonst keinen gibt
+                if (!IstImScrollbereich(tb)) y += 1e6;
+                if (y < ersterY) { ersterY = y; erster = tb; }
+            }
+            if (erster == null) return;
+
+            var feld = EingabeFuerFehler(erster);
+            if (feld != null)
+            {
+                feld.Focus();
+                // Feld UND Fehlertext darunter ins Bild
+                try
+                {
+                    // Fehlertext ist Geschwister, kein Kind des Felds
+                    var unten = erster.TransformToVisual(feld)
+                        .Transform(new Point(0, erster.ActualHeight)).Y;
+                    feld.BringIntoView(new Rect(0, 0, feld.ActualWidth,
+                        Math.Max(feld.ActualHeight, unten)));
+                }
+                catch (InvalidOperationException) { feld.BringIntoView(); }
+            }
+            else
+                erster.BringIntoView();
+        }
+
+        private bool IstImScrollbereich(DependencyObject d)
+        {
+            for (; d != null; d = System.Windows.Media.VisualTreeHelper.GetParent(d))
+                if (ReferenceEquals(d, FelderScroll)) return true;
+            return false;
+        }
+
+        /// <summary>Erstes bedienbares Eingabe-Element im kleinsten
+        /// umschließenden Container des Fehlertexts; höchstens bis zur
+        /// GroupBox (darüber gehörte es zu einer anderen Box).</summary>
+        private static FrameworkElement EingabeFuerFehler(TextBlock fehler)
+        {
+            DependencyObject d = System.Windows.Media.VisualTreeHelper.GetParent(fehler);
+            for (int tiefe = 0; d != null && tiefe < 12; tiefe++)
+            {
+                if (d is FrameworkElement container)
+                {
+                    foreach (var kandidat in AlleImBaum<FrameworkElement>(container))
+                    {
+                        bool eingabe = kandidat is TextBoxBase
+                            || kandidat is ComboBox || kandidat is ListBox
+                            || kandidat is CheckBox;
+                        // Teile einer ComboBox (ihr Editierfeld) nicht einzeln
+                        if (eingabe && kandidat is TextBoxBase
+                            && kandidat.TemplatedParent is ComboBox) continue;
+                        if (eingabe && kandidat.IsVisible && kandidat.IsEnabled
+                            && kandidat.Focusable)
+                            return kandidat;
+                    }
+                }
+                if (d is GroupBox || d is ScrollViewer) break;
+                d = System.Windows.Media.VisualTreeHelper.GetParent(d);
+            }
+            return null;
+        }
+
+        private static System.Collections.Generic.IEnumerable<T> AlleImBaum<T>(DependencyObject d)
+            where T : DependencyObject
+        {
+            if (d is T t) yield return t;
+            int n = System.Windows.Media.VisualTreeHelper.GetChildrenCount(d);
+            for (int i = 0; i < n; i++)
+                foreach (var x in AlleImBaum<T>(System.Windows.Media.VisualTreeHelper.GetChild(d, i)))
+                    yield return x;
         }
 
         /// <summary>Selektiert beim Fokus-Erhalt den vorhandenen Feldinhalt

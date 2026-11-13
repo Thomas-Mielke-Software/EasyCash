@@ -9,6 +9,7 @@
 // Copyleft (GPLv3) 2024 Thomas Mielke
 
 using System;
+using System.Collections.Generic;
 
 namespace ECTEngine
 {
@@ -238,11 +239,145 @@ namespace ECTEngine
         {
             Erweiterungen.Entferne(GruppenNs, "Buchungsgruppe");
             Erweiterungen.Entferne(GruppenNs, "BuchungsgruppeRolle");
-            Erweiterungen.Entferne(GruppenNs, "BuchungsgruppeVorlage");
             Erweiterungen.Entferne(GruppenNs, "SplitBasisbuchung");
             Erweiterungen.Entferne(GruppenNs, "SplitGegenbuchungMitVorsteuerabzug");
             Erweiterungen.Entferne(GruppenNs, "SplitGegenbuchungOhneVorsteuerabzug");
             Erweiterungen.Entferne(GruppenNs, "GewaehlterSplit");   // Alt-Split-Index
+            // Eine Kopie bzw. eine aufgelöste Gruppe ist eine gewöhnliche
+            // Buchung -- auch die Eingaben der Vorlage gehören dann nicht
+            // mehr dazu.
+            EntferneVorlagenBezug();
+        }
+
+        // ----------------------------------------------
+        // Vorlagen-Bezug (Basis-Buchung bzw. Einzelbuchung)
+        //
+        // Damit sich eine mit einer erweiterten Vorlage gebuchte Buchung
+        // später wieder MIT der Vorlage bearbeiten lässt, merkt sie sich,
+        // was im Dialog eingegeben wurde -- aus den gebuchten Beträgen
+        // allein lässt sich z.B. ein "Anteil 30 %" nicht sicher
+        // zurückrechnen. Alles liegt in der Erweiterung (Namensraum
+        // "EasyCash"):
+        //
+        //   BuchungsgruppeVorlage   Vorlagen-Platz 0-99 (Name historisch --
+        //                           gilt auch für Einzelbuchungen)
+        //   VorlageId               feste Kennung der Vorlage (Preset.Id):
+        //                           übersteht Umbenennen und Umnummerieren;
+        //                           gibt es keine Vorlage mit dieser Kennung
+        //                           mehr, wird die Buchung einzeln bearbeitet
+        //                           (Einstellungen.FindeVorlagenSlot)
+        //   VorlageName             Name der Vorlage beim Buchen (nur noch
+        //                           für Meldungen)
+        //   VorlageEingabeBetrag    eingegebener Betrag, wenn die Basis
+        //                           einen anderen bucht ("Basis bucht $rest")
+        //   VorlageEingabeText      Inhalt des Beschreibungsfelds, wenn die
+        //                           Basis-Beschreibung ein Template ist
+        //   VorlageEingabeBeleg     eingegebene Belegnummer, wenn die der
+        //                           Basis ein Template ist
+        //   VorlageFeld_<name>      Wert des Zusatz-Felds <name>
+        // ----------------------------------------------
+
+        private const string FeldKeyPraefix = "VorlageFeld_";
+
+        /// <summary>Name der Vorlage, mit der gebucht wurde ("" = unbekannt,
+        /// z.B. Buchungen aus der Zeit vor den Zusatz-Feldern).</summary>
+        public string VorlagenName =>
+            VorlagenFelder.Dekodiere(Erweiterungen.Hole(GruppenNs, "VorlageName"));
+
+        /// <summary>Kennung der Vorlage, mit der gebucht wurde ("" = keine
+        /// gemerkt; dann zählt allein der Platz).</summary>
+        public string VorlagenId => Erweiterungen.Hole(GruppenNs, "VorlageId") ?? "";
+
+        /// <summary>Im Dialog eingegebener Betrag (null = nicht gemerkt, die
+        /// Basis bucht dann den Eingabebetrag selbst).</summary>
+        public decimal? VorlagenEingabeBetrag
+        {
+            get
+            {
+                var v = Erweiterungen.Hole(GruppenNs, "VorlageEingabeBetrag");
+                return decimal.TryParse(v, System.Globalization.NumberStyles.Number,
+                    System.Globalization.CultureInfo.InvariantCulture, out decimal d)
+                    ? d : (decimal?)null;
+            }
+        }
+
+        /// <summary>Im Dialog eingegebener Beschreibungstext (null = nicht
+        /// gemerkt, die Beschreibung wurde unverändert gebucht).</summary>
+        public string VorlagenEingabeText =>
+            Erweiterungen.Hat(GruppenNs, "VorlageEingabeText")
+                ? VorlagenFelder.Dekodiere(Erweiterungen.Hole(GruppenNs, "VorlageEingabeText"))
+                : null;
+
+        /// <summary>Im Dialog eingegebene Belegnummer (null = nicht gemerkt,
+        /// sie wurde unverändert gebucht).</summary>
+        public string VorlagenEingabeBeleg =>
+            Erweiterungen.Hat(GruppenNs, "VorlageEingabeBeleg")
+                ? VorlagenFelder.Dekodiere(Erweiterungen.Hole(GruppenNs, "VorlageEingabeBeleg"))
+                : null;
+
+        /// <summary>Gemerkte Werte der Zusatz-Felder (Platzhalter-Name ->
+        /// Wert in Speicherform); leer, wenn keine gemerkt sind.</summary>
+        public Dictionary<string, string> VorlagenFeldWerte()
+        {
+            var werte = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+            foreach (var e in Erweiterungen.Alle())
+                if (e.Ns == GruppenNs && e.Key.StartsWith(FeldKeyPraefix, StringComparison.Ordinal))
+                    werte[e.Key.Substring(FeldKeyPraefix.Length)] =
+                        VorlagenFelder.Dekodiere(e.Wert);
+            return werte;
+        }
+
+        /// <summary>Merkt den Vorlagen-Bezug in der Buchung (ersetzt einen
+        /// vorhandenen vollständig).</summary>
+        /// <param name="eingabeBetrag">null = nicht merken.</param>
+        /// <param name="eingabeText">null = nicht merken.</param>
+        /// <param name="eingabeBeleg">null = nicht merken.</param>
+        /// <param name="vorlagenId">Preset.Id; null/"" = nicht merken.</param>
+        public void SetzeVorlagenBezug(int vorlagenSlot, string vorlagenName,
+            decimal? eingabeBetrag, string eingabeText, string eingabeBeleg,
+            IEnumerable<FeldWert> felder, string vorlagenId = null)
+        {
+            EntferneVorlagenBezug();
+            if (vorlagenSlot >= 0)
+                Erweiterungen.Setze(GruppenNs, "BuchungsgruppeVorlage",
+                    vorlagenSlot.ToString(System.Globalization.CultureInfo.InvariantCulture));
+            if (!string.IsNullOrEmpty(vorlagenId))
+                Erweiterungen.Setze(GruppenNs, "VorlageId", vorlagenId);
+            if (!string.IsNullOrEmpty(vorlagenName))
+                Erweiterungen.Setze(GruppenNs, "VorlageName",
+                    VorlagenFelder.Kodiere(vorlagenName));
+            if (eingabeBetrag.HasValue)
+                Erweiterungen.Setze(GruppenNs, "VorlageEingabeBetrag",
+                    eingabeBetrag.Value.ToString(System.Globalization.CultureInfo.InvariantCulture));
+            if (eingabeText != null)
+                Erweiterungen.Setze(GruppenNs, "VorlageEingabeText",
+                    VorlagenFelder.Kodiere(eingabeText));
+            if (eingabeBeleg != null)
+                Erweiterungen.Setze(GruppenNs, "VorlageEingabeBeleg",
+                    VorlagenFelder.Kodiere(eingabeBeleg));
+            if (felder != null)
+                foreach (var w in felder)
+                    if (w?.Feld != null && w.Feld.Name.Length > 0)
+                        Erweiterungen.Setze(GruppenNs, FeldKeyPraefix + w.Feld.Name,
+                            VorlagenFelder.Kodiere(w.Roh));
+        }
+
+        /// <summary>Entfernt den Vorlagen-Bezug (die Gruppen-Zugehörigkeit
+        /// selbst bleibt -- siehe <see cref="EntferneGruppe"/>).</summary>
+        public void EntferneVorlagenBezug()
+        {
+            Erweiterungen.Entferne(GruppenNs, "BuchungsgruppeVorlage");
+            Erweiterungen.Entferne(GruppenNs, "VorlageName");
+            Erweiterungen.Entferne(GruppenNs, "VorlageId");
+            Erweiterungen.Entferne(GruppenNs, "VorlageEingabeBetrag");
+            Erweiterungen.Entferne(GruppenNs, "VorlageEingabeText");
+            Erweiterungen.Entferne(GruppenNs, "VorlageEingabeBeleg");
+            var feldKeys = new List<string>();
+            foreach (var e in Erweiterungen.Alle())
+                if (e.Ns == GruppenNs && e.Key.StartsWith(FeldKeyPraefix, StringComparison.Ordinal))
+                    feldKeys.Add(e.Key);
+            foreach (var k in feldKeys)
+                Erweiterungen.Entferne(GruppenNs, k);
         }
 
         /// <summary>True wenn die Buchung Teil einer Buchungsgruppe ist

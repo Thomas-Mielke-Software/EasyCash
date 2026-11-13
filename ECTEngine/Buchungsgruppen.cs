@@ -1,18 +1,34 @@
-// Buchungsgruppen.cs -- Instanziierung von Buchungsgruppen-Vorlagen
+// Buchungsgruppen.cs -- Instanziierung von Buchungsvorlagen
 //
-// Rechnet die Zusatz-Zeilen einer mehrzeiligen Preset-Vorlage gegen die
-// Basis-Buchung aus (Formeln + Templates via FormelParser) und baut die
-// fertigen, per Gruppen-UUID verknüpften Buchungen. Liegt in der Engine,
-// damit die Logik ohne UI testbar ist -- das BuchungViewModel bindet nur.
+// Rechnet eine Vorlage gegen die Eingaben des Buchen-Dialogs aus (Formeln
+// + Templates via FormelParser) und baut die fertigen Buchungen: die
+// Basis-Buchung und -- bei einer Buchungsgruppen-Vorlage -- die per
+// Gruppen-UUID verknüpften Zusatz-Buchungen. Liegt in der Engine, damit
+// die Logik ohne UI testbar ist -- das BuchungViewModel bindet nur.
 //
-// Ablauf beim Buchen einer Gruppe:
-//   1. Dialog baut die Basis-Buchung aus den Feldern (Zeile 0).
-//   2. Berechne() löst jede Zusatz-Zeile auf ($rest läuft mit).
+// Eingaben sind die Basis-Buchung (Zeile 0, die Original-Felder des
+// Dialogs) und die Werte der ZUSATZ-FELDER der Vorlage (VorlagenFelder.cs).
+// Beides steht den Formeln und Templates als Variablen zur Verfügung.
+//
+// Ablauf beim Buchen:
+//   1. Dialog baut die Basis-Buchung aus den Feldern (Zeile 0). Ist das
+//      Betragsfeld gesperrt/ausgeblendet, kommt ihr Betrag vorab aus
+//      BerechneEingabeBetrag().
+//   2. Berechne() löst jede Zusatz-Zeile auf ($rest läuft mit), danach
+//      Betrag, Beschreibung und Belegnummer der Basis.
 //   3. BaueBuchungen() erzeugt Basis + Zusatz-Buchungen mit gemeinsamer
-//      UUID (Erweiterungs-Keys, siehe Buchung.SetzeGruppe).
+//      UUID (Erweiterungs-Keys, siehe Buchung.SetzeGruppe) und merkt die
+//      Eingaben in der Basis (Buchung.SetzeVorlagenBezug), damit sich die
+//      Buchung später wieder mit der Vorlage bearbeiten lässt.
+//
+// Zeilen ohne Betrag werden nicht gebucht: eine Zeile, deren Formel 0
+// ergibt (leer gelassenes Skonto, nicht gesetztes Häkchen), fällt weg --
+// ebenso eine Zeile ganz ohne Betrags-Formel (Vorlagen aus der Zeit der
+// manuellen Zeilen-Eingabe; die übernehmen heute die Zusatz-Felder).
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace ECTEngine
 {
@@ -30,40 +46,49 @@ namespace ECTEngine
         public string Betrieb { get; internal set; } = "";
         public string Bestandskonto { get; internal set; } = "";
 
-        /// <summary>Brutto-Betrag der Zeile (berechnet oder manuell).</summary>
+        /// <summary>Brutto-Betrag der Zeile.</summary>
         public decimal Brutto { get; internal set; }
         /// <summary>MWSt im x1000-Format (19 % = 19000).</summary>
         public int MwstPromille { get; internal set; }
 
-        /// <summary>True: Betrag ist im Dialog manuell einzugeben.</summary>
-        public bool BetragManuell { get; internal set; }
-        /// <summary>True: MWSt ist im Dialog wählbar (Vorlage lässt sie offen).</summary>
-        public bool MwstManuell { get; internal set; }
+        /// <summary>True: die Zeile wird NICHT gebucht (Betrag 0 oder keine
+        /// Betrags-Formel). Der Grund steht in <see cref="Hinweis"/>.</summary>
+        public bool Uebersprungen { get; internal set; }
+        public string Hinweis { get; internal set; } = "";
 
         /// <summary>Formel-/Auswertungsfehler dieser Zeile ("" = ok).</summary>
         public string Fehler { get; internal set; } = "";
-
-        /// <summary>Anzahl der Eingabefelder -- Grundlage der
-        /// Darstellungs-Heuristik (kompakt vs. Maske).</summary>
-        public int AnzahlEingabefelder =>
-            (BetragManuell ? 1 : 0) + (MwstManuell ? 1 : 0);
     }
 
     /// <summary>Ergebnis von BuchungsgruppenRechner.Berechne.</summary>
     public sealed class GruppenBerechnung
     {
+        /// <summary>Alle Zeilen der Vorlage, auch die übersprungenen.</summary>
         public IReadOnlyList<GruppenZeile> Zeilen { get; internal set; }
             = Array.Empty<GruppenZeile>();
+
+        /// <summary>Die Zeilen, die tatsächlich gebucht werden.</summary>
+        public IEnumerable<GruppenZeile> GebuchteZeilen =>
+            Zeilen.Where(z => !z.Uebersprungen);
 
         /// <summary>Tatsächlich zu buchender Brutto-Betrag der Basis-Zeile
         /// (via BasisBetragFormel ggf. abweichend von der Eingabe).</summary>
         public decimal BasisGebuchtBrutto { get; internal set; }
 
+        /// <summary>Beschreibung der Basis-Buchung (BasisTextTemplate
+        /// aufgelöst; ohne Template der Inhalt des Beschreibungsfelds).</summary>
+        public string BasisBeschreibung { get; internal set; } = "";
+
+        /// <summary>Belegnummer der Basis-Buchung (BasisBelegTemplate
+        /// aufgelöst; ohne Template die eingegebene).</summary>
+        public string BasisBelegnummer { get; internal set; } = "";
+
         /// <summary>Eingabe-Brutto minus Summe aller Zusatz-Zeilen
         /// (Endstand von $rest).</summary>
         public decimal Rest { get; internal set; }
 
-        /// <summary>Fehler der BasisBetragFormel ("" = ok).</summary>
+        /// <summary>Fehler der Basis-Buchung ("" = ok): Formelfehler oder
+        /// ein Basis-Betrag, den die Zusatz-Zeilen aufgezehrt haben.</summary>
         public string BasisFehler { get; internal set; } = "";
 
         public bool HatFehler
@@ -81,19 +106,32 @@ namespace ECTEngine
     public static class BuchungsgruppenRechner
     {
         /// <summary>
-        /// Löst alle Zusatz-Zeilen der Vorlage gegen die Basis-Buchung auf.
+        /// Eingabe-Betrag einer Vorlage, deren Betragsfeld gesperrt oder
+        /// ausgeblendet ist (VorlagenErweiterung.EingabeBetragFormel).
+        /// Rechnet nur mit den Zusatz-Feldern, Konstanten und $vat1..$vat4.
         /// </summary>
-        /// <param name="vorlage">Mehrzeiliges Preset.</param>
+        /// <returns>null, wenn die Vorlage keine solche Formel hat.</returns>
+        public static FormelErgebnis BerechneEingabeBetrag(Preset vorlage,
+            IEnumerable<FeldWert> felder)
+        {
+            string formel = vorlage?.Erweiterung.EingabeBetragFormel;
+            if (string.IsNullOrEmpty(formel)) return null;
+            var e = FormelParser.Berechne(formel, FormelParser.FeldVariablen(felder));
+            return e.Ok
+                ? FormelErgebnis.Erfolg(decimal.Round(e.Wert, 2, MidpointRounding.AwayFromZero))
+                : e;
+        }
+
+        /// <summary>
+        /// Löst die Vorlage gegen die Basis-Buchung und die Feldwerte auf.
+        /// </summary>
+        /// <param name="vorlage">Die Buchungsvorlage (mit oder ohne
+        /// Zusatz-Zeilen).</param>
         /// <param name="basis">Basis-Buchung mit dem EINGABE-Betrag
         /// (Zeile 0, wie im Dialog erfasst).</param>
-        /// <param name="manuelleBruttos">Manuell eingegebene Brutto-Beträge
-        /// pro Zusatz-Zeile (null = nicht eingegeben); nur für Zeilen mit
-        /// leerer Betrag-Formel relevant.</param>
-        /// <param name="manuelleMwstPromille">Manuell gewählte MWSt (x1000)
-        /// pro Zusatz-Zeile; nur für Zeilen mit leerem MWSt-Ausdruck.</param>
+        /// <param name="felder">Werte der Zusatz-Felder (null = keine).</param>
         public static GruppenBerechnung Berechne(Preset vorlage, Buchung basis,
-            IReadOnlyList<decimal?> manuelleBruttos = null,
-            IReadOnlyList<int?> manuelleMwstPromille = null)
+            IReadOnlyList<FeldWert> felder = null)
         {
             var ergebnis = new GruppenBerechnung();
             if (vorlage == null || basis == null) return ergebnis;
@@ -112,30 +150,34 @@ namespace ECTEngine
                           : vz.Art == "A" ? Buchungsart.Ausgabe
                           : basis.Art;
 
-                var zahlVars = FormelParser.ZahlVariablen(basis, rest, zeile.Index);
-                var textVars = FormelParser.TextVariablen(basis, rest, zeile.Index);
+                var zahlVars = FormelParser.ZahlVariablen(basis, rest, zeile.Index, felder);
+                var textVars = FormelParser.TextVariablen(basis, rest, zeile.Index, felder);
 
-                // Betrag: Formel oder manuell
-                zeile.BetragManuell = vz.BetragManuell;
-                if (vz.BetragManuell)
+                // Betrag: Formel. Ohne Formel gibt es nichts zu buchen.
+                if (string.IsNullOrWhiteSpace(vz.BetragFormel))
                 {
-                    zeile.Brutto = (manuelleBruttos != null && i < manuelleBruttos.Count
-                        ? manuelleBruttos[i] : null) ?? 0m;
+                    zeile.Uebersprungen = true;
+                    zeile.Hinweis = "ohne Betrags-Formel -- wird nicht gebucht";
                 }
                 else
                 {
                     var e = FormelParser.Berechne(vz.BetragFormel, zahlVars);
-                    if (e.Ok) zeile.Brutto = decimal.Round(e.Wert, 2, MidpointRounding.AwayFromZero);
+                    if (e.Ok)
+                    {
+                        zeile.Brutto = decimal.Round(e.Wert, 2, MidpointRounding.AwayFromZero);
+                        if (zeile.Brutto == 0m)
+                        {
+                            zeile.Uebersprungen = true;
+                            zeile.Hinweis = "Betrag 0 -- wird nicht gebucht";
+                        }
+                    }
                     else zeile.Fehler = "Betrag: " + e.Fehler;
                 }
 
-                // MWSt: Ausdruck (Prozent-Formel bzw. x1000-Rohwert) oder manuell
-                zeile.MwstManuell = string.IsNullOrEmpty(vz.MwstAusdruck);
-                if (zeile.MwstManuell)
-                {
-                    zeile.MwstPromille = (manuelleMwstPromille != null && i < manuelleMwstPromille.Count
-                        ? manuelleMwstPromille[i] : null) ?? basis.BruttoBetrag.MwstPromille;
-                }
+                // MWSt: Ausdruck (Prozent-Formel bzw. x1000-Rohwert);
+                // leer = Satz der Basis
+                if (string.IsNullOrWhiteSpace(vz.MwstAusdruck))
+                    zeile.MwstPromille = basis.BruttoBetrag.MwstPromille;
                 else
                 {
                     int? promille = WerteMwstAusdruckAus(vz.MwstAusdruck, zahlVars, out string mwstFehler);
@@ -151,6 +193,19 @@ namespace ECTEngine
                 zeile.Betrieb       = LoeseText(vz.BetriebTemplate, basis.Betrieb, textVars, basis.Datum);
                 zeile.Bestandskonto = LoeseText(vz.BestandskontoTemplate, basis.Bestandskonto, textVars, basis.Datum);
 
+                if (zeile.Uebersprungen)
+                {
+                    // Was nicht gebucht wird, kann das Buchen auch nicht
+                    // blockieren (z.B. ein noch nicht angelegtes Konto einer
+                    // Zeile, deren Betrag 0 ist).
+                    zeile.Fehler = "";
+                }
+                else if (zeile.Fehler.Length == 0 && string.IsNullOrWhiteSpace(zeile.Konto))
+                {
+                    // Ein Konto aus einem (noch) leeren Zusatz-Feld
+                    zeile.Fehler = "Konto: kein Konto angegeben.";
+                }
+
                 rest -= zeile.Brutto;
                 zeilen.Add(zeile);
             }
@@ -160,14 +215,17 @@ namespace ECTEngine
 
             // Basis-Betrag: Formel (z.B. "$rest" bei belegweiser Aufteilung)
             // oder unverändert die Eingabe
-            if (string.IsNullOrEmpty(vorlage.BasisBetragFormel))
+            if (string.IsNullOrWhiteSpace(vorlage.BasisBetragFormel))
                 ergebnis.BasisGebuchtBrutto = eingabeBrutto;
             else
             {
-                var basisVars = FormelParser.ZahlVariablen(basis, rest, 0);
+                var basisVars = FormelParser.ZahlVariablen(basis, rest, 0, felder);
                 var e = FormelParser.Berechne(vorlage.BasisBetragFormel, basisVars);
                 if (e.Ok)
+                {
                     ergebnis.BasisGebuchtBrutto = decimal.Round(e.Wert, 2, MidpointRounding.AwayFromZero);
+                    ergebnis.BasisFehler = PruefeBasisBetrag(eingabeBrutto, ergebnis.BasisGebuchtBrutto);
+                }
                 else
                 {
                     ergebnis.BasisGebuchtBrutto = eingabeBrutto;
@@ -175,34 +233,93 @@ namespace ECTEngine
                 }
             }
 
+            // Beschreibung und Belegnummer der Basis (Templates der Vorlage)
+            var basisText = FormelParser.TextVariablen(basis, rest, 0, felder);
+            ergebnis.BasisBeschreibung = LoeseText(vorlage.Erweiterung.BasisTextTemplate,
+                basis.Beschreibung, basisText, basis.Datum);
+            ergebnis.BasisBelegnummer = LoeseText(vorlage.Erweiterung.BasisBelegTemplate,
+                basis.Belegnummer, basisText, basis.Datum);
+
             return ergebnis;
         }
 
         /// <summary>
-        /// Baut aus Basis + Berechnung die fertigen, per Gruppen-UUID
-        /// verknüpften Buchungen (Basis zuerst, Rolle 0). Die Basis-Buchung
-        /// wird dabei verändert (Betrag ggf. via BasisBetragFormel,
-        /// Gruppen-Keys in der Erweiterung).
+        /// Wacht darüber, dass die Formel der Basis-Buchung etwas Buchbares
+        /// übrig lässt. Typischer Fall ist die Aufteilung ("Basis bucht
+        /// $rest"): übersteigen die Zusatz-Beträge die Eingabe, kippte die
+        /// Basis ins andere Vorzeichen (aus der Ausgabe würde faktisch eine
+        /// Einnahme) -- bleibt genau 0, entstünde eine leere Buchung.
+        /// Eine Eingabe von 0 wird nicht hier, sondern vom Dialog bemängelt.
+        /// </summary>
+        private static string PruefeBasisBetrag(decimal eingabe, decimal gebucht)
+        {
+            if (eingabe == 0m) return "";
+            if (gebucht == 0m)
+                return "Für die Basis-Buchung bleibt kein Betrag übrig (0,00) -- "
+                     + "bitte die Beträge prüfen.";
+            if ((eingabe > 0m) != (gebucht > 0m))
+                return "Die Zusatz-Beträge übersteigen den eingegebenen Betrag: für "
+                     + "die Basis-Buchung blieben "
+                     + Waehrungsformat.Betrag(gebucht) + ".";
+            return "";
+        }
+
+        /// <summary>
+        /// Baut aus Basis + Berechnung die fertigen Buchungen (Basis zuerst,
+        /// Rolle 0). Die Basis-Buchung wird dabei verändert: Betrag,
+        /// Beschreibung und Belegnummer laut Berechnung, Gruppen-Keys und
+        /// Vorlagen-Bezug in der Erweiterung. Bleibt keine Zusatz-Zeile
+        /// übrig (alle übersprungen bzw. Vorlage ohne Zeilen), entsteht eine
+        /// gewöhnliche Einzelbuchung OHNE Gruppen-Keys.
         /// </summary>
         /// <param name="vorhandeneUuid">Beim BEARBEITEN einer bestehenden
         /// Gruppe deren UUID (bleibt erhalten); null = neue Gruppe.</param>
+        /// <param name="felder">Werte der Zusatz-Felder -- werden in der
+        /// Basis gemerkt.</param>
         public static List<Buchung> BaueBuchungen(Preset vorlage, int vorlagenSlot,
-            Buchung basis, GruppenBerechnung berechnung, string vorhandeneUuid = null)
+            Buchung basis, GruppenBerechnung berechnung, string vorhandeneUuid = null,
+            IReadOnlyList<FeldWert> felder = null)
         {
             var liste = new List<Buchung> { basis };
-            if (vorlage == null || berechnung == null || berechnung.Zeilen.Count == 0)
-                return liste;
+            if (vorlage == null || berechnung == null) return liste;
 
-            string uuid = string.IsNullOrEmpty(vorhandeneUuid)
-                ? Guid.NewGuid().ToString() : vorhandeneUuid;
+            // Eingaben festhalten, bevor die Basis verändert wird
+            decimal eingabeBrutto = basis.BruttoBetrag.BruttoWert;
+            string eingabeText = basis.Beschreibung ?? "";
+            string eingabeBeleg = basis.Belegnummer ?? "";
 
-            // Basis: ggf. reduzierter Betrag (MWSt-Satz der Eingabe bleibt)
+            // Basis: ggf. reduzierter Betrag (MWSt-Satz der Eingabe bleibt),
+            // Beschreibung/Beleg aus den Templates
             basis.BruttoBetrag = Betrag.AusCent(
                 (int)decimal.Round(berechnung.BasisGebuchtBrutto * 100m, 0, MidpointRounding.AwayFromZero),
                 basis.BruttoBetrag.MwstPromille);
-            basis.SetzeGruppe(uuid, 0, vorlagenSlot);
+            basis.Beschreibung = berechnung.BasisBeschreibung;
+            basis.Belegnummer = berechnung.BasisBelegnummer;
 
-            foreach (var z in berechnung.Zeilen)
+            var gebucht = berechnung.GebuchteZeilen.ToList();
+
+            // Reihenfolge: EntferneGruppe räumt auch einen alten
+            // Vorlagen-Bezug ab, darum zuerst.
+            string uuid = null;
+            if (gebucht.Count > 0)
+            {
+                uuid = string.IsNullOrEmpty(vorhandeneUuid)
+                    ? Guid.NewGuid().ToString() : vorhandeneUuid;
+                basis.SetzeGruppe(uuid, 0, vorlagenSlot);
+            }
+            else
+                basis.EntferneGruppe();
+
+            basis.SetzeVorlagenBezug(vorlagenSlot, vorlage.Text,
+                string.IsNullOrWhiteSpace(vorlage.BasisBetragFormel)
+                    ? (decimal?)null : eingabeBrutto,
+                string.IsNullOrEmpty(vorlage.Erweiterung.BasisTextTemplate)
+                    ? null : eingabeText,
+                string.IsNullOrEmpty(vorlage.Erweiterung.BasisBelegTemplate)
+                    ? null : eingabeBeleg,
+                felder, vorlage.Id);
+
+            foreach (var z in gebucht)
             {
                 var b = new Buchung
                 {

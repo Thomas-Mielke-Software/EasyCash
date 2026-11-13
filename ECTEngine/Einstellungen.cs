@@ -49,11 +49,13 @@ namespace ECTEngine
         public string Art { get; }
         /// <summary>Konto-Name oder Template (Pflichtfeld der Zeile).</summary>
         public string Konto { get; }
-        /// <summary>MWSt: Festwert x1000 ("19000") oder Variable ("$vat2");
-        /// leer = wie Basiszeile.</summary>
+        /// <summary>MWSt: Festwert in Prozent ("7"), x1000-Rohwert ("19000")
+        /// oder Formel/Variable ("$vat2", "$satz2"); leer = Satz der Basis.</summary>
         public string MwstAusdruck { get; }
-        /// <summary>Arithmetische Formel ("$brutto*0,3", "$rest");
-        /// leer = manuelle Eingabe beim Buchen.</summary>
+        /// <summary>Arithmetische Formel ("$brutto*0,3", "$rest", "$skonto").
+        /// Pflicht: eine Zeile OHNE Formel wird beim Buchen übersprungen
+        /// (früher: manuelle Eingabe im Zeilen-Bereich -- abgelöst durch die
+        /// Zusatz-Felder; alte Vorlagen werden so tolerant gelesen).</summary>
         public string BetragFormel { get; }
         /// <summary>Beschreibungs-Template ("$B (7% Anteil)");
         /// leer = von Basis kopiert.</summary>
@@ -65,8 +67,9 @@ namespace ECTEngine
         public string BetriebTemplate { get; }
         /// <summary>Bestandskonto (fest oder Template); leer = von Basis kopiert.</summary>
         public string BestandskontoTemplate { get; }
-        /// <summary>Darstellungs-Override im Buchen-Dialog:
-        /// "" = Heuristik, "kompakt", "maske".</summary>
+        /// <summary>Ohne Wirkung (früher Darstellungs-Override der
+        /// Eingabezeilen: "kompakt"/"maske"). Wird nur noch durchgereicht,
+        /// damit bestehende Vorlagen unverändert gespeichert bleiben.</summary>
         public string Darstellung { get; }
 
         public PresetZeile(string art, string konto, string mwstAusdruck,
@@ -85,8 +88,10 @@ namespace ECTEngine
             Darstellung           = darstellung           ?? "";
         }
 
-        /// <summary>True wenn der Betrag beim Buchen manuell einzugeben ist.</summary>
-        public bool BetragManuell => string.IsNullOrEmpty(BetragFormel);
+        /// <summary>True wenn die Zeile keine Betrags-Formel hat -- sie wird
+        /// dann beim Buchen übersprungen (Name aus der Zeit der manuellen
+        /// Zeilen-Eingabe).</summary>
+        public bool BetragManuell => string.IsNullOrWhiteSpace(BetragFormel);
 
         public bool IstLeer =>
             Konto == "" && BetragFormel == "" && TextTemplate == "" &&
@@ -127,10 +132,31 @@ namespace ECTEngine
         /// </summary>
         public string BasisBetragFormel { get; }
 
+        /// <summary>
+        /// Erweiterung des Buchen-Dialogs durch die Vorlage: Zusatz-Felder,
+        /// Regeln für die Original-Felder und die Templates/Vorgaben der
+        /// Basis-Buchung (siehe VorlagenFelder.cs). Nie null.
+        /// </summary>
+        public VorlagenErweiterung Erweiterung { get; }
+
+        /// <summary>
+        /// Feste Kennung der Vorlage (ini-Key NNId, eine GUID). Bleibt beim
+        /// Umbenennen und beim Verschieben auf eine andere Nummer erhalten;
+        /// darüber findet eine gebuchte Buchung ihre Vorlage wieder (siehe
+        /// <see cref="Einstellungen.FindeVorlagenSlot"/>). "" = noch keine
+        /// vergeben -- <see cref="Einstellungen.SpeicherePreset"/> vergibt
+        /// sie. Gehört nicht ins XML-Austauschformat: eine importierte
+        /// Vorlage ist eine neue.
+        /// </summary>
+        public string Id { get; }
+
         public Preset(string text, bool ausgabe, int mwst, int afaj, string konto,
             string notiz = "", bool degressiv = false, int afaSatz = 0,
-            IReadOnlyList<PresetZeile> zeilen = null, string basisBetragFormel = null)
+            IReadOnlyList<PresetZeile> zeilen = null, string basisBetragFormel = null,
+            VorlagenErweiterung erweiterung = null, string id = null)
         {
+            Id = id ?? "";
+            Erweiterung = erweiterung ?? VorlagenErweiterung.Leer;
             Text      = text    ?? "";
             Ausgabe   = ausgabe;
             Mwst      = mwst;
@@ -147,6 +173,22 @@ namespace ECTEngine
 
         /// <summary>True wenn das Preset eine Buchungsgruppen-Vorlage ist.</summary>
         public bool IstMehrzeilig => Zeilen.Count > 0;
+
+        /// <summary>Zusatz-Felder der Vorlage (Kurzform für
+        /// <c>Erweiterung.Felder</c>).</summary>
+        public IReadOnlyList<PresetFeld> Felder => Erweiterung.Felder;
+
+        /// <summary>
+        /// True, wenn die Vorlage mehr tut, als die Dialog-Felder einmalig
+        /// vorzubelegen: Zusatz-Zeilen, Zusatz-Felder, Original-Feld-Regeln
+        /// oder Formeln/Templates für die Basis-Buchung. Der Buchen-Dialog
+        /// hält eine solche Vorlage bis zum Buchen "aktiv" (rechnet live
+        /// mit, zeigt die Vorschau und merkt sich den Vorlagen-Bezug in der
+        /// Buchung).
+        /// </summary>
+        public bool IstErweitert =>
+            IstMehrzeilig || !Erweiterung.IstLeer
+            || !string.IsNullOrWhiteSpace(BasisBetragFormel);
     }
 
     /// <summary>
@@ -365,8 +407,184 @@ namespace ECTEngine
             Speichere(pfx + "AfASatz", p.AfaSatz);
             Speichere(pfx + "BasisBetrag", p.BasisBetragFormel);
             SchreibeZusatzZeilen(pfx, p.Zeilen);
+            SchreibeErweiterung(pfx, p.Erweiterung);
+            SpeichereWennGeaendert(pfx + "Id", VorlagenIdFuer(pfx, p));
             BaueListenAuf();
             PresetsGeaendert?.Invoke();
+        }
+
+        /// <summary>Kennung, unter der <paramref name="p"/> gespeichert wird:
+        /// die eigene, sonst die des Platzes (der Editor speichert bei jeder
+        /// Änderung ein frisch gebautes Preset -- es darf dabei keine neue
+        /// bekommen), sonst eine neue. Ein geleerter Platz verliert sie, eine
+        /// später dort angelegte Vorlage ist eine andere.</summary>
+        private static string VorlagenIdFuer(string pfx, Preset p)
+        {
+            if (p.IstLeer) return "";
+            if (p.Id.Length > 0) return p.Id;
+            var vorhanden = Hole(pfx + "Id");
+            return vorhanden.Length > 0 ? vorhanden : NeueVorlagenId();
+        }
+
+        private static string NeueVorlagenId() => Guid.NewGuid().ToString("N");
+
+        /// <summary>
+        /// Platz der Vorlage, mit der <paramref name="b"/> gebucht wurde,
+        /// oder -1. Mit gemerkter Kennung (<see cref="Buchung.VorlagenId"/>)
+        /// zählt allein sie: zuerst im gemerkten Platz, sonst in allen (die
+        /// Vorlage kann umnummeriert worden sein); umbenannt sein darf sie
+        /// ohnehin. Ohne Kennung (Buchungen aus der Zeit davor) bleibt es
+        /// beim gemerkten Platz.
+        /// </summary>
+        public static int FindeVorlagenSlot(Buchung b)
+        {
+            if (b == null) return -1;
+            int slot = b.GruppenVorlage;
+            string id = b.VorlagenId;
+            if (id.Length == 0) return slot;
+
+            var ps = Presets;
+            if (slot >= 0 && slot < ps.Count && ps[slot].Id == id) return slot;
+            for (int i = 0; i < ps.Count; i++)
+                if (ps[i].Id == id) return i;
+            return -1;
+        }
+
+        // ---------------------------------------------------------------------
+        // Vorlagen-Erweiterung: Zusatz-Felder, Original-Feld-Regeln und die
+        // Vorgaben der Basis-Buchung (siehe VorlagenFelder.cs)
+        //
+        //   NNEingabeBetrag, NNBasisText, NNBasisBeleg,
+        //   NNBasisBestandskonto, NNBasisBetrieb
+        //   NNF<k>Name/Bez/Typ/Box/Vorgabe/Pflicht/Merken/Optionen   (k = 1..12)
+        //   NNO<Feld> ("gesperrt"/"ausgeblendet"), NNO<Feld>Bez
+        //   NNWert_<name>     zuletzt gebuchter Wert eines "Merken"-Felds
+        //
+        // Geschrieben wird nur, was sich geändert hat: der Vorlagen-Editor
+        // speichert bei jeder Feldänderung die ganze Vorlage, und jeder
+        // Speichere()-Aufruf ist ein ini-Schreibzugriff.
+        // ---------------------------------------------------------------------
+
+        private static readonly string[] _feldSuffixe =
+        {
+            "Name", "Bez", "Typ", "Box", "Vorgabe", "Pflicht", "Merken", "Optionen"
+        };
+
+        private static void SpeichereWennGeaendert(string key, string value)
+        {
+            value = value ?? "";
+            if (Hole(key) != value) Speichere(key, value);
+        }
+
+        private static VorlagenErweiterung LeseErweiterung(string pfx)
+        {
+            // Zusatz-Felder: stoppt beim ersten Feld ohne Namen
+            List<PresetFeld> felder = null;
+            for (int k = 1; k <= VorlagenFelder.MaxFelder; k++)
+            {
+                var fpfx = pfx + "F" + k;
+                var name = Hole(fpfx + "Name");
+                if (string.IsNullOrWhiteSpace(name)) break;
+                (felder ?? (felder = new List<PresetFeld>())).Add(new PresetFeld(
+                    name,
+                    Hole(fpfx + "Bez"),
+                    Hole(fpfx + "Typ"),
+                    Hole(fpfx + "Box"),
+                    Hole(fpfx + "Vorgabe"),
+                    Hole(fpfx + "Pflicht") == "1",
+                    Hole(fpfx + "Merken") == "1",
+                    Hole(fpfx + "Optionen")));
+            }
+
+            // Original-Feld-Regeln: nur die vom Standard abweichenden
+            List<OriginalFeldRegel> regeln = null;
+            foreach (var info in OriginalFeld.Alle)
+            {
+                var opfx = pfx + "O" + info.Schluessel;
+                var zustand = Hole(opfx);
+                var bez = Hole(opfx + "Bez");
+                if (zustand.Length == 0 && bez.Length == 0) continue;
+                (regeln ?? (regeln = new List<OriginalFeldRegel>())).Add(
+                    new OriginalFeldRegel(info.Schluessel,
+                        OriginalFeldRegel.ZustandAusName(zustand), bez));
+            }
+
+            var eingabe = Hole(pfx + "EingabeBetrag");
+            var text    = Hole(pfx + "BasisText");
+            var beleg   = Hole(pfx + "BasisBeleg");
+            var bk      = Hole(pfx + "BasisBestandskonto");
+            var betrieb = Hole(pfx + "BasisBetrieb");
+
+            if (felder == null && regeln == null && eingabe.Length == 0
+                && text.Length == 0 && beleg.Length == 0 && bk.Length == 0
+                && betrieb.Length == 0)
+                return VorlagenErweiterung.Leer;
+
+            return new VorlagenErweiterung(felder, regeln, eingabe, text, beleg, bk, betrieb);
+        }
+
+        private static void SchreibeErweiterung(string pfx, VorlagenErweiterung e)
+        {
+            e = e ?? VorlagenErweiterung.Leer;
+
+            SpeichereWennGeaendert(pfx + "EingabeBetrag", e.EingabeBetragFormel);
+            SpeichereWennGeaendert(pfx + "BasisText", e.BasisTextTemplate);
+            SpeichereWennGeaendert(pfx + "BasisBeleg", e.BasisBelegTemplate);
+            SpeichereWennGeaendert(pfx + "BasisBestandskonto", e.BasisBestandskonto);
+            SpeichereWennGeaendert(pfx + "BasisBetrieb", e.BasisBetrieb);
+
+            // Zusatz-Felder; die Keys entfallener Felder leeren, damit die
+            // Leseschleife stoppt
+            int anzahl = Math.Min(e.Felder.Count, VorlagenFelder.MaxFelder);
+            for (int k = 1; k <= VorlagenFelder.MaxFelder; k++)
+            {
+                var fpfx = pfx + "F" + k;
+                var f = k <= anzahl ? e.Felder[k - 1] : null;
+                SpeichereWennGeaendert(fpfx + "Name", f?.Name);
+                SpeichereWennGeaendert(fpfx + "Bez", f?.Bezeichnung);
+                SpeichereWennGeaendert(fpfx + "Typ", f?.TypName);
+                SpeichereWennGeaendert(fpfx + "Box", f?.Box);
+                SpeichereWennGeaendert(fpfx + "Vorgabe", f?.Vorbelegung);
+                SpeichereWennGeaendert(fpfx + "Pflicht", f != null && f.Pflicht ? "1" : "");
+                SpeichereWennGeaendert(fpfx + "Merken", f != null && f.Merken ? "1" : "");
+                SpeichereWennGeaendert(fpfx + "Optionen", f?.Optionen);
+            }
+
+            // Original-Feld-Regeln
+            foreach (var info in OriginalFeld.Alle)
+            {
+                var regel = e.RegelFuer(info.Schluessel);
+                var opfx = pfx + "O" + info.Schluessel;
+                SpeichereWennGeaendert(opfx, OriginalFeldRegel.ZustandName(regel.Zustand));
+                SpeichereWennGeaendert(opfx + "Bez", regel.Bezeichnung);
+            }
+
+            // Gemerkte Werte von Feldern, die es nicht mehr gibt bzw. die
+            // sich nichts mehr merken sollen, wegräumen (auch beim Löschen
+            // und Überschreiben eines Vorlagen-Platzes).
+            var merker = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+            foreach (var f in e.Felder)
+                if (f.Merken) merker.Add(pfx + "Wert_" + f.Name);
+            foreach (var key in HoleSchluesselMitPraefix(pfx + "Wert_"))
+                if (!merker.Contains(key))
+                    Speichere(key, "");
+        }
+
+        /// <summary>Zuletzt gebuchter Wert eines "Merken"-Felds der Vorlage
+        /// im Platz <paramref name="slot"/> ("" = noch keiner).</summary>
+        public static string HoleGemerktenFeldwert(int slot, string feldName)
+        {
+            if (slot < 0 || slot > 99 || string.IsNullOrEmpty(feldName)) return "";
+            return Hole("[Buchungsposten]" + slot.ToString("D2") + "Wert_" + feldName);
+        }
+
+        /// <summary>Merkt sich den gebuchten Wert eines Felds als künftige
+        /// Vorbelegung.</summary>
+        public static void MerkeFeldwert(int slot, string feldName, string wert)
+        {
+            if (slot < 0 || slot > 99 || string.IsNullOrEmpty(feldName)) return;
+            SpeichereWennGeaendert(
+                "[Buchungsposten]" + slot.ToString("D2") + "Wert_" + feldName, wert);
         }
 
         /// <summary>Maximale Zusatz-Zeilen pro Buchungsgruppen-Vorlage
@@ -518,8 +736,23 @@ namespace ECTEngine
                 var notiz   = Hole(pfx + "Notiz");
                 var degr    = Hole(pfx + "Degr") == "1";
                 var afaSatz = HoleInt(pfx + "AfASatz");
-                ps.Add(new Preset(text, ausgabe, mwst, afaj, konto, notiz, degr, afaSatz,
-                    LeseZusatzZeilen(pfx), Hole(pfx + "BasisBetrag")));
+                var p = new Preset(text, ausgabe, mwst, afaj, konto, notiz, degr, afaSatz,
+                    LeseZusatzZeilen(pfx), Hole(pfx + "BasisBetrag"),
+                    LeseErweiterung(pfx), Hole(pfx + "Id"));
+                // Erweiterte Vorlagen aus der Zeit vor der Kennung bekommen
+                // sie beim ersten Laden -- sonst merkten sich die damit
+                // gebuchten Buchungen keine und verlören beim Umbenennen den
+                // Bezug. Klassische Presets brauchen keine (die Buchung merkt
+                // sich bei ihnen keinen Vorlagen-Bezug).
+                if (p.Id.Length == 0 && !p.IstLeer && p.IstErweitert)
+                {
+                    var id = NeueVorlagenId();
+                    Speichere(pfx + "Id", id);
+                    p = new Preset(p.Text, p.Ausgabe, p.Mwst, p.AfaJ, p.Konto, p.Notiz,
+                        p.Degressiv, p.AfaSatz, p.Zeilen, p.BasisBetragFormel,
+                        p.Erweiterung, id);
+                }
+                ps.Add(p);
             }
             _presets = ps;
 

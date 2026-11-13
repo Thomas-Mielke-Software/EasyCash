@@ -49,10 +49,11 @@ public:
 };
 
 // ----------------------------------------------------------
-// App-Profil fuer ECTViews.FensterPosition (Dialogpositionen
+// App-Profil fuer ECTViews.FensterPosition (Fensterpositionen
 // im Profil wie bei den nativen Dialogen, [Fenster]...PosX/Y).
-// Wird beim ersten Einbetten registriert; bei weiteren Nutzern
-// (z.B. BuchungView) an eine zentrale Stelle ziehen.
+// Registriert von jeder Ansicht, aus der ein WPF-Fenster mit
+// gemerkter Position aufgehen kann (Formular-Designer, Anleitung
+// aus den Einstellungen); Deklaration in AppProfilShared.h.
 // ----------------------------------------------------------
 ref class AppProfilZugriff
 {
@@ -74,7 +75,9 @@ public:
     }
 };
 
-static void RegistriereAppProfil()
+#include "AppProfilShared.h"
+
+void ECTBridge_RegistriereAppProfil()
 {
     if (ECTViews::FensterPosition::ProfilIntLesen != nullptr) return;
     ECTViews::FensterPosition::ProfilIntLesen =
@@ -99,7 +102,7 @@ HWND ECT_FormularEinbetten(
         auto* bridge = static_cast<CEasyCashDocBridge*>(pDocBridge);
         if (!bridge) return NULL;
 
-        RegistriereAppProfil();   // Designer-Dialog merkt sich seine Position
+        ECTBridge_RegistriereAppProfil();   // Designer-Dialog merkt sich seine Position
 
         // Engine-Stand garantieren (der Rechner arbeitet auf den managed Buchungen)
         bridge->SyncNativeToManaged();

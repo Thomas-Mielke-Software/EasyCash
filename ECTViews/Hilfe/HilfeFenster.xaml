@@ -1,0 +1,57 @@
+<Window x:Class="ECTViews.Hilfe.HilfeFenster"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Anleitung"
+        Width="980" Height="760" MinWidth="560" MinHeight="360"
+        ShowInTaskbar="True"
+        Background="White"
+        FontFamily="Segoe UI" FontSize="13">
+
+    <!-- Anzeige einer Benutzer-Anleitung (Markdown aus ECTViews/Hilfe,
+         siehe MarkdownDokument.cs). Links das Inhaltsverzeichnis, rechts
+         der Text. Der FlowDocumentReader bringt Suche (Strg+F) und Zoom
+         mit; der Text ist markier- und kopierbar. Das Fenster ist NICHT
+         modal und hat keinen Besitzer (eigener Taskleisten-Eintrag, Alt+Tab,
+         nebeneinander andockbar): man liest darin nach, waehrend man im
+         Programm arbeitet. Position und Groesse merkt FensterPosition. -->
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="230" MinWidth="120"/>
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+
+        <DockPanel Grid.Column="0" Background="#F5F5F5">
+            <TextBlock DockPanel.Dock="Top" Text="Inhalt" FontWeight="SemiBold"
+                       Foreground="#444" Margin="12,12,12,6"/>
+            <ListBox x:Name="InhaltListe" BorderThickness="0" Background="Transparent"
+                     ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+                     SelectionChanged="OnInhaltGewaehlt">
+                <ListBox.ItemTemplate>
+                    <DataTemplate>
+                        <TextBlock Text="{Binding Text}" Margin="{Binding Einzug}"
+                                   FontWeight="{Binding Gewicht}"
+                                   TextWrapping="Wrap"/>
+                    </DataTemplate>
+                </ListBox.ItemTemplate>
+                <ListBox.ItemContainerStyle>
+                    <Style TargetType="ListBoxItem">
+                        <Setter Property="Padding" Value="12,2,8,2"/>
+                        <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+                    </Style>
+                </ListBox.ItemContainerStyle>
+            </ListBox>
+        </DockPanel>
+
+        <GridSplitter Grid.Column="1" Width="5" HorizontalAlignment="Center"
+                      VerticalAlignment="Stretch" Background="#E0E0E0"/>
+
+        <FlowDocumentReader x:Name="Leser" Grid.Column="2"
+                            ViewingMode="Scroll"
+                            IsPageViewEnabled="False"
+                            IsTwoPageViewEnabled="False"
+                            IsFindEnabled="True"
+                            IsPrintEnabled="False"
+                            MinZoom="80" MaxZoom="200" Zoom="100"/>
+    </Grid>
+</Window>

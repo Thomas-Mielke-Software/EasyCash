@@ -12,12 +12,24 @@
         Background="#F5F5F5"
         FontFamily="Segoe UI" FontSize="13">
 
+    <!-- Aufbau: oben der SCROLLBEREICH mit allen Eingabe-Boxen, darunter
+         fest die Buchen-/Abbrechen-Knoepfe. Das Fenster waechst mit seinem
+         Inhalt (SizeToContent=Height), hoechstens bis zur Hoehe des
+         Arbeitsbereichs (MaxHeight setzt das Code-Behind) - erst dann
+         erscheint der Scrollbalken. Noetig, weil eine Buchungsvorlage den
+         Dialog um Zusatz-Felder erweitern kann. -->
+
     <Window.Resources>
         <ResourceDictionary>
         <ResourceDictionary.MergedDictionaries>
             <!-- app-weite Button-Stile (PrimaryButtonStyle / SecondaryButtonStyle) -->
             <ResourceDictionary Source="/ECTViews;component/GemeinsameStile.xaml"/>
         </ResourceDictionary.MergedDictionaries>
+
+        <!-- Konverter: bool nach Visibility (Collapsed bei false). Steht
+             ganz oben, weil WPF Resources der Reihe nach liest und die
+             Templates weiter unten ihn per StaticResource brauchen. -->
+        <BooleanToVisibilityConverter x:Key="BoolToVis"/>
 
         <!-- Basis-Stil für Labels -->
         <Style TargetType="TextBlock" x:Key="LabelStyle">
@@ -38,6 +50,14 @@
                 <Trigger Property="Text" Value="">
                     <Setter Property="Visibility" Value="Collapsed"/>
                 </Trigger>
+                <!-- Blinken nach wiederholtem Buchen-Versuch: das Code-Behind
+                     schaltet BuchungView.FehlerFett hin und her. Ueber das
+                     Fenster gebunden, weil der Stil auch in Templates mit
+                     anderem DataContext steckt (Zusatz-Felder, Vorschau-Zeilen). -->
+                <DataTrigger Binding="{Binding FehlerFett, RelativeSource={RelativeSource AncestorType=local:BuchungView}}"
+                             Value="True">
+                    <Setter Property="FontWeight" Value="Bold"/>
+                </DataTrigger>
             </Style.Triggers>
         </Style>
 
@@ -49,6 +69,22 @@
             <Setter Property="FontSize" Value="11"/>
             <Setter Property="FontStyle" Value="Italic"/>
             <Setter Property="Margin" Value="0,4,0,0"/>
+            <Setter Property="TextWrapping" Value="Wrap"/>
+            <Setter Property="Visibility" Value="Visible"/>
+            <Style.Triggers>
+                <Trigger Property="Text" Value="">
+                    <Setter Property="Visibility" Value="Collapsed"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+
+        <!-- Stil für Vorschau-/Nebentexte: grau, klein. Für das, was die
+             aktive Buchungsvorlage aus den Eingaben macht (gebuchte
+             Beschreibung, uebersprungene Zusatz-Zeile). -->
+        <Style TargetType="TextBlock" x:Key="VorschauStyle">
+            <Setter Property="Foreground" Value="#777"/>
+            <Setter Property="FontSize" Value="11"/>
+            <Setter Property="Margin" Value="0,3,0,0"/>
             <Setter Property="TextWrapping" Value="Wrap"/>
             <Setter Property="Visibility" Value="Visible"/>
             <Style.Triggers>
@@ -74,15 +110,12 @@
             <Setter Property="Padding" Value="8,4"/>
         </Style>
 
-        <!-- Konverter: bool → Visibility (Collapsed bei false) -->
-        <BooleanToVisibilityConverter x:Key="BoolToVis"/>
-
         <!-- PrimaryButtonStyle/SecondaryButtonStyle kommen aus
              GemeinsameStile.xaml (MergedDictionaries oben). -->
 
         <!-- DataTemplate für Icon-Listen-Items: Icon links, Name rechts.
              Stretch="Uniform" skaliert das gecroppte Icon proportional auf
-             die Image-Größe — funktioniert egal ob die Quell-Sprites 16x16,
+             die Image-Größe; funktioniert egal ob die Quell-Sprites 16x16,
              32x32 oder andere Größen verwenden. -->
         <DataTemplate x:Key="IconItemTemplate">
             <!-- LastChildFill=False + rechts angedocktes Kuerzel-Schild: so
@@ -99,7 +132,8 @@
                            TextTrimming="CharacterEllipsis"/>
                 <!-- Kuerzel-Schild: nur sichtbar, solange Alt gedrueckt ist
                      (BuchungViewModel.AltHinweiseSichtbar) und der Eintrag
-                     ueberhaupt ein Kuerzel hat (die ersten fuenf). -->
+                     ueberhaupt ein Kuerzel hat (die ersten zehn der beiden
+                     Original-Listen; Zusatz-Feld-Listen haben keine). -->
                 <Border x:Name="HotkeySchild" DockPanel.Dock="Right"
                         Visibility="Collapsed"
                         Background="#FFF3C4" BorderBrush="#D4A72C"
@@ -122,24 +156,173 @@
                 </MultiDataTrigger>
             </DataTemplate.Triggers>
         </DataTemplate>
+
+        <!-- [Zusatz-Felder der Buchungsvorlage]
+             Ein Template pro Control-Art (ZusatzFeldViewModel.Steuerelement);
+             der ZusatzFeldSelektor waehlt aus. Die Beschriftungen einer Box
+             stehen ueber SharedSizeGroup buendig untereinander. -->
+
+        <!-- Textfeld ueber die volle Breite -->
+        <DataTemplate x:Key="ZusatzFeldText">
+            <StackPanel Margin="0,4,0,0">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" SharedSizeGroup="ZusatzFeldLabel"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Text="{Binding Beschriftung}" ToolTip="{Binding Hinweis}"
+                               Style="{StaticResource LabelStyle}"/>
+                    <TextBox Grid.Column="1"
+                             Text="{Binding Text, UpdateSourceTrigger=PropertyChanged}"
+                             GotKeyboardFocus="OnFeldGotKeyboardFocus"
+                             PreviewMouseLeftButtonDown="OnFeldPreviewMouseLeftButtonDown"/>
+                </Grid>
+                <TextBlock Style="{StaticResource ErrorStyle}" Text="{Binding Fehler}"/>
+            </StackPanel>
+        </DataTemplate>
+
+        <!-- schmales, rechtsbuendiges Feld mit Einheit (Betrag, Zahl,
+             Prozent, Datum) -->
+        <DataTemplate x:Key="ZusatzFeldZahl">
+            <StackPanel Margin="0,4,0,0">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" SharedSizeGroup="ZusatzFeldLabel"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Text="{Binding Beschriftung}" ToolTip="{Binding Hinweis}"
+                               Style="{StaticResource LabelStyle}"/>
+                    <StackPanel Grid.Column="1" Orientation="Horizontal">
+                        <TextBox Width="120" TextAlignment="Right"
+                                 Text="{Binding Text, UpdateSourceTrigger=PropertyChanged}"
+                                 GotKeyboardFocus="OnFeldGotKeyboardFocus"
+                                 PreviewMouseLeftButtonDown="OnFeldPreviewMouseLeftButtonDown"/>
+                        <TextBlock Text="{Binding Einheit}" VerticalAlignment="Center"
+                                   Margin="4,0,0,0" Foreground="#777"/>
+                    </StackPanel>
+                </Grid>
+                <TextBlock Style="{StaticResource ErrorStyle}" Text="{Binding Fehler}"/>
+            </StackPanel>
+        </DataTemplate>
+
+        <!-- MWSt-Satz: editierbare Auswahl wie das Original-Feld -->
+        <DataTemplate x:Key="ZusatzFeldMwst">
+            <StackPanel Margin="0,4,0,0">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" SharedSizeGroup="ZusatzFeldLabel"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Text="{Binding Beschriftung}" ToolTip="{Binding Hinweis}"
+                               Style="{StaticResource LabelStyle}"/>
+                    <StackPanel Grid.Column="1" Orientation="Horizontal">
+                        <ComboBox Width="80" IsEditable="True"
+                                  Text="{Binding Text, UpdateSourceTrigger=PropertyChanged}"
+                                  ItemsSource="{Binding Optionen}"
+                                  HorizontalContentAlignment="Right"/>
+                        <TextBlock Text="{Binding Einheit}" VerticalAlignment="Center"
+                                   Margin="4,0,0,0" Foreground="#777"/>
+                    </StackPanel>
+                </Grid>
+                <TextBlock Style="{StaticResource ErrorStyle}" Text="{Binding Fehler}"/>
+            </StackPanel>
+        </DataTemplate>
+
+        <!-- Auswahlliste (Auswahl-Feld, Konto) -->
+        <DataTemplate x:Key="ZusatzFeldAuswahl">
+            <StackPanel Margin="0,4,0,0">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" SharedSizeGroup="ZusatzFeldLabel"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Text="{Binding Beschriftung}" ToolTip="{Binding Hinweis}"
+                               Style="{StaticResource LabelStyle}"/>
+                    <ComboBox Grid.Column="1"
+                              ItemsSource="{Binding Optionen}"
+                              SelectedItem="{Binding GewaehlteOption}"/>
+                </Grid>
+                <TextBlock Style="{StaticResource ErrorStyle}" Text="{Binding Fehler}"/>
+            </StackPanel>
+        </DataTemplate>
+
+        <!-- Haekchen -->
+        <DataTemplate x:Key="ZusatzFeldHaekchen">
+            <CheckBox Margin="0,6,0,2" Content="{Binding Bezeichnung}"
+                      IsChecked="{Binding IstAngehakt}" ToolTip="{Binding Hinweis}"/>
+        </DataTemplate>
+
+        <!-- Icon-Liste (Betrieb, Bestandskonto) wie die Original-Listen -->
+        <DataTemplate x:Key="ZusatzFeldIconListe">
+            <StackPanel Margin="0,6,0,0"
+                        Visibility="{Binding Sichtbar, Converter={StaticResource BoolToVis}}">
+                <TextBlock Text="{Binding Beschriftung}" ToolTip="{Binding Hinweis}"
+                           Style="{StaticResource LabelStyle}" Margin="0,0,0,2"/>
+                <local:ListBoxScroll ItemsSource="{Binding Eintraege}"
+                                     SelectedItem="{Binding GewaehlterEintrag}"
+                                     ItemTemplate="{StaticResource IconItemTemplate}"
+                                     Height="120"
+                                     HorizontalContentAlignment="Stretch"
+                                     ScrollViewer.VerticalScrollBarVisibility="Auto"/>
+                <TextBlock Style="{StaticResource ErrorStyle}" Text="{Binding Fehler}"/>
+            </StackPanel>
+        </DataTemplate>
+
+        <local:ZusatzFeldTemplateSelector x:Key="ZusatzFeldSelektor"
+            Text="{StaticResource ZusatzFeldText}"
+            Zahl="{StaticResource ZusatzFeldZahl}"
+            Mwst="{StaticResource ZusatzFeldMwst}"
+            Auswahl="{StaticResource ZusatzFeldAuswahl}"
+            Haekchen="{StaticResource ZusatzFeldHaekchen}"
+            IconListe="{StaticResource ZusatzFeldIconListe}"/>
+
+        <!-- Liste der Zusatz-Felder einer Box; ohne Felder nimmt sie
+             keinen Platz ein. -->
+        <Style x:Key="ZusatzFelderListe" TargetType="ItemsControl">
+            <Setter Property="ItemTemplateSelector" Value="{StaticResource ZusatzFeldSelektor}"/>
+            <Setter Property="Focusable" Value="False"/>
+            <Setter Property="IsTabStop" Value="False"/>
+            <Setter Property="Grid.IsSharedSizeScope" Value="True"/>
+            <Style.Triggers>
+                <Trigger Property="HasItems" Value="False">
+                    <Setter Property="Visibility" Value="Collapsed"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
         </ResourceDictionary>
     </Window.Resources>
 
     <Grid Margin="12">
         <Grid.RowDefinitions>
-            <RowDefinition Height="Auto"/>  <!-- Buchungsart -->
-            <RowDefinition Height="Auto"/>  <!-- Datum -->
-            <RowDefinition Height="Auto"/>  <!-- Beschreibung -->
-            <RowDefinition Height="Auto"/>  <!-- Betrag + MWSt -->
-            <RowDefinition Height="Auto"/>  <!-- Belegnummer + Konto -->
-            <RowDefinition Height="Auto"/>  <!-- Bestandskonto + Betrieb -->
-            <RowDefinition Height="Auto"/>  <!-- AfA -->
-            <RowDefinition Height="Auto"/>  <!-- Buchungsgruppe -->
-            <RowDefinition Height="*"/>     <!-- Spacer -->
+            <RowDefinition Height="*"/>     <!-- Scrollbereich mit den Eingabe-Boxen -->
+            <RowDefinition Height="Auto"/>  <!-- Fehler ausgeblendeter Felder -->
             <RowDefinition Height="Auto"/>  <!-- Buttons -->
         </Grid.RowDefinitions>
 
-        <!-- ═══ Zeile 0: Buchungsart ═══ -->
+        <!-- Focusable=False: der Scrollbereich selbst soll kein Tabstopp
+             sein. Beim Scrollen schliesst das Code-Behind die Popups
+             (Vorlagen-Liste, Notiz), die sonst an alter Stelle stehen
+             blieben. -->
+        <ScrollViewer x:Name="FelderScroll" Grid.Row="0"
+                      VerticalScrollBarVisibility="Auto"
+                      HorizontalScrollBarVisibility="Disabled"
+                      Focusable="False"
+                      ScrollChanged="OnFelderScrollChanged"
+                      PreviewMouseWheel="OnFelderPreviewMouseWheel">
+        <Grid VerticalAlignment="Top" Margin="0,0,2,0">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>  <!-- 0 Buchungsart -->
+            <RowDefinition Height="Auto"/>  <!-- 1 Hinweis zur Vorlage -->
+            <RowDefinition Height="Auto"/>  <!-- 2 Datum -->
+            <RowDefinition Height="Auto"/>  <!-- 3 Beschreibung -->
+            <RowDefinition Height="Auto"/>  <!-- 4 Betrag + MWSt -->
+            <RowDefinition Height="Auto"/>  <!-- 5 Belegnummer + Konto -->
+            <RowDefinition Height="Auto"/>  <!-- 6 Bestandskonto + Betrieb -->
+            <RowDefinition Height="Auto"/>  <!-- 7 AfA -->
+            <RowDefinition Height="Auto"/>  <!-- 8 aktive Buchungsvorlage -->
+        </Grid.RowDefinitions>
+
+        <!-- [Zeile 0: Buchungsart] -->
         <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="0,0,0,8">
             <!-- Farben wie die Abschnittstitel im Journal (ColEinnahme /
                  ColAusgabe in JournalView.xaml): Einnahmen blau, Ausgaben rot. -->
@@ -153,8 +336,13 @@
                          VerticalContentAlignment="Center"/>
         </StackPanel>
 
-        <!-- ═══ Zeile 1: Datum ═══ -->
-        <GroupBox Grid.Row="1" Header="Datum">
+        <!-- [Zeile 1: Hinweis, z.B. wenn die Buchung nicht mehr mit ihrer
+             Vorlage geoeffnet werden konnte] -->
+        <TextBlock Grid.Row="1" Style="{StaticResource HintStyle}"
+                   Margin="0,0,0,6" Text="{Binding VorlagenHinweis}"/>
+
+        <!-- [Zeile 2: Datum] -->
+        <GroupBox Grid.Row="2" Header="Datum">
             <StackPanel>
                 <StackPanel Orientation="Horizontal">
                     <TextBlock Text="Tag:" Style="{StaticResource LabelStyle}"/>
@@ -198,11 +386,13 @@
                 </StackPanel>
                 <TextBlock Style="{StaticResource ErrorStyle}"
                            Text="{Binding DatumError}"/>
+                <ItemsControl ItemsSource="{Binding FelderDatum}"
+                              Style="{StaticResource ZusatzFelderListe}"/>
             </StackPanel>
         </GroupBox>
 
-        <!-- ═══ Zeile 2: Beschreibung ═══ -->
-        <GroupBox Grid.Row="2" Header="Beschreibung">
+        <!-- [Zeile 3: Beschreibung] -->
+        <GroupBox Grid.Row="3" Header="{Binding FeldBeschreibung.Titel}">
             <StackPanel>
                 <!-- Echtes TextBox (kein ComboBox): so stoert das Filtern der
                      Vorschlagsliste das Editierfeld/den Cursor NICHT. Der
@@ -257,6 +447,15 @@
                 <TextBlock Style="{StaticResource ErrorStyle}"
                            Text="{Binding BeschreibungError}"/>
 
+                <!-- Vorschau: setzt die aktive Vorlage die gebuchte
+                     Beschreibung aus einem Template zusammen, steht hier das
+                     Ergebnis (das Feld selbst behaelt den getippten Text). -->
+                <TextBlock Style="{StaticResource VorschauStyle}"
+                           Text="{Binding BeschreibungVorschau}"/>
+
+                <ItemsControl ItemsSource="{Binding FelderBeschreibung}"
+                              Style="{StaticResource ZusatzFelderListe}"/>
+
                 <!-- Balloon: zeigt die Preset-Notiz fuer ein paar Sekunden,
                      wenn ein Preset mit Notiz ausgewaehlt wurde. -->
                 <Popup x:Name="NotizBalloon"
@@ -282,15 +481,21 @@
             </StackPanel>
         </GroupBox>
 
-        <!-- ═══ Zeile 3: Betrag + MWSt ═══ -->
-        <GroupBox Grid.Row="3" Header="Betrag">
-            <Grid>
+        <!-- [Zeile 4: Betrag + MWSt]
+             Beide Felder kann die aktive Vorlage sperren, ausblenden oder
+             umbenennen (FeldBetrag / FeldMwst). -->
+        <GroupBox Grid.Row="4" Header="Betrag"
+                  Visibility="{Binding BetragBoxSichtbar, Converter={StaticResource BoolToVis}}">
+            <StackPanel>
+            <Grid Visibility="{Binding BetragZeileSichtbar, Converter={StaticResource BoolToVis}}">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="Auto"/>
                     <ColumnDefinition Width="*"/>
                     <ColumnDefinition Width="Auto"/>
                     <ColumnDefinition Width="Auto"/>
-                    <ColumnDefinition Width="80"/>
+                    <!-- Auto statt fester Breite: blendet die Vorlage die MWSt
+                         aus, gibt die Spalte ihren Platz an den Betrag ab. -->
+                    <ColumnDefinition Width="Auto"/>
                 </Grid.ColumnDefinitions>
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto"/>
@@ -302,8 +507,17 @@
                 <!-- Bruttobetrag (Label bewusst waehrungsneutral: vor dem
                      Umrechnen steht hier ein Fremdwaehrungsbetrag). -->
                 <TextBlock Grid.Row="0" Grid.Column="0"
-                           Text="Brutto:" Style="{StaticResource LabelStyle}"/>
-                <DockPanel Grid.Row="0" Grid.Column="1">
+                           Text="{Binding FeldBetrag.Beschriftung}"
+                           Style="{StaticResource LabelStyle}"
+                           Visibility="{Binding FeldBetrag.Sichtbar, Converter={StaticResource BoolToVis}}"/>
+                <!-- IsEnabled am DockPanel: eine gesperrte Vorlage sperrt
+                     Feld UND Waehrungsrechner; der Betrag kommt dann aus der
+                     Formel der Vorlage. -->
+                <DockPanel Grid.Row="0" Grid.Column="1"
+                           Visibility="{Binding FeldBetrag.Sichtbar, Converter={StaticResource BoolToVis}}"
+                           IsEnabled="{Binding FeldBetrag.Aktiv}"
+                           ToolTip="{Binding FeldBetrag.SperrHinweis}"
+                           ToolTipService.ShowOnDisabled="True">
                     <!-- Waehrungsrechner: rechnet einen Fremdwaehrungsbetrag ueber
                          den Tageskurs in Euro um (Auswahl aus den Einstellungen). -->
                     <Button DockPanel.Dock="Right" x:Name="WaehrungsrechnerKnopf"
@@ -322,29 +536,38 @@
 
                 <!-- MWSt -->
                 <TextBlock Grid.Row="0" Grid.Column="2"
-                           Text="MWSt %:" Style="{StaticResource LabelStyle}" Margin="12,0,8,0"/>
-                <ComboBox Grid.Row="0" Grid.Column="4"
+                           Text="{Binding FeldMwst.Beschriftung}"
+                           Style="{StaticResource LabelStyle}" Margin="12,0,8,0"
+                           Visibility="{Binding FeldMwst.Sichtbar, Converter={StaticResource BoolToVis}}"/>
+                <ComboBox Grid.Row="0" Grid.Column="4" Width="80"
                           Text="{Binding MwstText, UpdateSourceTrigger=PropertyChanged}"
                           ItemsSource="{Binding MwstOptionen}"
                           IsEditable="True"
-                          IsEnabled="{Binding MwstFeldAktiviert}"
-                          ToolTip="{Binding MwstFeldHinweis}"
+                          Visibility="{Binding FeldMwst.Sichtbar, Converter={StaticResource BoolToVis}}"
+                          IsEnabled="{Binding MwstEingabeAktiv}"
+                          ToolTip="{Binding MwstEingabeHinweis}"
                           ToolTipService.ShowOnDisabled="True"
                           HorizontalContentAlignment="Right"/>
 
-                <!-- Netto / USt Anzeige -->
+                <!-- Netto / USt Anzeige: nur solange die MWSt zu sehen ist.
+                     Blendet die Vorlage sie aus (Umbuchung, Pauschalen),
+                     gibt es auch nichts aufzuschluesseln. -->
                 <TextBlock Grid.Row="1" Grid.Column="0"
                            Text="Netto:" Style="{StaticResource LabelStyle}"
-                           Foreground="#888"/>
+                           Foreground="#888"
+                           Visibility="{Binding FeldMwst.Sichtbar, Converter={StaticResource BoolToVis}}"/>
                 <TextBlock Grid.Row="1" Grid.Column="1"
                            Text="{Binding NettoText}" TextAlignment="Right"
-                           VerticalAlignment="Center" Foreground="#888" Margin="0,2"/>
+                           VerticalAlignment="Center" Foreground="#888" Margin="0,2"
+                           Visibility="{Binding FeldMwst.Sichtbar, Converter={StaticResource BoolToVis}}"/>
                 <TextBlock Grid.Row="1" Grid.Column="2" Grid.ColumnSpan="2"
                            Text="USt:" Style="{StaticResource LabelStyle}"
-                           Foreground="#888" Margin="12,0,8,0"/>
+                           Foreground="#888" Margin="12,0,8,0"
+                           Visibility="{Binding FeldMwst.Sichtbar, Converter={StaticResource BoolToVis}}"/>
                 <TextBlock Grid.Row="1" Grid.Column="4"
                            Text="{Binding MwstBetragText}" TextAlignment="Right"
-                           VerticalAlignment="Center" Foreground="#888" Margin="0,2"/>
+                           VerticalAlignment="Center" Foreground="#888" Margin="0,2"
+                           Visibility="{Binding FeldMwst.Sichtbar, Converter={StaticResource BoolToVis}}"/>
 
                 <!-- Fehler-Zeilen -->
                 <TextBlock Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2"
@@ -354,80 +577,123 @@
                            Style="{StaticResource ErrorStyle}"
                            Text="{Binding MwstError}"/>
             </Grid>
+            <ItemsControl ItemsSource="{Binding FelderBetrag}"
+                          Style="{StaticResource ZusatzFelderListe}"/>
+            </StackPanel>
         </GroupBox>
 
-        <!-- ═══ Zeile 4: Belegnummer + Konto ═══ -->
-        <GroupBox Grid.Row="4" Header="Zuordnung">
+        <!-- [Zeile 5: Belegnummer + Konto] -->
+        <GroupBox Grid.Row="5" Header="Zuordnung"
+                  Visibility="{Binding ZuordnungBoxSichtbar, Converter={StaticResource BoolToVis}}">
+            <StackPanel>
+            <!-- Spalten "Auto" + feste Feldbreite: ein ausgeblendetes
+                 Beleg-Feld gibt seinen Platz an das Konto ab. -->
             <Grid>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="Auto"/>
-                    <ColumnDefinition Width="120"/>
+                    <ColumnDefinition Width="Auto"/>
                     <ColumnDefinition Width="Auto"/>
                     <ColumnDefinition Width="*"/>
                 </Grid.ColumnDefinitions>
 
-                <TextBlock Grid.Column="0" Text="Beleg-Nr.:"
-                           Style="{StaticResource LabelStyle}"/>
-                <TextBox Grid.Column="1"
+                <TextBlock Grid.Column="0" Text="{Binding FeldBeleg.Beschriftung}"
+                           Style="{StaticResource LabelStyle}"
+                           Visibility="{Binding FeldBeleg.Sichtbar, Converter={StaticResource BoolToVis}}"/>
+                <TextBox Grid.Column="1" Width="120" Margin="0,2,12,2"
                          Text="{Binding Belegnummer, UpdateSourceTrigger=PropertyChanged}"
+                         Visibility="{Binding FeldBeleg.Sichtbar, Converter={StaticResource BoolToVis}}"
+                         IsEnabled="{Binding FeldBeleg.Aktiv}"
+                         ToolTip="{Binding FeldBeleg.SperrHinweis}"
+                         ToolTipService.ShowOnDisabled="True"
                          GotKeyboardFocus="OnFeldGotKeyboardFocus"
                          PreviewMouseLeftButtonDown="OnFeldPreviewMouseLeftButtonDown"/>
-                <TextBlock Grid.Column="2" Text="Konto:"
-                           Style="{StaticResource LabelStyle}" Margin="12,0,8,0"/>
+                <TextBlock Grid.Column="2" Text="{Binding FeldKonto.Beschriftung}"
+                           Style="{StaticResource LabelStyle}"
+                           Visibility="{Binding FeldKonto.Sichtbar, Converter={StaticResource BoolToVis}}"/>
                 <ComboBox Grid.Column="3"
                           SelectedItem="{Binding SelectedKonto, UpdateSourceTrigger=PropertyChanged}"
-                          ItemsSource="{Binding Konten}"/>
+                          ItemsSource="{Binding Konten}"
+                          Visibility="{Binding FeldKonto.Sichtbar, Converter={StaticResource BoolToVis}}"
+                          IsEnabled="{Binding FeldKonto.Aktiv}"
+                          ToolTip="{Binding FeldKonto.SperrHinweis}"
+                          ToolTipService.ShowOnDisabled="True"/>
             </Grid>
+            <ItemsControl ItemsSource="{Binding FelderZuordnung}"
+                          Style="{StaticResource ZusatzFelderListe}"/>
+            </StackPanel>
         </GroupBox>
 
-        <!-- ═══ Zeile 5: Bestandskonto + Betrieb (mit Icon-Listen) ═══ -->
-        <Grid Grid.Row="5"
-              Visibility="{Binding ListenAnzeigen, Converter={StaticResource BoolToVis}}">
+        <!-- [Zeile 6: Bestandskonto + Betrieb (mit Icon-Listen)]
+             Eine Box erscheint, wenn ihre Original-Liste etwas zu zeigen
+             hat ODER die Vorlage ein Zusatz-Feld hineinlegt. -->
+        <Grid Grid.Row="6"
+              Visibility="{Binding ListenBereichSichtbar, Converter={StaticResource BoolToVis}}">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*"/>
                 <ColumnDefinition Width="8"/>
                 <ColumnDefinition Width="*"/>
             </Grid.ColumnDefinitions>
 
-            <GroupBox Grid.Column="0" Header="Bestandskonto"
-                      Visibility="{Binding BestandskontenAnzeigen,
+            <GroupBox Grid.Column="0" Header="{Binding FeldBestandskonto.Titel}"
+                      Visibility="{Binding BestandskontoBoxSichtbar,
                                    Converter={StaticResource BoolToVis}}">
                 <StackPanel>
-                    <local:ListBoxScroll ItemsSource="{Binding Bestandskonten}"
-                                   SelectedItem="{Binding SelectedBestandskonto}"
-                                   ItemTemplate="{StaticResource IconItemTemplate}"
-                                   Height="160"
-                                   HorizontalContentAlignment="Stretch"
-                                   ScrollViewer.VerticalScrollBarVisibility="Auto"/>
-                    <TextBlock Style="{StaticResource ErrorStyle}"
-                               Text="{Binding BestandskontoError}"/>
+                    <StackPanel Visibility="{Binding BestandskontoListeSichtbar,
+                                             Converter={StaticResource BoolToVis}}">
+                        <local:ListBoxScroll ItemsSource="{Binding Bestandskonten}"
+                                       SelectedItem="{Binding SelectedBestandskonto}"
+                                       ItemTemplate="{StaticResource IconItemTemplate}"
+                                       Height="160"
+                                       HorizontalContentAlignment="Stretch"
+                                       ScrollViewer.VerticalScrollBarVisibility="Auto"
+                                       IsEnabled="{Binding FeldBestandskonto.Aktiv}"
+                                       ToolTip="{Binding FeldBestandskonto.SperrHinweis}"
+                                       ToolTipService.ShowOnDisabled="True"/>
+                        <TextBlock Style="{StaticResource ErrorStyle}"
+                                   Text="{Binding BestandskontoError}"/>
+                    </StackPanel>
+                    <ItemsControl ItemsSource="{Binding FelderBestandskonto}"
+                                  Style="{StaticResource ZusatzFelderListe}"/>
                 </StackPanel>
             </GroupBox>
 
-            <GroupBox Grid.Column="2" Header="Betrieb"
-                      Visibility="{Binding BetriebeAnzeigen,
+            <GroupBox Grid.Column="2" Header="{Binding FeldBetrieb.Titel}"
+                      Visibility="{Binding BetriebBoxSichtbar,
                                    Converter={StaticResource BoolToVis}}">
                 <StackPanel>
-                    <ListBox ItemsSource="{Binding Betriebe}"
-                             SelectedItem="{Binding SelectedBetrieb}"
-                             ItemTemplate="{StaticResource IconItemTemplate}"
-                             Height="160"
-                             HorizontalContentAlignment="Stretch"
-                             ScrollViewer.VerticalScrollBarVisibility="Auto"/>
-                    <TextBlock Style="{StaticResource ErrorStyle}"
-                               Text="{Binding BetriebError}"/>
+                    <StackPanel Visibility="{Binding BetriebListeSichtbar,
+                                             Converter={StaticResource BoolToVis}}">
+                        <ListBox ItemsSource="{Binding Betriebe}"
+                                 SelectedItem="{Binding SelectedBetrieb}"
+                                 ItemTemplate="{StaticResource IconItemTemplate}"
+                                 Height="160"
+                                 HorizontalContentAlignment="Stretch"
+                                 ScrollViewer.VerticalScrollBarVisibility="Auto"
+                                 IsEnabled="{Binding FeldBetrieb.Aktiv}"
+                                 ToolTip="{Binding FeldBetrieb.SperrHinweis}"
+                                 ToolTipService.ShowOnDisabled="True"/>
+                        <TextBlock Style="{StaticResource ErrorStyle}"
+                                   Text="{Binding BetriebError}"/>
+                    </StackPanel>
+                    <ItemsControl ItemsSource="{Binding FelderBetrieb}"
+                                  Style="{StaticResource ZusatzFelderListe}"/>
                 </StackPanel>
             </GroupBox>
         </Grid>
 
-        <!-- ═══ Zeile 6: Abschreibung ═══ -->
-        <!-- Nur bei Ausgaben bedienbar (Einnahmen kennen keine AfA; das
-             MFC-Original versteckt die Controls dort komplett). -->
-        <GroupBox Grid.Row="6" Header="Abschreibung (AfA)"
-                  IsEnabled="{Binding IstAusgabe}"
-                  ToolTip="{Binding AfaFeldHinweis}"
-                  ToolTipService.ShowOnDisabled="True">
+        <!-- [Zeile 7: Abschreibung] -->
+        <GroupBox Grid.Row="7" Header="{Binding FeldAfa.Titel}"
+                  Visibility="{Binding AfaBoxSichtbar, Converter={StaticResource BoolToVis}}">
             <StackPanel>
+            <!-- Die Original-Felder: nur bei Ausgaben bedienbar (Einnahmen
+                 kennen keine AfA; das MFC-Original versteckt die Controls
+                 dort komplett) und nur, solange die Vorlage sie nicht sperrt.
+                 IsEnabled sitzt hier und nicht an der GroupBox, damit
+                 Zusatz-Felder der Vorlage in dieser Box bedienbar bleiben. -->
+            <StackPanel IsEnabled="{Binding AfaBereichAktiv}"
+                        ToolTip="{Binding AfaBereichHinweis}"
+                        ToolTipService.ShowOnDisabled="True"
+                        Visibility="{Binding FeldAfa.Sichtbar, Converter={StaticResource BoolToVis}}">
                 <CheckBox Content="Abschreibung aktivieren"
                           IsChecked="{Binding AfaAktiviert}"
                           Margin="0,0,0,6"/>
@@ -487,155 +753,75 @@
                 <TextBlock Style="{StaticResource HintStyle}"
                            Text="{Binding AfaHinweis}"/>
             </StackPanel>
+            <ItemsControl ItemsSource="{Binding FelderAfa}"
+                          Style="{StaticResource ZusatzFelderListe}"/>
+            </StackPanel>
         </GroupBox>
 
-        <!-- ═══ Zeile 7: Buchungsgruppen-Zeilen (nur bei mehrzeiliger Vorlage) ═══ -->
-        <GroupBox Grid.Row="7" Margin="0,8,0,0" Padding="8"
-                  Visibility="{Binding HatZusatzzeilen, Converter={StaticResource BoolToVis}}">
+        <!-- [Zeile 8: aktive Buchungsvorlage]
+             Sichtbar, solange eine erweiterte Vorlage aktiv ist: Vorschau
+             der Zusatz-Buchungen, die beim Buchen entstehen (reine Anzeige;
+             Eingaben macht man in den Zusatz-Feldern der Boxen oben),
+             Summenzeile, Fehler und der Weg zurueck ("Vorlage entfernen"). -->
+        <GroupBox Grid.Row="8" Margin="0,8,0,0" Padding="8"
+                  Visibility="{Binding HatAktiveVorlage, Converter={StaticResource BoolToVis}}">
             <GroupBox.Header>
                 <StackPanel Orientation="Horizontal">
-                    <TextBlock Text="Buchungsgruppe: "/>
-                    <TextBlock Text="{Binding GruppenVorlageName}" FontWeight="SemiBold"/>
+                    <TextBlock Text="{Binding VorlagenBereichTitel}"/>
+                    <TextBlock Text="{Binding AktiveVorlageName}" FontWeight="SemiBold"/>
                 </StackPanel>
             </GroupBox.Header>
             <StackPanel>
-                <ItemsControl ItemsSource="{Binding Zusatzzeilen}">
+                <ItemsControl ItemsSource="{Binding Zusatzzeilen}"
+                              Focusable="False" IsTabStop="False"
+                              Grid.IsSharedSizeScope="True"
+                              Visibility="{Binding HatZusatzzeilen, Converter={StaticResource BoolToVis}}">
                     <ItemsControl.ItemTemplate>
                         <DataTemplate>
-                            <Border Visibility="{Binding IstSichtbar, Converter={StaticResource BoolToVis}}"
-                                    BorderBrush="#DDD" BorderThickness="0,0,0,1" Padding="0,4">
+                            <Border BorderBrush="#DDD" BorderThickness="0,0,0,1" Padding="0,3"
+                                    Background="Transparent" ToolTip="{Binding Details}">
                                 <StackPanel>
-                                    <!-- [kompakte (additive) Darstellung: nur die Eingabefelder] -->
-                                    <Grid Visibility="{Binding IstKompakt, Converter={StaticResource BoolToVis}}">
+                                    <Grid x:Name="Zeile">
                                         <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="Auto" SharedSizeGroup="ZeileArt"/>
+                                            <ColumnDefinition Width="Auto" SharedSizeGroup="ZeileKonto"/>
                                             <ColumnDefinition Width="*"/>
-                                            <ColumnDefinition Width="Auto"/>
-                                            <ColumnDefinition Width="Auto"/>
-                                            <ColumnDefinition Width="Auto"/>
-                                            <ColumnDefinition Width="Auto"/>
+                                            <ColumnDefinition Width="Auto" SharedSizeGroup="ZeileZiel"/>
+                                            <ColumnDefinition Width="Auto" SharedSizeGroup="ZeileBetrag"/>
+                                            <ColumnDefinition Width="Auto" SharedSizeGroup="ZeileMwst"/>
                                         </Grid.ColumnDefinitions>
-                                        <StackPanel Grid.Column="0" Orientation="Horizontal">
-                                            <TextBlock Text="{Binding KontoText}" FontWeight="SemiBold"
-                                                       VerticalAlignment="Center"/>
-                                            <TextBlock Text="{Binding BeschreibungText}" Foreground="#777"
-                                                       Margin="8,0,0,0" VerticalAlignment="Center"
-                                                       TextTrimming="CharacterEllipsis"
-                                                       ToolTip="{Binding BeschreibungText}"/>
-                                        </StackPanel>
-                                        <TextBlock Grid.Column="1" Text="Betrag:" VerticalAlignment="Center"
-                                                   Margin="8,0,4,0" Foreground="#333"/>
-                                        <Grid Grid.Column="2" Width="90">
-                                            <TextBox Text="{Binding BetragText, UpdateSourceTrigger=PropertyChanged}"
-                                                     TextAlignment="Right"
-                                                     Visibility="{Binding BetragEditierbar, Converter={StaticResource BoolToVis}}"/>
-                                            <TextBlock Text="{Binding BetragAnzeige}" TextAlignment="Right"
-                                                       VerticalAlignment="Center" Foreground="#555"
-                                                       ToolTip="{Binding BetragFormelTooltip}">
-                                                <TextBlock.Style>
-                                                    <Style TargetType="TextBlock">
-                                                        <Setter Property="Visibility" Value="Visible"/>
-                                                        <Style.Triggers>
-                                                            <DataTrigger Binding="{Binding BetragEditierbar}" Value="True">
-                                                                <Setter Property="Visibility" Value="Collapsed"/>
-                                                            </DataTrigger>
-                                                        </Style.Triggers>
-                                                    </Style>
-                                                </TextBlock.Style>
-                                            </TextBlock>
-                                        </Grid>
-                                        <TextBlock Grid.Column="3" Text="MWSt %:" VerticalAlignment="Center"
-                                                   Margin="10,0,4,0" Foreground="#333"/>
-                                        <Grid Grid.Column="4" Width="50">
-                                            <TextBox Text="{Binding MwstText, UpdateSourceTrigger=PropertyChanged}"
-                                                     TextAlignment="Center"
-                                                     Visibility="{Binding MwstEditierbar, Converter={StaticResource BoolToVis}}"/>
-                                            <TextBlock Text="{Binding MwstAnzeige}" TextAlignment="Center"
-                                                       VerticalAlignment="Center" Foreground="#555"
-                                                       ToolTip="{Binding MwstTooltip}">
-                                                <TextBlock.Style>
-                                                    <Style TargetType="TextBlock">
-                                                        <Setter Property="Visibility" Value="Visible"/>
-                                                        <Style.Triggers>
-                                                            <DataTrigger Binding="{Binding MwstEditierbar}" Value="True">
-                                                                <Setter Property="Visibility" Value="Collapsed"/>
-                                                            </DataTrigger>
-                                                        </Style.Triggers>
-                                                    </Style>
-                                                </TextBlock.Style>
-                                            </TextBlock>
-                                        </Grid>
+                                        <TextBlock Grid.Column="0" Text="{Binding ArtText}"
+                                                   Foreground="#777" Margin="0,0,10,0"/>
+                                        <TextBlock Grid.Column="1" Text="{Binding KontoText}"
+                                                   FontWeight="SemiBold" MaxWidth="260"
+                                                   TextTrimming="CharacterEllipsis"
+                                                   Margin="0,0,10,0"/>
+                                        <TextBlock Grid.Column="2" Text="{Binding BeschreibungText}"
+                                                   Foreground="#555"
+                                                   TextTrimming="CharacterEllipsis"/>
+                                        <!-- Betrieb/Bestandskonto der Zeile, wenn sie
+                                             von der Basis abweichen (zweiter Betrieb,
+                                             Zielkonto einer Umbuchung) -->
+                                        <TextBlock Grid.Column="3" Text="{Binding Ziel}"
+                                                   Foreground="#1565C0" Margin="10,0,0,0"/>
+                                        <TextBlock Grid.Column="4" Text="{Binding BetragAnzeige}"
+                                                   TextAlignment="Right" Margin="10,0,0,0"/>
+                                        <TextBlock Grid.Column="5" Text="{Binding MwstAnzeige}"
+                                                   Foreground="#777" TextAlignment="Right"
+                                                   Margin="10,0,0,0"/>
                                     </Grid>
-
-                                    <!-- [Masken-Darstellung (subtraktiv): alle aufgelösten Felder,
-                                         berechnete readonly] -->
-                                    <Grid Visibility="{Binding IstMaske, Converter={StaticResource BoolToVis}}">
-                                        <Grid.ColumnDefinitions>
-                                            <ColumnDefinition Width="Auto"/>
-                                            <ColumnDefinition Width="*"/>
-                                        </Grid.ColumnDefinitions>
-                                        <Grid.RowDefinitions>
-                                            <RowDefinition Height="Auto"/>
-                                            <RowDefinition Height="Auto"/>
-                                            <RowDefinition Height="Auto"/>
-                                            <RowDefinition Height="Auto"/>
-                                        </Grid.RowDefinitions>
-                                        <TextBlock Grid.Row="0" Grid.Column="0" Text="Konto:" Foreground="#333" Margin="0,0,8,2"/>
-                                        <StackPanel Grid.Row="0" Grid.Column="1" Orientation="Horizontal">
-                                            <TextBlock Text="{Binding KontoText}" FontWeight="SemiBold"/>
-                                            <TextBlock Text="{Binding ArtText, StringFormat=' ({0})'}" Foreground="#777"/>
-                                        </StackPanel>
-                                        <TextBlock Grid.Row="1" Grid.Column="0" Text="Beschreibung:" Foreground="#333" Margin="0,0,8,2"/>
-                                        <TextBlock Grid.Row="1" Grid.Column="1" Text="{Binding BeschreibungText}"/>
-                                        <TextBlock Grid.Row="2" Grid.Column="0" Text="Beleg:" Foreground="#333" Margin="0,0,8,2"/>
-                                        <TextBlock Grid.Row="2" Grid.Column="1" Text="{Binding BelegText}"/>
-                                        <TextBlock Grid.Row="3" Grid.Column="0" Text="Betrag / MWSt:" Foreground="#333" Margin="0,0,8,0"/>
-                                        <StackPanel Grid.Row="3" Grid.Column="1" Orientation="Horizontal">
-                                            <Grid Width="90">
-                                                <TextBox Text="{Binding BetragText, UpdateSourceTrigger=PropertyChanged}"
-                                                         TextAlignment="Right"
-                                                         Visibility="{Binding BetragEditierbar, Converter={StaticResource BoolToVis}}"/>
-                                                <TextBlock Text="{Binding BetragAnzeige}" TextAlignment="Right"
-                                                           VerticalAlignment="Center" Foreground="#555"
-                                                           ToolTip="{Binding BetragFormelTooltip}">
-                                                    <TextBlock.Style>
-                                                        <Style TargetType="TextBlock">
-                                                            <Setter Property="Visibility" Value="Visible"/>
-                                                            <Style.Triggers>
-                                                                <DataTrigger Binding="{Binding BetragEditierbar}" Value="True">
-                                                                    <Setter Property="Visibility" Value="Collapsed"/>
-                                                                </DataTrigger>
-                                                            </Style.Triggers>
-                                                        </Style>
-                                                    </TextBlock.Style>
-                                                </TextBlock>
-                                            </Grid>
-                                            <Grid Width="50" Margin="10,0,0,0">
-                                                <TextBox Text="{Binding MwstText, UpdateSourceTrigger=PropertyChanged}"
-                                                         TextAlignment="Center"
-                                                         Visibility="{Binding MwstEditierbar, Converter={StaticResource BoolToVis}}"/>
-                                                <TextBlock Text="{Binding MwstAnzeige}" TextAlignment="Center"
-                                                           VerticalAlignment="Center" Foreground="#555"
-                                                           ToolTip="{Binding MwstTooltip}">
-                                                    <TextBlock.Style>
-                                                        <Style TargetType="TextBlock">
-                                                            <Setter Property="Visibility" Value="Visible"/>
-                                                            <Style.Triggers>
-                                                                <DataTrigger Binding="{Binding MwstEditierbar}" Value="True">
-                                                                    <Setter Property="Visibility" Value="Collapsed"/>
-                                                                </DataTrigger>
-                                                            </Style.Triggers>
-                                                        </Style>
-                                                    </TextBlock.Style>
-                                                </TextBlock>
-                                            </Grid>
-                                            <TextBlock Text="%" VerticalAlignment="Center" Margin="4,0,0,0" Foreground="#777"/>
-                                        </StackPanel>
-                                    </Grid>
-
+                                    <TextBlock Style="{StaticResource VorschauStyle}"
+                                               Margin="0,1,0,0" Text="{Binding Hinweis}"/>
                                     <TextBlock Style="{StaticResource ErrorStyle}"
                                                Text="{Binding ZeilenFehler}"/>
                                 </StackPanel>
                             </Border>
+                            <DataTemplate.Triggers>
+                                <!-- Zeile, die nicht gebucht wird: blass -->
+                                <DataTrigger Binding="{Binding Uebersprungen}" Value="True">
+                                    <Setter TargetName="Zeile" Property="Opacity" Value="0.45"/>
+                                </DataTrigger>
+                            </DataTemplate.Triggers>
                         </DataTemplate>
                     </ItemsControl.ItemTemplate>
                 </ItemsControl>
@@ -646,23 +832,52 @@
                         <ColumnDefinition Width="*"/>
                         <ColumnDefinition Width="Auto"/>
                     </Grid.ColumnDefinitions>
-                    <StackPanel Grid.Column="0">
+                    <StackPanel Grid.Column="0" VerticalAlignment="Center">
                         <TextBlock Text="{Binding GruppenSummeText}" Foreground="#333"
                                    TextWrapping="Wrap"
-                                   ToolTip="Einnahmen und Ausgaben werden getrennt ausgewiesen, weil sich Zusatz-Zeilen gegenseitig aufheben können. &quot;Ergebnisneutral&quot; heißt: die Zeile läuft über ein Konto, dessen Name mit / beginnt -- sie speist nur die Formulare (z.B. die Umsatzsteuer-Voranmeldung) und berührt den Gewinn nicht."/>
+                                   ToolTip="Alle Buchungen, die entstehen, zusammengefasst nach dem Merkmal, in dem sie sich unterscheiden: Betrieb, Bestandskonto, Konto oder Steuersatz. Einnahmen und Ausgaben werden nie zusammengezählt, weil sich Zeilen einer Buchungsgruppe gegenseitig aufheben können."/>
                         <TextBlock Style="{StaticResource ErrorStyle}"
                                    Text="{Binding GruppenFehlerText}"/>
                     </StackPanel>
                     <Button Grid.Column="1" Content="Vorlage entfernen" Padding="8,2"
-                            VerticalAlignment="Top"
-                            Command="{Binding GruppeEntfernenCommand}"
-                            ToolTip="Zusatz-Zeilen verwerfen und nur die Basis-Buchung buchen"/>
+                            VerticalAlignment="Top" Margin="8,0,0,0"
+                            Command="{Binding VorlageEntfernenCommand}"
+                            ToolTip="Die Buchungsvorlage ablegen: Zusatz-Felder und Zusatz-Buchungen entfallen, alle Felder sind wieder frei bedienbar. Die schon eingetragenen Werte bleiben stehen."/>
                 </Grid>
             </StackPanel>
         </GroupBox>
 
-        <!-- ═══ Zeile 9: Buttons ═══ -->
-        <StackPanel Grid.Row="9" Orientation="Horizontal"
+        <!-- Fortschritts-Overlay des Waehrungsrechners ueber Beschreibung (Zeile 3)
+             und Betrag (Zeile 4): waehrend der asynchronen Kursabfrage
+             sichtbar, mit Abbrechen-Moeglichkeit. Als letztes Grid-Kind = liegt
+             optisch oben (Issue #21: keine einfrierende/haengende Oberflaeche). -->
+        <Border Grid.Row="3" Grid.RowSpan="2" Panel.ZIndex="100"
+                Background="#D8FFFFFF" CornerRadius="3"
+                Visibility="{Binding UmrechnungLaeuft, Converter={StaticResource BoolToVis}}">
+            <Border HorizontalAlignment="Center" VerticalAlignment="Center"
+                    Background="White" BorderBrush="#1565C0" BorderThickness="1"
+                    CornerRadius="4" Padding="16,12">
+                <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                    <ProgressBar IsIndeterminate="True" Width="130" Height="14"
+                                 VerticalAlignment="Center"/>
+                    <TextBlock Text="{Binding UmrechnungStatus}" Margin="12,0,12,0"
+                               VerticalAlignment="Center" Foreground="#333"/>
+                    <Button Content="Abbrechen" Padding="10,3" Focusable="False"
+                            Command="{Binding AbbrechenUmrechnungCommand}"/>
+                </StackPanel>
+            </Border>
+        </Border>
+        </Grid>
+        </ScrollViewer>
+
+        <!-- [Fehler von Feldern, die die Vorlage ausblendet]
+             Ausserhalb des Scrollbereichs, direkt ueber den Knoepfen: sonst
+             bliebe "Buchen" scheinbar grundlos wirkungslos. -->
+        <TextBlock Grid.Row="1" Style="{StaticResource ErrorStyle}"
+                   Text="{Binding VersteckteFehlerText}"/>
+
+        <!-- [Buttons] -->
+        <StackPanel Grid.Row="2" Orientation="Horizontal"
                     HorizontalAlignment="Right" Margin="0,8,0,0">
             <Button Content="{Binding OkButtonText}"
                     Command="{Binding OkCommand}"
@@ -682,26 +897,5 @@
                     IsCancel="True"
                     Style="{StaticResource SecondaryButtonStyle}"/>
         </StackPanel>
-
-        <!-- Fortschritts-Overlay des Waehrungsrechners ueber Beschreibung (Zeile 2)
-             und Betrag (Zeile 3): waehrend der asynchronen Kursabfrage
-             sichtbar, mit Abbrechen-Moeglichkeit. Als letztes Grid-Kind = liegt
-             optisch oben (Issue #21: keine einfrierende/haengende Oberflaeche). -->
-        <Border Grid.Row="2" Grid.RowSpan="2" Panel.ZIndex="100"
-                Background="#D8FFFFFF" CornerRadius="3"
-                Visibility="{Binding UmrechnungLaeuft, Converter={StaticResource BoolToVis}}">
-            <Border HorizontalAlignment="Center" VerticalAlignment="Center"
-                    Background="White" BorderBrush="#1565C0" BorderThickness="1"
-                    CornerRadius="4" Padding="16,12">
-                <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                    <ProgressBar IsIndeterminate="True" Width="130" Height="14"
-                                 VerticalAlignment="Center"/>
-                    <TextBlock Text="{Binding UmrechnungStatus}" Margin="12,0,12,0"
-                               VerticalAlignment="Center" Foreground="#333"/>
-                    <Button Content="Abbrechen" Padding="10,3" Focusable="False"
-                            Command="{Binding AbbrechenUmrechnungCommand}"/>
-                </StackPanel>
-            </Border>
-        </Border>
     </Grid>
 </Window>

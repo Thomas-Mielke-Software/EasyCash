@@ -39,6 +39,13 @@
     <EmbeddedResource Include="Resources\icons_bestandskonten.bmp" Condition="Exists('Resources\icons_bestandskonten.bmp')" />
   </ItemGroup>
 
+  <!-- Benutzer-Anleitungen (Markdown), angezeigt von Hilfe/HilfeFenster.
+       Eingebettet statt als Dateien ausgeliefert: sie gehören zur
+       Programmversion und brauchen so keinen Eintrag im Installer. -->
+  <ItemGroup>
+    <EmbeddedResource Include="Hilfe\*.md" />
+  </ItemGroup>
+
   <ItemGroup>
     <ProjectReference Include="..\ECTEngine\ECTEngine.csproj" />
   </ItemGroup>

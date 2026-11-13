@@ -69,7 +69,14 @@ EasyCash/
       BuchungView.xaml           — Buchungs-Eingabe-Dialog
     ViewModels/
       BuchungViewModel.cs
+      BuchungViewModel.Gruppen.cs — aktive Vorlage, Vorschau, Bearbeiten
+      BuchungViewModel.Felder.cs  — Zusatz-Felder + Original-Feld-Regeln
+      ZusatzFeldViewModel.cs      — Feld-, Zustands- und Zeilen-VMs
       IconListItem.cs
+    Hilfe/                       — Benutzer-Anleitungen (Markdown, eingebettet)
+      Buchungsvorlagen.md        — Doku der Buchungsvorlagen
+      MarkdownDokument.cs        — Markdown nach FlowDocument
+      HilfeFenster.xaml(.cs)     — Anzeige (nicht modal, Inhalt + Suche)
     Journal/                     — Journal+Navigation
       JournalView.xaml(.cs)
       JournalRow.cs              — Datenklassen pro Zeilentyp
@@ -229,9 +236,27 @@ Beträge/Prozente auf der C#-Seite laufen IMMER über
   zustellen), sobald `ECT_WpfTextfeldHatFokus()` meldet, dass der
   WPF-Tastaturfokus in einem Textfeld steht (managed in
   `ViewHost.TextfeldHatFokus()`: `TextBoxBase`/`PasswordBox`/editierbare
-  `ComboBox`). Außerhalb von Textfeldern (Journal-Liste) bleibt es bei
+  `ComboBox`, dazu Dokument-Ansichten mit markierbarem Text --
+  FlowDocumentReader/-ScrollViewer/DocumentViewerBase als Vorfahr, also
+  Anleitung und Seitenansicht; das gilt auch für NICHT eingebettete
+  WPF-Fenster, weil `CWinThread::PreTranslateMessage` jede Nachricht des
+  Threads am Hauptfenster vorbeiführt). Außerhalb von Textfeldern (Journal-Liste) bleibt es bei
   den Accelerators, Strg+A bucht dort weiter eine Ausgabe. Betrifft
   ALLE eingebetteten Ansichten, nicht nur die Einstellungen.
+- **WPF-Ausschneiden schneidet nicht aus** (Strg+X, Umschalt+Entf,
+  Kontextmenü -- Text landet in der Zwischenablage, bleibt aber stehen):
+  WPF kopiert per `OleSetClipboard` + `OleFlushClipboard`, und der Flush
+  scheitert auf manchen Systemen dauerhaft mit 0x800401D0
+  (CLIPBRD_E_CANT_OPEN; gemessen auch in einem reinen WPF-Testprogramm).
+  WPF schluckt den Fehler und bricht Cut VOR dem Löschen ab; Kopieren
+  scheint zu klappen, der Text verschwindet aber mit dem Programmende.
+  Fix: `ECTViews/TextBoxZwischenablage.cs` -- Klassen-Befehlsbindungen für
+  Copy/Cut an `TextBox` (vor WPFs eigener an `TextBoxBase`), schreiben per
+  Win32 `SetClipboardData(CF_UNICODETEXT)`, registriert per
+  Modul-Initialisierer (läuft vor jedem ECTViews-Code, egal über welchen
+  Einstieg). FlowDocument-Viewer lassen sich so NICHT abfangen (WPF
+  registriert dort auf denselben Typ, seine Bindung kommt zuerst) -- das
+  Hilfefenster nimmt `CommandManager.AddPreviewExecutedHandler`.
 
 ### ViewHost / Listen-Cache
 
@@ -305,7 +330,9 @@ robuster in hosted-WPF-Szenarien.
      zu buchen. Alt+Leertaste erreicht das Systemmenü weiterhin.
   3. Der Ziffernblock bleibt bewusst frei (Alt+Zahlencode-Eingabe).
 - `MinWidth=480 MinHeight=640 Width=800 SizeToContent=Height
-  ResizeMode=CanResizeWithGrip`
+  ResizeMode=CanResizeWithGrip`; Eingabe-Boxen in einem ScrollViewer,
+  Knöpfe fest darunter, MaxHeight = Arbeitsbereich (siehe "Erweiterbarer
+  Buchen-Dialog")
 
 ### ECTViews — Journal+Navigation (komplett)
 - 4 Modi: Datum (0), Konten (1), Bestandskonten (2), Anlagenverzeichnis (3)
@@ -425,7 +452,8 @@ robuster in hosted-WPF-Szenarien.
   `Buchungsgruppen.cs` (`BuchungsgruppenRechner`), Tests in
   ECTEngine.Tests.
 - UI: `BuchungViewModel.Gruppen.cs` (partial) + Zeilen-Bereich in
-  BuchungView (kompakt/Maske je `Darstellung`-Override); Ergebnis des
+  BuchungView (seit 2026-11 reine Vorschau, siehe "Erweiterbarer
+  Buchen-Dialog"); Ergebnis des
   Buchen-Dialogs ist jetzt eine LISTE (`ErgebnisBuchungen`,
   `GebuchtUndWeiter` liefert Listen; ECT_ShowBuchungDialog fügt alle ein).
 - **Gruppen-Bearbeitung**: Bearbeiten eines Gruppenmitglieds öffnet die
@@ -485,6 +513,151 @@ robuster in hosted-WPF-Szenarien.
   übernommen wird im Code-Behind per Enter oder Mausdruck. Das Popup
   schließt bei Fensterwechsel, Verschieben und Klick außerhalb (Topmost-
   Fenster, folgt dem Dialog sonst nicht).
+
+### Erweiterbarer Buchen-Dialog: Zusatz-Felder + Original-Feld-Regeln (Stand 2026-11-12)
+Eine Buchungsvorlage kann den Buchen-Dialog erweitern. Benutzer-Doku:
+`ECTViews/Hilfe/Buchungsvorlagen.md` (im Vorlagen-Editor über "Anleitung...").
+- **Zusatz-Felder** (`PresetFeld`, max. 12 pro Vorlage): benannte
+  Eingabefelder mit Platzhalter (`$anteil2`), Bezeichnung, Typ, Ziel-Box,
+  Vorbelegung, Pflicht, "letzten Wert merken". Typen: betrag, zahl,
+  prozent, mwst, text, auswahl, janein, konto, betrieb, bestandskonto,
+  datum. Der Wert fließt als Variable in DIESELBEN Formeln/Templates wie
+  `$brutto`/`$rest` (`FormelParser.ZahlVariablen/TextVariablen(..., felder)`).
+  Reservierte Namen + Regeln: `VorlagenFelder.PruefeName` (mind. 2 Zeichen
+  wegen der einbuchstabigen Datums-Platzhalter).
+- **Original-Feld-Regeln** (`OriginalFeldRegel`): Betrag, MWSt, Beleg,
+  Konto, Bestandskonto, Betrieb, AfA lassen sich pro Vorlage sperren,
+  ausblenden, umbenennen. Beschreibung nur umbenennbar (trägt die
+  Vorlagen-Auswahl), Datum gar nicht. Gesperrt/ausgeblendet = Wert kommt
+  aus der Vorlage; für den Betrag ist das `EingabeBetragFormel` (rechnet nur
+  mit Zusatz-Feldern + `$vat1..4`, Ergebnis = `$brutto` der Vorlage).
+- **Basis-Templates**: `BasisTextTemplate`/`BasisBelegTemplate` formen
+  Beschreibung/Beleg der Basis-Buchung (Vorschauzeile "Wird gebucht als:");
+  `BasisBestandskonto`/`BasisBetrieb` wählen beim Laden vor. Alles zusammen
+  = `VorlagenErweiterung` an `Preset.Erweiterung` (nie null).
+- **"Aktive Vorlage"**: `Preset.IstErweitert` (Zusatz-Zeilen ODER irgendeine
+  Erweiterung ODER BasisBetragFormel) -- nur solche Vorlagen bleiben bis zum
+  Buchen im Dialog aktiv (`_aktiveVorlage` in BuchungViewModel.Gruppen.cs),
+  auch OHNE Zusatz-Zeilen. Klassische Presets belegen weiter nur vor.
+- **Manuelle Zeilen-Eingabe ist ENTFALLEN** (früher: leere Betrags-Formel/
+  leerer MwSt-Ausdruck = Eingabefeld im Zeilen-Bereich). Jetzt: Zeile ohne
+  Betrags-Formel wird übersprungen, leere MwSt = Satz der Basis,
+  `Darstellung` ohne Wirkung (wird nur durchgereicht). Der Zeilen-Bereich im
+  Dialog ist reine Vorschau. Was eine Vorlage abfragen will, deklariert sie
+  als Zusatz-Feld.
+- **Null-Zeilen werden nicht gebucht** (`GruppenZeile.Uebersprungen`):
+  Betrag 0 nach Rundung oder keine Formel. Die Gruppen-ROLLE bleibt der
+  Vorlagen-Zeilenindex, auch wenn davor Zeilen entfallen. Bleibt keine Zeile
+  übrig, entsteht eine Einzelbuchung OHNE Gruppen-Keys. Fehler
+  übersprungener Zeilen blockieren nicht.
+- **Basis darf nicht aufgezehrt werden**: mit BasisBetragFormel blockiert
+  ein Basis-Betrag von 0 bzw. mit gekipptem Vorzeichen das Buchen
+  (`PruefeBasisBetrag`).
+- **Feste Vorlagen-Kennung** (`Preset.Id`, ini `NNId`, GUID): vergibt
+  `SpeicherePreset` (eigene > die des Platzes > neue; geleerter Platz
+  verliert sie), erweiterte Vorlagen ohne Kennung bekommen sie beim Laden.
+  Die Buchung merkt sie als `VorlageId`; `Einstellungen.FindeVorlagenSlot`
+  findet die Vorlage darüber auch umbenannt oder umnummeriert (gemerkter
+  Platz zuerst, sonst alle). Buchungen ohne Kennung: allein der Platz (der
+  frühere Namensvergleich ist entfallen -- Umbenennen brach sonst den
+  Bezug). Nicht im XML: eine importierte Vorlage ist eine neue.
+- **Bearbeiten-Roundtrip** (`Buchung.SetzeVorlagenBezug`): die Basis-Buchung
+  merkt in der Erweiterung (Namensraum "EasyCash") `BuchungsgruppeVorlage`
+  (Platz; Name historisch, gilt auch für Einzelbuchungen), `VorlageId`, `VorlageName`,
+  `VorlageFeld_<name>` und -- nur wo die Vorlage sie umformt --
+  `VorlageEingabeBetrag/-Text/-Beleg`. Werte mit '|' werden prozent-kodiert
+  (`VorlagenFelder.Kodiere`, das Pipe-Format verträgt kein '|').
+  `ViewHost.ZeigeBuchungBearbeitenKombiDialog` öffnet MIT Vorlage, wenn
+  `FindeVorlagenSlot` sie noch findet (`IstVorlageDerBuchung`),
+  auch für Einzelbuchungen; sonst Einzel-Bearbeitung mit Hinweis
+  (`VorlagenHinweis`). Die Zusatz-Buchungen werden NICHT zurückgelesen,
+  sondern beim Speichern neu berechnet. `EntferneGruppe` räumt den
+  Vorlagen-Bezug mit ab (Kopieren).
+- **Persistenz ini** ([Buchungsposten], Platz NN): `NNF<k>Name/Bez/Typ/Box/
+  Vorgabe/Pflicht/Merken/Optionen`, `NNO<Feld>` + `NNO<Feld>Bez`,
+  `NNEingabeBetrag`, `NNBasisText/-Beleg/-Bestandskonto/-Betrieb`,
+  `NNWert_<name>` (gemerkter letzter Wert). Die Erweiterungs-Keys werden nur
+  bei Änderung geschrieben (`SpeichereWennGeaendert`) -- der Editor speichert
+  bei jeder Feldänderung die ganze Vorlage.
+- **XML**: Format-Version 2, sobald eine Vorlage den Dialog erweitert (sonst
+  weiter 1, damit ältere Stände sie lesen). Unbekannte Typen/Boxen/
+  Original-Felder werden tolerant gelesen, ungültige Platzhalter abgelehnt.
+- **Dialog**: je Box ein `ItemsControl` (`FelderBetrag`, `FelderBeschreibung`,
+  ...) mit `ZusatzFeldTemplateSelector` -- KEIN im Code-Behind gebautes UI.
+  Original-Felder binden an `OriginalFeldZustand` (`FeldBetrag.Sichtbar/
+  .Aktiv/.Beschriftung`). Fehler AUSGEBLENDETER Felder sammelt
+  `VersteckteFehlerText` über den Knöpfen (sonst bliebe "Buchen" scheinbar
+  grundlos wirkungslos). Gescheiterter Buchen-Versuch
+  (`AbgelehnteBuchenVersuche` im VM, Reaktion in BuchungView.xaml.cs):
+  Fokus auf das Eingabefeld des obersten Fehlertexts (erstes Eingabe-
+  Element im kleinsten Container, höchstens bis zur GroupBox) und Feld +
+  Fehlertext ins Bild rollen (`TransformToVisual`, der Fehlertext ist
+  Geschwister des Felds); ab dem zweiten Versuch blinken alle Fehlertexte
+  dreimal und bleiben fett (DP `BuchungView.FehlerFett`, DataTrigger im
+  `ErrorStyle` über `AncestorType=local:BuchungView`, weil der Stil auch in
+  Templates mit anderem DataContext steckt).
+- **Summenzeile** der Vorlagen-Box: kein "Basis/Zusatz", sondern
+  zusammengefasst nach dem ersten Merkmal, in dem sich die entstehenden
+  Buchungen unterscheiden (Betrieb, Bestandskonto, Konto, Steuersatz;
+  "Je Betrieb: Laden 70,00 Ausgabe; Werkstatt 30,00 Ausgabe" -- Semikolon
+  wegen der Kommas in den Beträgen), nie über
+  Richtungen addiert. Der Hinweis auf ergebnisneutrale '/'-Konten steht
+  stattdessen in der Konto-Auswahl des Editors.
+- **Scrollbereich**: Boxen in einem ScrollViewer, Knöpfe fest darunter.
+  `SizeToContent=Height`, `MaxHeight` = Arbeitsbereich des Monitors
+  (Code-Behind, per `Screen.FromHandle` + `VisualTreeHelper.GetDpi` -- NICHT
+  `PresentationSource.FromVisual`, das verbietet der
+  DialogBesitzer-Konventionstest); wächst das Fenster über den unteren Rand,
+  rutscht es nach oben. Mausrad über einer inneren Liste am Anschlag rollt
+  den äußeren Bereich weiter.
+- **Editor** (PresetsPage): Abschnitte Kopf, Prüfhinweise (gelber Kasten,
+  `VorlagenFelder.Pruefe` -- gespeichert wird trotzdem), "Felder des
+  Buchen-Dialogs" (bewusst als Erstes), "Werte der Vorlage", "Zusatz-Felder",
+  "Buchungsgruppe", Notiz. Im Dialog ausgeblendete NICHT-Pflichtfelder
+  (Beleg, AfA) verschwinden auch im Editor und werden dabei neutralisiert;
+  Pflichtfelder bleiben mit Vermerk stehen.
+- **Konto-Auswahl im Editor** (Vorlage + Zusatz-Zeilen): editierbare
+  ComboBox (`KontoAuswahlEintrag`, `TextSearch.TextPath="Wert"`) mit
+  Abschnitten Platzhalter (`$konto`, Zusatz-Felder Typ Konto; nur Zeilen),
+  Konten der Buchungsart (bei Zeilen die der ZEILE) und "Über
+  Formularfelder": `ECTEngine/KontoVorschlaege.cs` -- Spezifikationen für
+  einzeilige Fälle, die neben der EÜR eine UVA/U30-Kennzahl brauchen
+  (Ausfuhr 43/011, i.g. Lieferung 41/017, §18b 21, nicht steuerbar 45,
+  steuerfrei o. VSt 48, AT Grundstücke 019, PV 0 % 87, EUSt 62/061,
+  steuerfreier i.g. Erwerb 91/071), gefiltert nach Land. Geprüft gegen die
+  echten .ecf in `VorlagenBibliothekFelderTests`. FALLE: Fällt der gewählte
+  Eintrag beim Listenwechsel weg, LEERT die editierbare ComboBox ihr
+  Textfeld -- darum nach jeder neuen ItemsSource `Konto` neu melden.
+  In der U30 2026 ist 1020 nur noch Summenfeld (= 1019 + 1016).
+- **Hilfe**: `ECTViews/Hilfe/` -- `MarkdownDokument` (kleiner Markdown-nach-
+  FlowDocument-Umsetzer), `HilfeFenster` (Inhaltsverzeichnis, Suche über
+  FlowDocumentReader), Anleitungen als eingebettete `*.md`. Das Fenster hat
+  bewusst KEINEN Besitzer und einen Taskleisten-Eintrag (ein Owned-Window
+  liegt immer über dem Hauptfenster und fehlt in Alt+Tab -- zum Nachbauen
+  der Beispiele will man wechseln/andocken); erste Position mittig auf dem
+  Bildschirm des Programms, danach Position+Größe+Maximiert aus dem Profil
+  (`FensterPosition.Verwalte(..., mitGroesse: true)`, gemerkt auch bei
+  Deactivated, weil es beim Beenden oft noch offen ist). Gespeichert wird
+  die NORMALE Lage -- bei maximiertem/minimiertem Fenster aus
+  `RestoreBounds`; früher wurde in diesem Fall gar nichts gespeichert. Das
+  Inhaltsverzeichnis folgt dem Bildlauf: `TextPointer.GetCharacterRect`
+  liefert dort Koordinaten RELATIV ZUM SICHTBAREN AUSSCHNITT, skaliert mit
+  Zoom/100 (gemessen).
+- **App-Profil-Delegates** (`FensterPosition.ProfilIntLesen/-Schreiben`):
+  registriert `ECTBridge_RegistriereAppProfil()` (AppProfilShared.h,
+  Definition in FormularExports.cpp) -- beim Einbetten von Formular UND
+  Einstellungen. Ohne Registrierung merkt sich kein WPF-Fenster seine
+  Position.
+- **Bibliothek**: sieben Beispiel-Vorlagen mit Zusatz-Feldern (Abschnitte
+  "Aufteilen einer Rechnung", "Geldverkehr", "Reise und Bewirtung"); sie sind
+  zugleich die Beispiele der Anleitung und durch `BibliothekZusatzFeldTests`
+  durchgerechnet.
+- **Tests**: `VorlagenFelderTests.cs` (Feldwerte, Rechner, Vorlagen-Bezug,
+  ini/XML-Persistenz, Definitions-Prüfung, Bibliothek).
+- **Offen**: Abnahme im echten Programm (bisher nur per Offscreen-Test-Aufbau
+  gerendert und durchgebucht), steuerliche Gegenprüfung der sieben
+  Bibliotheks-Vorlagen, Tastatur-Durchlauf (Tab-Reihenfolge mit
+  Zusatz-Feldern).
 
 ### Vorlagen-Bibliothek (mitgeliefert, Stand 2026-08-23)
 - **Kuratierte Sammlung** von Buchungsvorlagen, hierarchisch + über

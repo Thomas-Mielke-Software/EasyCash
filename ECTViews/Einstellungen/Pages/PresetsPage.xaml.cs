@@ -101,6 +101,47 @@ namespace ECTViews.EinstellungenUi.Pages
         }
 
         // -----------------------------------------------------------------
+        // Zusatz-Felder (Buttons im Feld-Editor)
+        // -----------------------------------------------------------------
+
+        private void OnFeldHinzufuegen(object sender, RoutedEventArgs e)
+        {
+            VM?.Ausgewaehlt?.FeldHinzufuegen();
+        }
+
+        private static PresetsPageViewModel.PresetFeldItem FeldVon(object sender)
+            => (sender as FrameworkElement)?.DataContext
+                as PresetsPageViewModel.PresetFeldItem;
+
+        private void OnFeldEntfernen(object sender, RoutedEventArgs e)
+        {
+            VM?.Ausgewaehlt?.FeldEntfernen(FeldVon(sender));
+        }
+
+        private void OnFeldHoch(object sender, RoutedEventArgs e)
+        {
+            VM?.Ausgewaehlt?.FeldVerschieben(FeldVon(sender), -1);
+        }
+
+        private void OnFeldRunter(object sender, RoutedEventArgs e)
+        {
+            VM?.Ausgewaehlt?.FeldVerschieben(FeldVon(sender), +1);
+        }
+
+        // -----------------------------------------------------------------
+        // Anleitung
+        // -----------------------------------------------------------------
+
+        /// <summary>Öffnet die Benutzer-Anleitung zu den Buchungsvorlagen
+        /// in einem eigenen Fenster neben den Einstellungen (nicht modal:
+        /// man will darin nachlesen, WÄHREND man die Vorlage baut).</summary>
+        private void OnAnleitung(object sender, RoutedEventArgs e)
+        {
+            Hilfe.HilfeFenster.Zeige("Buchungsvorlagen.md",
+                "Anleitung: Buchungsvorlagen", this);
+        }
+
+        // -----------------------------------------------------------------
         // XML-Export/Import (Vorlagen teilen)
         // -----------------------------------------------------------------
 

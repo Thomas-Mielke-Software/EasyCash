@@ -24,8 +24,8 @@ namespace ECTEngine.Tests
         [Fact]
         public void Baum_HatVerschachtelteAbschnitte()
         {
-            var wurzel = Assert.Single(VorlagenBibliothek.Lade());
-            Assert.Equal("Auslandsgeschäfte", wurzel.Titel);
+            var wurzel = Assert.Single(VorlagenBibliothek.Lade(),
+                a => a.Titel == "Auslandsgeschäfte");
             // Die Wurzel trägt selbst keine Einträge, nur Unterabschnitte
             Assert.Empty(wurzel.Eintraege);
 

@@ -300,8 +300,11 @@ namespace ECTEngine
         /// <param name="rest">Basis-Brutto minus Brutto aller bisher
         /// berechneten Zusatz-Zeilen ($rest).</param>
         /// <param name="vorlagenzeile">1-basierter Index der Zusatz-Zeile.</param>
+        /// <param name="felder">Werte der Zusatz-Felder der Vorlage -- jedes
+        /// Feld wird unter seinem Platzhalter-Namen zur Variable.</param>
         public static Dictionary<string, decimal> ZahlVariablen(
-            Buchung basis, decimal rest, int vorlagenzeile)
+            Buchung basis, decimal rest, int vorlagenzeile,
+            IEnumerable<FeldWert> felder = null)
         {
             var map = new Dictionary<string, decimal>(StringComparer.OrdinalIgnoreCase)
             {
@@ -316,6 +319,21 @@ namespace ECTEngine
                 ["vorlagenzeile"] = vorlagenzeile
             };
             FuegeVatVariablenHinzu(map);
+            VorlagenFelder.ErgaenzeVariablen(map, felder);
+            return map;
+        }
+
+        /// <summary>
+        /// Variablen, die OHNE Basis-Buchung feststehen: die Zusatz-Felder
+        /// und $vat1..$vat4. Damit rechnet die Eingabe-Betrag-Formel einer
+        /// Vorlage (das Betragsfeld ist dann gesperrt/ausgeblendet, es gibt
+        /// also noch kein $brutto) und die Vorbelegung von Zahl-Feldern.
+        /// </summary>
+        public static Dictionary<string, decimal> FeldVariablen(IEnumerable<FeldWert> felder)
+        {
+            var map = new Dictionary<string, decimal>(StringComparer.OrdinalIgnoreCase);
+            FuegeVatVariablenHinzu(map);
+            VorlagenFelder.ErgaenzeVariablen(map, felder);
             return map;
         }
 
@@ -327,7 +345,8 @@ namespace ECTEngine
         /// Alias erhalten (bestehende Vorlagen/frühe Privat-Split-Importe).
         /// </summary>
         public static Dictionary<string, string> TextVariablen(
-            Buchung basis, decimal rest, int vorlagenzeile)
+            Buchung basis, decimal rest, int vorlagenzeile,
+            IEnumerable<FeldWert> felder = null)
         {
             var map = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
             {
@@ -344,6 +363,7 @@ namespace ECTEngine
                 ["rest"] = Waehrungsformat.BetragOhneGruppierung(rest),
                 ["vorlagenzeile"] = vorlagenzeile.ToString(CultureInfo.InvariantCulture)
             };
+            VorlagenFelder.ErgaenzeVariablen(map, felder);
             return map;
         }
 

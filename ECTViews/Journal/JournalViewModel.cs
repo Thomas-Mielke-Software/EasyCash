@@ -572,7 +572,7 @@ namespace ECTViews.Journal
                 // Die Vorlage, in der das Ziel schon steckt, waere ein
                 // Nichts-Tun -- die faellt aus der Liste raus.
                 int schonSlot = string.IsNullOrEmpty(ziel.GruppenUuid)
-                    ? -1 : ziel.GruppenVorlage;
+                    ? -1 : Einstellungen.FindeVorlagenSlot(ziel);
                 var presets = Einstellungen.Presets;
                 for (int i = 0; i < presets.Count; i++)
                 {

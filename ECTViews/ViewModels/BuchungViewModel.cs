@@ -106,6 +106,7 @@ namespace ECTViews.ViewModels
                     // AfA-Bereich ist dann per IsEnabled-Bindung gesperrt.
                     if (!value)
                         AfaAktiviert = false;
+                    MeldeFeldLayout();   // AfaBereichAktiv haengt an der Buchungsart
                     LadeKonten();
                     LadePresets();   // Vorschlagsliste auf neue Buchungsart filtern
                 }
@@ -169,6 +170,7 @@ namespace ECTViews.ViewModels
                 if (!SetProperty(ref _datumTagText, value ?? "")) return;
                 OnPropertyChanged(nameof(DatumTag));
                 ValidiereFeldFallsAktiv(ValidiereDatum);
+                AktualisiereVorlage();   // Datums-Platzhalter in Templates
             }
         }
 
@@ -182,6 +184,7 @@ namespace ECTViews.ViewModels
                 OnPropertyChanged(nameof(DatumMonat));
                 BerechneRestwertHeuristisch();
                 ValidiereFeldFallsAktiv(ValidiereDatum);
+                AktualisiereVorlage();
             }
         }
 
@@ -194,6 +197,7 @@ namespace ECTViews.ViewModels
                 if (!SetProperty(ref _datumJahrText, value ?? "")) return;
                 OnPropertyChanged(nameof(DatumJahr));
                 ValidiereFeldFallsAktiv(ValidiereDatum);
+                AktualisiereVorlage();
             }
         }
 
@@ -234,7 +238,7 @@ namespace ECTViews.ViewModels
                     OnPropertyChanged(nameof(MwstBetragText));
                     BerechneRestwertHeuristisch();
                     ValidiereFeldFallsAktiv(ValidiereBetrag);
-                    AktualisiereZusatzzeilen();
+                    AktualisiereVorlage();
                 }
             }
         }
@@ -320,7 +324,7 @@ namespace ECTViews.ViewModels
                     OnPropertyChanged(nameof(MwstBetragText));
                     BerechneRestwertHeuristisch();
                     ValidiereFeldFallsAktiv(ValidiereMwst);
-                    AktualisiereZusatzzeilen();
+                    AktualisiereVorlage();
                 }
             }
         }
@@ -429,7 +433,7 @@ namespace ECTViews.ViewModels
                         else
                             AktualisiereVorschlaege(_beschreibung);
                     }
-                    AktualisiereZusatzzeilen();   // $B in Zeilen-Templates
+                    AktualisiereVorlage();   // $B in Zeilen-Templates
                 }
             }
         }
@@ -582,19 +586,30 @@ namespace ECTViews.ViewModels
             // MessageBox auf Antwort.
             VorschlaegeOffen = false;
 
-            // Ist genau diese Gruppen-Vorlage schon geladen, ändert die Wahl
-            // nichts an der Gruppe: keine Rückfrage und die Zusatz-Zeilen
-            // bleiben stehen (sonst gingen die manuell erfassten bzw. beim
-            // Bearbeiten aus den bestehenden Buchungen vorbelegten Beträge
-            // verloren).
-            bool gleicheGruppenVorlage = p.IstMehrzeilig
-                && _gruppenVorlage != null && presetSlot == _gruppenVorlageSlot;
+            // Wird die Vorlage aktiv (bleibt sie bis zum Buchen im Dialog)?
+            // Nur erweiterte Vorlagen -- mit einer Ausnahme: Wird eine
+            // einzelne ZUSATZ-Buchung einer Gruppe bearbeitet, deren Vorlage
+            // nicht mehr auffindbar ist (Einzel-Fallback), belegt auch eine
+            // erweiterte Vorlage OHNE Zusatz-Zeilen nur die Felder vor.
+            // Aktiv würde sie der Buchung beim Speichern die Gruppen-Keys
+            // nehmen, die übrigen Mitglieder der Gruppe blieben zurück.
+            bool einzelnesGruppenMitglied = IstBearbeitung && !_mitVorlageGeoeffnet
+                && _originalBuchung?.GruppenUuid != null;
+            bool wirdAktiv = p.IstErweitert
+                && !(einzelnesGruppenMitglied && !p.IstMehrzeilig);
+
+            // Ist genau diese Vorlage schon aktiv, ändert die Wahl nichts:
+            // keine Rückfrage, und die Zusatz-Felder behalten ihre Werte
+            // (sonst gingen die schon eingegebenen bzw. beim Bearbeiten aus
+            // der Buchung wiederhergestellten Angaben verloren).
+            bool gleicheVorlage = wirdAktiv
+                && _aktiveVorlage != null && presetSlot == _aktiveVorlageSlot;
 
             // Bearbeiten-Modus: die Wahl einer Vorlage kann die Buchung in
             // eine Buchungsgruppe umwandeln, eine bestehende Gruppe umstellen
             // oder sie auflösen. Die Rückfrage kommt VOR jeder Feldänderung --
             // ein "Nein" lässt die Buchung komplett unberührt.
-            if (IstBearbeitung && !gleicheGruppenVorlage && !BestaetigeGruppenWechsel(p))
+            if (IstBearbeitung && !gleicheVorlage && !BestaetigeGruppenWechsel(p))
                 return;
 
             _presetLaden = true;
@@ -602,14 +617,27 @@ namespace ECTViews.ViewModels
             {
                 // Feld-Spezifikation ("$de:Formular=Id|...||") -> verknüpftes
                 // Konto suchen bzw. anlegen lassen; sonst 1:1 übernehmen.
-                SelectedKonto = LoeseKontoFeld(p.Konto);
+                string konto = LoeseKontoFeld(p.Konto);
+                // Ein Konto, das (noch) nicht in der Kontenliste steht, in
+                // die Auswahl aufnehmen: gebucht würde es ohnehin, die
+                // Auswahlliste zeigte aber ein leeres Feld -- bei einem von
+                // der Vorlage gesperrten Konto sähe man gar nicht, wohin
+                // gebucht wird.
+                if (!string.IsNullOrEmpty(konto) && !Konten.Contains(konto))
+                    Konten.Add(konto);
+                SelectedKonto = konto;
 
                 // MwstText-Setter erzwingt 0, falls das Feld global aus ist.
                 MwstText = p.Mwst > 0
                     ? Waehrungsformat.Zahl(p.Mwst / 1000m)
                     : "0";
 
-                if (p.AfaJ > 1)
+                // Blendet die Vorlage die Abschreibung aus, wird auch keine
+                // gebucht -- selbst wenn eine von Hand geschriebene Vorlage
+                // trotzdem AfA-Jahre nennt (der Editor verhindert das).
+                bool afaAusgeblendet =
+                    p.Erweiterung.ZustandVon(OriginalFeld.Afa) == FeldZustand.Ausgeblendet;
+                if (p.AfaJ > 1 && !afaAusgeblendet)
                 {
                     AfaJahre = p.AfaJ.ToString();
                     AfaDegressiv = p.Degressiv;
@@ -620,6 +648,9 @@ namespace ECTViews.ViewModels
                 {
                     AfaAktiviert = false;
                 }
+
+                // Bestandskonto/Betrieb, die die Vorlage vorgibt
+                WaehleBasisListenwerte(p);
             }
             finally
             {
@@ -638,9 +669,20 @@ namespace ECTViews.ViewModels
             // ein ganz eigener Text bleibt stehen bzw. bekommt bei einer
             // GRUPPEN-Vorlage deren Namen vorangestellt (siehe
             // BeschreibungNachVorlage / ECTEngine.VorlagenBeschreibung).
-            string beschreibungNeu = beschreibungErhalten
-                ? BeschreibungNachVorlage(p)
-                : p.Text;
+            //
+            // Zweite Ausnahme: setzt die Vorlage die gebuchte Beschreibung
+            // selbst aus dem Feldinhalt zusammen (BasisText-Template mit
+            // $beschreibung), ist der Text im Feld der INHALT der Buchung.
+            // Beim Bearbeiten bleibt er darum unangetastet; bei einer neuen
+            // Buchung startet das Feld leer, wenn der Vorlagenname sonst
+            // doppelt in der gebuchten Beschreibung stünde.
+            string beschreibungNeu;
+            if (wirdAktiv && VorlageNutztBeschreibung(p))
+                beschreibungNeu = beschreibungErhalten ? Beschreibung
+                    : VorlagennameStuendeDoppelt(p) ? "" : p.Text;
+            else
+                beschreibungNeu = beschreibungErhalten
+                    ? BeschreibungNachVorlage(p) : p.Text;
             if (beschreibungErhalten)
                 _geschuetzteBeschreibung = beschreibungNeu;
 
@@ -660,16 +702,17 @@ namespace ECTViews.ViewModels
             if (!string.IsNullOrWhiteSpace(p.Notiz))
                 PresetNotizAnzeigen?.Invoke(p.Notiz);
 
-            // Buchungsgruppen-Vorlage: Zusatz-Zeilen laden bzw. wegräumen.
+            // Erweiterte Vorlage: aktivieren (Zusatz-Zeilen, Zusatz-Felder,
+            // Original-Feld-Regeln) bzw. eine bisher aktive wegräumen.
             // Im Bearbeiten-Modus ist die Umwandlung an dieser Stelle bereits
             // bestätigt (BestaetigeGruppenWechsel ganz oben) bzw. ausdrücklich
             // über das Journal angefordert.
-            if (gleicheGruppenVorlage)
-                AktualisiereZusatzzeilen();
-            else if (p.IstMehrzeilig)
-                UebernimmGruppenVorlage(p, presetSlot);
+            if (gleicheVorlage)
+                AktualisiereVorlage();
+            else if (wirdAktiv)
+                UebernimmVorlage(p, presetSlot);
             else
-                EntferneGruppenVorlage();
+                EntferneVorlage();
         }
 
         /// <summary>
@@ -748,7 +791,7 @@ namespace ECTViews.ViewModels
             set
             {
                 if (SetProperty(ref _belegnummer, value ?? ""))
-                    AktualisiereZusatzzeilen();   // $beleg in Zeilen-Templates
+                    AktualisiereVorlage();   // $beleg in Zeilen-Templates
             }
         }
 
@@ -763,7 +806,11 @@ namespace ECTViews.ViewModels
         public string SelectedKonto
         {
             get => _selectedKonto;
-            set => SetProperty(ref _selectedKonto, value ?? "");
+            set
+            {
+                if (SetProperty(ref _selectedKonto, value ?? ""))
+                    AktualisiereVorlage();   // $konto in Zeilen-Templates
+            }
         }
 
         // ----------------------------------------------
@@ -985,7 +1032,10 @@ namespace ECTViews.ViewModels
             set
             {
                 if (SetProperty(ref _selectedBestandskonto, value))
+                {
                     ValidiereFeldFallsAktiv(ValidiereBestandskonto);
+                    AktualisiereVorlage();   // Zusatz-Zeilen erben es
+                }
             }
         }
 
@@ -1008,7 +1058,10 @@ namespace ECTViews.ViewModels
             set
             {
                 if (SetProperty(ref _selectedBetrieb, value))
+                {
                     ValidiereFeldFallsAktiv(ValidiereBetrieb);
+                    AktualisiereVorlage();   // Zusatz-Zeilen erben ihn
+                }
             }
         }
 
@@ -1420,16 +1473,33 @@ namespace ECTViews.ViewModels
             // Validierung ab jetzt live -- sonst würden Fehler nie verschwinden
             _validierungAktiv = true;
 
-            if (!ValidiereAlles())
+            if (!ValidiereEingabe())
+            {
+                AbgelehnteBuchenVersuche++;
                 return;  // Fenster bleibt offen, Fehler werden angezeigt
-            if (!ValidiereGruppe())
-                return;  // Gruppen-Fehler (Formeln, fehlende Beträge)
+            }
 
             ErgebnisBuchungen = BaueAlleBuchungen();
             Ergebnis = ErgebnisBuchungen[0];
+            MerkeFeldWerte();
 
             Bestaetigt = true;
             RequestClose?.Invoke();
+        }
+
+        /// <summary>
+        /// Validiert die Original-Felder UND die aktive Vorlage. Beides wird
+        /// immer geprüft (kein Abbruch nach dem ersten Fehlschlag): blendet
+        /// die Vorlage z.B. den Betrag aus und fehlt eine Pflichtangabe in
+        /// einem Zusatz-Feld, soll der Anwender den Fehler am Zusatz-Feld
+        /// sehen und nicht nur die Folge davon (Betrag 0).
+        /// </summary>
+        private bool ValidiereEingabe()
+        {
+            bool ok = ValidiereAlles();
+            ok &= ValidiereVorlage();
+            AktualisiereVersteckteFehler();
+            return ok;
         }
 
         /// <summary>
@@ -1443,12 +1513,14 @@ namespace ECTViews.ViewModels
         {
             _validierungAktiv = true;
 
-            if (!ValidiereAlles())
+            if (!ValidiereEingabe())
+            {
+                AbgelehnteBuchenVersuche++;
                 return;  // Fenster bleibt offen, Fehler werden angezeigt
-            if (!ValidiereGruppe())
-                return;  // Gruppen-Fehler (Formeln, fehlende Beträge)
+            }
 
             var buchungen = BaueAlleBuchungen();
+            MerkeFeldWerte();
 
             // Persistieren ueberlaesst der ViewModel dem nativen Aufrufer
             // (Einfuegen in die Engine, Sync, Modified-Flag). Geschieht
@@ -1532,9 +1604,11 @@ namespace ECTViews.ViewModels
             // Live-Validierung zuruecksetzen -- die frische Maske soll keine
             // roten Fehler aus der eben gebuchten Eingabe zeigen.
             _validierungAktiv = false;
+            AbgelehnteBuchenVersuche = 0;
 
-            // Gruppen-Vorlage nicht in die naechste Buchung uebernehmen.
-            EntferneGruppenVorlage();
+            // Die aktive Vorlage (samt Zusatz-Feldern und Feld-Regeln) nicht
+            // in die naechste Buchung uebernehmen.
+            EntferneVorlage();
 
             // AfA zuruecksetzen (AfaAktiviert zuerst -> raeumt Hinweis ab).
             AfaAktiviert = false;
@@ -1577,6 +1651,7 @@ namespace ECTViews.ViewModels
             DatumError = ""; BetragError = ""; MwstError = "";
             BeschreibungError = ""; AfaError = "";
             BestandskontoError = ""; BetriebError = "";
+            VersteckteFehlerText = "";
         }
 
         /// <summary>
@@ -1662,6 +1737,20 @@ namespace ECTViews.ViewModels
         /// damit Fehler beim Korrigieren sofort verschwinden.
         /// </summary>
         private bool _validierungAktiv;
+
+        private int _abgelehnteBuchenVersuche;
+        /// <summary>
+        /// Wie oft "Buchen"/"Weiterbuchen" seit dem Öffnen (bzw. seit dem
+        /// letzten Weiterbuchen) an Validierungsfehlern gescheitert ist. Die
+        /// View reagiert auf jede Erhöhung: Fokus auf das erste Feld mit
+        /// Fehler, ab dem zweiten Versuch lassen sie die Fehlertexte
+        /// aufblinken (BuchungView.xaml.cs). 0 = frische Maske.
+        /// </summary>
+        public int AbgelehnteBuchenVersuche
+        {
+            get => _abgelehnteBuchenVersuche;
+            private set => SetProperty(ref _abgelehnteBuchenVersuche, value);
+        }
 
         // -- Fehler-Properties --
 
@@ -2068,6 +2157,9 @@ namespace ECTViews.ViewModels
                 SelectedBetrieb = Betriebe.FirstOrDefault(
                     b => b.Name == _betriebFallback);
             }
+
+            // Zusatz-Felder vom Typ "Betrieb" einer schon aktiven Vorlage
+            AktualisiereFeldListen();
         }
 
         /// <summary>
@@ -2104,6 +2196,9 @@ namespace ECTViews.ViewModels
                 SelectedBestandskonto = Bestandskonten.FirstOrDefault(
                     k => k.Name == _bestandskontoFallback);
             }
+
+            // Zusatz-Felder vom Typ "Bestandskonto" einer schon aktiven Vorlage
+            AktualisiereFeldListen();
         }
     }
 }

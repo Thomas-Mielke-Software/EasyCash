@@ -1,11 +1,19 @@
-// BuchungViewModel.Gruppen.cs -- Buchungsgruppen-Teil des Buchen-Dialogs
+// BuchungViewModel.Gruppen.cs -- die AKTIVE BUCHUNGSVORLAGE im Buchen-Dialog
 //
-// Wird aktiv, wenn ein mehrzeiliges Preset (Buchungsgruppen-Vorlage)
-// geladen ist: hält die Zusatz-Zeilen-ViewModels, rechnet sie bei jeder
-// relevanten Basis-Änderung über BuchungsgruppenRechner (Engine) neu
-// und baut beim Buchen die komplette, per Gruppen-UUID verknüpfte
-// Buchungsliste. Die Basis-Zeile bleibt der bestehende Dialog-Feldsatz
-// (kein Umbau des 1800-Zeilen-Haupt-ViewModels).
+// Eine "erweiterte" Vorlage (Preset.IstErweitert: Zusatz-Zeilen,
+// Zusatz-Felder, Original-Feld-Regeln oder Formeln/Templates für die
+// Basis) belegt die Felder nicht nur einmalig vor, sondern bleibt bis zum
+// Buchen aktiv: der Dialog rechnet bei jeder relevanten Änderung über
+// BuchungsgruppenRechner (Engine) neu, zeigt die entstehenden
+// Zusatz-Buchungen als Vorschau und baut beim Buchen die komplette, per
+// Gruppen-UUID verknüpfte Buchungsliste. Die Basis-Zeile bleibt der
+// bestehende Dialog-Feldsatz (kein Umbau des Haupt-ViewModels); die
+// Zusatz-Felder und Original-Feld-Regeln stehen in
+// BuchungViewModel.Felder.cs.
+//
+// Eingaben PRO ZUSATZ-ZEILE gibt es nicht mehr (früher: Betrag und MWSt
+// im Zeilen-Bereich) -- was eine Vorlage abfragen will, deklariert sie als
+// Zusatz-Feld. Der Zeilen-Bereich ist reine Vorschau.
 
 using System;
 using System.Collections.Generic;
@@ -23,13 +31,15 @@ namespace ECTViews.ViewModels
         // Zustand
         // ------------------------------------------------------------------
 
-        /// <summary>Zusatz-Zeilen der geladenen Gruppen-Vorlage (leer, wenn
-        /// ein klassisches Einzel-Preset bzw. keines geladen ist).</summary>
+        /// <summary>Vorschau der Zusatz-Zeilen der aktiven Vorlage (leer,
+        /// wenn sie keine hat bzw. keine Vorlage aktiv ist).</summary>
         public ObservableCollection<ZusatzzeileViewModel> Zusatzzeilen { get; }
             = new ObservableCollection<ZusatzzeileViewModel>();
 
-        private Preset _gruppenVorlage;
-        private int _gruppenVorlageSlot = -1;
+        // Die aktive (erweiterte) Vorlage; null = keine. Ein klassisches
+        // Einzel-Preset wird nie aktiv, es belegt nur die Felder vor.
+        private Preset _aktiveVorlage;
+        private int _aktiveVorlageSlot = -1;
         private GruppenBerechnung _letzteBerechnung;
 
         // Beim Bearbeiten einer bestehenden Gruppe: deren UUID -- die neu
@@ -37,16 +47,58 @@ namespace ECTViews.ViewModels
         // nicht verliert.
         private string _bestehendeGruppenUuid;
 
-        /// <summary>True wenn eine Buchungsgruppen-Vorlage geladen ist
-        /// (steuert die Sichtbarkeit des Zeilen-Bereichs).</summary>
-        public bool HatZusatzzeilen => _gruppenVorlage != null;
+        // Die bearbeitete Buchung wurde MIT ihrer Vorlage geöffnet (siehe
+        // LadeVorlageFuerBearbeitung). Entfernt der Anwender die Vorlage,
+        // muss auch der Vorlagen-Bezug aus der Buchung verschwinden.
+        private bool _mitVorlageGeoeffnet;
 
-        public string GruppenVorlageName => _gruppenVorlage?.Text ?? "";
+        /// <summary>True wenn eine erweiterte Vorlage aktiv ist (steuert
+        /// die Sichtbarkeit des Vorlagen-Bereichs).</summary>
+        public bool HatAktiveVorlage => _aktiveVorlage != null;
+
+        /// <summary>True wenn die aktive Vorlage Zusatz-Zeilen hat
+        /// (Vorschau-Liste sichtbar).</summary>
+        public bool HatZusatzzeilen => Zusatzzeilen.Count > 0;
+
+        public string AktiveVorlageName => _aktiveVorlage?.Text ?? "";
+
+        /// <summary>Überschrift des Vorlagen-Bereichs.</summary>
+        public string VorlagenBereichTitel =>
+            _aktiveVorlage != null && _aktiveVorlage.IstMehrzeilig
+                ? "Buchungsgruppe: " : "Buchungsvorlage: ";
+
+        private string _beschreibungVorschau = "";
+        /// <summary>Die Beschreibung, die tatsächlich gebucht wird, wenn die
+        /// Vorlage sie aus einem Template zusammensetzt ("" = der Inhalt
+        /// des Beschreibungsfelds wird unverändert gebucht).</summary>
+        public string BeschreibungVorschau
+        {
+            get => _beschreibungVorschau;
+            private set => SetProperty(ref _beschreibungVorschau, value ?? "");
+        }
+
+        private string _vorlagenHinweis = "";
+        /// <summary>Hinweis über den Feldern, z.B. wenn eine Buchung nicht
+        /// mehr mit ihrer Vorlage geöffnet werden konnte (vom ViewHost
+        /// gesetzt).</summary>
+        public string VorlagenHinweis
+        {
+            get => _vorlagenHinweis;
+            set => SetProperty(ref _vorlagenHinweis, value ?? "");
+        }
+
+        /// <summary>
+        /// True, wenn die bearbeitete Buchung auf eine Vorlage verweist, die
+        /// es so nicht mehr gibt (Platz leer oder anders belegt). Die
+        /// Buchung wird dann einzeln bearbeitet; beim Speichern verliert
+        /// eine Einzelbuchung den toten Vorlagen-Bezug.
+        /// </summary>
+        public bool VorlagenBezugVeraltet { get; set; }
 
         private string _gruppenSummeText = "";
-        /// <summary>Summenzeile der Gruppe: Basis mit ihrer Richtung, die
-        /// Zusatz-Zeilen je Richtung getrennt (nie über Richtungen hinweg
-        /// addiert) und der ergebnisneutrale Anteil -- siehe BaueSummeText.</summary>
+        /// <summary>Summenzeile der Gruppe: die entstehenden Buchungen,
+        /// zusammengefasst nach dem Merkmal, in dem sie sich unterscheiden
+        /// (nie über Richtungen hinweg addiert) -- siehe BaueSummeText.</summary>
         public string GruppenSummeText
         {
             get => _gruppenSummeText;
@@ -64,18 +116,33 @@ namespace ECTViews.ViewModels
         // Laden / Entfernen der Vorlage
         // ------------------------------------------------------------------
 
-        private void UebernimmGruppenVorlage(Preset p, int slot)
+        /// <summary>Macht <paramref name="p"/> zur aktiven Vorlage: Vorschau-
+        /// Zeilen, Original-Feld-Regeln und Zusatz-Felder aufbauen, dann
+        /// rechnen.</summary>
+        /// <param name="gespeicherteWerte">Beim Bearbeiten die in der
+        /// Buchung gemerkten Feldwerte; null bei einer neuen Buchung (siehe
+        /// BaueZusatzfelder).</param>
+        private void UebernimmVorlage(Preset p, int slot,
+            IReadOnlyDictionary<string, string> gespeicherteWerte = null)
         {
-            _gruppenVorlage = p;
-            _gruppenVorlageSlot = slot;
+            _aktiveVorlage = p;
+            _aktiveVorlageSlot = slot;
             Zusatzzeilen.Clear();
             for (int i = 0; i < p.Zeilen.Count; i++)
-                Zusatzzeilen.Add(new ZusatzzeileViewModel(
-                    p.Zeilen[i], i + 1, AktualisiereZusatzzeilen));
+                Zusatzzeilen.Add(new ZusatzzeileViewModel(i + 1));
+            WendeOriginalFeldRegelnAn(p);
+            BaueZusatzfelder(p, slot, gespeicherteWerte);
             LoeseZeilenKontoSpezifikationen(p);
+            MeldeVorlagenWechsel();
+            AktualisiereVorlage();
+        }
+
+        private void MeldeVorlagenWechsel()
+        {
+            OnPropertyChanged(nameof(HatAktiveVorlage));
             OnPropertyChanged(nameof(HatZusatzzeilen));
-            OnPropertyChanged(nameof(GruppenVorlageName));
-            AktualisiereZusatzzeilen();
+            OnPropertyChanged(nameof(AktiveVorlageName));
+            OnPropertyChanged(nameof(VorlagenBereichTitel));
         }
 
         // ------------------------------------------------------------------
@@ -141,105 +208,202 @@ namespace ECTViews.ViewModels
             if (angelegt) LadeKonten();
         }
 
-        private RelayCommand _gruppeEntfernenCommand;
-        /// <summary>Kommando des "x"-Knopfs im Zeilen-Bereich.</summary>
-        public RelayCommand GruppeEntfernenCommand =>
-            _gruppeEntfernenCommand ??
-            (_gruppeEntfernenCommand = new RelayCommand(EntferneGruppenVorlage));
+        private RelayCommand _vorlageEntfernenCommand;
+        /// <summary>Kommando des Knopfs "Vorlage entfernen".</summary>
+        public RelayCommand VorlageEntfernenCommand =>
+            _vorlageEntfernenCommand ??
+            (_vorlageEntfernenCommand = new RelayCommand(EntferneVorlage));
 
-        /// <summary>Entfernt die geladene Gruppen-Vorlage samt Zeilen
-        /// (Kommando des "x"-Knopfs im Zeilen-Bereich; auch beim Laden eines
-        /// Einzel-Presets und beim Weiterbuchen gerufen).</summary>
-        public void EntferneGruppenVorlage()
+        /// <summary>Entfernt die aktive Vorlage: Zusatz-Zeilen und
+        /// Zusatz-Felder verschwinden, die Original-Felder sind wieder
+        /// sichtbar, editierbar und tragen ihre Standard-Bezeichnung. Die
+        /// schon vorbelegten Feldwerte bleiben stehen. (Knopf "Vorlage
+        /// entfernen"; auch beim Laden eines Einzel-Presets und beim
+        /// Weiterbuchen gerufen.)</summary>
+        public void EntferneVorlage()
         {
-            if (_gruppenVorlage == null && Zusatzzeilen.Count == 0) return;
-            _gruppenVorlage = null;
-            _gruppenVorlageSlot = -1;
+            if (_aktiveVorlage == null && Zusatzzeilen.Count == 0
+                && Zusatzfelder.Count == 0) return;
+            _aktiveVorlage = null;
+            _aktiveVorlageSlot = -1;
             _letzteBerechnung = null;
             Zusatzzeilen.Clear();
+            LeereZusatzfelder();
+            WendeOriginalFeldRegelnAn(null);
             GruppenSummeText = "";
             GruppenFehlerText = "";
-            OnPropertyChanged(nameof(HatZusatzzeilen));
-            OnPropertyChanged(nameof(GruppenVorlageName));
+            BeschreibungVorschau = "";
+            VersteckteFehlerText = "";
+            MeldeVorlagenWechsel();
         }
 
         // ------------------------------------------------------------------
-        // Neuberechnung (live bei Basis-/Zeilen-Änderungen)
+        // Neuberechnung (live bei Änderungen an Basis- und Zusatz-Feldern)
         // ------------------------------------------------------------------
 
-        private bool _zusatzzeilenRechnenAktiv;   // Re-Entrancy-Schutz
+        private bool _vorlageRechnenAktiv;   // Re-Entrancy-Schutz
 
-        private void AktualisiereZusatzzeilen()
+        private void AktualisiereVorlage()
         {
-            if (_gruppenVorlage == null || _zusatzzeilenRechnenAktiv) return;
-            _zusatzzeilenRechnenAktiv = true;
+            if (_aktiveVorlage == null || _vorlageRechnenAktiv) return;
+            _vorlageRechnenAktiv = true;
             try
             {
+                var felder = FeldWerte();
+                PruefeZusatzfelder(allesZeigen: _validierungAktiv);
+
+                // Gesperrtes/ausgeblendetes Betragsfeld: der Betrag kommt
+                // aus der Formel der Vorlage und steht (bei "gesperrt")
+                // read-only im Feld. Der BetragText-Setter ruft hierher
+                // zurück -- das fängt der Re-Entrancy-Schutz ab.
+                string eingabeFehler = "";
+                if (!FeldBetrag.Aktiv)
+                {
+                    var e = BuchungsgruppenRechner.BerechneEingabeBetrag(_aktiveVorlage, felder);
+                    if (e != null && e.Ok)
+                        BetragText = Waehrungsformat.BetragOhneGruppierung(e.Wert);
+                    else if (e != null)
+                        eingabeFehler = FeldBetrag.Titel + ": " + e.Fehler;
+                }
+
                 var basis = BaueBasisFuerGruppenBerechnung();
-                var b = BuchungsgruppenRechner.Berechne(
-                    _gruppenVorlage, basis, ManuelleBruttos(), ManuelleMwstWerte());
+                var b = BuchungsgruppenRechner.Berechne(_aktiveVorlage, basis, felder);
                 _letzteBerechnung = b;
 
                 for (int i = 0; i < Zusatzzeilen.Count && i < b.Zeilen.Count; i++)
-                    Zusatzzeilen[i].UebernimmBerechnung(b.Zeilen[i]);
+                    Zusatzzeilen[i].UebernimmBerechnung(b.Zeilen[i], basis);
 
-                GruppenSummeText = BaueSummeText(b);
+                GruppenSummeText = BaueSummeText(b, basis);
 
-                GruppenFehlerText = SammleGruppenFehler(b, pruefeManuelle: _validierungAktiv);
+                BeschreibungVorschau =
+                    _aktiveVorlage.Erweiterung.BasisTextTemplate.Length > 0
+                        ? "Wird gebucht als: " + b.BasisBeschreibung : "";
+
+                GruppenFehlerText = eingabeFehler.Length > 0
+                    ? eingabeFehler : SammleVorlagenFehler(b);
+
+                if (_validierungAktiv) AktualisiereVersteckteFehler();
             }
             finally
             {
-                _zusatzzeilenRechnenAktiv = false;
+                _vorlageRechnenAktiv = false;
             }
         }
 
         /// <summary>
-        /// Summenzeile der Gruppe. Leitregel: NIE über Buchungsrichtungen
-        /// hinweg addieren. Eine Gruppe kann Zeilen enthalten, die einander
-        /// aufheben (Reverse Charge: geschuldete USt als Einnahme, Vorsteuer
-        /// als Ausgabe) -- eine Gesamtsumme suggeriert dort eine Bewegung,
-        /// die es nicht gibt. Stattdessen: Basis mit ihrer Richtung, die
-        /// Zusatz-Zeilen je Richtung getrennt, und der Hinweis, welcher
-        /// Anteil über neutrale "/"-Konten läuft und damit den Gewinn gar
-        /// nicht berührt. Alles, was hier steht, ist damit unmittelbar
-        /// nachprüfbar -- es gibt keine Zahl, die erst erklärt werden muss.
+        /// Summenzeile der Gruppe. Statt abstrakt "Basis"/"Zusatz" nennt sie
+        /// das Merkmal, in dem sich die entstehenden Buchungen unterscheiden
+        /// -- bei einer Aufteilung auf zwei Betriebe also die Betriebe:
+        /// "Je Betrieb: Laden 70,00 Ausgabe; Werkstatt 30,00 Ausgabe".
+        /// Gesucht wird in der Reihenfolge Betrieb, Bestandskonto, Konto,
+        /// Steuersatz (siehe <see cref="SummenMerkmal"/>).
+        ///
+        /// Leitregel bleibt: NIE über Buchungsrichtungen hinweg addieren.
+        /// Eine Gruppe kann Zeilen enthalten, die einander aufheben (Reverse
+        /// Charge: geschuldete USt als Einnahme, Vorsteuer als Ausgabe) --
+        /// eine Gesamtsumme suggeriert dort eine Bewegung, die es nicht
+        /// gibt. Zusammengefasst wird darum nur innerhalb (Merkmal, Richtung).
         /// </summary>
-        private string BaueSummeText(GruppenBerechnung b)
+        private string BaueSummeText(GruppenBerechnung b, Buchung basis)
         {
-            string basisArt = IstAusgabe ? "Ausgabe" : "Einnahme";
-            var text = new StringBuilder("Basis " +
-                Waehrungsformat.Betrag(b.BasisGebuchtBrutto) + " " + basisArt);
+            // Ohne Zusatz-Zeilen und ohne eigene Basis-Formel bucht die
+            // Vorlage genau das, was im Betragsfeld steht -- dann sagt die
+            // Zeile nichts Neues. Ausnahme: die Vorlage blendet das
+            // Betragsfeld aus; hier ist die Summenzeile die einzige Stelle,
+            // an der der berechnete Betrag zu sehen ist.
+            if (b.Zeilen.Count == 0 && FeldBetrag.Sichtbar
+                && string.IsNullOrWhiteSpace(_aktiveVorlage?.BasisBetragFormel))
+                return "";
 
-            var zeilen = b.Zeilen;
-            if (zeilen.Count > 0)
+            // Alle Buchungen, die entstehen: die Basis plus die Zeilen, die
+            // auch gebucht werden.
+            var posten = new List<SummenPosten>
             {
-                decimal aus = zeilen.Where(z => z.Art == Buchungsart.Ausgabe)
-                                    .Sum(z => z.Brutto);
-                decimal ein = zeilen.Where(z => z.Art == Buchungsart.Einnahme)
-                                    .Sum(z => z.Brutto);
+                new SummenPosten(basis.Art, b.BasisGebuchtBrutto, basis.Betrieb,
+                                 basis.Bestandskonto, basis.Konto, MwstPromille)
+            };
+            posten.AddRange(b.GebuchteZeilen.Select(z => new SummenPosten(
+                z.Art, z.Brutto, z.Betrieb, z.Bestandskonto, z.Konto, z.MwstPromille)));
 
-                var teile = new List<string>();
-                if (aus != 0) teile.Add(Waehrungsformat.Betrag(aus) + " Ausgabe");
-                if (ein != 0) teile.Add(Waehrungsformat.Betrag(ein) + " Einnahme");
-                if (teile.Count > 0)
-                    text.Append("; Zusatz ").Append(string.Join(", ", teile));
-
-                // Neutrale Konten ('/'-Präfix) speisen nur die Formulare.
-                var neutrale = zeilen.Where(z => IstNeutralesKonto(z.Konto)).ToList();
-                decimal neutralSumme = neutrale.Sum(z => z.Brutto);
-                if (neutralSumme != 0)
-                    text.Append(neutrale.Count == zeilen.Count
-                        ? " (ergebnisneutral)"
-                        : " (davon " + Waehrungsformat.Betrag(neutralSumme)
-                          + " ergebnisneutral)");
+            string text;
+            if (posten.Count == 1)
+            {
+                // Nur die Basis bucht (Zusatz-Zeilen alle 0): nichts zu
+                // unterscheiden.
+                text = "Gebucht wird " + Waehrungsformat.Betrag(posten[0].Brutto)
+                     + " " + ArtWort(posten[0].Art);
+            }
+            else
+            {
+                var merkmal = SummenMerkmal(posten, out string ueberschrift);
+                if (merkmal == null)
+                {
+                    // Nichts unterscheidet die Buchungen (z.B. zweiter Betrieb
+                    // = erster): nur Anzahl und Summe je Richtung.
+                    var jeArt = posten.GroupBy(p => p.Art)
+                        .Select(g => Waehrungsformat.Betrag(g.Sum(p => p.Brutto)) + " " + ArtWort(g.Key));
+                    text = posten.Count + " Buchungen, zusammen " + string.Join("; ", jeArt);
+                }
+                else
+                {
+                    var gruppen = posten
+                        .GroupBy(p => new { Wert = merkmal(p), p.Art })
+                        .Select(g => g.Key.Wert + " " + Waehrungsformat.Betrag(g.Sum(p => p.Brutto))
+                                     + " " + ArtWort(g.Key.Art));
+                    // Semikolon, nicht Komma: die Beträge selbst enthalten
+                    // Kommas ("Laden 70,00 Ausgabe; Werkstatt 30,00 Ausgabe")
+                    text = ueberschrift + ": " + string.Join("; ", gruppen);
+                }
             }
 
-            text.Append(RestHinweis(b));
-            return text.ToString();
+            return text + RestHinweis(b);
         }
 
-        private static bool IstNeutralesKonto(string konto)
-            => !string.IsNullOrEmpty(konto) && konto.StartsWith("/");
+        private sealed class SummenPosten
+        {
+            public Buchungsart Art { get; }
+            public decimal Brutto { get; }
+            public string Betrieb { get; }
+            public string Bestandskonto { get; }
+            public string Konto { get; }
+            public int MwstPromille { get; }
+
+            public SummenPosten(Buchungsart art, decimal brutto, string betrieb,
+                string bestandskonto, string konto, int mwstPromille)
+            {
+                Art = art; Brutto = brutto;
+                Betrieb = betrieb ?? ""; Bestandskonto = bestandskonto ?? "";
+                Konto = konto ?? ""; MwstPromille = mwstPromille;
+            }
+        }
+
+        private static string ArtWort(Buchungsart art)
+            => art == Buchungsart.Ausgabe ? "Ausgabe" : "Einnahme";
+
+        /// <summary>Das erste Merkmal, in dem sich die Buchungen
+        /// unterscheiden; null, wenn sie sich in keinem unterscheiden.</summary>
+        private static Func<SummenPosten, string> SummenMerkmal(
+            List<SummenPosten> posten, out string ueberschrift)
+        {
+            bool Verschieden(Func<SummenPosten, string> f)
+                => posten.Select(f).Distinct(StringComparer.Ordinal).Skip(1).Any();
+
+            Func<SummenPosten, string> betrieb =
+                p => p.Betrieb.Length > 0 ? p.Betrieb : "ohne Betrieb";
+            Func<SummenPosten, string> bestandskonto =
+                p => p.Bestandskonto.Length > 0 ? p.Bestandskonto : "ohne Bestandskonto";
+            Func<SummenPosten, string> konto =
+                p => p.Konto.Length > 0 ? p.Konto : "ohne Konto";
+            Func<SummenPosten, string> mwst =
+                p => Waehrungsformat.Zahl(p.MwstPromille / 1000m) + " %";
+
+            if (Verschieden(betrieb))       { ueberschrift = "Je Betrieb";       return betrieb; }
+            if (Verschieden(bestandskonto)) { ueberschrift = "Je Bestandskonto"; return bestandskonto; }
+            if (Verschieden(konto))         { ueberschrift = "Je Konto";         return konto; }
+            if (Verschieden(mwst))          { ueberschrift = "Je Steuersatz";    return mwst; }
+            ueberschrift = "";
+            return null;
+        }
 
         /// <summary>
         /// "(Rest ...)" nur bei Vorlagen, die den Eingabebetrag AUFTEILEN.
@@ -253,13 +417,14 @@ namespace ECTViews.ViewModels
         /// </summary>
         private string RestHinweis(GruppenBerechnung b)
         {
-            if (string.IsNullOrEmpty(_gruppenVorlage?.BasisBetragFormel)) return "";
+            if (string.IsNullOrEmpty(_aktiveVorlage?.BasisBetragFormel)) return "";
             // Der Normalfall der Aufteilung ist BasisBetrag = "$rest": dann
             // IST der Rest schon der Basis-Betrag und stünde nur doppelt da.
             // Interessant wird die Zahl erst, wenn die Formel den Rest NICHT
             // vollständig aufbraucht -- dann ist wirklich etwas offen.
             if (b.Rest == b.BasisGebuchtBrutto) return "";
-            return "; nicht zugeordnet " + Waehrungsformat.Betrag(b.Rest);
+            // in Klammern: "; " trennt in der Summenzeile die Gruppen
+            return " (nicht zugeordnet " + Waehrungsformat.Betrag(b.Rest) + ")";
         }
 
         /// <summary>Basis-Buchung für die LIVE-Berechnung -- tolerant, weil
@@ -286,22 +451,14 @@ namespace ECTViews.ViewModels
             };
         }
 
-        private IReadOnlyList<decimal?> ManuelleBruttos()
-            => Zusatzzeilen.Select(z => z.ManuellerBrutto).ToList();
-
-        private IReadOnlyList<int?> ManuelleMwstWerte()
-            => Zusatzzeilen.Select(z => z.ManuelleMwstPromille).ToList();
-
-        private string SammleGruppenFehler(GruppenBerechnung b, bool pruefeManuelle)
+        /// <summary>Erster Fehler der Berechnung (Basis vor Zeilen). Fehler
+        /// der Zusatz-Felder stehen an den Feldern selbst.</summary>
+        private static string SammleVorlagenFehler(GruppenBerechnung b)
         {
             if (b.BasisFehler.Length > 0) return b.BasisFehler;
             foreach (var z in b.Zeilen)
                 if (z.Fehler.Length > 0)
                     return $"Zeile {z.Index}: {z.Fehler}";
-            if (pruefeManuelle)
-                for (int i = 0; i < Zusatzzeilen.Count; i++)
-                    if (Zusatzzeilen[i].BetragEditierbar && Zusatzzeilen[i].ManuellerBrutto == null)
-                        return $"Zeile {i + 1}: Bitte einen Betrag eingeben.";
             return "";
         }
 
@@ -309,40 +466,45 @@ namespace ECTViews.ViewModels
         // Validierung + Ergebnis
         // ------------------------------------------------------------------
 
-        /// <summary>Validiert die Gruppen-Zeilen (Formelfehler, fehlende
-        /// manuelle Beträge). True wenn keine Vorlage geladen oder alles ok.</summary>
-        private bool ValidiereGruppe()
+        /// <summary>Validiert die aktive Vorlage: Zusatz-Felder (inkl.
+        /// Pflichtangaben) und die Berechnung (Formelfehler, aufgezehrter
+        /// Basis-Betrag). True wenn keine Vorlage aktiv oder alles ok.</summary>
+        private bool ValidiereVorlage()
         {
-            if (_gruppenVorlage == null) { GruppenFehlerText = ""; return true; }
-            AktualisiereZusatzzeilen();
-            var fehler = _letzteBerechnung == null
-                ? "" : SammleGruppenFehler(_letzteBerechnung, pruefeManuelle: true);
-            GruppenFehlerText = fehler;
-            return fehler.Length == 0;
+            if (_aktiveVorlage == null) { GruppenFehlerText = ""; return true; }
+            AktualisiereVorlage();
+            bool felderOk = PruefeZusatzfelder(allesZeigen: true);
+            return felderOk && GruppenFehlerText.Length == 0;
         }
 
-        /// <summary>Baut alle zu buchenden Buchungen: ohne Gruppen-Vorlage
-        /// genau die Basis-Buchung, sonst Basis + Zusatz-Zeilen mit
-        /// gemeinsamer Gruppen-UUID (beim Bearbeiten bleibt die UUID der
-        /// bestehenden Gruppe erhalten).</summary>
+        /// <summary>Baut alle zu buchenden Buchungen: ohne aktive Vorlage
+        /// genau die Basis-Buchung, sonst rechnet die Engine -- Basis mit
+        /// Vorlagen-Bezug plus die Zusatz-Buchungen mit gemeinsamer
+        /// Gruppen-UUID (beim Bearbeiten bleibt die UUID der bestehenden
+        /// Gruppe erhalten).</summary>
         private List<Buchung> BaueAlleBuchungen()
         {
             var basis = BaueBuchungAusFeldern();
-            if (_gruppenVorlage == null)
+            if (_aktiveVorlage == null)
             {
-                // Wurde die Gruppe während der Bearbeitung aufgelöst
-                // ("Vorlage entfernen"), darf die Basis die alten
-                // Gruppen-Keys nicht behalten.
-                if (_bestehendeGruppenUuid != null)
+                // Wurde die Vorlage während der Bearbeitung entfernt, darf
+                // die Buchung weder die alten Gruppen-Keys noch die
+                // Eingaben der Vorlage behalten.
+                if (_bestehendeGruppenUuid != null || _mitVorlageGeoeffnet)
                     basis.EntferneGruppe();
+                // Verweis auf eine Vorlage, die es so nicht mehr gibt: eine
+                // Einzelbuchung wird ihn los (ein Gruppen-Mitglied braucht
+                // den Platz-Verweis weiter für seine Gruppe).
+                else if (VorlagenBezugVeraltet && basis.GruppenUuid == null)
+                    basis.EntferneVorlagenBezug();
                 return new List<Buchung> { basis };
             }
 
-            var berechnung = BuchungsgruppenRechner.Berechne(
-                _gruppenVorlage, basis, ManuelleBruttos(), ManuelleMwstWerte());
+            var felder = FeldWerte();
+            var berechnung = BuchungsgruppenRechner.Berechne(_aktiveVorlage, basis, felder);
             return BuchungsgruppenRechner.BaueBuchungen(
-                _gruppenVorlage, _gruppenVorlageSlot, basis, berechnung,
-                _bestehendeGruppenUuid);
+                _aktiveVorlage, _aktiveVorlageSlot, basis, berechnung,
+                _bestehendeGruppenUuid, felder);
         }
 
         // ------------------------------------------------------------------
@@ -350,49 +512,61 @@ namespace ECTViews.ViewModels
         // ------------------------------------------------------------------
 
         /// <summary>
-        /// Lädt beim BEARBEITEN eines Gruppenmitglieds die komplette Gruppe
-        /// in den Dialog: Vorlagen-Zeilen wie bei der Neuerfassung, manuelle
-        /// Betrag-/MWSt-Felder aus den bestehenden Zusatz-Buchungen
-        /// vorbelegt (Zuordnung über die Gruppen-Rolle). Bei belegweiser
-        /// Aufteilung (BasisBetragFormel gesetzt) wird der ursprünglich
-        /// eingegebene Gesamtbetrag als Basis-Brutto plus Summe der
-        /// Zusatz-Zeilen rekonstruiert.
+        /// Lädt beim BEARBEITEN die Vorlage, mit der die Buchung gebucht
+        /// wurde, wieder in den Dialog -- samt dem, was damals eingegeben
+        /// wurde. Die Basis-Buchung trägt dafür ihren Vorlagen-Bezug
+        /// (Buchung.SetzeVorlagenBezug): Werte der Zusatz-Felder und, wo
+        /// die Vorlage sie umformt, den eingegebenen Betrag, Beschreibungs-
+        /// text und Beleg. Die Zusatz-Buchungen selbst werden nicht
+        /// zurückgelesen, sondern beim Speichern neu berechnet.
         /// Aufrufer: ViewHost.ZeigeBuchungBearbeitenKombiDialog.
         /// </summary>
-        public void LadeGruppeFuerBearbeitung(Preset vorlage, int slot,
+        /// <param name="zusatzBuchungen">Die bestehenden Zusatz-Buchungen
+        /// der Gruppe -- nur noch für Buchungen aus der Zeit VOR dem
+        /// gemerkten Eingabe-Betrag (Rekonstruktion als Summe).</param>
+        /// <param name="gruppenUuid">UUID der bestehenden Gruppe; null bei
+        /// einer Einzelbuchung mit Vorlagen-Bezug.</param>
+        public void LadeVorlageFuerBearbeitung(Preset vorlage, int slot,
             IReadOnlyList<Buchung> zusatzBuchungen, string gruppenUuid)
         {
             _bestehendeGruppenUuid = gruppenUuid;
-            UebernimmGruppenVorlage(vorlage, slot);
+            _mitVorlageGeoeffnet = true;
+            var e = vorlage.Erweiterung;
 
-            // Eingabe-Gesamtbetrag rekonstruieren (exakt für "$rest";
-            // für andere Basis-Formeln eine Näherung)
-            if (!string.IsNullOrEmpty(vorlage.BasisBetragFormel)
-                && zusatzBuchungen != null && zusatzBuchungen.Count > 0)
+            // Die Eingaben wiederherstellen, BEVOR die Vorlage rechnet --
+            // in den Feldern der Buchung steht ja das Ergebnis der Templates.
+            string eingabeText = _originalBuchung?.VorlagenEingabeText;
+            if (eingabeText != null && e.BasisTextTemplate.Length > 0)
             {
-                decimal gesamt = (BetragInCent / 100m)
-                    + zusatzBuchungen.Sum(b => b.BruttoBetrag.BruttoWert);
-                BetragText = Waehrungsformat.BetragOhneGruppierung(gesamt);
+                _beschreibung = eingabeText;
+                _geschuetzteBeschreibung = eingabeText;
+                OnPropertyChanged(nameof(Beschreibung));
             }
-
-            // Manuelle Felder aus den bestehenden Buchungen vorbelegen
-            if (zusatzBuchungen != null)
+            string eingabeBeleg = _originalBuchung?.VorlagenEingabeBeleg;
+            if (eingabeBeleg != null && e.BasisBelegTemplate.Length > 0)
             {
-                foreach (var m in zusatzBuchungen)
+                _belegnummer = eingabeBeleg;
+                OnPropertyChanged(nameof(Belegnummer));
+            }
+            if (!string.IsNullOrWhiteSpace(vorlage.BasisBetragFormel))
+            {
+                decimal? eingabeBetrag = _originalBuchung?.VorlagenEingabeBetrag;
+                if (eingabeBetrag.HasValue)
+                    BetragText = Waehrungsformat.BetragOhneGruppierung(eingabeBetrag.Value);
+                else if (zusatzBuchungen != null && zusatzBuchungen.Count > 0)
                 {
-                    int i = m.GruppenRolle - 1;
-                    if (i < 0 || i >= Zusatzzeilen.Count) continue;
-                    var z = Zusatzzeilen[i];
-                    if (z.BetragEditierbar)
-                        z.BetragText = Waehrungsformat.BetragOhneGruppierung(
-                            m.BruttoBetrag.BruttoWert);
-                    if (z.MwstEditierbar)
-                        z.MwstText = Waehrungsformat.Zahl(
-                            m.BruttoBetrag.MwstPromille / 1000m);
+                    // Altbestand ohne gemerkte Eingabe: Gesamtbetrag als
+                    // Basis-Brutto plus Summe der Zusatz-Buchungen (exakt
+                    // für "$rest", für andere Basis-Formeln eine Näherung)
+                    decimal gesamt = (BetragInCent / 100m)
+                        + zusatzBuchungen.Sum(b => b.BruttoBetrag.BruttoWert);
+                    BetragText = Waehrungsformat.BetragOhneGruppierung(gesamt);
                 }
             }
 
-            AktualisiereZusatzzeilen();
+            UebernimmVorlage(vorlage, slot,
+                _originalBuchung?.VorlagenFeldWerte()
+                    ?? new Dictionary<string, string>());
         }
 
         // ------------------------------------------------------------------
@@ -428,8 +602,8 @@ namespace ECTViews.ViewModels
         // Umwandlung laeuft -- dann entfaellt die Rueckfrage.
         private bool _umwandlungOhneRueckfrage;
 
-        /// <summary>Slot der geladenen Gruppen-Vorlage (-1 = keine).</summary>
-        public int GruppenVorlagenSlot => _gruppenVorlageSlot;
+        /// <summary>Slot der aktiven Vorlage (-1 = keine).</summary>
+        public int GruppenVorlagenSlot => _aktiveVorlageSlot;
 
         /// <summary>
         /// Wandelt die bearbeitete Buchung in eine Buchungsgruppe um bzw.
@@ -465,7 +639,9 @@ namespace ECTViews.ViewModels
         {
             if (_umwandlungOhneRueckfrage) return true;
 
-            bool hatGruppe = _gruppenVorlage != null;
+            // Um die GRUPPE geht es hier: eine aktive Vorlage ohne
+            // Zusatz-Zeilen (nur Zusatz-Felder o.ä.) ist keine.
+            bool hatGruppe = _aktiveVorlage != null && _aktiveVorlage.IstMehrzeilig;
             if (!hatGruppe && !p.IstMehrzeilig) return true;
 
             // Gruppen-Mitglied, dessen Gruppe der Dialog nicht laden konnte
@@ -575,145 +751,5 @@ namespace ECTViews.ViewModels
                 Beschreibung, p.Text, p.IstMehrzeilig,
                 Einstellungen.Presets.Where(v => !v.IstLeer).Select(v => v.Text));
         }
-    }
-
-    // ======================================================================
-    // ViewModel einer einzelnen Zusatz-Zeile
-    // ======================================================================
-
-    public class ZusatzzeileViewModel : ViewModelBase
-    {
-        private readonly Action _onGeaendert;
-
-        public PresetZeile Vorlage { get; }
-        /// <summary>1-basierter Zeilenindex (= spätere Gruppen-Rolle).</summary>
-        public int Index { get; }
-
-        public ZusatzzeileViewModel(PresetZeile vorlage, int index, Action onGeaendert)
-        {
-            Vorlage = vorlage;
-            Index = index;
-            _onGeaendert = onGeaendert;
-        }
-
-        // ------------------------------------------------------------------
-        // Editierbare Felder (nur wo die Vorlage sie offen lässt)
-        // ------------------------------------------------------------------
-
-        public bool BetragEditierbar => Vorlage.BetragManuell;
-        public bool MwstEditierbar => string.IsNullOrEmpty(Vorlage.MwstAusdruck);
-
-        private string _betragText = "";
-        public string BetragText
-        {
-            get => _betragText;
-            set
-            {
-                if (SetProperty(ref _betragText, value ?? ""))
-                    _onGeaendert?.Invoke();
-            }
-        }
-
-        /// <summary>Geparster manueller Brutto-Betrag; null wenn leer oder
-        /// nicht parsbar (Validierung meldet das beim Buchen).</summary>
-        public decimal? ManuellerBrutto
-        {
-            get
-            {
-                if (!BetragEditierbar) return null;
-                return Waehrungsformat.TryParse(_betragText, out decimal d)
-                    ? d : (decimal?)null;
-            }
-        }
-
-        private string _mwstText = "";
-        public string MwstText
-        {
-            get => _mwstText;
-            set
-            {
-                if (SetProperty(ref _mwstText, value ?? ""))
-                    _onGeaendert?.Invoke();
-            }
-        }
-
-        /// <summary>Manuell gewählte MWSt als x1000-Wert; null = Feld leer
-        /// (dann gilt der MWSt-Satz der Basis).</summary>
-        public int? ManuelleMwstPromille
-        {
-            get
-            {
-                if (!MwstEditierbar) return null;
-                if (!Waehrungsformat.TryParseProzent(_mwstText, out decimal d)
-                    || d < 0 || d > 100)
-                    return null;
-                return (int)decimal.Round(d * 1000m, 0, MidpointRounding.AwayFromZero);
-            }
-        }
-
-        // ------------------------------------------------------------------
-        // Anzeige (Ergebnis der Engine-Berechnung)
-        // ------------------------------------------------------------------
-
-        private string _artText = "";
-        public string ArtText { get => _artText; private set => SetProperty(ref _artText, value); }
-
-        private string _kontoText = "";
-        public string KontoText { get => _kontoText; private set => SetProperty(ref _kontoText, value); }
-
-        private string _beschreibungText = "";
-        public string BeschreibungText { get => _beschreibungText; private set => SetProperty(ref _beschreibungText, value); }
-
-        private string _belegText = "";
-        public string BelegText { get => _belegText; private set => SetProperty(ref _belegText, value); }
-
-        private string _betragAnzeige = "";
-        /// <summary>Berechneter Brutto-Betrag (readonly-Anzeige bei Formel-Zeilen).</summary>
-        public string BetragAnzeige { get => _betragAnzeige; private set => SetProperty(ref _betragAnzeige, value); }
-
-        private string _mwstAnzeige = "";
-        public string MwstAnzeige { get => _mwstAnzeige; private set => SetProperty(ref _mwstAnzeige, value); }
-
-        private string _zeilenFehler = "";
-        public string ZeilenFehler { get => _zeilenFehler; private set => SetProperty(ref _zeilenFehler, value); }
-
-        /// <summary>Tooltip der Betrag-Anzeige: die Formel aus der Vorlage.</summary>
-        public string BetragFormelTooltip =>
-            string.IsNullOrEmpty(Vorlage.BetragFormel) ? null : "Formel: " + Vorlage.BetragFormel;
-
-        public string MwstTooltip =>
-            string.IsNullOrEmpty(Vorlage.MwstAusdruck) ? null : "Aus Vorlage: " + Vorlage.MwstAusdruck;
-
-        internal void UebernimmBerechnung(GruppenZeile z)
-        {
-            ArtText = z.Art == Buchungsart.Einnahme ? "Einnahme" : "Ausgabe";
-            KontoText = z.Konto;
-            BeschreibungText = z.Beschreibung;
-            BelegText = z.Belegnummer;
-            if (!BetragEditierbar)
-                BetragAnzeige = Waehrungsformat.Betrag(z.Brutto);
-            if (!MwstEditierbar)
-                MwstAnzeige = Waehrungsformat.Zahl(z.MwstPromille / 1000m);
-            ZeilenFehler = z.Fehler;
-        }
-
-        // ------------------------------------------------------------------
-        // Darstellung (additiv/kompakt vs. Masken-Serie)
-        // ------------------------------------------------------------------
-
-        /// <summary>Reine Formelzeilen (keine Eingabefelder) rendern nicht --
-        /// sie erscheinen nur in der Summenzeile. Override "maske" macht sie
-        /// trotzdem sichtbar.</summary>
-        public bool IstSichtbar =>
-            BetragEditierbar || MwstEditierbar || IstMaske;
-
-        /// <summary>Volle Zeilen-Maske: per Vorlagen-Override
-        /// (Darstellung=maske); die Heuristik "&gt;2 Eingabefelder" kann bei
-        /// den aktuellen zwei Eingabefeldern nicht greifen.</summary>
-        public bool IstMaske =>
-            string.Equals(Vorlage.Darstellung, "maske", StringComparison.OrdinalIgnoreCase);
-
-        /// <summary>Kompakte (additive) Darstellung: nur die Eingabefelder.</summary>
-        public bool IstKompakt => IstSichtbar && !IstMaske;
     }
 }
