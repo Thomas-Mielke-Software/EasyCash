@@ -44,6 +44,7 @@ CNeuesKonto::CNeuesKonto(CWnd* pParent /*=NULL*/)
 	//}}AFX_DATA_INIT
 
 	m_aendern = FALSE;
+	m_feldID = 0;
 }
 
 
@@ -119,11 +120,17 @@ BOOL CNeuesKonto::OnInitDialog()
 void CNeuesKonto::OnOK() 
 {
 	char buffer[1000];
-	m_feldzuweisung.GetLBText(m_feldzuweisung.GetCurSel(), buffer);
-	if (!strncmp(buffer, "VERALTET: ", 10))
-		m_feldID = atoi(buffer+15);
+	*buffer = '\0';
+	if (m_feldzuweisung.GetCurSel() < 0)	// keine Zuweisung bzw. "Feldzuweisung löschen": der Puffer bliebe sonst unbelegt
+		m_feldID = 0;
 	else
-		m_feldID = atoi(buffer+5);
+	{
+		m_feldzuweisung.GetLBText(m_feldzuweisung.GetCurSel(), buffer);
+		if (!strncmp(buffer, "VERALTET: ", 10))
+			m_feldID = atoi(buffer+15);
+		else
+			m_feldID = atoi(buffer+5);
+	}
 
 	if (m_feldID == 66 && strstr(buffer, "Vorsteuerbeträge"))
 		if (AfxMessageBox("Diejenigen Ausgaben, bei denen ein MWSt.-Satz angegeben wurde, werden automatisch in Feld 66 berücksichtigt. Es sollte lediglich ein Konto 'VST-Beträge separat' dem Feld zugewiesen sein für Sonderfälle, wo reine Vorsteuer verbucht werden muss. Soll das Feld wirklich verknüpft werden?", MB_YESNO) != IDYES)

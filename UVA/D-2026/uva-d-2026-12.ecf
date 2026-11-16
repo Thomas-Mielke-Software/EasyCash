@@ -37,27 +37,27 @@
 			<name>plz</name>
 			<erweiterung>plz ort</erweiterung>
 		</feld>
-		<feld id="41" typ="Einnahmen" seite="1" horizontal="704" vertikal="1284" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="ohne" nullwertdarstellung="nein" veraltet="nein">
+		<feld id="41" typ="Einnahmen" seite="1" horizontal="704" vertikal="1284" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="ohne" nullwertdarstellung="nein" veraltet="nein" elsterfeldname="Steuerfall/Umsatzsteuervoranmeldung/Kz41">
 			<name>Steuerfreie Lieferungen an Abnehmer mit USt-Id Nr.</name>
 			<erweiterung/>
 		</feld>
-		<feld id="44" typ="Einnahmen" seite="1" horizontal="704" vertikal="1326" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="ohne" nullwertdarstellung="nein" veraltet="nein">
+		<feld id="44" typ="Einnahmen" seite="1" horizontal="704" vertikal="1326" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="ohne" nullwertdarstellung="nein" veraltet="nein" elsterfeldname="Steuerfall/Umsatzsteuervoranmeldung/Kz44">
 			<name>Steuerfreie Lieferungen neuer Fahrzeuge an Abnehmer ohne USt-Id Nr.</name>
 			<erweiterung/>
 		</feld>
-		<feld id="49" typ="Einnahmen" seite="2" horizontal="666" vertikal="132" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="ohne" nullwertdarstellung="nein" veraltet="nein">
+		<feld id="49" typ="Einnahmen" seite="2" horizontal="666" vertikal="132" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="ohne" nullwertdarstellung="nein" veraltet="nein" elsterfeldname="Steuerfall/Umsatzsteuervoranmeldung/Kz49">
 			<name>Steuerfreie Lieferungen neuer Fahrzeuge außerhalb eines Unternehmens</name>
 			<erweiterung/>
 		</feld>
-		<feld id="43" typ="Einnahmen" seite="2" horizontal="666" vertikal="199" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="ohne" nullwertdarstellung="nein" veraltet="nein">
+		<feld id="43" typ="Einnahmen" seite="2" horizontal="666" vertikal="199" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="ohne" nullwertdarstellung="nein" veraltet="nein" elsterfeldname="Steuerfall/Umsatzsteuervoranmeldung/Kz43">
 			<name>Weitere steuerfreie Umsätze mit Vorsteuerabzug</name>
 			<erweiterung/>
 		</feld>
-		<feld id="48" typ="Einnahmen" seite="2" horizontal="666" vertikal="269" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="ohne" nullwertdarstellung="nein" veraltet="nein">
+		<feld id="48" typ="Einnahmen" seite="2" horizontal="666" vertikal="269" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="ohne" nullwertdarstellung="nein" veraltet="nein" elsterfeldname="Steuerfall/Umsatzsteuervoranmeldung/Kz48">
 			<name>Steuerfreie Umsätze ohne Vorsteuerabzug</name>
 			<erweiterung/>
 		</feld>
-		<feld id="81" typ="Summe" seite="1" horizontal="703" vertikal="888" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="ohne" nullwertdarstellung="nein" veraltet="nein">
+		<feld id="81" typ="Summe" seite="1" horizontal="703" vertikal="888" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="ohne" nullwertdarstellung="nein" veraltet="nein" elsterfeldname="Steuerfall/Umsatzsteuervoranmeldung/Kz81">
 			<name>Steuerpflichtige Umsätze zum Steuersatz von 19%</name>
 			<erweiterung>netto19000(e)</erweiterung>
 		</feld>
@@ -65,7 +65,7 @@
 			<name>Steuerpflichtige Umsätze zum Steuersatz von 19% (Steuer)</name>
 			<erweiterung>81*119/100-81</erweiterung>
 		</feld>
-		<feld id="86" typ="Summe" seite="1" horizontal="703" vertikal="930" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="ohne" nullwertdarstellung="nein" veraltet="nein">
+		<feld id="86" typ="Summe" seite="1" horizontal="703" vertikal="930" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="ohne" nullwertdarstellung="nein" veraltet="nein" elsterfeldname="Steuerfall/Umsatzsteuervoranmeldung/Kz86">
 			<name>Steuerpflichtige Umsätze zum Steuersatz von 7%</name>
 			<erweiterung>netto7000(e)</erweiterung>
 		</feld>
@@ -73,35 +73,35 @@
 			<name>Steuerpflichtige Umsätze zum Steuersatz von 7% (Steuer)</name>
 			<erweiterung>86*107/100-86</erweiterung>
 		</feld>
-		<feld id="87" typ="Einnahmen" seite="1" horizontal="703" vertikal="974" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="ohne" nullwertdarstellung="nein" veraltet="nein">
+		<feld id="87" typ="Einnahmen" seite="1" horizontal="703" vertikal="974" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="ohne" nullwertdarstellung="nein" veraltet="nein" elsterfeldname="Steuerfall/Umsatzsteuervoranmeldung/Kz87">
 			<name>Steuerpflichtige Umsätze zum Steuersatz von 0%</name>
 			<erweiterung/>
 		</feld>
-		<feld id="35" typ="Summe" seite="1" horizontal="703" vertikal="1016" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="ohne" nullwertdarstellung="nein" veraltet="nein">
+		<feld id="35" typ="Summe" seite="1" horizontal="703" vertikal="1016" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="ohne" nullwertdarstellung="nein" veraltet="nein" elsterfeldname="Steuerfall/Umsatzsteuervoranmeldung/Kz35">
 			<name>Steuerpflichtige Umsätze, die anderen Steuersätzen unterliegen</name>
 			<erweiterung>netto(e)-netto0000(e)-netto7000(e)-netto19000(e)</erweiterung>
 		</feld>
-		<feld id="36" typ="Summe" seite="1" horizontal="931" vertikal="1016" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" nullwertdarstellung="nein" veraltet="nein">
+		<feld id="36" typ="Summe" seite="1" horizontal="931" vertikal="1016" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" nullwertdarstellung="nein" veraltet="nein" elsterfeldname="Steuerfall/Umsatzsteuervoranmeldung/Kz36">
 			<name>Steuerpflichtige Umsätze, die anderen Steuersätzen unterliegen (Steuer)</name>
 			<erweiterung>mwst(e)-mwst0000(e)-mwst7000(e)-mwst19000(e)</erweiterung>
 		</feld>
-		<feld id="77" typ="Einnahmen" seite="1" horizontal="703" vertikal="1069" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="ohne" nullwertdarstellung="nein" veraltet="nein">
+		<feld id="77" typ="Einnahmen" seite="1" horizontal="703" vertikal="1069" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="ohne" nullwertdarstellung="nein" veraltet="nein" elsterfeldname="Steuerfall/Umsatzsteuervoranmeldung/Kz77">
 			<name>Lieferungen land- und forstwirtschaftlicher Betriebe an Abnehmer mit USt-Id Nr.</name>
 			<erweiterung/>
 		</feld>
-		<feld id="76" typ="Einnahmen" seite="1" horizontal="703" vertikal="1123" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="ohne" nullwertdarstellung="nein" veraltet="nein">
+		<feld id="76" typ="Einnahmen" seite="1" horizontal="703" vertikal="1123" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="ohne" nullwertdarstellung="nein" veraltet="nein" elsterfeldname="Steuerfall/Umsatzsteuervoranmeldung/Kz76">
 			<name>Umsätze, für die eine Steuer nach §24 UStG zu entrichten ist (Netto-Anteil)</name>
 			<erweiterung/>
 		</feld>
-		<feld id="80" typ="Einnahmen" seite="1" horizontal="931" vertikal="1123" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" nullwertdarstellung="nein" veraltet="nein">
+		<feld id="80" typ="Einnahmen" seite="1" horizontal="931" vertikal="1123" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" nullwertdarstellung="nein" veraltet="nein" elsterfeldname="Steuerfall/Umsatzsteuervoranmeldung/Kz80">
 			<name>Umsätze, für die eine Steuer nach §24 UStG zu entrichten ist (Steuer-Anteil)</name>
 			<erweiterung/>
 		</feld>
-		<feld id="91" typ="Ausgaben" seite="2" horizontal="666" vertikal="363" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="ohne" nullwertdarstellung="nein" veraltet="nein">
+		<feld id="91" typ="Ausgaben" seite="2" horizontal="666" vertikal="363" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="ohne" nullwertdarstellung="nein" veraltet="nein" elsterfeldname="Steuerfall/Umsatzsteuervoranmeldung/Kz91">
 			<name>Steuerfreie innergemeinschaftliche Erwerbe nach §4b UStG</name>
 			<erweiterung/>
 		</feld>
-		<feld id="89" typ="Ausgaben" seite="2" horizontal="666" vertikal="430" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="ohne" nullwertdarstellung="nein" veraltet="nein">
+		<feld id="89" typ="Ausgaben" seite="2" horizontal="666" vertikal="430" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="ohne" nullwertdarstellung="nein" veraltet="nein" elsterfeldname="Steuerfall/Umsatzsteuervoranmeldung/Kz89">
 			<name>Innergem. Erwerbe zu 19% (Netto-Anteil)</name>
 			<erweiterung/>
 		</feld>
@@ -109,7 +109,7 @@
 			<name>Innergem. Erwerbe zu 19% (Steuer-Anteil)</name>
 			<erweiterung/>
 		</feld>
-		<feld id="93" typ="Ausgaben" seite="2" horizontal="666" vertikal="472" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="ohne" nullwertdarstellung="nein" veraltet="nein">
+		<feld id="93" typ="Ausgaben" seite="2" horizontal="666" vertikal="472" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="ohne" nullwertdarstellung="nein" veraltet="nein" elsterfeldname="Steuerfall/Umsatzsteuervoranmeldung/Kz93">
 			<name>Innergem. Erwerbe zu 7% (Netto-Anteil)</name>
 			<erweiterung/>
 		</feld>
@@ -117,31 +117,31 @@
 			<name>Innergem. Erwerbe zu 7% (Steuer-Anteil)</name>
 			<erweiterung/>
 		</feld>
-		<feld id="90" typ="Ausgaben" seite="2" horizontal="666" vertikal="514" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="ohne" nullwertdarstellung="nein" veraltet="nein">
+		<feld id="90" typ="Ausgaben" seite="2" horizontal="666" vertikal="514" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="ohne" nullwertdarstellung="nein" veraltet="nein" elsterfeldname="Steuerfall/Umsatzsteuervoranmeldung/Kz90">
 			<name>Innergem. Erwerbe zu 0%</name>
 			<erweiterung/>
 		</feld>
-		<feld id="95" typ="Ausgaben" seite="2" horizontal="666" vertikal="558" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="ohne" nullwertdarstellung="nein" veraltet="nein">
+		<feld id="95" typ="Ausgaben" seite="2" horizontal="666" vertikal="558" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="ohne" nullwertdarstellung="nein" veraltet="nein" elsterfeldname="Steuerfall/Umsatzsteuervoranmeldung/Kz95">
 			<name>Innergem. Erwerbe zu anderen Steuersätzen (Netto-Anteil)</name>
 			<erweiterung/>
 		</feld>
-		<feld id="98" typ="Einnahmen" seite="2" horizontal="892" vertikal="558" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" nullwertdarstellung="nein" veraltet="nein">
+		<feld id="98" typ="Einnahmen" seite="2" horizontal="892" vertikal="558" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" nullwertdarstellung="nein" veraltet="nein" elsterfeldname="Steuerfall/Umsatzsteuervoranmeldung/Kz98">
 			<name>Innergem. Erwerbe zu anderen Steuersätzen (Steuer-Anteil)</name>
 			<erweiterung/>
 		</feld>
-		<feld id="94" typ="Ausgaben" seite="2" horizontal="666" vertikal="610" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="ohne" nullwertdarstellung="nein" veraltet="nein">
+		<feld id="94" typ="Ausgaben" seite="2" horizontal="666" vertikal="610" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="ohne" nullwertdarstellung="nein" veraltet="nein" elsterfeldname="Steuerfall/Umsatzsteuervoranmeldung/Kz94">
 			<name>Innergem. Erwerbe neuer Fahrzeuge von Lieferern ohne USt-Id Nr. (Netto-Anteil)</name>
 			<erweiterung/>
 		</feld>
-		<feld id="96" typ="Einnahmen" seite="2" horizontal="892" vertikal="610" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" nullwertdarstellung="nein" veraltet="nein">
+		<feld id="96" typ="Einnahmen" seite="2" horizontal="892" vertikal="610" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" nullwertdarstellung="nein" veraltet="nein" elsterfeldname="Steuerfall/Umsatzsteuervoranmeldung/Kz96">
 			<name>Innergem. Erwerbe neuer Fahrzeuge von Lieferern ohne USt-Id Nr. (Steuer-Anteil)</name>
 			<erweiterung/>
 		</feld>
-		<feld id="46" typ="Ausgaben" seite="2" horizontal="666" vertikal="715" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="ohne" nullwertdarstellung="nein" veraltet="nein">
+		<feld id="46" typ="Ausgaben" seite="2" horizontal="666" vertikal="715" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="ohne" nullwertdarstellung="nein" veraltet="nein" elsterfeldname="Steuerfall/Umsatzsteuervoranmeldung/Kz46">
 			<name>Im Inland steuerpflichtige sonstige Leistungen von im übrigen Gemeinschaftsgebiet ansässigen Unternehmen (Netto-Anteil)</name>
 			<erweiterung/>
 		</feld>
-		<feld id="47" typ="Einnahmen" seite="2" horizontal="892" vertikal="715" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" nullwertdarstellung="nein" veraltet="nein">
+		<feld id="47" typ="Einnahmen" seite="2" horizontal="892" vertikal="715" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" nullwertdarstellung="nein" veraltet="nein" elsterfeldname="Steuerfall/Umsatzsteuervoranmeldung/Kz47">
 			<name>Im Inland steuerpflichtige sonstige Leistungen von im übrigen Gemeinschaftsgebiet ansässigen Unternehmen (Steuer-Anteil)</name>
 			<erweiterung/>
 		</feld>
@@ -157,11 +157,11 @@
 			<name>Leistungen eines im Ausland ansässigen Unternehmers (Steuer-Anteil)</name>
 			<erweiterung/>
 		</feld>
-		<feld id="73" typ="Ausgaben" seite="2" horizontal="666" vertikal="758" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="ohne" nullwertdarstellung="nein" veraltet="nein">
+		<feld id="73" typ="Ausgaben" seite="2" horizontal="666" vertikal="758" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="ohne" nullwertdarstellung="nein" veraltet="nein" elsterfeldname="Steuerfall/Umsatzsteuervoranmeldung/Kz73">
 			<name>Lieferungen sicherungsübereigneter Gegenstände und Umsätze, die unter das GrEStG fallen (Netto-Anteil)</name>
 			<erweiterung/>
 		</feld>
-		<feld id="74" typ="Einnahmen" seite="2" horizontal="892" vertikal="758" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" nullwertdarstellung="nein" veraltet="nein">
+		<feld id="74" typ="Einnahmen" seite="2" horizontal="892" vertikal="758" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" nullwertdarstellung="nein" veraltet="nein" elsterfeldname="Steuerfall/Umsatzsteuervoranmeldung/Kz74">
 			<name>Lieferungen sicherungsübereigneter Gegenstände und Umsätze, die unter das GrEStG fallen (Steuer-Anteil)</name>
 			<erweiterung/>
 		</feld>
@@ -173,11 +173,11 @@
 			<name>Lieferung von Mobilfunkgeräten und integrierten Schaltkreisen (Steuer-Anteil)</name>
 			<erweiterung/>
 		</feld>
-		<feld id="84" typ="Ausgaben" seite="2" horizontal="666" vertikal="800" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="ohne" nullwertdarstellung="nein" veraltet="nein">
+		<feld id="84" typ="Ausgaben" seite="2" horizontal="666" vertikal="800" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="ohne" nullwertdarstellung="nein" veraltet="nein" elsterfeldname="Steuerfall/Umsatzsteuervoranmeldung/Kz84">
 			<name>Andere Leistungen nach § 13b Abs. 2 (Netto-Anteil)</name>
 			<erweiterung/>
 		</feld>
-		<feld id="85" typ="Einnahmen" seite="2" horizontal="892" vertikal="800" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" nullwertdarstellung="nein" veraltet="nein">
+		<feld id="85" typ="Einnahmen" seite="2" horizontal="892" vertikal="800" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" nullwertdarstellung="nein" veraltet="nein" elsterfeldname="Steuerfall/Umsatzsteuervoranmeldung/Kz85">
 			<name>Andere Leistungen nach § 13b Abs. 2 (Steuer-Anteil)</name>
 			<erweiterung/>
 		</feld>
@@ -189,23 +189,23 @@
 			<name>Steuernummer nochmal</name>
 			<erweiterung>fsteuernummer</erweiterung>
 		</feld>
-		<feld id="42" typ="Einnahmen" seite="2" horizontal="666" vertikal="871" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="ohne" nullwertdarstellung="nein" veraltet="nein">
+		<feld id="42" typ="Einnahmen" seite="2" horizontal="666" vertikal="871" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="ohne" nullwertdarstellung="nein" veraltet="nein" elsterfeldname="Steuerfall/Umsatzsteuervoranmeldung/Kz42">
 			<name>Lieferungen des ersten Abnehmers bei innergemeinschaftlichen Dreiecksgeschäften</name>
 			<erweiterung/>
 		</feld>
-		<feld id="60" typ="Einnahmen" seite="2" horizontal="666" vertikal="924" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="ohne" nullwertdarstellung="nein" veraltet="nein">
+		<feld id="60" typ="Einnahmen" seite="2" horizontal="666" vertikal="924" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="ohne" nullwertdarstellung="nein" veraltet="nein" elsterfeldname="Steuerfall/Umsatzsteuervoranmeldung/Kz60">
 			<name>Steuerpflichtige Umsätze im Sinne des §13b Abs. 1 Satz 1 Nr. 1 bis 5 UStG, für die der Leistungsempfänger die Steuer schuldet</name>
 			<erweiterung/>
 		</feld>
-		<feld id="21" typ="Einnahmen" seite="2" horizontal="666" vertikal="968" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="ohne" nullwertdarstellung="nein" veraltet="nein">
+		<feld id="21" typ="Einnahmen" seite="2" horizontal="666" vertikal="968" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="ohne" nullwertdarstellung="nein" veraltet="nein" elsterfeldname="Steuerfall/Umsatzsteuervoranmeldung/Kz21">
 			<name>Nicht steuerbare sonstige Leistungen gem. §18b Satz 1 Nr. 2 UStG</name>
 			<erweiterung/>
 		</feld>
-		<feld id="45" typ="Einnahmen" seite="2" horizontal="666" vertikal="1010" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="ohne" nullwertdarstellung="nein" veraltet="nein">
+		<feld id="45" typ="Einnahmen" seite="2" horizontal="666" vertikal="1010" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="ohne" nullwertdarstellung="nein" veraltet="nein" elsterfeldname="Steuerfall/Umsatzsteuervoranmeldung/Kz45">
 			<name>Nicht steuerbare Umsätze (Leistungsort nicht im Inland)</name>
 			<erweiterung/>
 		</feld>
-		<feld id="1466" typ="Summe" seite="2" horizontal="892" vertikal="1172" ausrichtung="rechtsbuendig" anteil="brutto" nachkommaanteil="mit" nullwertdarstellung="nein" veraltet="nein">
+		<feld id="1466" typ="Summe" seite="2" horizontal="892" vertikal="1172" ausrichtung="rechtsbuendig" anteil="brutto" nachkommaanteil="mit" nullwertdarstellung="nein" veraltet="nein" elsterfeldname="Steuerfall/Umsatzsteuervoranmeldung/Kz66">
 			<name>Vorsteuerbeträge Summenfeld</name>
 			<erweiterung>66+mwst(a)</erweiterung>
 		</feld>
@@ -221,27 +221,27 @@
 			<name>VST-Beträge separat Hinweis2</name>
 			<erweiterung>separat:</erweiterung>
 		</feld>
-		<feld id="61" typ="Ausgaben" seite="2" horizontal="892" vertikal="1215" ausrichtung="rechtsbuendig" anteil="brutto" nachkommaanteil="mit" nullwertdarstellung="nein" veraltet="nein">
+		<feld id="61" typ="Ausgaben" seite="2" horizontal="892" vertikal="1215" ausrichtung="rechtsbuendig" anteil="brutto" nachkommaanteil="mit" nullwertdarstellung="nein" veraltet="nein" elsterfeldname="Steuerfall/Umsatzsteuervoranmeldung/Kz61">
 			<name>Vorsteuerbeträge aus dem innergemeinschaftlichen Erwerb von Gegenständen</name>
 			<erweiterung/>
 		</feld>
-		<feld id="62" typ="Ausgaben" seite="2" horizontal="892" vertikal="1258" ausrichtung="rechtsbuendig" anteil="brutto" nachkommaanteil="mit" nullwertdarstellung="nein" veraltet="nein">
+		<feld id="62" typ="Ausgaben" seite="2" horizontal="892" vertikal="1258" ausrichtung="rechtsbuendig" anteil="brutto" nachkommaanteil="mit" nullwertdarstellung="nein" veraltet="nein" elsterfeldname="Steuerfall/Umsatzsteuervoranmeldung/Kz62">
 			<name>Entrichtete Einfuhrumsatzsteuer</name>
 			<erweiterung/>
 		</feld>
-		<feld id="67" typ="Ausgaben" seite="2" horizontal="892" vertikal="1301" ausrichtung="rechtsbuendig" anteil="brutto" nachkommaanteil="mit" nullwertdarstellung="nein" veraltet="nein">
+		<feld id="67" typ="Ausgaben" seite="2" horizontal="892" vertikal="1301" ausrichtung="rechtsbuendig" anteil="brutto" nachkommaanteil="mit" nullwertdarstellung="nein" veraltet="nein" elsterfeldname="Steuerfall/Umsatzsteuervoranmeldung/Kz67">
 			<name>Vorsteuerbeträge im Sinne des §13b Abs. 1 UStG</name>
 			<erweiterung/>
 		</feld>
-		<feld id="63" typ="Ausgaben" seite="3" horizontal="931" vertikal="132" ausrichtung="rechtsbuendig" anteil="brutto" nachkommaanteil="mit" nullwertdarstellung="nein" veraltet="nein">
+		<feld id="63" typ="Ausgaben" seite="3" horizontal="931" vertikal="132" ausrichtung="rechtsbuendig" anteil="brutto" nachkommaanteil="mit" nullwertdarstellung="nein" veraltet="nein" elsterfeldname="Steuerfall/Umsatzsteuervoranmeldung/Kz63">
 			<name>Vorsteuerbeträge, die nach allgemeinen Durchschnittssätzen berechnet sind</name>
 			<erweiterung/>
 		</feld>
-		<feld id="64" typ="Ausgaben" seite="3" horizontal="931" vertikal="242" ausrichtung="rechtsbuendig" anteil="brutto" nachkommaanteil="mit" nullwertdarstellung="nein" veraltet="nein">
+		<feld id="64" typ="Ausgaben" seite="3" horizontal="931" vertikal="242" ausrichtung="rechtsbuendig" anteil="brutto" nachkommaanteil="mit" nullwertdarstellung="nein" veraltet="nein" elsterfeldname="Steuerfall/Umsatzsteuervoranmeldung/Kz64">
 			<name>Berichtigung des Vorsteuerabzugs (§15a UStG)</name>
 			<erweiterung/>
 		</feld>
-		<feld id="59" typ="Ausgaben" seite="3" horizontal="931" vertikal="199" ausrichtung="rechtsbuendig" anteil="brutto" nachkommaanteil="mit" nullwertdarstellung="nein" veraltet="nein">
+		<feld id="59" typ="Ausgaben" seite="3" horizontal="931" vertikal="199" ausrichtung="rechtsbuendig" anteil="brutto" nachkommaanteil="mit" nullwertdarstellung="nein" veraltet="nein" elsterfeldname="Steuerfall/Umsatzsteuervoranmeldung/Kz59">
 			<name>Vorsteuerabzug für innergemeinschaftliche Lieferungen neuer Fahrzeuge außerhalb eines Unternehmens sowie von Kleinunternehmern</name>
 			<erweiterung/>
 		</feld>
@@ -249,11 +249,11 @@
 			<name>Verbleibender Betrag</name>
 			<erweiterung>1000-1466-61-62-67-63-59-64</erweiterung>
 		</feld>
-		<feld id="65" typ="Ausgaben" seite="3" horizontal="931" vertikal="369" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" nullwertdarstellung="nein" veraltet="nein">
+		<feld id="65" typ="Ausgaben" seite="3" horizontal="931" vertikal="369" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" nullwertdarstellung="nein" veraltet="nein" elsterfeldname="Steuerfall/Umsatzsteuervoranmeldung/Kz65">
 			<name>Steuer infolge Wechsels der Besteuerungsform</name>
 			<erweiterung/>
 		</feld>
-		<feld id="69" typ="Ausgaben" seite="3" horizontal="931" vertikal="450" ausrichtung="rechtsbuendig" anteil="brutto" nachkommaanteil="mit" nullwertdarstellung="nein" veraltet="nein">
+		<feld id="69" typ="Ausgaben" seite="3" horizontal="931" vertikal="450" ausrichtung="rechtsbuendig" anteil="brutto" nachkommaanteil="mit" nullwertdarstellung="nein" veraltet="nein" elsterfeldname="Steuerfall/Umsatzsteuervoranmeldung/Kz69">
 			<name>In Rechnungen unrichtig oder unberechtigt ausgewiesene Steuerbeträge</name>
 			<erweiterung/>
 		</feld>
@@ -265,11 +265,11 @@
 			<name>Voranmeldungszeitraum Kreuzchen</name>
 			<erweiterung>X</erweiterung>
 		</feld>
-		<feld id="39" typ="Dokumentdaten" seite="3" horizontal="931" vertikal="577" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="ohne" nullwertdarstellung="nein" veraltet="nein">
+		<feld id="39" typ="Dokumentdaten" seite="3" horizontal="931" vertikal="577" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="ohne" nullwertdarstellung="nein" veraltet="nein" elsterfeldname="Steuerfall/Umsatzsteuervoranmeldung/Kz39">
 			<name>Anrechnung (Abzug) der festgesetzten Sondervorauszahlung für Dauerfristverlängerung</name>
 			<erweiterung>[Dauerfristverlängerung]Sondervorauszahlung$J</erweiterung>
 		</feld>
-		<feld id="83" typ="Summe" seite="3" horizontal="931" vertikal="645" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" nullwertdarstellung="ja" veraltet="nein">
+		<feld id="83" typ="Summe" seite="3" horizontal="931" vertikal="645" ausrichtung="rechtsbuendig" anteil="netto" nachkommaanteil="mit" nullwertdarstellung="ja" veraltet="nein" elsterfeldname="Steuerfall/Umsatzsteuervoranmeldung/Kz83">
 			<name>Verbleibende Umsatzsteuer-Vorauszahlung</name>
 			<erweiterung>2005-39</erweiterung>
 		</feld>

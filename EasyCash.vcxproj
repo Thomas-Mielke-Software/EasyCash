@@ -467,6 +467,14 @@ copy ..\EasyCash\Release\crashrpt_lang.ini .\Release
       <Optimization Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Disabled</Optimization>
       <Optimization Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Disabled</Optimization>
     </ClCompile>
+    <ClCompile Include="UStAbgleich.cpp">
+      <Optimization Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Disabled</Optimization>
+      <Optimization Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Disabled</Optimization>
+    </ClCompile>
+    <ClCompile Include="UStAbgleichDlg.cpp">
+      <Optimization Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Disabled</Optimization>
+      <Optimization Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Disabled</Optimization>
+    </ClCompile>
     <ClCompile Include="VCalcParser.cpp">
       <Optimization Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Disabled</Optimization>
       <Optimization Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Disabled</Optimization>
@@ -572,6 +580,8 @@ copy ..\EasyCash\Release\crashrpt_lang.ini .\Release
     <ClInclude Include="Tmschema.h" />
     <ClInclude Include="UnternehmensartDlg.h" />
     <ClInclude Include="UstVorauszahlungenDlg.h" />
+    <ClInclude Include="UStAbgleich.h" />
+    <ClInclude Include="UStAbgleichDlg.h" />
     <ClInclude Include="Uxtheme.h" />
     <ClInclude Include="VCalcParser.h" />
     <ClInclude Include="VCalcParserException.h" />

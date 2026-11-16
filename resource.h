@@ -95,6 +95,7 @@
 #define IDB_DATENVERZEICHNIS            413
 #define IDD_USTVORAUSZAHLUNGEN          414
 #define IDD_FORMULARABSCHNITT           415
+#define IDD_USTABGLEICH                 444
 #define IDB_TOOLBAR_16                  419
 #define IDB_TOOLBAR_32                  420
 #define IDR_DAUERBUCHUNGEN_AUSFUEHREN_MONATE 421
@@ -400,6 +401,9 @@
 #define IDC_VORAUSZAHLUNG               1169
 #define IDC_MWST_STATIC                 1169
 #define IDC_REPARATURINSTALLATION       1170
+#define IDC_USTABGLEICH_LISTE           1172
+#define IDC_USTABGLEICH_AENDERN         1173
+#define IDC_USTABGLEICH_HINWEIS         1174
 #define IDC_BUCHUNGSLISTE_BESTANDSKONTEN 1500
 #define ID_VIEW_JOURNAL_MONATE_ALLE     2802
 #define ID_VIEW_JOURNAL_MONATE_JANUAR   2803
@@ -547,15 +551,16 @@
 #define ID_MAC_PAKET_DOWNLOAD           32924
 #define ID_PROGRAMMUPDATE_INSTALLIEREN  32925
 #define ID_PROGRAMMUPDATE_UEBERSPRINGEN 32926
+#define ID_USTABGLEICH                  32927
 
 // Next default values for new objects
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_3D_CONTROLS                     1
-#define _APS_NEXT_RESOURCE_VALUE        444
-#define _APS_NEXT_COMMAND_VALUE         32927
-#define _APS_NEXT_CONTROL_VALUE         1172
+#define _APS_NEXT_RESOURCE_VALUE        445
+#define _APS_NEXT_COMMAND_VALUE         32928
+#define _APS_NEXT_CONTROL_VALUE         1175
 #define _APS_NEXT_SYMED_VALUE           115
 #endif
 #endif
