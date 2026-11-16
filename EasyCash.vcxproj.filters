@@ -144,6 +144,12 @@
     <ClCompile Include="UstVorauszahlungenDlg.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="UStAbgleich.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="UStAbgleichDlg.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
     <ClCompile Include="VCalcParser.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -320,6 +326,12 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="UstVorauszahlungenDlg.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="UStAbgleich.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="UStAbgleichDlg.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Uxtheme.h">

@@ -90,6 +90,12 @@ protected:
 	XDoc *m_aktFormular;
 
 	void UpdateList();
+
+	// Abgleich der Zuweisungen für USt-Voranmeldung und Umsatzsteuererklärung (siehe UStAbgleich.h):
+	// Ist eines der beiden Formulare gewählt, zeigt eine dritte Spalte die Zuweisung für das andere.
+	int m_nPartnerFormular;		// -1 = keine dritte Spalte, 0 = sie zeigt die Voranmeldung, 1 = sie zeigt die Erklärung
+	int m_nFormularJahr;		// Jahr des gewählten Formulars
+	void UStAbgleichMitfuehren(int n, int nAlt);
 public:
 	CComboBox m_ctrlFinanzamtszahlungen1;
 	CComboBox m_ctrlFinanzamtszahlungen2;

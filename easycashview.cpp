@@ -43,6 +43,7 @@
 #include "DatenverzeichnisDlg.h"
 #include "UstVorauszahlungenDlg.h"
 #include "MacPaket.h"
+#include "UStAbgleichDlg.h"
 
 //#if defined(NDEBUG)
 //#include "CrashRpt.h"
@@ -74,6 +75,7 @@ BEGIN_MESSAGE_MAP(CEasyCashView, CScrollView)
 	ON_COMMAND(ID_EDIT_DAUERBUCHUNGEN_EINGEBEN, OnEditDauerbuchungenEingeben)
 	ON_COMMAND(ID_EDIT_DAUERBUCHUNGEN_AUSFUEHREN, OnEditDauerbuchungenAusfuehren)
 	ON_COMMAND(ID_EDIT_UMSATZSTEUERVORAUSZAHLUNGEN, OnEditUmsatzsteuervorauszahlungen)
+	ON_COMMAND(ID_USTABGLEICH, OnUStAbgleich)
 	ON_WM_RBUTTONDOWN()
 	ON_COMMAND(ID_FILE_BACKUP_SUBFOLDER, OnFileBackupSubfolder)
 	ON_COMMAND(ID_FILE_BACKUP_EXTERNAL, OnFileBackupExternal)
@@ -515,6 +517,7 @@ SendMessage(WM_COMMAND, ID_FILE_SAVE, 0L);
 
 void CEasyCashView::UpdateFormularMenu()
 {
+	GetUStAbgleich().Verwerfen();	// die installierten Formulare können sich geändert haben
 	LadeECFormulare(m_csaFormulare);
 	m_csaFormularnamen.RemoveAll();
 	m_csaFormularfilter.RemoveAll();
@@ -1401,9 +1404,99 @@ static void PruefeIniKodierung(LPCSTR pszIniDatei)
 		WritePrivateProfileString("Allgemein", "EncodingTest", INI_ENCODING_TEST_1252, pszIniDatei);
 }
 
+// Wird gerade eine USt-Voranmeldung oder eine Umsatzsteuererklärung angezeigt und passen die Kontenzuweisungen
+// beider Formulare nicht zusammen (siehe UStAbgleich.h), liefert die Funktion den Hinweistext dazu.
+// Gemeldet wird nur, was das angezeigte Formular verfälscht: Wer keine Voranmeldungen abgibt und deshalb
+// nie eine öffnet, wird auch nicht an deren Zuweisungen erinnert.
+// Rückgabe: -1 = kein Hinweis, 0 = Hinweis zur Voranmeldung, 1 = Hinweis zur Erklärung
+int CEasyCashView::UStAbgleichMeldung(CString &csMeldung)
+{
+	csMeldung.Empty();
+	if (m_GewaehltesFormular < 0 || m_GewaehltesFormular >= m_csaFormulare.GetSize()) return -1;
+
+	// Name und Anzeigename des angezeigten Formulars; gemerkt, weil die Funktion bei jedem Update läuft
+	static CString csDatei, csName, csAnzeigename;
+	if (csDatei != m_csaFormulare[m_GewaehltesFormular])
+	{
+		csDatei = m_csaFormulare[m_GewaehltesFormular];
+		UStAbgleichFormularkopf(csDatei, csName, csAnzeigename);
+	}
+	BOOL bErklaerung = csName == USTABGLEICH_FORMULAR_UST;
+	// Die Erklärungsformulare bis 2024 heißen intern wie die Voranmeldung, benutzen deren Zuweisungen
+	// und sind deshalb nicht betroffen.
+	BOOL bVoranmeldung = csName == USTABGLEICH_FORMULAR_UVA && csAnzeigename.Left((int)strlen(USTABGLEICH_FORMULAR_UVA) + 1) == USTABGLEICH_FORMULAR_UVA " ";
+	if (!bErklaerung && !bVoranmeldung) return -1;
+
+	CUStAbgleich &abgleich = GetUStAbgleich();
+	if (!abgleich.Lade(UStAbgleichJahrAusAnzeigename(csAnzeigename))) return -1;
+	if (bErklaerung && abgleich.UStFormulardatei().CompareNoCase(csDatei)) return -1;	// Erklärungsformular ohne Entsprechungen
+
+	int nMitBuchungen = 0;
+	int nKonten = UStAbgleichZaehleBefunde(abgleich, einstellungen1, GetDocument(), bErklaerung ? 1 : 0, &nMitBuchungen);
+	if (!nKonten) return -1;
+
+	CString csKonten, csBuchungen;
+	if (nKonten == 1)
+		csKonten = "Bei einem E/Ü-Konto";
+	else
+		csKonten.Format("Bei %d E/Ü-Konten", nKonten);
+	if (nKonten == 1)
+		csBuchungen.Format(nMitBuchungen ? "es hat Buchungen in %04d" : "ohne Buchungen in %04d", GetDocument()->nJahr);
+	else if (nMitBuchungen)
+		csBuchungen.Format("%d davon mit Buchungen in %04d", nMitBuchungen, GetDocument()->nJahr);
+	else
+		csBuchungen.Format("keines davon mit Buchungen in %04d", GetDocument()->nJahr);
+	csMeldung.Format("%s fehlt die Zuordnung zur %s oder passt nicht zu der für die %s (%s). Beträge dieser Konten können hier fehlen oder im falschen Feld stehen.",
+		(LPCTSTR)csKonten, bErklaerung ? USTABGLEICH_FORMULAR_UST : USTABGLEICH_FORMULAR_UVA,
+		bErklaerung ? USTABGLEICH_FORMULAR_UVA : USTABGLEICH_FORMULAR_UST, (LPCTSTR)csBuchungen);
+	return bErklaerung ? 1 : 0;
+}
+
+// Knopf "Abgleichen" in der CaptionBar: Zuweisungen von Voranmeldung und Erklärung abgleichen
+void CEasyCashView::OnUStAbgleich()
+{
+	int nJahr = GetDocument()->nJahr;
+	if (m_GewaehltesFormular >= 0 && m_GewaehltesFormular < m_csaFormulare.GetSize())
+	{
+		CString csName, csAnzeigename;
+		if (UStAbgleichFormularkopf(m_csaFormulare[m_GewaehltesFormular], csName, csAnzeigename) && UStAbgleichJahrAusAnzeigename(csAnzeigename))
+			nJahr = UStAbgleichJahrAusAnzeigename(csAnzeigename);
+	}
+
+	CUStAbgleichDlg dlg(einstellungen1, GetDocument(), nJahr, this);
+	if (dlg.DoModal() == IDOK && dlg.m_bGeaendert)
+	{
+		SaveProfile();
+		GetDocument()->UpdateAllViews(NULL);
+	}
+}
+
 void CEasyCashView::CaptionBoxCheckOnUpdate()
 {
 	CEasyCashDoc *pDoc = GetDocument();
+
+	// Der Hinweis zum Abgleich von Voranmeldung und Erklärung gilt nur dem angezeigten Formular. Anders als
+	// die übrigen Hinweise wird er deshalb bei jedem Update neu bewertet, auch wenn er gerade angezeigt wird.
+	static CString csUStHinweis;						// zuletzt angezeigter Text, leer = wird nicht angezeigt
+	static int nUStHinweisFuer = -1;					// 0 = Voranmeldung, 1 = Erklärung
+	static BOOL bUStHinweisGeschlossen[2] = { FALSE, FALSE };	// vom Benutzer geschlossen: in dieser Sitzung nicht wieder zeigen
+	CString csUStMeldung;
+	int nUStMeldungFuer = UStAbgleichMeldung(csUStMeldung);
+	if (!csUStHinweis.IsEmpty())
+	{
+		if (!theApp.IsCaptionBoxShown())
+		{
+			if (nUStHinweisFuer >= 0) bUStHinweisGeschlossen[nUStHinweisFuer] = TRUE;
+			csUStHinweis.Empty();
+		}
+		else if (nUStMeldungFuer >= 0 && csUStMeldung == csUStHinweis)
+			return;	// unverändert stehen lassen
+		else
+		{
+			theApp.CaptionBoxHide();
+			csUStHinweis.Empty();
+		}
+	}
 
 	if (theApp.IsCaptionBoxShown()) return;
 
@@ -1532,6 +1625,15 @@ void CEasyCashView::CaptionBoxCheckOnUpdate()
 				}
 			}
 		}
+	}
+
+	// passen die Kontenzuweisungen für Voranmeldung und Erklärung zum angezeigten USt-Formular?
+	if (nUStMeldungFuer >= 0 && !bUStHinweisGeschlossen[nUStMeldungFuer])
+	{
+		theApp.CaptionBox(csUStMeldung, ID_USTABGLEICH, "Abgleichen", "Zuordnungen der E/Ü-Konten für Voranmeldung und Umsatzsteuererklärung abgleichen");
+		csUStHinweis = csUStMeldung;
+		nUStHinweisFuer = nUStMeldungFuer;
+		return;
 	}
 
 	if (m_csaBetriebeNamen.GetSize())
@@ -8902,6 +9004,7 @@ void CEasyCashView::LoadProfile()
 					einstellungen1->AusgabenRechnungsposten[i] = "VST-Beträge separat";
 					SetErweiterungKey(einstellungen1->AusgabenFeldzuweisungen[i], "ECT", "E/Ü-Rechnung", "1185");
 					SetErweiterungKey(einstellungen1->AusgabenFeldzuweisungen[i], "ECT", "Umsatzsteuer-Voranmeldung", "66");
+					SetErweiterungKey(einstellungen1->AusgabenFeldzuweisungen[i], "ECT", "Umsatzsteuererklärung", "1320");	// Gegenstück zu Feld 66 ab dem Formular 2025
 					if (bUnterkategorienVorhanden) einstellungen1->AusgabenUnterkategorien[i] = "Unabhängig gebuchte Vorsteuer";
 					WritePrivateProfileString("Allgemein", "VST-Betraege-separat-angelegt", "1", EasyCashIniFilenameBuffer);
 					if (!bVSTBetraegeSeparatAngelegt && !bInitRechnungsposten) AfxMessageBox("Ein Konto 'VST-Beträge separat' wurde angelegt für VST-Beträge, die vom Netto-Betrag entkoppelt sind. Bitte kontrollieren Sie die Formularfeld-Zuweisungen unter Einstellungen->E/Ü-Konten!");

@@ -25,12 +25,25 @@
 #include "Einstellungen4.h"
 #include "NeuesKonto.h"
 #include ".\ECTIFace\EasyCashDoc.h"
+#include "UStAbgleichDlg.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
 #undef THIS_FILE
 static char THIS_FILE[] = __FILE__;
 #endif
+
+// Feldname mit vorangestellter Feldnummer, wie er in der Kontenliste erscheint ("41: Steuerfreie Lieferungen ...").
+// Die Nummer ist dieselbe, die der Kontodialog als "Feld 41: ..." zur Auswahl anbietet.
+static CString FeldMitNummer(int nID, LPCTSTR name)
+{
+	CString csText;
+	if (nID > 0)
+		csText.Format("%d: %s", nID, name ? name : "");
+	else
+		csText = name ? name : "";
+	return csText;
+}
 
 /////////////////////////////////////////////////////////////////////////////
 // CEinstellungen4 property page
@@ -46,6 +59,8 @@ CEinstellungen4::CEinstellungen4() : CPropertyPage(CEinstellungen4::IDD)
 
 	m_kontenkategorie = 0;
 	m_aktFormular = NULL;
+	m_nPartnerFormular = -1;
+	m_nFormularJahr = 0;
 
 	m_ButtonsNotYetSet = TRUE;
 
@@ -292,7 +307,7 @@ LRESULT CEinstellungen4::OnGetListItem(WPARAM wParam, LPARAM lParam)
 							child = felder->GetChild(i);
 							if (atoi(child->GetAttrValue("id")) == nID)
 							{
-								data->m_text = child->GetChildValue("name");
+								data->m_text = FeldMitNummer(nID, child->GetChildValue("name"));
 								data->m_tooltip = child->GetChildValue("erweiterung");
 								if (data->m_tooltip == "") data->m_tooltip = data->m_text;
 
@@ -336,7 +351,7 @@ LRESULT CEinstellungen4::OnGetListItem(WPARAM wParam, LPARAM lParam)
 							CString csTemp = child->GetAttrValue("id");
 							if (atoi(csTemp) == nID)
 							{
-								data->m_text = child->GetChildValue("name");
+								data->m_text = FeldMitNummer(nID, child->GetChildValue("name"));
 								data->m_tooltip = child->GetChildValue("erweiterung");
 								if (data->m_tooltip.IsEmpty()) data->m_tooltip = data->m_text;
 								break;
@@ -348,6 +363,30 @@ LRESULT CEinstellungen4::OnGetListItem(WPARAM wParam, LPARAM lParam)
 		}
 		else
 			data->m_text = "";
+	}
+	else if (subItem == 2 && m_nPartnerFormular >= 0 && m_kontenkategorie <= 1 && item >= 0 && item < 100)
+	{
+		// Zuweisung für das jeweils andere USt-Formular; Unstimmiges in Rot
+		CUStAbgleich &abgleich = GetUStAbgleich();
+		BOOL bEinnahmen = m_kontenkategorie == 0;
+		CString &csFeldzuweisung = bEinnahmen ? m_einstellungen1->EinnahmenFeldzuweisungen[item] : m_einstellungen1->AusgabenFeldzuweisungen[item];
+		int nUvaFeld = CUStAbgleich::LiesZuweisung(csFeldzuweisung, USTABGLEICH_FORMULAR_UVA);
+		int nUStFeld = CUStAbgleich::LiesZuweisung(csFeldzuweisung, USTABGLEICH_FORMULAR_UST);
+		const CUStAbgleich::Feld *pFeld = m_nPartnerFormular == 1 ? abgleich.UStFeld(nUStFeld) : abgleich.UvaFeld(nUvaFeld);
+		data->m_text = pFeld ? FeldMitNummer(pFeld->nID, pFeld->csName) : CString();
+		data->m_tooltip = data->m_text;
+
+		CUStAbgleich::Befund befund = abgleich.Pruefe(csFeldzuweisung, bEinnahmen);
+		if (befund != CUStAbgleich::STIMMIG)
+		{
+			if (!pFeld)
+				data->m_text = befund == CUStAbgleich::UST_MEHRDEUTIG ? "fehlt (mehrere Felder kommen in Frage)" : "fehlt";
+			else if (befund == CUStAbgleich::WIDERSPRUCH)
+				data->m_text += "  (passt nicht zusammen)";
+			data->m_colors.m_textColor = RGB(192, 0, 0);
+			data->m_tooltip = UStAbgleichBefundText(abgleich, befund, nUvaFeld, nUStFeld, bEinnahmen)
+				+ " Zum Beheben oben das andere Formular wählen und auf das Konto doppelklicken, oder das Formular anzeigen und dort 'Abgleichen' wählen.";
+		}
 	}
 
 	// data->m_tooltip = "";
@@ -431,6 +470,7 @@ void CEinstellungen4::OnPlus()
 					char feldid_str[30];
 					_ultoa(dlg.m_feldID, feldid_str, 10);
 					SetErweiterungKey(m_einstellungen1->EinnahmenFeldzuweisungen[i], "ECT", dlg.m_formularname, feldid_str);
+					UStAbgleichMitfuehren(i, 0);
 					UpdateList();
 					break;
 				}
@@ -462,6 +502,7 @@ void CEinstellungen4::OnPlus()
 					char feldid_str[30];
 					_ultoa(dlg.m_feldID, feldid_str, 10);
 					SetErweiterungKey(m_einstellungen1->AusgabenFeldzuweisungen[i], "ECT", dlg.m_formularname, feldid_str);
+					UStAbgleichMitfuehren(i, 0);
 					UpdateList();
 					break;
 				}
@@ -651,6 +692,7 @@ TRACE3("%d: %s  --  %s\n\r", n, dlg.m_formularname.GetBuffer(0), m_csaFormulare[
 	}
 	((CComboBox *)GetDlgItem(IDC_KONTENKATEGORIE))->GetLBText(m_kontenkategorie, dlg.m_kategorie);
 	dlg.m_aendern = TRUE;
+	int nFeldIDZuvor = dlg.m_feldID;
 	if (dlg.DoModal() == IDOK)
 	{
 		if (dlg.m_konto.IsEmpty()) return;
@@ -671,6 +713,7 @@ TRACE3("%d: %s  --  %s\n\r", n, dlg.m_formularname.GetBuffer(0), m_csaFormulare[
 			_ultoa(dlg.m_feldID, feldid_str, 10);
 			SetErweiterungKey(m_einstellungen1->AusgabenFeldzuweisungen[n], "ECT", dlg.m_formularname, feldid_str);
 		}
+		UStAbgleichMitfuehren(n, nFeldIDZuvor);
 		UpdateList();
 	}
 }
@@ -702,8 +745,25 @@ void CEinstellungen4::OnSelchangeFormular()
 		int strippos;
 		m_formular.GetLBText(n, csTemp);
 		if ((strippos = csTemp.Find(" \\ ", 0)) >= 0) csTemp = csTemp.Left(strippos);
+		if (m_nPartnerFormular >= 0) m_liste.DeleteColumn(2);
 		m_liste.DeleteColumn(1);
 		m_liste.InsertColumn(1, csTemp, LVCFMT_LEFT, LISTE_COLUMNWIDTH);
+
+		// Ist eine USt-Voranmeldung oder eine Umsatzsteuererklärung gewählt, zeigt eine dritte Spalte die
+		// Zuweisung für das jeweils andere Formular, damit Unstimmigkeiten zwischen beiden sichtbar sind.
+		m_nPartnerFormular = -1;
+		CString csAnzeigename;
+		m_formular.GetLBText(n, csAnzeigename);
+		m_nFormularJahr = UStAbgleichJahrAusAnzeigename(strippos >= 0 ? (LPCTSTR)csAnzeigename + strippos : (LPCTSTR)csAnzeigename);
+		if (csTemp == USTABGLEICH_FORMULAR_UST)
+			m_nPartnerFormular = 0;
+		else if (csTemp == USTABGLEICH_FORMULAR_UVA)
+			m_nPartnerFormular = 1;
+		if (m_nPartnerFormular >= 0 && !GetUStAbgleich().Lade(m_nFormularJahr))
+			m_nPartnerFormular = -1;	// kein Formular mit Entsprechungen installiert
+		if (m_nPartnerFormular >= 0)
+			m_liste.InsertColumn(2, m_nPartnerFormular == 1 ? "dazu: " USTABGLEICH_FORMULAR_UST : "dazu: " USTABGLEICH_FORMULAR_UVA, LVCFMT_LEFT, LISTE_COLUMNWIDTH);
+
 		if (n >= 0) 
 		{
 			if (m_aktFormular) delete m_aktFormular;
@@ -712,6 +772,25 @@ void CEinstellungen4::OnSelchangeFormular()
 			SetTimer(1, 1, NULL);
 		}
 	}
+}
+
+// Nach einer geänderten Feldzuweisung des Kontos n für das gewählte Formular: Ist es eine USt-Voranmeldung
+// oder eine Umsatzsteuererklärung, wird die Zuweisung für das jeweils andere Formular mitgeführt.
+// nAlt = Feld-ID vor der Änderung (0 bei einem neuen Konto).
+void CEinstellungen4::UStAbgleichMitfuehren(int n, int nAlt)
+{
+	if (n < 0 || n >= 100 || m_kontenkategorie > 1 || m_formular.GetCurSel() < 0) return;
+
+	CString csFormularname;
+	m_formular.GetLBText(m_formular.GetCurSel(), csFormularname);
+	int strippos;
+	if ((strippos = csFormularname.Find(" \\ ", 0)) >= 0) csFormularname = csFormularname.Left(strippos);
+
+	BOOL bEinnahmen = m_kontenkategorie == 0;
+	UStAbgleichNachZuweisung(this,
+		bEinnahmen ? m_einstellungen1->EinnahmenFeldzuweisungen[n] : m_einstellungen1->AusgabenFeldzuweisungen[n], bEinnahmen,
+		bEinnahmen ? m_einstellungen1->EinnahmenRechnungsposten[n] : m_einstellungen1->AusgabenRechnungsposten[n],
+		csFormularname, m_nFormularJahr, nAlt);
 }
 
 void CEinstellungen4::OnCbnSelchangeFinanzamtszahlungen1()
@@ -746,8 +825,9 @@ void CEinstellungen4::OnTimer(UINT_PTR nIDEvent)
 	m_liste.GetWindowRect(&r);
 	int nListeBreite = r.right - r.left - 21;
 
-	m_liste.SetColumnWidth(0, nListeBreite / 2);
-	m_liste.SetColumnWidth(1, nListeBreite / 2);
+	int nSpalten = m_nPartnerFormular >= 0 ? 3 : 2;
+	for (int nSpalte = 0; nSpalte < nSpalten; nSpalte++)
+		m_liste.SetColumnWidth(nSpalte, nListeBreite / nSpalten);
 
 	CPropertyPage::OnTimer(nIDEvent);
 }

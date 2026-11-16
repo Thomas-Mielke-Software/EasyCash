@@ -285,6 +285,7 @@ protected:
 	void SetUmsatzsteuervorauszahlung(int nZeitraum, CString& csValue);
 	void DauerbuchungenAusfuehren(int jb, int mb);
 	void CaptionBoxCheckOnUpdate();
+	int UStAbgleichMeldung(CString &csMeldung);
 	void SetzeZoomfaktor();
 	void MoveFormularfeld(LPXNode child, CSize delta);
 
@@ -312,6 +313,7 @@ protected:
 	afx_msg void OnEditDauerbuchungenEingeben();
 	afx_msg void OnEditDauerbuchungenAusfuehren();
 	afx_msg void OnEditUmsatzsteuervorauszahlungen();
+	afx_msg void OnUStAbgleich();
 	afx_msg void OnRButtonDown(UINT nFlags, CPoint point);
 	afx_msg void OnFileJahreswechsel();
 	afx_msg void OnFileBackupSubfolder();

@@ -887,6 +887,18 @@ BEGIN
     LTEXT           "Bei 'Unterkategorie' können die Konten unterhalb der Hauptkategorie 'Einnahmen' und 'Ausgaben' weiter untergliedert werden. Es reicht hierbei das jeweils erste Konto mit einem Namen für die Unterkategorie zu versehen.",IDC_STATIC,7,154,274,28
 END
 
+IDD_USTABGLEICH DIALOGEX 0, 0, 560, 260
+STYLE DS_SETFONT | WS_POPUP | WS_CAPTION | WS_SYSMENU | WS_THICKFRAME
+CAPTION "Zuordnungen für Voranmeldung und Umsatzsteuererklärung abgleichen"
+FONT 8, "MS Sans Serif", 0, 0, 0x0
+BEGIN
+    LTEXT           "",IDC_USTABGLEICH_HINWEIS,7,7,546,34
+    CONTROL         "",IDC_USTABGLEICH_LISTE,"SysListView32",LVS_REPORT | LVS_SINGLESEL | LVS_SHOWSELALWAYS | LVS_NOSORTHEADER | WS_BORDER | WS_TABSTOP,7,44,546,188
+    PUSHBUTTON      "&Vorschlag ändern...",IDC_USTABGLEICH_AENDERN,7,239,80,14
+    DEFPUSHBUTTON   "Übernehmen",IDOK,445,239,50,14
+    PUSHBUTTON      "Abbrechen",IDCANCEL,503,239,50,14
+END
+
 IDD_EINSTELLUNGEN5 DIALOGEX 0, 0, 362, 199
 STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_DISABLED | WS_CAPTION | WS_SYSMENU
 CAPTION "Privat-Split"
@@ -1414,6 +1426,14 @@ BEGIN
         RIGHTMARGIN, 281
         TOPMARGIN, 7
         BOTTOMMARGIN, 200
+    END
+
+    IDD_USTABGLEICH, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 553
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 253
     END
 
     IDD_EINSTELLUNGEN5, DIALOG
@@ -1994,6 +2014,16 @@ END
 IDD_NEUES_KONTO AFX_DIALOG_LAYOUT
 BEGIN
     0
+END
+
+IDD_USTABGLEICH AFX_DIALOG_LAYOUT
+BEGIN
+    0,
+    0, 0, 100, 0,
+    0, 0, 100, 100,
+    0, 100, 0, 0,
+    100, 100, 0, 0,
+    100, 100, 0, 0
 END
 
 
