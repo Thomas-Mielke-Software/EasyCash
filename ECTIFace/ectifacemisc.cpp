@@ -25,6 +25,7 @@
 #include "Startoptionen.h"
 #include "EasyCashDoc.h"
 #include "resource.h"	// IDD_KONTO_ANLEGEN (HoleKontoMitFeldern)
+#include "..\UStAbgleich.h"	// USt-Abgleich (HoleKontoMitFeldern)
 
 // Wandelt einen Betrag von String in int (= Pfennige/Cents) um
 extern "C" AFX_EXT_CLASS int currency_to_int(char *s)
@@ -646,9 +647,19 @@ extern "C" AFX_EXT_CLASS char *HoleKontoFuerFeld(char ea, LPCSTR eurech_feld, LP
 // Landes müssen am Konto verknüpft sein (UND-Kombination); geliefert wird
 // das erstbeste Konto (Slot-Reihenfolge, Einnahmen vor Ausgaben).
 //
+// Meta-Paar "$name=<Kontoname>" (höchstens eines pro Land-Block): Vorschlag
+// für die Eingabemaske statt der aneinandergehängten Feldnamen, z.B.
+//
+//   "$de:Umsatzsteuer-Voranmeldung=47|$name=/Verrechnung von §13b-USt||"
+//
+// Formularnamen beginnen nie mit '$', darum kollidiert das nicht. Andere
+// $-Schlüssel werden übersprungen statt abgelehnt (vorwärtskompatibel: lieber
+// ignorieren als ein Konto gegen ein Phantom-Formular verknüpfen).
+//
 // Existiert kein passendes Konto, fragt eine Eingabemaske (IDD_KONTO_ANLEGEN)
-// den Kontonamen ab (vorbelegt mit den Feldnamen aus den .ecf-Formularen,
-// " / "-getrennt) und legt das Konto samt Feldzuweisungen in der ini an.
+// den Kontonamen ab (vorbelegt mit dem $name-Vorschlag, sonst mit den
+// Feldnamen aus den .ecf-Formularen, " / "-getrennt) und legt das Konto samt
+// Feldzuweisungen in der ini an.
 // Return: Kontoname oder "" (Abbruch, Spezifikations-Fehler oder alle
 // 100 Slots belegt -- Fehler jeweils als MessageBox).
 //
@@ -677,11 +688,13 @@ static CString KontoFeldLandKuerzel(LPCSTR inifilename)
 }
 
 // Parst aus der Spezifikation den Block des gewünschten Landes.
+// csNameVorschlag: "$name=..." des Landes ("" ohne), beim ersten Block gleichen Landes.
 // Return: Anzahl der Paare; 0 = kein Block für das Land; -1 = Syntaxfehler.
 static int ParseKontoFeldSpez(LPCSTR spez, const CString &csLand,
-	KontoFeldPaar *paare, int nMaxPaare, CString &csFehler)
+	KontoFeldPaar *paare, int nMaxPaare, CString &csFehler, CString &csNameVorschlag)
 {
 	csFehler = "";
+	csNameVorschlag = "";
 	CString s = spez ? spez : "";
 	s.Trim();
 	if (s.GetLength() > 0 && s[0] == '$') s = s.Mid(1);
@@ -717,6 +730,8 @@ static int ParseKontoFeldSpez(LPCSTR spez, const CString &csLand,
 
 		BOOL bAktiv = land == csLand;
 		if (bAktiv) bLandGefunden = TRUE;
+		int nPaareImBlock = 0;
+		BOOL bNameImBlock = FALSE;
 
 		// Paare "Formularname=Feld-Id", '|'-getrennt
 		int p = 0;
@@ -735,6 +750,32 @@ static int ParseKontoFeldSpez(LPCSTR spez, const CString &csLand,
 					(LPCTSTR)paar);
 				return -1;
 			}
+
+			// Meta-Paare ("$name=..."): keine Feld-Verknüpfung, sondern Zusatzangabe. Unbekannte
+			// $-Schlüssel werden übersprungen statt abgelehnt (siehe HoleKontoMitFeldern).
+			CString schluessel = paar.Left(gleich);
+			schluessel.Trim();
+			if (schluessel[0] == '$')
+			{
+				if (!schluessel.CompareNoCase("$name"))
+				{
+					if (bNameImBlock)
+					{
+						csFehler.Format("Land-Block \"%s:\" enthält mehr als ein \"$name=\".",
+							(LPCTSTR)land);
+						return -1;
+					}
+					bNameImBlock = TRUE;
+					if (bAktiv && csNameVorschlag.IsEmpty())	// erster Block gleichen Landes gewinnt
+					{
+						csNameVorschlag = paar.Mid(gleich + 1);
+						csNameVorschlag.Trim();
+					}
+				}
+				continue;
+			}
+
+			nPaareImBlock++;
 			if (bAktiv && nAnzahl < nMaxPaare)
 			{
 				paare[nAnzahl].formular = paar.Left(gleich);
@@ -743,6 +784,12 @@ static int ParseKontoFeldSpez(LPCSTR spez, const CString &csLand,
 				paare[nAnzahl].feldid.Trim();
 				nAnzahl++;
 			}
+		}
+		if (nPaareImBlock == 0)
+		{
+			csFehler.Format("Land-Block \"%s:\" enthält keine Feld-Zuordnung.",
+				(LPCTSTR)land);
+			return -1;
 		}
 	}
 
@@ -870,6 +917,28 @@ static BOOL ErmittleKontoFeldInfo(const KontoFeldPaar *paare, int nPaare,
 	return TRUE;
 }
 
+// USt-Abgleich: Nennt die Spezifikation nur eines der beiden USt-Formulare (Voranmeldung bzw.
+// Erklärung), wird die Zuweisung für das andere still mitgeführt, wenn sie eindeutig ist
+// (Voranmeldung 41 -> Erklärung 741). Mehrdeutiges (43, 48, 64) bleibt leer und wird vom
+// USt-Abgleich gemeldet (UStAbgleich.h). Maßgeblich ist die neueste installierte Erklärung mit
+// uvafeld-Attributen. V4: ECTEngine KontoFeldSelektor.UstAbgleichMitfuehren.
+//
+// UStAbgleich.cpp wird dafür zusätzlich in diese DLL übersetzt: Plugins rufen HoleKontoMitFeldern
+// direkt hier auf, das Hauptprogramm bekommt die Anlage gar nicht mit. Eine eigene Instanz statt
+// GetUStAbgleich(), denn die gemerkte Instanz der DLL ist nicht die des Hauptprogramms und würde
+// nie verworfen, wenn sich die installierten Formulare ändern.
+static void KontoUStAbgleichMitfuehren(CString &csFeldzuweisung, BOOL bEinnahmen)
+{
+	BOOL bUva = CUStAbgleich::LiesZuweisung(csFeldzuweisung, USTABGLEICH_FORMULAR_UVA) != 0;
+	BOOL bUSt = CUStAbgleich::LiesZuweisung(csFeldzuweisung, USTABGLEICH_FORMULAR_UST) != 0;
+	if (bUva == bUSt) return;	// keines oder beide genannt: nichts mitzuführen
+
+	CUStAbgleich abgleich;
+	if (!abgleich.Lade(0)) return;	// keine Erklärung mit uvafeld-Attributen installiert
+	CUStAbgleich::Mitfuehrung m;
+	abgleich.NachZuweisung(csFeldzuweisung, bEinnahmen, bUSt, 0, m);	// trägt nur Eindeutiges ein (PARTNER_GESETZT)
+}
+
 // Legt das Konto am ersten freien Slot an und schreibt die Feldzuweisungen
 // im Erweiterungs-Format ("ECT|Formular=Id|...||") in die ini.
 static BOOL LegeKontoMitFeldernAn(LPCSTR inifilename, BOOL bEinnahmen,
@@ -903,6 +972,7 @@ static BOOL LegeKontoMitFeldernAn(LPCSTR inifilename, BOOL bEinnahmen,
 	for (int p = 0; p < nPaare; p++)
 		csBlob += "|" + paare[p].formular + "=" + paare[p].feldid;
 	csBlob += "||";
+	KontoUStAbgleichMitfuehren(csBlob, bEinnahmen);
 
 	sprintf(key, "%02d", frei);
 	WritePrivateProfileString(sRech, key, sName, inifilename);
@@ -959,8 +1029,8 @@ extern "C" AFX_EXT_CLASS char *HoleKontoMitFeldern(LPCSTR spez)
 
 	CString csLand = KontoFeldLandKuerzel(inifilename);
 	KontoFeldPaar paare[MAX_KONTOFELD_PAARE];
-	CString csFehler;
-	int nPaare = ParseKontoFeldSpez(spez, csLand, paare, MAX_KONTOFELD_PAARE, csFehler);
+	CString csFehler, csNameVorschlag;
+	int nPaare = ParseKontoFeldSpez(spez, csLand, paare, MAX_KONTOFELD_PAARE, csFehler, csNameVorschlag);
 	if (nPaare <= 0)
 	{
 		AfxMessageBox(csFehler, MB_ICONWARNING);
@@ -1003,8 +1073,8 @@ extern "C" AFX_EXT_CLASS char *HoleKontoMitFeldern(LPCSTR spez)
 	csHinweis += " verknüpft ist. Den Kontonamen bitte ggf. geeignet kürzen, "
 		"sodass der Zweck des Kontos aber noch eindeutig zu erkennen ist.";
 
-	CString csVorgabe;	// Feldnamen mit " / " verbunden
-	for (int p = 0; p < nPaare; p++)
+	CString csVorgabe = csNameVorschlag;	// "$name=..." der Spezifikation, sonst die Feldnamen mit " / " verbunden
+	for (int p = 0; p < nPaare && csNameVorschlag.IsEmpty(); p++)
 	{
 		if (p > 0) csVorgabe += " / ";
 		csVorgabe += feldnamen[p];

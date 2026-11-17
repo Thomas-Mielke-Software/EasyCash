@@ -316,6 +316,7 @@ copy ..\Debug\ECTIFace.dll ..\EasyCTX\Debug\ECTIFace.dll
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="XMLite.cpp" />
+    <ClCompile Include="..\UStAbgleich.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="ECTIFace.def" />
@@ -338,6 +339,7 @@ copy ..\Debug\ECTIFace.dll ..\EasyCTX\Debug\ECTIFace.dll
     <ClInclude Include="Startoptionen.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="XMLite.h" />
+    <ClInclude Include="..\UStAbgleich.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
