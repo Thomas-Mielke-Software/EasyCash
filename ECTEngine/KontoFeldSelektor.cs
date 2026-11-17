@@ -504,10 +504,29 @@ namespace ECTEngine
             var zuweisungen = new Dictionary<string, string>();
             foreach (var b in bedarf)
                 zuweisungen[b.Formular] = b.FeldId;
+            UstAbgleichMitfuehren(zuweisungen, istEinnahme);
 
             gruppe.Add(new EUKonto(name, istEinnahme, gruppe.Count, "", zuweisungen));
             EUKonten.SpeichereReihenfolge(einnahmen, ausgaben);
             return true;
+        }
+
+        /// <summary>
+        /// Nennt die Spezifikation nur eines der beiden USt-Formulare
+        /// (Voranmeldung bzw. Erklärung), wird die Zuweisung für das andere
+        /// still mitgeführt, wenn sie eindeutig ist (Voranmeldung 41 ->
+        /// Erklärung 741). Mehrdeutiges (43, 48, 64) bleibt leer und wird vom
+        /// USt-Abgleich gemeldet (UstAbgleich.cs). Maßgeblich ist die
+        /// neueste installierte Erklärung mit uvafeld-Attributen.
+        /// </summary>
+        public static void UstAbgleichMitfuehren(Dictionary<string, string> zuweisungen, bool istEinnahme,
+            UstAbgleich abgleich = null)
+        {
+            bool uva = UstAbgleich.LiesZuweisung(zuweisungen, UstAbgleich.FormularUva) != 0;
+            bool ust = UstAbgleich.LiesZuweisung(zuweisungen, UstAbgleich.FormularUst) != 0;
+            if (uva == ust) return;   // keines oder beide genannt: nichts mitzuführen
+            abgleich = abgleich ?? UstAbgleich.FuerJahr(0);
+            abgleich.NachZuweisung(zuweisungen, istEinnahme, ustGeaendert: ust, alt: 0);
         }
     }
 }

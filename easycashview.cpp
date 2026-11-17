@@ -1554,6 +1554,19 @@ int CEasyCashView::UStAbgleichMeldung(CString &csMeldung)
 	csMeldung.Empty();
 	if (m_GewaehltesFormular < 0 || m_GewaehltesFormular >= m_csaFormulare.GetSize()) return -1;
 
+#ifdef USE_ECTENGINE
+	// v4: Regeln und Zaehlung managed (ECTEngine/UstAbgleich.cs) auf den Konten des
+	// Einstellungs-Caches. Die nativen einstellungen1->...Feldzuweisungen[] werden im
+	// WPF-Pfad nur beim Oeffnen der Ansicht geladen und sind nach Aenderungen in der
+	// WPF-Konten-Seite veraltet.
+	// m_GewaehltesFormular bleibt nach dem Verlassen der Formular-Ansicht u.U.
+	// stehen -- gemeldet wird nur, solange das Formular wirklich zu sehen ist.
+	if (!IstFormularWpfAktiv()) return -1;
+	char szMeldung[2000];
+	int nFuer = ECT_UstAbgleichMeldung(GetDocument(), m_csaFormulare[m_GewaehltesFormular], szMeldung, sizeof(szMeldung));
+	if (nFuer >= 0) csMeldung = szMeldung;
+	return nFuer;
+#else
 	// Name und Anzeigename des angezeigten Formulars; gemerkt, weil die Funktion bei jedem Update läuft
 	static CString csDatei, csName, csAnzeigename;
 	if (csDatei != m_csaFormulare[m_GewaehltesFormular])
@@ -1590,6 +1603,7 @@ int CEasyCashView::UStAbgleichMeldung(CString &csMeldung)
 		(LPCTSTR)csKonten, bErklaerung ? USTABGLEICH_FORMULAR_UST : USTABGLEICH_FORMULAR_UVA,
 		bErklaerung ? USTABGLEICH_FORMULAR_UVA : USTABGLEICH_FORMULAR_UST, (LPCTSTR)csBuchungen);
 	return bErklaerung ? 1 : 0;
+#endif
 }
 
 // Knopf "Abgleichen" in der CaptionBar: Zuweisungen von Voranmeldung und Erklärung abgleichen
@@ -1603,12 +1617,21 @@ void CEasyCashView::OnUStAbgleich()
 			nJahr = UStAbgleichJahrAusAnzeigename(csAnzeigename);
 	}
 
+#ifdef USE_ECTENGINE
+	// v4: WPF-Dialog auf den Konten des Einstellungs-Caches; er speichert selbst (Cache +
+	// easyct.ini). KEIN SaveProfile() -- das schriebe das ganze Profil aus den im WPF-Pfad
+	// veralteten nativen einstellungen1..5 zurueck und ueberschriebe Aenderungen aus den
+	// WPF-Einstellungen.
+	if (ECT_ZeigeUstAbgleichDialog(GetDocument(), nJahr, AfxGetMainWnd()->GetSafeHwnd()))
+		GetDocument()->UpdateAllViews(NULL);
+#else
 	CUStAbgleichDlg dlg(einstellungen1, GetDocument(), nJahr, this);
 	if (dlg.DoModal() == IDOK && dlg.m_bGeaendert)
 	{
 		SaveProfile();
 		GetDocument()->UpdateAllViews(NULL);
 	}
+#endif
 }
 
 void CEasyCashView::CaptionBoxCheckOnUpdate()
@@ -9815,13 +9838,16 @@ void CEasyCashView::VerstecktEinstellungenWpf(BOOL bFormularWiederherstellen)
 	// hier zurueckspiegeln. Das Modified-Flag wird bereits beim Aendern in der
 	// WPF-Seite gesetzt (EinstellungenDokumentHandler), damit MFC beim
 	// Schliessen "Speichern?" fragt -- auch ueber den Destruktor-Pfad.
+	// ERST abloesen, DANN spiegeln: Das Abloesen uebernimmt noch ein offenes
+	// Textfeld (EinstellungenView.UebernimmOffeneEingabe) -- dessen Wert waere
+	// sonst erst nach dem Sync geschrieben und nativ verloren.
+	ECT_EinstellungenViewAbloesen(m_hwndEinstellungenWpf);
+	m_hwndEinstellungenWpf = NULL;
+
 	if (GetDocument())
 	{
 		((CEasyCashDocBridge*)GetDocument())->SyncManagedToNative();
 	}
-
-	ECT_EinstellungenViewAbloesen(m_hwndEinstellungenWpf);
-	m_hwndEinstellungenWpf = NULL;
 
 	// Buchungsposten koennten in den Einstellungen geaendert worden sein --
 	// die Vorlagen-Dropdowns der Einnahme-/Ausgabe-Knoepfe neu aufbauen.
@@ -10039,6 +10065,7 @@ void CEasyCashView::ZeigeFormularWpf(int nFormularIndex)
 		::BringWindowToTop(m_hwndFormularWpf);
 		m_bFormularWpfImAufbau = false;
 		VergleicheFormularwerteDebug();
+		CaptionBoxCheckOnUpdate();	// USt-Abgleich-Hinweis gilt dem angezeigten Formular (s.u.)
 		return;
 	}
 
@@ -10092,6 +10119,11 @@ void CEasyCashView::ZeigeFormularWpf(int nFormularIndex)
 	if (m_pNavigationWnd) m_pNavigationWnd->ShowWindow(SW_HIDE);
 
 	VergleicheFormularwerteDebug();
+
+	// Der USt-Abgleich-Hinweis gilt dem angezeigten Formular. Im WPF-Pfad
+	// laeuft die Formularwahl ohne UpdateAllViews -- OnUpdate und damit
+	// CaptionBoxCheckOnUpdate kaemen sonst erst bei der naechsten Buchung.
+	CaptionBoxCheckOnUpdate();
 }
 
 void CEasyCashView::VerstecktFormularWpf()
@@ -10121,6 +10153,10 @@ void CEasyCashView::VerstecktFormularWpf()
 		SetupScroll();
 		Invalidate();
 	}
+
+	// Formular weg: einen USt-Abgleich-Hinweis abraeumen (UStAbgleichMeldung
+	// meldet im WPF-Pfad nur bei aktiver Formular-Ansicht).
+	CaptionBoxCheckOnUpdate();
 }
 
 void CEasyCashView::GroessenAnpassungFormularWpf()

@@ -561,6 +561,80 @@ namespace ECTViews
             return vm.Uebernehme();
         }
 
+        // ------------------------------------------------------------------
+        // USt-Abgleich Voranmeldung / Erklärung (UST-ABGLEICH.md)
+        // ------------------------------------------------------------------
+
+        /// <summary>
+        /// Abgleich-Dialog (WPF-Ersatz für CUStAbgleichDlg). Arbeitet auf den
+        /// Konten aus dem Einstellungs-Cache und speichert bei "Übernehmen"
+        /// die geänderten Feldzuweisungen sofort (Cache + ini).
+        /// </summary>
+        /// <param name="jahr">Jahr des angezeigten Formulars (bestimmt, welche
+        /// Erklärung maßgeblich ist); 0 = neueste.</param>
+        /// <returns>true, wenn Zuweisungen geändert wurden.</returns>
+        public static bool ZeigeUstAbgleichDialog(BuchungsDocument doc, int jahr, IntPtr ownerHwnd)
+        {
+            EnsureWpfInitialized();
+
+            var vm = new UstAbgleichUi.UstAbgleichViewModel(
+                EUKonten.AlleKontenAusCache(), doc, UstAbgleich.FuerJahr(jahr), jahr);
+            var view = new UstAbgleichUi.UstAbgleichView(vm);
+            if (ownerHwnd != IntPtr.Zero)
+                new WindowInteropHelper(view) { Owner = ownerHwnd };
+
+            view.ShowDialog();
+            return vm.Geaendert;
+        }
+
+        /// <summary>
+        /// Hinweis am Formular (Pendant zu CEasyCashView::UStAbgleichMeldung):
+        /// Ist <paramref name="formulardatei"/> eine USt-Voranmeldung oder eine
+        /// Umsatzsteuererklärung mit Entsprechungen und passen Zuweisungen
+        /// nicht zusammen, liefert die Funktion den Text dazu. Gemeldet wird nur,
+        /// was das angezeigte Formular verfälscht. Gezählt wird auf den Konten
+        /// des Einstellungs-Caches -- NICHT auf den nativen einstellungen1,
+        /// die im WPF-Pfad nach Änderungen in der Konten-Seite veraltet sind.
+        /// </summary>
+        /// <returns>-1 = kein Hinweis, 0 = Hinweis zur Voranmeldung,
+        /// 1 = Hinweis zur Erklärung</returns>
+        public static int UstAbgleichMeldung(BuchungsDocument doc, string formulardatei, out string meldung)
+        {
+            meldung = "";
+            if (string.IsNullOrEmpty(formulardatei)
+                || !UstAbgleich.LiesFormularkopf(formulardatei, out string name, out string anzeigename))
+                return -1;
+
+            bool erklaerung = name == UstAbgleich.FormularUst;
+            // Die Erklärungsformulare bis 2024 heißen intern wie die Voranmeldung,
+            // benutzen deren Zuweisungen und sind deshalb nicht betroffen.
+            bool voranmeldung = name == UstAbgleich.FormularUva
+                && anzeigename.StartsWith(UstAbgleich.FormularUva + " ", StringComparison.Ordinal);
+            if (!erklaerung && !voranmeldung) return -1;
+
+            var abgleich = UstAbgleich.FuerJahr(UstAbgleich.JahrAusAnzeigename(anzeigename));
+            if (!abgleich.IstAktiv) return -1;
+            if (erklaerung && !GleicheDatei(abgleich.UstFormulardatei, formulardatei))
+                return -1;   // Erklärungsformular ohne Entsprechungen
+
+            var formular = erklaerung ? UstAbgleichFormular.Erklaerung : UstAbgleichFormular.Voranmeldung;
+            int anzahl = abgleich.ZaehleBefunde(EUKonten.AlleKontenAusCache(), doc, formular, out int mitBuchungen);
+            if (anzahl == 0) return -1;
+
+            meldung = UstAbgleich.HinweisText(formular, anzahl, mitBuchungen, doc?.Jahr ?? abgleich.UstJahr);
+            return erklaerung ? 1 : 0;
+        }
+
+        private static bool GleicheDatei(string a, string b)
+        {
+            try
+            {
+                return string.Equals(System.IO.Path.GetFullPath(a), System.IO.Path.GetFullPath(b),
+                    StringComparison.OrdinalIgnoreCase);
+            }
+            catch { return string.Equals(a, b, StringComparison.OrdinalIgnoreCase); }
+        }
+
         /// <summary>
         /// Zeigt den Verwaltungs-/Auswahl-Dialog für Betriebe (WPF-Ersatz für
         /// CIconAuswahlBetrieb im Modus 1). Änderungen werden sofort über den

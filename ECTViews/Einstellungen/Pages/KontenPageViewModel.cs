@@ -63,9 +63,9 @@ namespace ECTViews.EinstellungenUi.Pages
             EUKonten.Lade();
 
             foreach (var k in EUKonten.EinnahmenKonten)
-                Konten.Add(new EUKontoVM(k, GruppeEinnahmen, PersistiereReihenfolge, IstNameVergeben));
+                Konten.Add(NeuesKontoVM(k, GruppeEinnahmen));
             foreach (var k in EUKonten.AusgabenKonten)
-                Konten.Add(new EUKontoVM(k, GruppeAusgaben, PersistiereReihenfolge, IstNameVergeben));
+                Konten.Add(NeuesKontoVM(k, GruppeAusgaben));
 
             foreach (var g in EUKonten.FormularGruppen)
                 Formulare.Add(new FormularKategorieVM(
@@ -106,15 +106,65 @@ namespace ECTViews.EinstellungenUi.Pages
             ? "1 Konto ist keinem Formularfeld zugeordnet"
             : $"{AnzahlKontenOhneZuordnung} Konten sind keinem Formularfeld zugeordnet";
 
+        // -----------------------------------------------------------------
+        // USt-Abgleich Voranmeldung / Erklärung (UST-ABGLEICH.md, Regeln in
+        // ECTEngine/UstAbgleich.cs). Maßgeblich ist das Jahr der in der
+        // Spalte "Umsatzsteuererklärung" gewählten Formularversion.
+        // -----------------------------------------------------------------
+
+        /// <summary>Das geöffnete Dokument (für "Buchungen &lt;Jahr&gt;" im
+        /// Abgleich-Dialog); null, wenn keines offen ist.</summary>
+        public BuchungsDocument Dokument { get; set; }
+
+        public int AbgleichJahr
+        {
+            get
+            {
+                var kat = Formulare.FirstOrDefault(f => f.Name == UstAbgleich.FormularUst)
+                       ?? Formulare.FirstOrDefault(f => f.Name == UstAbgleich.FormularUva);
+                return kat?.AusgewaehlteVariante?.Jahr ?? 0;
+            }
+        }
+
+        public UstAbgleich Abgleich => UstAbgleich.FuerJahr(AbgleichJahr);
+
+        private int _anzahlKontenUnstimmig;
+        public int AnzahlKontenUnstimmig
+        {
+            get => _anzahlKontenUnstimmig;
+            private set
+            {
+                if (SetProperty(ref _anzahlKontenUnstimmig, value))
+                    OnPropertyChanged(nameof(UnstimmigText));
+            }
+        }
+
+        public string UnstimmigText => AnzahlKontenUnstimmig == 1
+            ? "1 Konto: Zuordnungen für Voranmeldung und Umsatzsteuererklärung passen nicht zusammen"
+            : $"{AnzahlKontenUnstimmig} Konten: Zuordnungen für Voranmeldung und Umsatzsteuererklärung passen nicht zusammen";
+
+        /// <summary>Ja/Nein-Rückfrage beim Mitführen (Text) -- vom Code-Behind
+        /// gesetzt. Ohne Rückfrage bleibt die Unstimmigkeit stehen und wird
+        /// gemeldet.</summary>
+        public Func<string, bool> UstRueckfrage { get; set; }
+
+        /// <summary>Auswahl unter mehreren Feldern (Kopfzeile, Einträge) --
+        /// vom Code-Behind als Kontextmenü an der Maus gezeigt. Die gewählte
+        /// Option speichert selbst.</summary>
+        public Action<string, IList<UstAbgleichUi.UstAbgleichOption>> UstFeldAuswahl { get; set; }
+
         public void AktualisiereVerknuepfungen()
         {
-            int ohne = 0;
+            int ohne = 0, unstimmig = 0;
+            var abgleich = Abgleich;
             foreach (var k in Konten)
             {
-                k.AktualisiereAnschluesse(Formulare);
+                k.AktualisiereAnschluesse(Formulare, abgleich);
                 if (k.IstOhneZuordnung) ohne++;
+                if (k.IstUstUnstimmig) unstimmig++;
             }
             AnzahlKontenOhneZuordnung = ohne;
+            AnzahlKontenUnstimmig = unstimmig;
 
             foreach (var kat in Formulare)
             {
@@ -163,9 +213,9 @@ namespace ECTViews.EinstellungenUi.Pages
 
             Konten.Clear();
             foreach (var k in EUKonten.EinnahmenKonten)
-                Konten.Add(new EUKontoVM(k, GruppeEinnahmen, PersistiereReihenfolge, IstNameVergeben));
+                Konten.Add(NeuesKontoVM(k, GruppeEinnahmen));
             foreach (var k in EUKonten.AusgabenKonten)
-                Konten.Add(new EUKontoVM(k, GruppeAusgaben, PersistiereReihenfolge, IstNameVergeben));
+                Konten.Add(NeuesKontoVM(k, GruppeAusgaben));
             AktualisiereVerknuepfungen();
 
             // Selektion (und damit die Feld-Hervorhebung) wiederherstellen.
@@ -224,6 +274,7 @@ namespace ECTViews.EinstellungenUi.Pages
         {
             if (konto == null || feld == null || string.IsNullOrEmpty(formularName)) return;
 
+            int alt = UstAbgleich.LiesZuweisung(konto.Modell.Feldzuweisungen, formularName);   // für den USt-Abgleich
             bool geloest;
             if (feld.IstKeine)
             {
@@ -245,15 +296,105 @@ namespace ECTViews.EinstellungenUi.Pages
                 }
             }
 
-            EUKonten.SpeichereFeldzuweisungen(konto.Modell);
-
             Statusleiste.Melde(geloest
                 ? $"Verknüpfung von Konto \"{konto.Name}\" im Formular \"{formularName}\" gelöst."
                 : $"Konto \"{konto.Name}\" mit Feld \"{feld.Bezeichnung}\" verknüpft.");
 
+            // Voranmeldung oder Erklärung geändert: das Gegenstück mitführen
+            // (still, per Rückfrage oder per Auswahl -- Port von UStAbgleichNachZuweisung)
+            var auswahl = UstMitfuehren(konto, formularName, alt);
+
+            EUKonten.SpeichereFeldzuweisungen(konto.Modell);
+
             AktualisiereVerknuepfungen();
             SelektiertesKonto = konto;
             MarkiereZugewieseneFelder(konto);
+
+            auswahl?.Invoke();   // Feldauswahl erst nach dem Speichern zeigen (wählt asynchron)
+        }
+
+        private const string UstSoLassen = "Nein: so lassen (gilt dann als gewollt und wird nicht mehr gemeldet)";
+
+        /// <summary>
+        /// Führt nach einer geänderten Zuweisung für Voranmeldung oder
+        /// Erklärung das Gegenstück mit. Rückfragen laufen synchron über
+        /// <see cref="UstRueckfrage"/>; muss unter mehreren Feldern gewählt
+        /// werden, liefert die Methode die Aktion, die die Auswahl zeigt
+        /// (sonst null).
+        /// </summary>
+        private Action UstMitfuehren(EUKontoVM konto, string formularName, int alt)
+        {
+            bool ustGeaendert = formularName == UstAbgleich.FormularUst;
+            if (!ustGeaendert && formularName != UstAbgleich.FormularUva) return null;   // anderes Formular
+            var abgleich = Abgleich;
+            if (!abgleich.IstAktiv) return null;
+
+            var d = konto.Modell.Feldzuweisungen;
+            var m = abgleich.NachZuweisung(d, konto.Modell.IstEinnahme, ustGeaendert, alt);
+            string partner = m.PartnerFormular, geaendert = m.GeaendertFormular;
+            string partnerAltText = abgleich.FeldText(m.PartnerIstUst, m.PartnerAlt);
+            var art = m.Art;
+
+            if (art == UstMitfuehrung.ArtTyp.Widerspruch && m.PartnerNeu != 0)
+            {
+                string frage = $"Das Konto '{konto.Name}' ist für die {partner} diesem Feld zugeordnet:\n\n{partnerAltText}\n\n"
+                             + $"Zur neuen Zuordnung für die {geaendert} gehört dort aber:\n\n"
+                             + $"{abgleich.FeldText(m.PartnerIstUst, m.PartnerNeu)}\n\n"
+                             + $"Soll die Zuordnung für die {partner} darauf umgestellt werden?\n\nJa: umstellen\n{UstSoLassen}";
+                bool? ja = UstRueckfrage?.Invoke(frage);
+                if (ja == true) UstAbgleich.SchreibeZuweisung(d, partner, m.PartnerNeu);
+                else if (ja == false) UstAbgleich.SetzeBelassen(d, true);
+            }
+            else if (art == UstMitfuehrung.ArtTyp.Widerspruch && m.Kandidaten.Count > 1)
+            {
+                string frage = $"Das Konto '{konto.Name}' ist für die {partner} diesem Feld zugeordnet:\n\n{partnerAltText}\n\n"
+                             + $"Zur neuen Zuordnung für die {geaendert} passt das nicht; dort kommen mehrere andere Felder "
+                             + $"in Frage. Soll jetzt eines davon gewählt werden?\n\nJa: Feld wählen\n{UstSoLassen}";
+                bool? ja = UstRueckfrage?.Invoke(frage);
+                if (ja == true) art = UstMitfuehrung.ArtTyp.PartnerWaehlen;
+                else if (ja == false) UstAbgleich.SetzeBelassen(d, true);
+            }
+            else if (art == UstMitfuehrung.ArtTyp.Widerspruch || art == UstMitfuehrung.ArtTyp.PartnerEntfernen)
+            {
+                string frage = $"Das Konto '{konto.Name}' ist für die {partner} diesem Feld zugeordnet:\n\n{partnerAltText}\n\n"
+                             + $"Zur geänderten Zuordnung für die {geaendert} passt das nicht mehr. "
+                             + $"Soll die Zuordnung für die {partner} entfernt werden?\n\nJa: entfernen\n{UstSoLassen}";
+                bool? ja = UstRueckfrage?.Invoke(frage);
+                if (ja == true) UstAbgleich.SchreibeZuweisung(d, partner, 0);
+                else if (ja == false) UstAbgleich.SetzeBelassen(d, true);
+            }
+            else if (art == UstMitfuehrung.ArtTyp.PartnerGesetzt)
+                Statusleiste.Melde($"Konto \"{konto.Name}\": Zuordnung für die {partner} mitgeführt "
+                                 + $"({abgleich.FeldText(m.PartnerIstUst, m.PartnerNeu)}).");
+
+            if (art != UstMitfuehrung.ArtTyp.PartnerWaehlen || UstFeldAuswahl == null) return null;
+
+            string kopf = $"Konto '{konto.Name}': Feld {m.GeaendertNeu} der {geaendert} verteilt sich in der "
+                        + $"{partner} auf mehrere Felder. Welches gilt?";
+            var optionen = new List<UstAbgleichUi.UstAbgleichOption>();
+            foreach (int k in m.Kandidaten)
+            {
+                int feld = k;
+                optionen.Add(UstAbgleichUi.UstAbgleichOption.Eintrag(abgleich.FeldText(m.PartnerIstUst, feld), false, () =>
+                {
+                    UstAbgleich.SchreibeZuweisung(d, partner, feld);
+                    EUKonten.SpeichereFeldzuweisungen(konto.Modell);
+                    AktualisiereVerknuepfungen();
+                    MarkiereZugewieseneFelder(_selektiertesKonto);
+                    Statusleiste.Melde($"Konto \"{konto.Name}\": {partner} {abgleich.FeldText(m.PartnerIstUst, feld)}.");
+                }));
+            }
+            optionen.Add(UstAbgleichUi.UstAbgleichOption.Trenner());
+            optionen.Add(UstAbgleichUi.UstAbgleichOption.Eintrag("Jetzt nicht zuordnen", false, () => { }));
+            var auswahl = UstFeldAuswahl;
+            return () => auswahl(kopf, optionen);
+        }
+
+        /// <summary>Nach dem Abgleich-Dialog: Anschlüsse und Hervorhebung neu.</summary>
+        public void NachAbgleich()
+        {
+            AktualisiereVerknuepfungen();
+            MarkiereZugewieseneFelder(_selektiertesKonto);
         }
 
         /// <summary>
@@ -309,6 +450,93 @@ namespace ECTViews.EinstellungenUi.Pages
         // Anlegen / Löschen von Konten
         // -----------------------------------------------------------------
 
+        private EUKontoVM NeuesKontoVM(EUKonto modell, string gruppe)
+            => new EUKontoVM(modell, gruppe, PersistiereReihenfolge, IstNameVergeben)
+               {
+                   Umbenannt = NachUmbenennen
+               };
+
+        // -----------------------------------------------------------------
+        // Umbenennen: Buchungen des geöffneten Jahres mitnehmen (Rückfrage)
+        // -----------------------------------------------------------------
+
+        /// <summary>Ja/Nein-Rückfrage, ob die Buchungen umbenannt werden
+        /// sollen -- vom Code-Behind gesetzt. Ohne Rückfrage bleibt alles.</summary>
+        public Func<string, bool> UmbenennenRueckfrage { get; set; }
+
+        /// <summary>Meldet nach dem Umbenennen von Buchungen an den nativen
+        /// Teil: managed --> nativ synchronisieren, Modified-Flag, Ansichten neu.
+        /// Ohne diesen Rückkanal würde das nächste Update (Sync nativ -->
+        /// managed) die Änderung wieder überschreiben.</summary>
+        public Action BuchungenGeaendert { get; set; }
+
+        /// <summary>Archivjahre rechnen ihre Formulare live mit dem aktuellen
+        /// Kontenrahmen -- gilt für beide Rückfragen beim Umbenennen.</summary>
+        private const string ArchivHinweis =
+              "Hinweis für Archivjahre: Deren Formulare werden live mit dem aktuellen "
+            + "Kontenrahmen berechnet, Beträge auf dem alten Namen fehlen dort also. Abhilfe: "
+            + "die Datei des Jahres öffnen, das Konto kurz auf den alten Namen zurück- und "
+            + "wieder auf den neuen umbenennen und dabei die Buchungen mitnehmen lassen. "
+            + "Für bereits abgegebene Erklärungen ggf. die easyct.ini aus Datensicherungen "
+            + "oder PDF-Ausdrucke bemühen.";
+
+        /// <summary>In dieser Sitzung angelegte Konten: ihr erstes Benennen
+        /// ("Neues Konto" --> eigentlicher Name) braucht keine Rückfrage.</summary>
+        private readonly HashSet<EUKonto> _neuAngelegt = new HashSet<EUKonto>();
+
+        private void NachUmbenennen(EUKontoVM konto, string alt)
+        {
+            if (string.IsNullOrEmpty(alt) || UmbenennenRueckfrage == null) return;
+            if (_neuAngelegt.Contains(konto.Modell)) return;   // frisch angelegt: keine Geschichte
+            var doc = Dokument;
+            string neu = konto.Name;
+            var art = konto.Modell.IstEinnahme ? Buchungsart.Einnahme : Buchungsart.Ausgabe;
+
+            var buchungen = doc?.Buchungen.Where(b => b.Art == art && b.Konto == alt).ToList() ?? new List<Buchung>();
+            var dauer = doc?.Dauerbuchungen.Where(b => b.Art == art && b.Konto == alt).ToList() ?? new List<Dauerbuchung>();
+            // AfA-Abgang: Restwert-Buchungen merken das ursprüngliche Konto (Anlagenverzeichnis)
+            var ursprung = doc == null || art != Buchungsart.Ausgabe ? new List<Buchung>()
+                : doc.Buchungen.Where(b => b.Art == art
+                    && b.Erweiterungen.Hole("EasyCash", "UrspruenglichesKonto") == alt).ToList();
+
+            if (buchungen.Count == 0 && dauer.Count == 0 && ursprung.Count == 0)
+            {
+                // Im geöffneten Jahr ist nichts mitzunehmen -- Archivjahre können
+                // aber betroffen sein: umbenennen bestätigen lassen, sonst zurück.
+                string frage0 = $"Konto \"{alt}\" in \"{neu}\" umbenennen?\n\n"
+                    + (doc != null ? $"Im geöffneten Buchungsjahr {doc.Jahr} ist darauf nichts gebucht.\n\n" : "")
+                    + ArchivHinweis + "\n\n"
+                    + "Ja: umbenennen\nNein: den alten Namen behalten";
+                if (!UmbenennenRueckfrage(frage0))
+                {
+                    konto.SetzeNameOhneRueckfrage(alt);
+                    Statusleiste.Melde($"Umbenennen abgebrochen, das Konto heißt weiter \"{alt}\".");
+                }
+                return;
+            }
+
+            string anzahl = buchungen.Count == 1 ? "1 Buchung" : $"{buchungen.Count} Buchungen";
+            if (dauer.Count > 0)
+                anzahl += dauer.Count == 1 ? " und 1 Dauerbuchung" : $" und {dauer.Count} Dauerbuchungen";
+            string frage =
+                $"Im geöffneten Buchungsjahr {doc.Jahr} stehen {anzahl} auf dem bisherigen Kontonamen "
+              + $"\"{alt}\".\n\nSollen sie auf \"{neu}\" umgestellt werden?\n\n"
+              + "Ja: umstellen (das Dokument muss danach gespeichert werden)\n"
+              + "Nein: Die Buchungen behalten den alten Namen. Er gehört dann nicht mehr zum "
+              + "Kontenrahmen, ihre Beträge fehlen in den Formularen, und der Buchen-Dialog "
+              + "verlangt beim Bearbeiten ein anderes Konto.\n\n"
+              + "Buchungsdateien anderer Jahre werden nicht geändert; dort behalten die Buchungen "
+              + "den alten Namen, und der Buchen-Dialog mahnt ihn beim Bearbeiten an. "
+              + ArchivHinweis;
+            if (!UmbenennenRueckfrage(frage)) return;
+
+            foreach (var b in buchungen) b.Konto = neu;
+            foreach (var b in dauer) b.Konto = neu;
+            foreach (var b in ursprung) b.Erweiterungen.Setze("EasyCash", "UrspruenglichesKonto", neu);
+            BuchungenGeaendert?.Invoke();
+            Statusleiste.Melde($"{anzahl} von \"{alt}\" auf \"{neu}\" umgestellt.");
+        }
+
         /// <summary>True wenn in der GLEICHEN Gruppe (Einnahmen bzw. Ausgaben)
         /// bereits ein anderes Konto diesen Namen trägt. Doppelte Namen wären
         /// fatal: Buchungen referenzieren das Konto nur über den Namen.</summary>
@@ -330,9 +558,8 @@ namespace ECTViews.EinstellungenUi.Pages
                 name = "Neues Konto " + n;
 
             var modell = new EUKonto(name, einnahme, 0, "", null);
-            var vm = new EUKontoVM(modell,
-                einnahme ? GruppeEinnahmen : GruppeAusgaben, PersistiereReihenfolge,
-                IstNameVergeben);
+            var vm = NeuesKontoVM(modell, einnahme ? GruppeEinnahmen : GruppeAusgaben);
+            _neuAngelegt.Add(modell);
 
             if (einnahme)
                 Konten.Insert(Konten.Count(k => k.Modell.IstEinnahme), vm); // ans Ende der Einnahmen
@@ -420,11 +647,27 @@ namespace ECTViews.EinstellungenUi.Pages
                         $"Ein Konto \"{neu}\" existiert in dieser Gruppe bereits -- Umbenennen abgelehnt.");
                     return;
                 }
+                string alt = Modell.Name;
                 Modell.Name = neu;
                 OnPropertyChanged();
                 _onGeaendert?.Invoke();
                 Statusleiste.Melde($"Konto in \"{neu}\" umbenannt.");
+                Umbenannt?.Invoke(this, alt);   // Buchungen mitnehmen? (Besitzer fragt)
             }
+        }
+
+        /// <summary>Nach dem Umbenennen (Argument: bisheriger Name) -- vom
+        /// Besitzer-VM gesetzt.</summary>
+        public System.Action<EUKontoVM, string> Umbenannt { get; set; }
+
+        /// <summary>Setzt den Namen zurück (abgebrochenes Umbenennen) und
+        /// persistiert, ohne erneut <see cref="Umbenannt"/> auszulösen.</summary>
+        internal void SetzeNameOhneRueckfrage(string name)
+        {
+            if (string.IsNullOrEmpty(name) || Modell.Name == name) return;
+            Modell.Name = name;
+            OnPropertyChanged(nameof(Name));
+            _onGeaendert?.Invoke();
         }
 
         // --- Verknuepfungs-Anschluesse (einer je Formular-Spalte) -------------
@@ -451,11 +694,32 @@ namespace ECTViews.EinstellungenUi.Pages
             private set => SetProperty(ref _zuordnungsText, value);
         }
 
-        public void AktualisiereAnschluesse(IEnumerable<FormularKategorieVM> formulare)
+        private bool _istUstUnstimmig;
+        /// <summary>Zuweisungen für Voranmeldung und Erklärung passen nicht
+        /// zusammen (USt-Abgleich, Befund != Stimmig).</summary>
+        public bool IstUstUnstimmig
+        {
+            get => _istUstUnstimmig;
+            private set => SetProperty(ref _istUstUnstimmig, value);
+        }
+
+        public void AktualisiereAnschluesse(IEnumerable<FormularKategorieVM> formulare,
+            UstAbgleich abgleich = null)
         {
             var liste = new List<KontoAnschlussVM>();
             var text = new System.Text.StringBuilder();
             bool irgendeine = false;
+
+            // USt-Abgleich: welche der beiden Spalten verfälscht der Befund?
+            var befund = abgleich?.Pruefe(Modell.Feldzuweisungen, Modell.IstEinnahme) ?? UstAbgleichBefund.Stimmig;
+            IstUstUnstimmig = befund != UstAbgleichBefund.Stimmig;
+            string befundText = "";
+            if (IstUstUnstimmig)
+                befundText = abgleich.BefundText(befund,
+                    UstAbgleich.LiesZuweisung(Modell.Feldzuweisungen, UstAbgleich.FormularUva),
+                    UstAbgleich.LiesZuweisung(Modell.Feldzuweisungen, UstAbgleich.FormularUst),
+                    Modell.IstEinnahme);
+
             foreach (var kat in formulare)
             {
                 string zeile;
@@ -481,7 +745,16 @@ namespace ECTViews.EinstellungenUi.Pages
                         zeile = $"{kat.Name}: Kz {id} (in der gewählten Formularversion nicht vorhanden)";
                     }
                 }
-                liste.Add(new KontoAnschlussVM(kat.Name, zustand));
+                string tooltip = kat.Name;
+                bool verfaelscht =
+                    (kat.Name == UstAbgleich.FormularUva && UstAbgleich.Verfaelscht(befund, UstAbgleichFormular.Voranmeldung))
+                 || (kat.Name == UstAbgleich.FormularUst && UstAbgleich.Verfaelscht(befund, UstAbgleichFormular.Erklaerung));
+                if (verfaelscht)
+                {
+                    zustand = AnschlussZustand.UstUnstimmig;
+                    tooltip = kat.Name + ": " + befundText;
+                }
+                liste.Add(new KontoAnschlussVM(kat.Name, zustand, tooltip));
                 if (text.Length > 0) text.AppendLine();
                 text.Append(zeile);
             }
@@ -490,7 +763,17 @@ namespace ECTViews.EinstellungenUi.Pages
             ZuordnungsText = IstOhneZuordnung
                 ? "Keinem Formularfeld zugeordnet -- der Betrag dieses Kontos erscheint in keinem Formular.\n" + text
                 : text.ToString();
+            if (IstUstUnstimmig)
+                ZuordnungsText += "\n\nUSt-Abgleich: " + befundText
+                               + " Zum Beheben \"Abgleichen...\" über der Kontenliste wählen.";
+            ZuordnungsText += "\n\n" + DragDropHinweis;
         }
+
+        public const string DragDropHinweis =
+            "Zuordnen: das Konto per Drag&Drop auf ein Feld eines Formulars rechts ziehen "
+          + "(oder ein Feld auf das Konto). Dasselbe Feld nochmals zuordnen oder "
+          + "\"<keine Feldzuweisung>\" auf das Konto ziehen löst die Zuordnung. "
+          + "Innerhalb der Gruppe nach oben/unten ziehen sortiert.";
 
         /// <summary>Unterkategorie des Kontos -- strukturiert/rueckt die Konten
         /// in der EÜR ein. Wird sofort persistiert.</summary>
@@ -634,7 +917,9 @@ namespace ECTViews.EinstellungenUi.Pages
             : $"Mit {AnzahlKonten} Konten verknüpft";
     }
 
-    public enum AnschlussZustand { Offen, Verknuepft, FehltInVariante }
+    /// <summary>UstUnstimmig: Spalte Voranmeldung bzw. Erklärung, deren
+    /// Zuweisung nicht zu der des anderen USt-Formulars passt (rot).</summary>
+    public enum AnschlussZustand { Offen, Verknuepft, FehltInVariante, UstUnstimmig }
 
     /// <summary>Ein Verknuepfungs-Anschluss eines Kontos fuer EINE
     /// Formular-Spalte (Reihenfolge = Spalten-Reihenfolge). Die Rubber-Bands
@@ -643,10 +928,13 @@ namespace ECTViews.EinstellungenUi.Pages
     {
         public string FormularName { get; }
         public AnschlussZustand Zustand { get; }
-        public KontoAnschlussVM(string formularName, AnschlussZustand zustand)
+        /// <summary>Formularname, bei USt-Unstimmigkeit mit Befund.</summary>
+        public string Tooltip { get; }
+        public KontoAnschlussVM(string formularName, AnschlussZustand zustand, string tooltip = null)
         {
             FormularName = formularName;
             Zustand = zustand;
+            Tooltip = tooltip ?? formularName;
         }
     }
 }

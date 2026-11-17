@@ -603,6 +603,59 @@ BOOL ECT_ZeigeUstVorauszahlungenDialog(void* pDocBridge, HWND hWndOwner)
     }
 }
 
+// ----------------------------------------------------------
+// USt-Abgleich Voranmeldung / Erklaerung (Doku im Header)
+// ----------------------------------------------------------
+int ECT_UstAbgleichMeldung(void* pDocBridge, LPCSTR pszFormulardatei, char* pszMeldung, int nMeldungLen)
+{
+    if (pszMeldung && nMeldungLen > 0) *pszMeldung = '\0';
+    try
+    {
+        auto* bridge = static_cast<CEasyCashDocBridge*>(pDocBridge);
+        ECTEngine::BuchungsDocument^ engine = bridge ? GetEngine(bridge) : nullptr;
+        String^ meldung = String::Empty;
+        int fuer = ECTViews::ViewHost::UstAbgleichMeldung(engine,
+            pszFormulardatei ? gcnew String(pszFormulardatei) : String::Empty, meldung);
+        if (fuer >= 0 && pszMeldung && nMeldungLen > 0)
+        {
+            CString cs = ECTBridge::ToNative(meldung);
+            strncpy_s(pszMeldung, nMeldungLen, (LPCTSTR)cs, _TRUNCATE);
+        }
+        return fuer;
+    }
+    catch (Exception^ ex)
+    {
+        // Laeuft bei jedem Update: keine MessageBox, nur ins Debug-Fenster.
+        TRACE("ECT_UstAbgleichMeldung: %s\n", (LPCTSTR)CString(ex->Message));
+        return -1;
+    }
+}
+
+BOOL ECT_ZeigeUstAbgleichDialog(void* pDocBridge, int nJahr, HWND hWndOwner)
+{
+    try
+    {
+        auto* bridge = static_cast<CEasyCashDocBridge*>(pDocBridge);
+        ECTEngine::BuchungsDocument^ engine = nullptr;
+        if (bridge)
+        {
+            // Buchungszahlen je Konto kommen aus dem managed Dokument
+            bridge->SyncNativeToManaged();
+            engine = GetEngine(bridge);
+        }
+        bool geaendert = ECTViews::ViewHost::ZeigeUstAbgleichDialog(
+            engine, nJahr, IntPtr((void*)hWndOwner));
+        return geaendert ? TRUE : FALSE;
+    }
+    catch (Exception^ ex)
+    {
+        CString msg;
+        msg = "Fehler im USt-Abgleich-Dialog: "; msg += CString(ex->Message);
+        AfxMessageBox(msg, MB_ICONERROR);
+        return FALSE;
+    }
+}
+
 BOOL ECT_ZeigeDauerbuchungenAusfuehrenDialog(
     int nBuchungsjahr, HWND hWndOwner, int* pnMonatOut, int* pnJahrOut)
 {

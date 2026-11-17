@@ -809,8 +809,41 @@ namespace ECTViews.ViewModels
             set
             {
                 if (SetProperty(ref _selectedKonto, value ?? ""))
+                {
+                    ValidiereKonto();
                     AktualisiereVorlage();   // $konto in Zeilen-Templates
+                }
             }
+        }
+
+        private string _kontoError = "";
+        /// <summary>Feldprüfung Konto: das gewählte Konto gehört nicht (mehr) zu
+        /// den E/Ü-Konten der Einstellungen -- z.B. weil es dort umbenannt
+        /// wurde. Wird sofort angezeigt, nicht erst beim Buchen.</summary>
+        public string KontoError
+        {
+            get => _kontoError;
+            private set => SetProperty(ref _kontoError, value);
+        }
+
+        /// <summary>
+        /// Prüft, dass das gewählte Konto zum aktuellen Kontenrahmen gehört
+        /// (Einstellungen -> E/Ü-Konten). Buchungen auf ein Konto außerhalb
+        /// davon fallen aus allen Formularfeldern heraus. Leer bleibt erlaubt
+        /// (unzugewiesene Buchung).
+        /// </summary>
+        private bool ValidiereKonto()
+        {
+            string konto = _selectedKonto ?? "";
+            var kontenrahmen = IstAusgabe ? Einstellungen.AusgabenKonten : Einstellungen.EinnahmenKonten;
+            if (konto.Length == 0 || kontenrahmen.Contains(konto))
+            {
+                KontoError = "";
+                return true;
+            }
+            KontoError = $"Das Konto \"{konto}\" gehört nicht zum aktuellen Kontenrahmen "
+                       + "(Einstellungen --> E/Ü-Konten) und muss durch eines aus der Liste ersetzt werden.";
+            return false;
         }
 
         // ----------------------------------------------
@@ -1239,7 +1272,12 @@ namespace ECTViews.ViewModels
             _beschreibung = buchung.Beschreibung;
             _geschuetzteBeschreibung = buchung.Beschreibung ?? "";
             _belegnummer = buchung.Belegnummer;
-            _selectedKonto = buchung.Konto;
+            _selectedKonto = buchung.Konto ?? "";
+            // Ein Konto außerhalb des Kontenrahmens (z.B. umbenannt) trotzdem
+            // anzeigen -- die Liste kennt es nicht --, aber gleich rot anmahnen.
+            if (_selectedKonto.Length > 0 && !Konten.Contains(_selectedKonto))
+                Konten.Add(_selectedKonto);
+            ValidiereKonto();
             _bestandskontoFallback = buchung.Bestandskonto ?? "";
             _betriebFallback = buchung.Betrieb ?? "";
 
@@ -1651,6 +1689,7 @@ namespace ECTViews.ViewModels
             DatumError = ""; BetragError = ""; MwstError = "";
             BeschreibungError = ""; AfaError = "";
             BestandskontoError = ""; BetriebError = "";
+            ValidiereKonto();   // live geprüft, nicht erst beim Buchen
             VersteckteFehlerText = "";
         }
 
@@ -1803,6 +1842,7 @@ namespace ECTViews.ViewModels
             ok &= ValidiereMwst();
             ok &= ValidiereBeschreibung();
             ok &= ValidiereAfa();
+            ok &= ValidiereKonto();
             ok &= ValidiereBestandskonto();
             ok &= ValidiereBetrieb();
             return ok;
@@ -2047,16 +2087,11 @@ namespace ECTViews.ViewModels
                 if (!string.IsNullOrEmpty(k))
                     Konten.Add(k);
 
-            // Auch Konten aus bestehenden Buchungen hinzufügen
-            var buchungskonten = _doc.Buchungen
-                .Where(b => b.Art == (IstAusgabe ? Buchungsart.Ausgabe : Buchungsart.Einnahme))
-                .Select(b => b.Konto)
-                .Where(k => !string.IsNullOrEmpty(k))
-                .Distinct()
-                .Where(k => !Konten.Contains(k));
-
-            foreach (var k in buchungskonten)
-                Konten.Add(k);
+            // Konten, die nur noch in bestehenden Buchungen vorkommen (z.B.
+            // umbenannt), stehen bewusst NICHT mehr in der Liste: sie gehören
+            // nicht zum Kontenrahmen und speisen kein Formularfeld (KontoError).
+            // Eine so bebuchte Buchung zeigt ihr Konto trotzdem an, siehe
+            // Bearbeiten-Konstruktor.
 
             // Vorauswahl nach Buchungsart-Wechsel: exakter Treffer bevorzugt,
             // sonst den Eintrag mit dem längsten gemeinsamen Präfix (von links).

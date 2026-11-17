@@ -366,6 +366,29 @@ namespace ECTEngine
         // -----------------------------------------------------------------
         // Konten + Feldzuweisungen aus dem Einstellungs-Cache
         // -----------------------------------------------------------------
+
+        /// <summary>
+        /// Alle Konten (Einnahmen, dann Ausgaben) frisch aus dem Cache, OHNE
+        /// die Formulare zu laden und ohne die statischen Listen anzufassen --
+        /// für Prüfungen außerhalb der Konten-Seite (USt-Abgleich-Hinweis am
+        /// Formular, läuft bei jedem Update).
+        /// </summary>
+        public static List<EUKonto> AlleKontenAusCache()
+        {
+            var alle = LadeKonten(einnahmen: true);
+            alle.AddRange(LadeKonten(einnahmen: false));
+            return alle;
+        }
+
+        /// <summary>v3 schreibt eine im USt-Abgleich entfernte Zuweisung als
+        /// "0" (UStAbgleichDlg/SchreibeZuweisung). Für v4 heißt das "keine
+        /// Zuweisung" -- sonst stünde in der Konten-Seite "Kz 0 (nicht
+        /// vorhanden)". Beim nächsten Speichern fällt der Key dann weg, was
+        /// v3 genauso als 0 liest.</summary>
+        private static bool IstEntfernteUstZuweisung(string formular, string wert)
+            => wert == "0"
+               && (formular == UstAbgleich.FormularUva || formular == UstAbgleich.FormularUst);
+
         private static List<EUKonto> LadeKonten(bool einnahmen)
         {
             var namen = einnahmen
@@ -383,7 +406,8 @@ namespace ECTEngine
 
                 var zuw = new Dictionary<string, string>();
                 foreach (var eintrag in store.Alle())
-                    if (eintrag.Ns == "ECT" && !string.IsNullOrEmpty(eintrag.Wert))
+                    if (eintrag.Ns == "ECT" && !string.IsNullOrEmpty(eintrag.Wert)
+                        && !IstEntfernteUstZuweisung(eintrag.Key, eintrag.Wert))
                         zuw[eintrag.Key] = eintrag.Wert;
 
                 string uk = Einstellungen.Hole(ukSektion + nn);

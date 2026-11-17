@@ -618,6 +618,9 @@
                           ToolTip="{Binding FeldKonto.SperrHinweis}"
                           ToolTipService.ShowOnDisabled="True"/>
             </Grid>
+            <!-- Konto ausserhalb des Kontenrahmens (z.B. umbenannt) -->
+            <TextBlock Style="{StaticResource ErrorStyle}" Text="{Binding KontoError}"
+                       Visibility="{Binding FeldKonto.Sichtbar, Converter={StaticResource BoolToVis}}"/>
             <ItemsControl ItemsSource="{Binding FelderZuordnung}"
                           Style="{StaticResource ZusatzFelderListe}"/>
             </StackPanel>

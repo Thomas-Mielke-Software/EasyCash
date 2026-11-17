@@ -55,8 +55,11 @@ namespace ECTViews.EinstellungenUi
         /// <param name="startSeite">Titel der Seite, die beim Öffnen vorselektiert
         /// werden soll (z.B. "Buchungsvorlagen"). Ist null/leer oder unbekannt,
         /// wird die erste Seite ("Allgemein") gewählt.</param>
+        /// <param name="onBuchungenGeaendert">Callback nach geänderten Buchungen
+        /// (Konto umbenannt): nativ Sync managed --> nativ, Modified-Flag,
+        /// Ansichten neu.</param>
         public EinstellungenViewModel(BuchungsDocument dokument, System.Action onDokumentGeaendert = null,
-            string startSeite = null)
+            string startSeite = null, System.Action onBuchungenGeaendert = null)
         {
             // Seiten als Fabriken registrieren -- gebaut wird erst beim Anklicken
             // (siehe EinstellungenNavItem.Seite). So ist das Öffnen sofort da,
@@ -66,7 +69,7 @@ namespace ECTViews.EinstellungenUi
             Items.Add(Seite(GRUPPE_GLOBAL, "Unternehmer*in",   () => new UnternehmerPage()));
             Items.Add(Seite(GRUPPE_GLOBAL, "Finanzamt",        () => new FinanzamtPage()));
             Items.Add(Seite(GRUPPE_GLOBAL, "Buchungsvorlagen", () => new PresetsPage()));
-            Items.Add(Seite(GRUPPE_GLOBAL, "E/Ü-Konten",       () => new KontenPage()));
+            Items.Add(Seite(GRUPPE_GLOBAL, "E/Ü-Konten",       () => new KontenPage { Dokument = dokument, BuchungenGeaendert = onBuchungenGeaendert }));
             Items.Add(Seite(GRUPPE_GLOBAL, "E/Ü-Einstellungen", () => new EUEinstellungenPage()));
             Items.Add(Seite(GRUPPE_GLOBAL, "Währungsumrechnung", () => new WaehrungenPage()));
 

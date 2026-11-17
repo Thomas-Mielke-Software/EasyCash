@@ -40,16 +40,19 @@ namespace ECTViews.EinstellungenUi
         /// eines Dokumentwerts gerufen wird (setzt nativ das Modified-Flag).</param>
         /// <param name="startSeite">Titel der beim Öffnen vorzuselektierenden
         /// Seite (z.B. "Buchungsvorlagen"); null/leer -> erste Seite.</param>
+        /// <param name="onBuchungenGeaendert">Callback nach geänderten Buchungen
+        /// (Konto umbenannt): nativ Sync managed --> nativ, Modified-Flag,
+        /// Ansichten neu.</param>
         public static IntPtr Einbetten(
             IntPtr parentHwnd, int x, int y, int width, int height,
             BuchungsDocument dokument, Action onDokumentGeaendert,
-            string startSeite = null)
+            string startSeite = null, Action onBuchungenGeaendert = null)
         {
             if (parentHwnd == IntPtr.Zero) return IntPtr.Zero;
 
             EnsureWpfApplication();
 
-            var vm = new EinstellungenViewModel(dokument, onDokumentGeaendert, startSeite);
+            var vm = new EinstellungenViewModel(dokument, onDokumentGeaendert, startSeite, onBuchungenGeaendert);
             var view = new EinstellungenView { DataContext = vm };
 
             var hwndParams = new HwndSourceParameters("ECT_Einstellungen")
@@ -84,6 +87,7 @@ namespace ECTViews.EinstellungenUi
                 {
                     var e = _aktiveHosts[i];
                     _aktiveHosts.RemoveAt(i);
+                    try { e.View?.UebernimmOffeneEingabe(); } catch { }   // offenes Textfeld noch speichern
                     try { e.Source.Dispose(); } catch { }
                     return;
                 }
@@ -94,6 +98,7 @@ namespace ECTViews.EinstellungenUi
         {
             foreach (var e in _aktiveHosts)
             {
+                try { e.View?.UebernimmOffeneEingabe(); } catch { }   // offenes Textfeld noch speichern
                 try { e.Source.Dispose(); } catch { }
             }
             _aktiveHosts.Clear();

@@ -48,6 +48,8 @@
             <SolidColorBrush x:Key="RingPinsel" Color="#A8B4BC"/>
             <SolidColorBrush x:Key="BernsteinPinsel" Color="#F9A825"/>
             <SolidColorBrush x:Key="BernsteinText" Color="#9A5B00"/>
+            <!-- USt-Abgleich: Voranmeldung und Erklaerung passen nicht zusammen -->
+            <SolidColorBrush x:Key="UnstimmigPinsel" Color="#FF3B30"/>
 
             <Style x:Key="KontoItemStyle" TargetType="ListBoxItem">
                 <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
@@ -55,7 +57,7 @@
 
             <DataTemplate x:Key="KontoAnschlussVorlage" DataType="{x:Type pages:KontoAnschlussVM}">
                 <Ellipse Tag="Anschluss" Width="7" Height="7" Margin="2,0"
-                         VerticalAlignment="Center" ToolTip="{Binding FormularName}">
+                         VerticalAlignment="Center" ToolTip="{Binding Tooltip}">
                     <Ellipse.Style>
                         <Style TargetType="Ellipse">
                             <Setter Property="Fill" Value="{StaticResource BandPinsel}"/>
@@ -67,6 +69,9 @@
                                 </DataTrigger>
                                 <DataTrigger Binding="{Binding Zustand}" Value="FehltInVariante">
                                     <Setter Property="Fill" Value="{StaticResource BernsteinPinsel}"/>
+                                </DataTrigger>
+                                <DataTrigger Binding="{Binding Zustand}" Value="UstUnstimmig">
+                                    <Setter Property="Fill" Value="{StaticResource UnstimmigPinsel}"/>
                                 </DataTrigger>
                             </Style.Triggers>
                         </Style>
@@ -118,7 +123,7 @@
         <DockPanel Margin="24,20">
             <TextBlock DockPanel.Dock="Top" Text="E/Ü-Konten" Style="{StaticResource SeitenUeberschrift}"/>
             <TextBlock DockPanel.Dock="Top" Style="{StaticResource Hinweis}" Margin="0,0,0,10"
-                       Text="Links die Einnahmen-/Ausgabenkonten, rechts je Formular die zuweisbaren Felder (Kz = Feldkennzeichen). Per Drag&amp;Drop ein Feld auf ein Konto (oder umgekehrt) ziehen, um es zuzuweisen; dasselbe Feld erneut zuweisen löst die Zuordnung. Konten innerhalb ihrer Gruppe per Drag&amp;Drop sortieren. Die Punkte rechts am Konto stehen der Reihe nach für die Formulare (gefüllt = zugeordnet, Ring = ohne Feld); vor jedem Feld steht, wie viele Konten es speisen. Ein Klick auf Konto oder Feld zeigt die Verbindungen."/>
+                       Text="Links die Einnahmen-/Ausgabenkonten, rechts je Formular die zuweisbaren Felder (Kz = Feldkennzeichen). Per Drag&amp;Drop ein Feld auf ein Konto (oder umgekehrt) ziehen, um es zuzuweisen; dasselbe Feld erneut zuweisen löst die Zuordnung. Konten innerhalb ihrer Gruppe per Drag&amp;Drop sortieren. Die Punkte rechts am Konto stehen der Reihe nach für die Formulare (gefüllt = zugeordnet, Ring = ohne Feld, rot = Voranmeldung und Umsatzsteuererklärung passen nicht zusammen); vor jedem Feld steht, wie viele Konten es speisen. Ein Klick auf Konto oder Feld zeigt die Verbindungen."/>
 
             <ScrollViewer x:Name="SpaltenScroll"
                           HorizontalScrollBarVisibility="Auto"
@@ -163,6 +168,31 @@
                                                Foreground="{StaticResource BernsteinText}"
                                                TextWrapping="Wrap"/>
                                 </StackPanel>
+                            </Border>
+
+                            <!-- USt-Abgleich: Zuordnungen fuer Voranmeldung und Erklaerung passen nicht zusammen -->
+                            <Border DockPanel.Dock="Top" Background="#FFEBEE"
+                                    BorderBrush="#EF9A9A" BorderThickness="0,0,0,1" Padding="6,3">
+                                <Border.Style>
+                                    <Style TargetType="Border">
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding AnzahlKontenUnstimmig}" Value="0">
+                                                <Setter Property="Visibility" Value="Collapsed"/>
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </Border.Style>
+                                <DockPanel>
+                                    <Button DockPanel.Dock="Right" Content="Abgleichen..." Padding="6,1"
+                                            Margin="6,0,0,0" VerticalAlignment="Center" FontSize="11.5"
+                                            Click="OnUstAbgleichen"
+                                            ToolTip="Zuordnungen für Umsatzsteuer-Voranmeldung und Umsatzsteuererklärung abgleichen"/>
+                                    <Ellipse Width="7" Height="7" Margin="0,0,6,0" VerticalAlignment="Center"
+                                             Fill="{StaticResource UnstimmigPinsel}"/>
+                                    <TextBlock Text="{Binding UnstimmigText}" FontSize="11.5"
+                                               Foreground="#B71C1C" VerticalAlignment="Center"
+                                               TextWrapping="Wrap"/>
+                                </DockPanel>
                             </Border>
 
                             <!-- [Konto-Editor: Anlegen/Umbenennen/Löschen + Unterkategorie
@@ -220,7 +250,12 @@
                                      ScrollViewer.HorizontalScrollBarVisibility="Disabled">
                                 <ListBox.ItemTemplate>
                                     <DataTemplate DataType="{x:Type pages:EUKontoVM}">
-                                        <Grid ToolTip="{Binding ZuordnungsText}">
+                                        <Grid ToolTipOpening="OnKontoToolTipOeffnet">
+                                            <!-- umbrechen statt ueber die ganze Bildschirmbreite -->
+                                            <Grid.ToolTip>
+                                                <TextBlock Text="{Binding ZuordnungsText}"
+                                                           TextWrapping="Wrap" MaxWidth="460"/>
+                                            </Grid.ToolTip>
                                             <Grid.ColumnDefinitions>
                                                 <ColumnDefinition Width="*"/>
                                                 <ColumnDefinition Width="Auto"/>

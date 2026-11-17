@@ -91,6 +91,11 @@ EasyCash/
       DauerbuchungenView.xaml(.cs)          — Liste + Editor (modal)
       DauerbuchungenViewModel.cs            — arbeitet auf doc.Dauerbuchungen
       DauerbuchungenAusfuehrenView.xaml(.cs) — "ausführen bis Monat/Jahr"
+    UstAbgleich/                 — Abgleich der Kontenzuweisungen USt-Voranmeldung/
+                                   -Erklärung (Namespace ECTViews.UstAbgleichUi,
+                                   Regeln in ECTEngine/UstAbgleich.cs)
+      UstAbgleichView.xaml(.cs)  — Liste + Vorschläge, Auswahl als Kontextmenü
+      UstAbgleichViewModel.cs    — Zeilen, Optionen, Übernehmen
     Stammdaten/                  — Betriebe-/Bestandskonten-/Mandanten-Verwaltung
       StammdatenVerwaltenView.xaml(.cs) — Verwaltung + Auswahl (alle 3 Typen)
       StammdatenVerwaltenViewModel.cs   — abstrakt + Betriebe/Bestandskonten
@@ -243,6 +248,17 @@ Beträge/Prozente auf der C#-Seite laufen IMMER über
   Threads am Hauptfenster vorbeiführt). Außerhalb von Textfeldern (Journal-Liste) bleibt es bei
   den Accelerators, Strg+A bucht dort weiter eine Ausgabe. Betrifft
   ALLE eingebetteten Ansichten, nicht nur die Einstellungen.
+- **`UpdateSourceTrigger=LostFocus` greift beim Wegklicken nach MFC nicht**
+  (Default von `TextBox.Text`): LostFocus ist LOGISCHER Fokus. Klickt man aus
+  einem Textfeld einer eingebetteten Ansicht in ein MFC-Fenster (Ribbon,
+  Buchen-Knopf) oder wird die HwndSource abgebaut, geht nur der
+  Tastatur-Fokus verloren -- die Bindung schreibt nie zurück (passiert:
+  umbenanntes Konto kam nirgends an). Die Einstellungen übernehmen darum in
+  `EinstellungenView` zusätzlich bei `LostKeyboardFocus` und Enter, und
+  `EinstellungenEmbed.Abloesen` ruft vor dem Dispose
+  `UebernimmOffeneEingabe()`. `VerstecktEinstellungenWpf` löst darum ERST
+  ab und synchronisiert DANN managed --> nativ. Andere eingebettete Ansichten
+  mit LostFocus-Bindungen brauchen dasselbe.
 - **WPF-Ausschneiden schneidet nicht aus** (Strg+X, Umschalt+Entf,
   Kontextmenü -- Text landet in der Zwischenablage, bleibt aber stehen):
   WPF kopiert per `OleSetClipboard` + `OleFlushClipboard`, und der Flush
@@ -286,6 +302,22 @@ robuster in hosted-WPF-Szenarien.
 - Auto-Hide der Listen wenn keine Daten gesetzt
 - `IstBearbeitung` als notifying Property mit `OkButtonText`
   ("Buchen" / "Speichern")
+- **Konto muss zum Kontenrahmen gehören** (Stand 2026-11-17): `KontoError`
+  (live, roter Text unter der Konto-Auswahl, blockiert das Buchen), wenn das
+  Konto nicht in `Einstellungen.Einnahmen-/AusgabenKonten` steht -- z.B. nach
+  Umbenennen in den Einstellungen. Die Liste zeigt nur noch den Kontenrahmen
+  (früher kamen alle in Buchungen vorkommenden Namen dazu); das Altkonto einer
+  bearbeiteten Buchung wird angehängt, damit es sichtbar bleibt.
+- **Umbenennen eines Kontos** (KontenPage): Rückfrage, ob die Buchungen und
+  Dauerbuchungen des geöffneten Jahres (dazu `UrspruenglichesKonto` der
+  AfA-Abgänge) mitgehen; danach `BuchungenGeaendert` --> Bridge
+  `OnBuchungenGeaendert`: SOFORT `SyncManagedToNative` + Modified-Flag +
+  `UpdateAllViews` (das nächste Update synchronisiert sonst nativ --> managed
+  und die Änderung wäre weg). Andere Jahresdateien bleiben, wie in v3.
+  Ist im geöffneten Jahr nichts betroffen (oder kein Dokument offen), kommt
+  stattdessen eine Rückfrage mit dem Archiv-Hinweis; "Nein" nimmt den Namen
+  zurück (`SetzeNameOhneRueckfrage`). Ausnahme: das erste Benennen eines in
+  dieser Sitzung angelegten Kontos ("Neues Konto" --> Name).
 - **Feld-Reihenfolge**: Beschreibung steht VOR Betrag/MWSt (anders als im
   MFC-Original) — die Wahl einer Buchungsvorlage setzt die MWSt., ist der
   Betragseingabe also logisch vorgelagert.
@@ -900,6 +932,16 @@ im Patch immer **vollständig im `#ifdef USE_ECTENGINE`-Block**
 gekapselt. Der alte MFC-Render-Pfad bleibt unverändert daneben
 existieren und kann durch Wegnehmen des Switches reaktiviert werden.
 
+**USE_ECTIFACE wird nur noch gekapselt, nicht mehr gebaut (Entscheidung
+Thomas, 2026-11-17):** v3 lebt als echter `master`, der zweite Build im
+Branch wird nicht mehr gepflegt oder getestet. Gekapselt wird trotzdem
+weiter, weil der alte Code dann wörtlich im `#else` steht und der Diff zu
+master klein bleibt -- Merges aus master laufen so ohne Konflikte an den
+umgebauten Stellen. Also: alten Code nicht löschen und im `#else` nicht
+umbauen, sondern stehen lassen; neuen Code nur im `USE_ECTENGINE`-Zweig.
+Ein `#else`-Zweig, der nicht mehr kompiliert, ist kein Fehler, den es zu
+beheben gilt (Klammerbalance je Zweig trotzdem nicht zerstören).
+
 **Ausnahme**: Beim Refactoring der Einstellungs-Architektur (siehe unten)
 ist `USE_ECTENGINE` explizit nicht zu beachten — der Cache wird global,
 und ein paralleler alter Pfad würde nur Inkonsistenzen schaffen.
@@ -951,3 +993,35 @@ ECT_SpeichereEinstellung("fname", "Finanzamt Musterstadt");
 ## Offene Punkte
 
 Siehe `TODO.md`.
+
+**USt-Abgleich Voranmeldung/Erklärung (Stand 2026-11-16, portiert, Abnahme offen):**
+Seit dem Merge 4a2360b heißt die Umsatzsteuererklärung 2025/2026 intern
+`Umsatzsteuererklärung` und braucht eigene Kontenzuweisungen. Der Abgleich
+hält beide Zuweisungen zusammen; Datenmodell und Regeln sind mit v3
+(`UStAbgleich*.cpp/.h`) identisch, beide lesen dieselbe easyct.ini. Vor jeder
+Arbeit daran `UST-ABGLEICH.md` lesen (Datenmodell, Regeln, Entscheidungen,
+Abnahme-Schritte). In v4:
+- Engine: `ECTEngine/UstAbgleich.cs` (1:1-Port von `CUStAbgleich`, arbeitet
+  auf `EUKonto.Feldzuweisungen`; `FuerJahr()` merkt je Jahr), Tests
+  `UstAbgleichTests` (alle Fälle des v3-Testrahmens gegen die echten .ecf).
+  `KontoFeldSelektor.ErzeugeKonto` führt die Erklärung eindeutig still mit.
+- Konten-Seite: roter Anschluss (`AnschlussZustand.UstUnstimmig`) in der
+  Spalte, die der Befund verfälscht, Befund im Tooltip, Kopfzeile mit
+  "Abgleichen..."; `WeiseFeldZu` führt das Gegenstück mit (still, Rückfrage
+  oder Feldauswahl als Kontextmenü). Jahr = Variante der Spalte
+  "Umsatzsteuererklärung".
+- Dialog: `ECTViews/UstAbgleich/` (`UstAbgleichView` + ViewModel), von der
+  Konten-Seite und über die CaptionBar (`ECT_ZeigeUstAbgleichDialog`).
+- Hinweis am Formular: native CaptionBar wie v3, aber Text/Zählung managed
+  (`ECT_UstAbgleichMeldung` im `USE_ECTENGINE`-Zweig von
+  `CEasyCashView::UStAbgleichMeldung`).
+- **FALLE `SaveProfile()` im WPF-Pfad**: Die nativen `einstellungen1..5`
+  werden in v4 nur beim Öffnen der Ansicht geladen (`LoadProfile`), die
+  WPF-Einstellungen schreiben am Cache vorbei an ihnen. `SaveProfile()`
+  schreibt aber das GANZE Profil aus diesen Kopien zurück und überschreibt
+  damit alles, was seitdem in den WPF-Einstellungen geändert wurde. Darum
+  ruft `OnUStAbgleich` in v4 kein `SaveProfile()` mehr (der WPF-Dialog
+  speichert selbst). Die übrigen Aufrufer sind im v4-Pfad harmlos (direkt
+  nach `LoadProfile()`: `OnInitialUpdate`, `LoadProfile` selbst) oder nur
+  im `#else`-Zweig bzw. im alten `buchendlg.cpp` erreichbar. Neue Aufrufer
+  im WPF-Pfad nicht einführen.

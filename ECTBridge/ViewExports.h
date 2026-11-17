@@ -210,6 +210,38 @@ ECTBRIDGE_API BOOL ECT_ZeigeDauerbuchungenAusfuehrenDialog(
 ECTBRIDGE_API BOOL ECT_ZeigeUstVorauszahlungenDialog(
     void* pDocBridge, HWND hWndOwner);
 
+// ----------------------------------------------------------
+// USt-Abgleich Voranmeldung / Erklaerung (UST-ABGLEICH.md)
+// ----------------------------------------------------------
+
+/// <summary>
+/// Hinweis am Formular (ersetzt im USE_ECTENGINE-Pfad die Zaehlung in
+/// CEasyCashView::UStAbgleichMeldung): Ist pszFormulardatei eine
+/// USt-Voranmeldung oder eine Umsatzsteuererklaerung mit Entsprechungen
+/// und passen Kontenzuweisungen beider Formulare nicht zusammen, steht der
+/// Hinweistext in pszMeldung. Gezaehlt wird auf den Konten des managed
+/// Einstellungs-Caches (die nativen einstellungen1 sind im WPF-Pfad nach
+/// Aenderungen in der Konten-Seite veraltet), Buchungen im managed
+/// Dokument (ohne eigenen Sync -- laeuft bei jedem OnUpdate; im
+/// WPF-Formularmodus hat ECT_FormularAktualisiere vorher synchronisiert).
+///
+/// Rueckgabe: -1 = kein Hinweis, 0 = Hinweis zur Voranmeldung,
+/// 1 = Hinweis zur Erklaerung.
+/// </summary>
+ECTBRIDGE_API int ECT_UstAbgleichMeldung(
+    void* pDocBridge, LPCSTR pszFormulardatei, char* pszMeldung, int nMeldungLen);
+
+/// <summary>
+/// Zeigt den WPF-Dialog "Zuordnungen fuer Voranmeldung und
+/// Umsatzsteuererklaerung abgleichen" (ersetzt CUStAbgleichDlg). nJahr =
+/// Jahr des angezeigten Formulars. Uebernommene Aenderungen sind bei der
+/// Rueckkehr bereits gespeichert (Cache + easyct.ini) -- der Aufrufer darf
+/// NICHT SaveProfile() rufen (wuerde veraltete native Werte zurueckschreiben).
+///
+/// Rueckgabe: TRUE, wenn Zuweisungen geaendert wurden.
+/// </summary>
+ECTBRIDGE_API BOOL ECT_ZeigeUstAbgleichDialog(void* pDocBridge, int nJahr, HWND hWndOwner);
+
 // ──────────────────────────────────────────────
 // Stammdaten-Verwaltung (Betriebe + Bestandskonten)
 // ──────────────────────────────────────────────

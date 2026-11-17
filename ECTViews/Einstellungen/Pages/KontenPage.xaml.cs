@@ -24,7 +24,89 @@ namespace ECTViews.EinstellungenUi.Pages
             // externe Änderung nachholen.
             AddHandler(LostKeyboardFocusEvent,
                 new KeyboardFocusChangedEventHandler(OnFokusVerloren), true);
+            // Mausrad waehrend Drag&Drop: die Liste unter der Maus rollen (die
+            // Maus ist an die Quell-Liste gefangen, sonst rollte nur diese).
+            AddHandler(PreviewMouseWheelEvent, new MouseWheelEventHandler(OnMausradBeimZiehen), true);
             EinstellungenLiveSync.Registriere(this);
+
+            // USt-Abgleich: Rückfragen und Feldauswahl beim Mitführen
+            if (VM != null)
+            {
+                VM.UstRueckfrage = UstRueckfrage;
+                VM.UstFeldAuswahl = ZeigeUstFeldAuswahl;
+                VM.UmbenennenRueckfrage = frage => MessageBox.Show(frage, "Konto umbenennen",
+                    MessageBoxButton.YesNo, MessageBoxImage.Question, MessageBoxResult.Yes) == MessageBoxResult.Yes;
+            }
+        }
+
+        /// <summary>Das geöffnete Dokument (Buchungszahlen im Abgleich-Dialog,
+        /// Umbenennen der Buchungen); null, wenn keines offen ist.</summary>
+        public BuchungsDocument Dokument
+        {
+            get => VM?.Dokument;
+            set { if (VM != null) VM.Dokument = value; }
+        }
+
+        /// <summary>Rückkanal nach geänderten Buchungen (nativ: Sync managed
+        /// --> nativ, Modified-Flag, Ansichten neu).</summary>
+        public Action BuchungenGeaendert
+        {
+            get => VM?.BuchungenGeaendert;
+            set { if (VM != null) VM.BuchungenGeaendert = value; }
+        }
+
+        // -----------------------------------------------------------------
+        // USt-Abgleich Voranmeldung / Erklärung
+        // -----------------------------------------------------------------
+        private const string UstTitel = "Umsatzsteuer-Voranmeldung und Umsatzsteuererklärung";
+
+        private bool UstRueckfrage(string frage)
+            => MessageBox.Show(frage, UstTitel, MessageBoxButton.YesNo, MessageBoxImage.Question,
+                   MessageBoxResult.Yes) == MessageBoxResult.Yes;
+
+        /// <summary>Auswahl unter mehreren Feldern als Kontextmenü an der Maus
+        /// (wie das Auswahlmenü in v3).</summary>
+        private void ZeigeUstFeldAuswahl(string kopf, IList<UstAbgleichUi.UstAbgleichOption> optionen)
+        {
+            var menue = new ContextMenu { Placement = System.Windows.Controls.Primitives.PlacementMode.MousePoint };
+            menue.Items.Add(new MenuItem
+            {
+                Header = new TextBlock { Text = kopf, TextWrapping = TextWrapping.Wrap, MaxWidth = 420 },
+                IsEnabled = false,
+                FontWeight = FontWeights.SemiBold
+            });
+            menue.Items.Add(new Separator());
+            foreach (var o in optionen)
+            {
+                if (o.IstTrenner) { menue.Items.Add(new Separator()); continue; }
+                var item = new MenuItem { Header = new TextBlock { Text = o.Text }, IsEnabled = !o.IstKopf };
+                var anwenden = o.Anwenden;
+                if (anwenden != null)
+                    item.Click += (s, e) =>
+                    {
+                        using (EinstellungenLiveSync.AlsUrheber(this))
+                            anwenden();
+                    };
+                menue.Items.Add(item);
+            }
+            menue.IsOpen = true;
+        }
+
+        private void OnUstAbgleichen(object sender, RoutedEventArgs e)
+        {
+            var vm = VM;
+            if (vm == null) return;
+            var dlgVm = new UstAbgleichUi.UstAbgleichViewModel(
+                vm.Konten.Select(k => k.Modell), vm.Dokument, vm.Abgleich, vm.AbgleichJahr);
+            var dlg = new UstAbgleichUi.UstAbgleichView(dlgVm);
+            DialogBesitzer.Setze(dlg, this);
+            using (EinstellungenLiveSync.AlsUrheber(this))
+                dlg.ShowDialog();
+            if (dlgVm.Geaendert)
+            {
+                vm.NachAbgleich();
+                Statusleiste.Melde("Zuordnungen für Voranmeldung und Umsatzsteuererklärung abgeglichen.");
+            }
         }
 
         // -----------------------------------------------------------------
@@ -104,7 +186,13 @@ namespace ECTViews.EinstellungenUi.Pages
             var antwort = MessageBox.Show(
                 $"Konto \"{konto.Name}\" wirklich löschen?\n\n"
               + "Bereits gebuchte Beträge bleiben erhalten, fehlen aber in "
-              + "den dann nicht mehr verknüpften Feldern von Formularen.",
+              + "den dann nicht mehr verknüpften Feldern von Formularen. "
+              + "Bitte im Anschluss in das Journal nach Konten wechseln "
+              + "und jede Buchung einzeln ändern bis das Konto aus dem "
+              + "Journal verschwunden ist. Hinweis: Formulare älterer Jahre, "
+              + "die das Konto verwenden, würden dadurch live im Programm verfälscht, "
+              + "deshalb ggf. die easyct.ini aus Datensicherungen oder PDF-Ausdrucke "
+              + "bemühen.",
                 "Konto löschen",
                 MessageBoxButton.YesNo, MessageBoxImage.Warning, MessageBoxResult.No);
             if (antwort != MessageBoxResult.Yes) return;
@@ -167,6 +255,7 @@ namespace ECTViews.EinstellungenUi.Pages
         // --- Druck auf ein Konto bzw. ein Feld merkt sich den Kandidaten ---
         private void OnKontoDown(object sender, MouseButtonEventArgs e)
         {
+            SchliesseKlickHinweis();
             ResetKandidat();
             var item = FindeAncestor<ListBoxItem>(e.OriginalSource as DependencyObject);
             var konto = item?.DataContext as EUKontoVM;
@@ -185,6 +274,7 @@ namespace ECTViews.EinstellungenUi.Pages
 
         private void OnFeldDown(object sender, MouseButtonEventArgs e)
         {
+            SchliesseKlickHinweis();
             ResetKandidat();
             var item = FindeAncestor<ListBoxItem>(e.OriginalSource as DependencyObject);
             var feld = item?.DataContext as FormularfeldVM;
@@ -193,9 +283,30 @@ namespace ECTViews.EinstellungenUi.Pages
             _art = DragArt.Feld;
             _dragFeld = feld;
             _dragKat = kat;
+            _dragListe = sender as ListBox;
             _quelleContainer = item;
             _start = e.GetPosition(this);
             _grab = e.GetPosition(item);
+            // Auto-Selektion der ListBox unterdruecken: sie rollte die Konten-
+            // Liste sofort zu den verknuepften Konten -- beim Ziehen eines Felds
+            // verschwand dadurch das Ziel-Konto. Ein reiner Klick selektiert in
+            // OnDragUp (wie beim Konto).
+            e.Handled = true;
+        }
+
+        private ListBox _dragListe;   // Feld-Liste des gedrueckten Felds
+
+        // Mausrad waehrend des Ziehens: Liste unter der Maus rollen.
+        private void OnMausradBeimZiehen(object sender, MouseWheelEventArgs e)
+        {
+            if (!_aktiv) return;
+            Point p = e.GetPosition(this);
+            var sv = FindeAncestor<ScrollViewer>(HitTestTopmost(p));
+            if (sv == null) return;
+            sv.ScrollToVerticalOffset(sv.VerticalOffset - e.Delta * 0.4);   // ~48 px je Raste
+            e.Handled = true;
+            Dispatcher.BeginInvoke(new Action(() => AktualisiereDrag(Mouse.GetPosition(this))),
+                System.Windows.Threading.DispatcherPriority.Background);
         }
 
         private void OnDragMove(object sender, MouseEventArgs e)
@@ -224,8 +335,112 @@ namespace ECTViews.EinstellungenUi.Pages
                     ZeigeKonto(_klickKandidat);   // erneuter Klick: Baender wieder vom Konto aus
                 else
                     VM.SelektiertesKonto = _klickKandidat;   // -> OnKontoSelektiert
+                // Zuordnungen + Drag&Drop-Hinweis sofort zeigen, nicht erst nach
+                // Verweilen -- aber NACH dem Zentrieren der Liste (ZeigeKonto
+                // rollt im Hintergrund, das Konto wandert dabei unter der Maus weg)
+                var ziel = _quelleContainer;
+                var konto = _klickKandidat;
+                Dispatcher.BeginInvoke(new Action(() => ZeigeKlickHinweis(ziel, konto.ZuordnungsText)),
+                    System.Windows.Threading.DispatcherPriority.ContextIdle);
+            }
+            else if (_art == DragArt.Feld && _dragFeld != null)
+            {
+                // reiner Klick: jetzt selektieren (Auto-Selektion war in OnFeldDown
+                // unterdrueckt). Erneuter Klick auf dasselbe Feld zeigt die Baender
+                // wieder (Abwaehlen + Waehlen loest OnFeldSelektiert erneut aus).
+                if (_dragListe != null)
+                {
+                    if (ReferenceEquals(_dragListe.SelectedItem, _dragFeld)) _dragListe.SelectedItem = null;
+                    _dragListe.SelectedItem = _dragFeld;
+                }
+                // Klick auf ein unverknuepftes Feld bzw. "<keine Feldzuweisung>":
+                // erklaeren, wie man zuordnet (ein Klick allein tut dort nichts)
+                if (_dragFeld.IstKeine)
+                    ZeigeKlickHinweis(_quelleContainer,
+                        "Zum Lösen einer Zuordnung in diesem Formular diesen Eintrag per Drag&Drop "
+                      + "auf das Konto ziehen (oder das Konto hierher).");
+                else if (_dragFeld.AnzahlKonten == 0)
+                    ZeigeKlickHinweis(_quelleContainer,
+                        $"Feld {_dragFeld.Id} ist mit keinem Konto verknüpft. Zum Zuordnen das Feld per "
+                      + "Drag&Drop auf ein Konto links ziehen (oder ein Konto auf das Feld).");
             }
             ResetKandidat();
+        }
+
+        // -----------------------------------------------------------------
+        // Klick-Hinweis: Tooltip, der sofort aufgeht (statt erst nach dem
+        // Verweilen) und beim Verlassen, beim naechsten Klick oder nach ein
+        // paar Sekunden wieder schliesst. Solange er offen ist, schweigt der
+        // eigene Hover-Tooltip des Elements (sonst stuenden zwei uebereinander).
+        // -----------------------------------------------------------------
+        private ToolTip _klickHinweis;
+        private FrameworkElement _klickHinweisZiel;
+        private System.Windows.Threading.DispatcherTimer _klickHinweisTimer;
+
+        private void ZeigeKlickHinweis(FrameworkElement ziel, string text)
+        {
+            SchliesseKlickHinweis();
+            if (ziel == null || string.IsNullOrEmpty(text)) return;
+
+            _klickHinweisZiel = ziel;
+            _klickHinweis = new ToolTip
+            {
+                Content = new TextBlock { Text = text, TextWrapping = TextWrapping.Wrap, MaxWidth = 460 },
+                PlacementTarget = ziel,
+                Placement = System.Windows.Controls.Primitives.PlacementMode.MousePoint,
+                StaysOpen = true,
+                IsOpen = true
+            };
+            ziel.MouseLeave += OnKlickHinweisVerlassen;
+            _klickHinweisTimer = new System.Windows.Threading.DispatcherTimer
+            {
+                Interval = TimeSpan.FromSeconds(Math.Max(5, Math.Min(15, text.Length / 25)))
+            };
+            _klickHinweisTimer.Tick += (s, e) => SchliesseKlickHinweis();
+            _klickHinweisTimer.Start();
+        }
+
+        private void OnKlickHinweisVerlassen(object sender, MouseEventArgs e) => SchliesseKlickHinweis();
+
+        // Hover-Tooltip eines Kontos (ToolTipOpening im Konto-Template):
+        // Waehrend der Klick-Hinweis offen ist, kein zweiter Tooltip -- auch
+        // nicht vom Konto, das nach dem Zentrieren der Liste unter die Maus
+        // gerollt ist. Ein so abgewiesenes Element bleibt stumm, bis die Maus
+        // es verlaesst (sonst kaeme sein Tooltip, sobald der Hinweis zugeht).
+        private FrameworkElement _tooltipStummBisVerlassen;
+
+        private void OnKontoToolTipOeffnet(object sender, ToolTipEventArgs e)
+        {
+            var fe = sender as FrameworkElement;
+            if (fe == null) return;
+            if (_klickHinweis == null && !ReferenceEquals(fe, _tooltipStummBisVerlassen)) return;
+            e.Handled = true;
+            if (!ReferenceEquals(fe, _tooltipStummBisVerlassen))
+            {
+                if (_tooltipStummBisVerlassen != null)
+                    _tooltipStummBisVerlassen.MouseLeave -= OnStummesElementVerlassen;
+                _tooltipStummBisVerlassen = fe;
+                fe.MouseLeave += OnStummesElementVerlassen;
+            }
+        }
+
+        private void OnStummesElementVerlassen(object sender, MouseEventArgs e)
+        {
+            if (sender is FrameworkElement fe) fe.MouseLeave -= OnStummesElementVerlassen;
+            if (ReferenceEquals(sender, _tooltipStummBisVerlassen)) _tooltipStummBisVerlassen = null;
+        }
+
+        private void SchliesseKlickHinweis()
+        {
+            _klickHinweisTimer?.Stop();
+            _klickHinweisTimer = null;
+            if (_klickHinweis != null) _klickHinweis.IsOpen = false;
+            _klickHinweis = null;
+            if (_klickHinweisZiel != null)
+            {
+                _klickHinweisZiel.MouseLeave -= OnKlickHinweisVerlassen;
+                _klickHinweisZiel = null;
+            }
         }
 
         // -----------------------------------------------------------------
@@ -505,7 +720,7 @@ namespace ECTViews.EinstellungenUi.Pages
         {
             _art = DragArt.None;
             _aktiv = false;
-            _dragKonto = null; _dragFeld = null; _dragKat = null; _klickKandidat = null;
+            _dragKonto = null; _dragFeld = null; _dragKat = null; _klickKandidat = null; _dragListe = null;
             _quelleContainer = null;
             _gap.Clear();
             _einfuegeIndex = -1;

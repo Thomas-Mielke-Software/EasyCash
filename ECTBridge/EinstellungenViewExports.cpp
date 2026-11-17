@@ -39,6 +39,19 @@ public:
         CEasyCashDocBridge* bridge = (CEasyCashDocBridge*)m_pDocBridge.ToPointer();
         bridge->SetModifiedFlag();
     }
+
+    // Buchungen wurden managed geaendert (Konto umbenannt, KontenPage):
+    // SOFORT nach nativ spiegeln -- das naechste Update synchronisiert sonst
+    // nativ --> managed und die Aenderung waere weg --, dann Modified-Flag
+    // und Ansichten (Journal, Navigation, Formular) neu aufbauen.
+    void OnBuchungenGeaendert()
+    {
+        if (m_pDocBridge == IntPtr::Zero) return;
+        CEasyCashDocBridge* bridge = (CEasyCashDocBridge*)m_pDocBridge.ToPointer();
+        bridge->SyncManagedToNative();
+        bridge->SetModifiedFlag("Kontoname in Buchungen geaendert");
+        bridge->UpdateAllViews(NULL);
+    }
 };
 
 // ----------------------------------------------------------
@@ -60,6 +73,7 @@ HWND ECT_EinstellungenEinbetten(
         // Die "Aktuelles Dokument"-Seite schreibt dann direkt in diese Engine.
         ECTEngine::BuchungsDocument^ dokument = nullptr;
         System::Action^ onGeaendert = nullptr;
+        System::Action^ onBuchungenGeaendert = nullptr;
         if (pDocBridge)
         {
             CEasyCashDocBridge* bridge = (CEasyCashDocBridge*)pDocBridge;
@@ -70,6 +84,8 @@ HWND ECT_EinstellungenEinbetten(
             handler->m_pDocBridge = IntPtr(pDocBridge);
             onGeaendert = gcnew System::Action(
                 handler, &EinstellungenDokumentHandler::OnGeaendert);
+            onBuchungenGeaendert = gcnew System::Action(
+                handler, &EinstellungenDokumentHandler::OnBuchungenGeaendert);
         }
 
         System::String^ startSeite = (szStartSeite && *szStartSeite)
@@ -77,7 +93,7 @@ HWND ECT_EinstellungenEinbetten(
 
         IntPtr hParent(hwndParent);
         IntPtr hKind = ECTViews::EinstellungenUi::EinstellungenEmbed::Einbetten(
-            hParent, x, y, width, height, dokument, onGeaendert, startSeite);
+            hParent, x, y, width, height, dokument, onGeaendert, startSeite, onBuchungenGeaendert);
 
         if (hKind == IntPtr::Zero) return NULL;
         return (HWND)hKind.ToPointer();

@@ -366,6 +366,7 @@ namespace ECTViews.ViewModels
             }
             Pruefe(FeldBetrag, BetragError);
             Pruefe(FeldMwst, MwstError);
+            Pruefe(FeldKonto, KontoError);
             Pruefe(FeldBestandskonto, BestandskontoError);
             Pruefe(FeldBetrieb, BetriebError);
             Pruefe(FeldAfa, AfaError);
