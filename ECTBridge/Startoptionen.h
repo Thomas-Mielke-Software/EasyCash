@@ -44,6 +44,7 @@ public:
 	afx_msg void OnBnClickedLeer();
 	afx_msg void OnBnClickedOhne();
 	afx_msg void OnBnClickedExit();
+	afx_msg void OnBnClickedDemo();
 	CButton m_OeffnenBn;
 	CButton m_Oeffnen2Bn;
 	CButton m_DatenverzeichnisBn;

@@ -157,6 +157,8 @@ EasyCash/
     FormularExports.h(.cpp)      — ECT_FormularEinbetten/-Wechsle/-Aktualisiere/
                                    -Drucken + ECT_FormularVergleichsdump
                                    (Golden-Master nativ/managed, Debug)
+    DemoModus.h(.cpp)            — Demo-Modus: Sandkasten-Verzeichnis,
+                                   Beispieldokument, Sperr-Rückfrage
     EasyCashDocBridge.h          — CEasyCashDocBridge + GetEngine(bridge)
 ```
 
@@ -885,6 +887,77 @@ Voranmeldung wird gefüttert, der Gewinn nicht berührt.
 - **Offen**: Sicht-/Druckabnahme (Font-Kalibrierung), Vergleichsdump
   auf echten Mandantendaten, Moduswechsel-Matrix (siehe TODO
   Test-Checkliste).
+
+### Demo-Modus (Stand 2026-11-24, nur v4)
+Start mit `/demo` (oder `-demo`), aus dem Ribbon (Optionen --> Programm -->
+"Demo", mit Rückfrage; im Demo-Modus "Demo beenden") oder aus den
+Startoptionen. Neustart = reguläres Beenden (mit den normalen
+Speichern-Rückfragen) + `ShellExecute` in `CEasyCashApp::ExitInstance`
+(`NeustartNachBeenden`, `m_nNeustart`).
+- **Sandkasten statt Einzelsperren**: echte Nutzerdaten dürfen unter keinen
+  Umständen berührt werden. Darum (1) frisches Datenverzeichnis
+  `%TEMP%\EasyCT-Demo\<PID>-<Zeit>` mit Markierungsdatei, ini per
+  `FileMode.CreateNew` -- jeder übersehene ini-Schreibzugriff landet dort;
+  gelöscht in `ExitInstance`, verwaiste Ordner beim nächsten Demo-Start
+  (`ECTBridge/DemoModus.cpp`). (2) Eigener Registry-Zweig "<Profil> Demo"
+  (`WechsleInsDemoProfil`, VOR jedem Profil-Zugriff; die Altdaten-Übernahme
+  aus C:\Windows\easyct.ini entfällt), wird beim Start geleert und NACH
+  `CWinAppEx::ExitInstance` gelöscht (die Basisklasse schreibt sonst die
+  MRU-Liste neu hinein). Nur der Registrierschlüssel wird lesend übernommen.
+  (3) Sperren mit Rückfrage "Im Demo-Modus ist diese Funktion nicht erlaubt.
+  Demo-Modus beenden?" (`ECT_DemoFunktionGesperrt`).
+- **Sperren**: Kommandos in `CMainFrame::OnCommand` (NICHT nur OnCmdMsg:
+  `CMDIFrameWnd::OnCommand` reicht WM_COMMAND zuerst ans aktive
+  Dokumentfenster, dort behandelt das Dokument ID_FILE_SAVE selbst) --
+  Liste `IstImDemoModusGesperrt` (Neu/Öffnen/Speichern/MRU/Jahreswechsel/
+  Datensicherung/Mandanten/Datenverzeichnis/Registrierungsinfo). Jedes neue
+  oder geöffnete Dokument (auch Drag&Drop, DDE, Plugins) läuft durch
+  `CMyMultiDocTemplate::OpenDocumentFile` -- genau EIN Dokument ist erlaubt.
+  Stille Verteidigung dahinter: `CDocument::DoSave` (VOR dem Datei-Dialog --
+  ein gescheitertes "Speichern unter" löscht sonst die gewählte Datei!),
+  `CEasyCashDocBridge::OnSaveDocument`/`SaveModified`,
+  `OnWiederherstellungsdateiSave`, `Serialize` beim Speichern (wirft),
+  Formular-Designer (`FormularDefinition.SpeichereAls` prüft
+  `DemoModus.Aktiv`). Export/Druck bleiben erlaubt (Ziel wählt der Nutzer).
+  Plugins laufen; die Steuernummer 99/999/99999 ist absichtlich ungültig.
+- **Daten**: `ECTEngine/Ressourcen/Demo/easyct.ini` (Platzhalter
+  `{JAHR}`/`{VORJAHR}`) + `Demodaten.xml` (Sammeldatei, s.u., für 2025
+  geschrieben, `DemoModus.VerschiebeJahr` verschiebt Datum, Jahreszahlen in
+  Texten/Belegen und die "UST-Zahlbetrag-JJJJ-NN"-Schlüssel). Demojahr =
+  ältester gemeinsamer Stand der installierten EÜR-, UVA- und
+  USt-Erklärungsformulare (`DemoModus.ErmittleJahr`; alte Erklärungen
+  heißen intern "Umsatzsteuer-Voranmeldung" und zählen nicht). Persona
+  Franziska Federkiel (Illustration + "Druckladen", Tintenfeld), ~150 Buchungen,
+  4 Dauerbuchungen, AfA (fortgeführt + neu), GWG, 7/19 %, §13b, §18b,
+  Drittland, Bewirtung, Privatanteil, Umbuchungen, Vorauszahlungen.
+  **Neu erzeugen**: `ECTEngine/Ressourcen/Demo/Demodaten-erzeugen.ps1`
+  (Windows PowerShell 5.1, braucht gebaute ECTEngine.dll; rechnet die
+  Buchungsgruppen mit dem echten BuchungsgruppenRechner und übernimmt die
+  Vorlagen 10-17 aus der Bibliothek mit festen Kennungen; Datei muss UTF-8
+  MIT BOM bleiben, sonst liest PS 5.1 die Umlaute im C#-Teil falsch).
+- **Dokument ohne "Neu"-Dialog**: `CEasyCashDocBridge::OnNewDocument`
+  Demo-Zweig --> `ECT_DemoDokumentFuellen` (`BuchungsDocument.UebernimmVon`
+  + `SyncManagedToNative`).
+- **Tests**: `DemoModusTests` (Feldverknüpfungen gegen die echten .ecf des
+  Demojahrs, USt-Abgleich ohne Befund, Konten/Betriebe/Bestandskonten der
+  ini, Gruppen mit ihrer Vorlage reproduzierbar, Bestandskonten nie im
+  Minus, Jahresverschiebung).
+- **Ribbon-Bild**: Index 7 in `RES/toolbar_einstellungen_32/16.bmp` (32bpp,
+  Alpha NICHT vormultipliziert).
+
+### XML-Speicherformat (Stand 2026-11-24, noch nicht im UI)
+Parallel zum CArchive-.eca-Format, Ziel: ohne C++/MFC, GoBD/DSGVO-tauglich
+(eine Datei je Buchung, mit GoBDify hash- und zeitstempelbar).
+- `ECTEngine/Speicherformat/BuchungsdateiXml.cs`: Elemente `<Buchung>`,
+  `<Dauerbuchung>`, `<Dokument>` + Sammeldatei `<ECTBuchungsdatei Format="1">`.
+  Bytegenau reproduzierbar (Invariant-Kultur, feste Attributreihenfolge,
+  Erweiterungen sortiert, UTF-8 ohne BOM, LF). Die `Uuid` einer Buchung ist
+  hier DAUERHAFT (in .eca transient).
+- `ECTEngine/Speicherformat/BuchungsOrdner.cs`: `kopf/kopf-NNNNNN.xml`,
+  `buchungen/<id>-NNNNNN.xml`; nur Änderungen werden neue Versionen,
+  Löschen = Löschvermerk, nie überschreiben (Temp-Datei + `File.Move`),
+  jede Version trägt den SHA-256 ihrer Vorgängerin; `Pruefe()` findet Lücken
+  und Manipulationen. Tests: `BuchungsdateiXmlTests`/`BuchungsOrdnerTests`.
 
 ### Persistenz
 - `NavigationBreitenverhaeltnis` (Promille) wird vom existierenden

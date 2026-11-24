@@ -438,6 +438,12 @@ namespace ECTEngine
 
         public void SpeichereAls(string pfad)
         {
+            // Demo-Modus: die .ecf gehören zur Installation, die auch die
+            // echten Daten nutzen -- der Designer meldet das wie einen
+            // Schreibfehler (FormularViewModel.SpeicherFehler) und lädt neu
+            if (DemoModus.Aktiv)
+                throw new IOException("Im Demo-Modus werden Formulare nicht gespeichert.");
+
             var sb = new StringBuilder(64 * 1024);
 
             var decl = Dokument.Declaration;

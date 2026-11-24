@@ -436,6 +436,36 @@ namespace ECTEngine
         // ----------------------------------------------
 
         /// <summary>
+        /// Übernimmt Buchungen, Dauerbuchungen und alle Dokumentfelder aus
+        /// einem anderen Dokument (z.B. frisch aus dem XML-Format gelesen) in
+        /// DIESES Objekt. Gebraucht, wo die Identität des Dokuments bestehen
+        /// bleiben muss -- die Bridge hält die Engine-Instanz fest. Die
+        /// Kontenlisten (aus der ini) bleiben unberührt.
+        /// </summary>
+        public void UebernimmVon(BuchungsDocument quelle)
+        {
+            if (quelle == null) throw new ArgumentNullException(nameof(quelle));
+            Buchungen.Clear();
+            Buchungen.AddRange(quelle.Buchungen);
+            Dauerbuchungen.Clear();
+            Dauerbuchungen.AddRange(quelle.Dauerbuchungen);
+            Buchungszaehler = quelle.Buchungszaehler;
+            LaufendeBelegnrEinnahmen = quelle.LaufendeBelegnrEinnahmen;
+            LaufendeBelegnrAusgaben = quelle.LaufendeBelegnrAusgaben;
+            LaufendeBelegnrBank = quelle.LaufendeBelegnrBank;
+            LaufendeBelegnrKasse = quelle.LaufendeBelegnrKasse;
+            Jahr = quelle.Jahr;
+            Waehrung = quelle.Waehrung;
+            UrspruenglicheWaehrung = quelle.UrspruenglicheWaehrung;
+            GlobaleAfaGenauigkeit = quelle.GlobaleAfaGenauigkeit;
+            DokumentVersion = quelle.DokumentVersion;
+            BackupNachfrageIntervallTage = quelle.BackupNachfrageIntervallTage;
+            BackupNachfrageTermin = quelle.BackupNachfrageTermin;
+            Erweiterungen = quelle.Erweiterungen.Clone();
+            Sort();
+        }
+
+        /// <summary>
         /// Prüft ob eine Buchung zu den Einnahmen gehört.
         /// Reimplementiert CEasyCashDoc::BuchungIstEinnahme().
         /// Im Original: lineare Suche durch die Einnahmen-Linked-List.

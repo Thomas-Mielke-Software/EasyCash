@@ -24,6 +24,7 @@
 #include "EasyCashDoc.h"
 #include "resource.h"
 #include "Startoptionen.h"
+#include "DemoModus.h"          // ECT_ID_DEMO_STARTEN_DIREKT
 
 // Wandelt einen Betrag von String in int (= Pfennige/Cents) um
 extern "C" AFX_EXT_CLASS int currency_to_int(char *s)
@@ -182,6 +183,10 @@ extern "C" AFX_EXT_CLASS void ZeigeStartoptionen()
 		return;
 	case 4:
 		PostMessage(AfxGetMainWnd()->m_hWnd, WM_COMMAND, ID_APP_EXIT, 0L);
+		return;
+	case 5:
+		// Demo-Modus: Programm mit Beispieldaten neu starten (DemoModus.h)
+		PostMessage(AfxGetMainWnd()->m_hWnd, WM_COMMAND, ECT_ID_DEMO_STARTEN_DIREKT, 0L);
 		return;
 	}
 }

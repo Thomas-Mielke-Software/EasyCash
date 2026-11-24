@@ -25,6 +25,7 @@
 #ifdef USE_ECTENGINE
 #include "ECTBridge\JournalExports.h"
 #include "ECTBridge\ViewExports.h"
+#include "ECTBridge\DemoModus.h"
 #endif
 #include "EasyCashView.h"
 #include "..\GrafLib\cimage\cimage.h"
@@ -777,6 +778,19 @@ void CMainFrame::Add_Category2()
 	std::auto_ptr<CMFCRibbonButton> apBtn2(new CMFCRibbonButton(ID_APP_ABOUT, "Info\nI", 5, 5));
 	apBtn2->SetAlwaysLargeImage();
 	pPanel1->Add(apBtn2.release());
+
+#ifdef USE_ECTENGINE
+	// Demo-Modus (ECTBridge/DemoModus.h): Neustart mit Beispieldaten bzw.
+	// zurueck zu den eigenen Daten; Bild 7 der Optionen-Leiste
+	std::auto_ptr<CMFCRibbonButton> apBtnDemo(new CMFCRibbonButton(ECT_ID_DEMO_UMSCHALTEN,
+		ECT_IstDemoModus() ? "Demo beenden\nD" : "Demo\nD", 7, 7));
+	apBtnDemo->SetAlwaysLargeImage();
+	apBtnDemo->SetToolTipText(ECT_IstDemoModus() ? "Demo-Modus beenden" : "Demo-Modus");
+	apBtnDemo->SetDescription(ECT_IstDemoModus()
+		? "Beendet den Demo-Modus und startet EasyCash&Tax mit den eigenen Daten neu. Die Beispieldaten werden nicht gespeichert."
+		: "Startet EasyCash&Tax mit Beispieldaten neu, zum Ausprobieren und zur Demonstration von Programmverhalten, wenn man keine echten Daten in Screenshots übermitteln will. Eigene Daten bleiben unberührt; im Demo-Modus wird nichts gespeichert.");
+	pPanel1->Add(apBtnDemo.release());
+#endif
 
 	CMFCRibbonPanel* pPanel2 = pCategory->AddPanel(_T("Oberflächen-Style\nO"));
 
@@ -1810,8 +1824,68 @@ void CMainFrame::OnTimer(UINT_PTR nIDEvent)
 	CMDIFrameWndEx::OnTimer(nIDEvent);
 }
 
-BOOL CMainFrame::OnCmdMsg(UINT nID, int nCode, void* pExtra, AFX_CMDHANDLERINFO* pHandlerInfo) 
+#ifdef USE_ECTENGINE
+// Kommandos, die im Demo-Modus gesperrt sind: alles, was ein Dokument
+// anlegt, oeffnet oder speichert, Daten nach aussen sichert oder das
+// Datenverzeichnis bzw. den Mandanten wechselt (ECTBridge/DemoModus.h).
+// Export und Druck bleiben erlaubt -- sie schreiben nur in eine Datei, die
+// der Nutzer selbst waehlt.
+static BOOL IstImDemoModusGesperrt(UINT nID)
 {
+	switch (nID)
+	{
+	case ID_FILE_NEW:
+	case ID_FILE_OPEN:
+	case ID_FILE_SAVE:
+	case ID_FILE_SAVE_AS:
+	case ID_FILE_JAHRESWECHSEL:
+	case ID_FILE_BACKUP:
+	case ID_FILE_BACKUP_SUBFOLDER:
+	case ID_FILE_BACKUP_EXTERNAL:
+	case ID_FILE_MANDANTEN:
+	case ID_FILE_WAEHLE_DATENVERZEICHNIS:
+	case ID_FILE_REGISTRIERUNGSINFORMATIONEN_SICHERN:
+	case ID_FILE_REGISTRIERUNGSINFORMATIONEN_WIEDERHERSTELLEN:
+		return TRUE;
+	}
+	return nID >= ID_FILE_MRU_FILE1 && nID <= ID_FILE_MRU_FILE16;
+}
+
+// WM_COMMAND (Ribbon, Menue, Tastenkuerzel) leitet CMDIFrameWnd::OnCommand
+// zuerst an das aktive Dokumentfenster -- dort behandelt das Dokument z.B.
+// ID_FILE_SAVE selbst, OnCmdMsg des Hauptfensters kaeme zu spaet. Darum die
+// Sperre schon hier; OnCmdMsg deckt die uebrigen Wege ab (z.B. Kommandos,
+// die das Hauptfenster selbst ausloest).
+BOOL CMainFrame::OnCommand(WPARAM wParam, LPARAM lParam)
+{
+	if (ECT_IstDemoModus() && IstImDemoModusGesperrt(LOWORD(wParam)))
+	{
+		ECT_DemoFunktionGesperrt();
+		return TRUE;
+	}
+	return CMDIFrameWndEx::OnCommand(wParam, lParam);
+}
+#endif
+
+BOOL CMainFrame::OnCmdMsg(UINT nID, int nCode, void* pExtra, AFX_CMDHANDLERINFO* pHandlerInfo)
+{
+#ifdef USE_ECTENGINE
+	if (ECT_IstDemoModus() && IstImDemoModusGesperrt(nID))
+	{
+		if (nCode == CN_COMMAND)
+		{
+			if (!pHandlerInfo)	// nur ausfuehren, nicht beim blossen Nachfragen
+				ECT_DemoFunktionGesperrt();
+			return TRUE;
+		}
+		if (nCode == CN_UPDATE_COMMAND_UI && !(nID >= ID_FILE_MRU_FILE1 && nID <= ID_FILE_MRU_FILE16))
+		{
+			((CCmdUI*)pExtra)->Enable(TRUE);	// anklickbar lassen, damit die Rueckfrage kommt
+			return TRUE;
+		}
+	}
+#endif
+
 	if (nCode == CN_COMMAND && m_bInformationModeElapsed && nID != 57670)
 	{
 		//m_wndStatusBar.SetInformation(NULL);	// Bei WM_COMMAND Information-Mode für Status-Bar ausschalten

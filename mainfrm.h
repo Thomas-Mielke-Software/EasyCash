@@ -119,6 +119,9 @@ public:
 	virtual BOOL OnCmdMsg(UINT nID, int nCode, void* pExtra, AFX_CMDHANDLERINFO* pHandlerInfo);
 	protected:
 	virtual LRESULT WindowProc(UINT message, WPARAM wParam, LPARAM lParam);
+#ifdef USE_ECTENGINE
+	virtual BOOL OnCommand(WPARAM wParam, LPARAM lParam);	// Sperren im Demo-Modus
+#endif
 	//}}AFX_VIRTUAL
 
 // Implementation

@@ -26,6 +26,14 @@
     <EmbeddedResource Include="Ressourcen\Vorlagenbibliothek.xml" />
   </ItemGroup>
 
+  <!-- Beispieldaten des Demo-Modus (DemoModus.cs). Das Erzeugungs-Skript
+       liegt daneben, wird aber nicht eingebettet. -->
+  <ItemGroup>
+    <EmbeddedResource Include="Ressourcen\Demo\easyct.ini" />
+    <EmbeddedResource Include="Ressourcen\Demo\Demodaten.xml" />
+    <None Include="Ressourcen\Demo\Demodaten-erzeugen.ps1" />
+  </ItemGroup>
+
   <!-- Waehrungsliste.cs: HTTP-Abruf der ect-forex-API + JSON-Parsen
        (JavaScriptSerializer liegt in System.Web.Extensions). -->
   <ItemGroup>

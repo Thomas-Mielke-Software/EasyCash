@@ -30,6 +30,7 @@
 #include "EasyCashDoc.h"
 #include "EasyCashDocBridge.h"  // fuer SyncNativeToManaged() in Jahreswechsel()
 #include "ViewExports.h"        // fuer ECT_ShowBuchungsjahrWaehlenDialog() in OnNewDocument()
+#include "DemoModus.h"          // Sperren im Demo-Modus (DoSave, Wiederherstellungsdatei, Dokumentvorlage)
 //#include "BuchungsjahrWaehlen.h"
 //#include "Konvertierung.h"
 //#include "AfAGenauigkeit.h"
@@ -72,6 +73,19 @@ BOOL CMyMultiDocTemplate::GetDocString(CString& rString, enum DocStringIndex i) 
     }
 	rString = strTemp;
 	return TRUE;
+}
+
+// Alle Wege zu einem neuen oder geoeffneten Dokument laufen hier durch:
+// Neu, Oeffnen, MRU, Drag&Drop, DDE (Doppelklick auf eine .eca), Plugins.
+// Im Demo-Modus gibt es genau EIN Dokument -- die Beispieldaten.
+CDocument* CMyMultiDocTemplate::OpenDocumentFile(LPCTSTR lpszPathName, BOOL bAddToMRU, BOOL bMakeVisible)
+{
+	if (ECT_IstDemoModus() && !ECT_DemoDokumentErlaubt())
+	{
+		ECT_DemoFunktionGesperrt();
+		return NULL;
+	}
+	return CMultiDocTemplate::OpenDocumentFile(lpszPathName, bAddToMRU, bMakeVisible);
 }
 
 CDocTemplate::Confidence CMyMultiDocTemplate::MatchDocType(const char* pszPathName, CDocument*& rpDocMatch)
@@ -1504,6 +1518,8 @@ void CEasyCashDoc::OnFileSave()
 
 void CEasyCashDoc::OnWiederherstellungsdateiSave()
 {
+	if (ECT_IstDemoModus()) return;	// Demo-Modus: nie etwas schreiben (DemoModus.h)
+
 	char path[1000];
 	strcpy(path, m_strPathName);
 	char* pFileExtension = path + strlen(path) - 4;
@@ -1618,6 +1634,15 @@ BOOL CDocument::DoSave(LPCTSTR lpszPathName, BOOL bReplace)
 	// if 'bReplace' is TRUE will change file name if successful (SaveAs)
 	// if 'bReplace' is FALSE will not change path name (SaveCopyAs)
 {
+	// Demo-Modus: gar nicht erst den Datei-Dialog zeigen. Wichtig auch, weil
+	// ein gescheitertes "Speichern unter" weiter unten die im Dialog gewaehlte
+	// Datei loescht -- das koennte eine echte Buchungsdatei sein.
+	if (ECT_IstDemoModus())
+	{
+		TRACE0("Demo-Modus: DoSave abgewiesen\n");
+		return FALSE;
+	}
+
 	CString newName = lpszPathName;
 	if (newName.IsEmpty())
 	{

@@ -146,7 +146,7 @@ BEGIN
     PUSHBUTTON      "Datensicherung auf externem Laufwerk oder USB-Stick",IDC_EXTERN2,7,67,302,25
 END
 
-IDD_STARTOPTIONEN DIALOGEX 0, 0, 430, 199
+IDD_STARTOPTIONEN DIALOGEX 0, 0, 430, 231
 STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSMENU
 CAPTION "Startoptionen"
 FONT 8, "MS Shell Dlg", 400, 0, 0x1
@@ -158,13 +158,15 @@ BEGIN
     CONTROL         "mit leerer Buchungsdatei neu starten",IDC_LEER,"Button",BS_COMMANDLINK | WS_TABSTOP,7,79,416,25
     CONTROL         "Programm ohne Buchungsdatei starten (z.B. für Mandantenfunktion)",IDC_OHNE,
                     "Button",BS_COMMANDLINK | WS_TABSTOP,7,110,415,25
-    CONTROL         "Programm schließen",IDC_EXIT,"Button",BS_COMMANDLINK | WS_TABSTOP,7,143,415,25
+    CONTROL         "Programm im Demo-Modus mit Beispieldaten ausprobieren (eigene Daten bleiben unberührt)",IDC_DEMO,
+                    "Button",BS_COMMANDLINK | WS_TABSTOP,7,143,415,25
+    CONTROL         "Programm schließen",IDC_EXIT,"Button",BS_COMMANDLINK | WS_TABSTOP,7,175,415,25
     PUSHBUTTON      "Datei mit 'Datei Öffnen'-Dialog suchen (z.B. bei Änderung des Dateinamens)",IDC_OEFFNEN2,7,19,415,25
     PUSHBUTTON      "Datenverzeichnis neu wählen (z.B. wenn das Datenverzeichnis verschoben wurde)",IDC_DATENVERZEICHNIS2,7,50,415,25
     PUSHBUTTON      "mit leerer Buchungsdatei neu starten",IDC_LEER2,7,81,415,25
     PUSHBUTTON      "Programm ohne Buchungsdatei starten (z.B. für Mandantenfunktion)",IDC_OHNE2,7,112,415,25
-    PUSHBUTTON      "Programm schließen",IDC_EXIT2,7,143,415,25
-    LTEXT           "Hinweis: Die ersten drei Optionen stehen auch über das Applikationsmenü (der runde Knopf links oben) zur Verfügung.\r\n              Die aktuelle Buchungsdatei lässt sich mit dem kleineren der beiden 'X'-Knöpfe rechts oben schließen.",IDC_STATIC,7,174,415,18
+    PUSHBUTTON      "Programm schließen",IDC_EXIT2,7,175,415,25
+    LTEXT           "Hinweis: Die ersten drei Optionen stehen auch über das Applikationsmenü (der runde Knopf links oben) zur Verfügung.\r\n              Die aktuelle Buchungsdatei lässt sich mit dem kleineren der beiden 'X'-Knöpfe rechts oben schließen.",IDC_STATIC,7,206,415,18
     LTEXT           "Konnte die zuletzt benutzte Buchungsdatei beim Start nicht automatisch öffnen. Bitte wählen Sie aus folgenden Optionen:",IDC_STATIC,7,7,415,10
 END
 
@@ -214,7 +216,7 @@ BEGIN
         LEFTMARGIN, 7
         RIGHTMARGIN, 422
         TOPMARGIN, 7
-        BOTTOMMARGIN, 192
+        BOTTOMMARGIN, 224
     END
 END
 #endif    // APSTUDIO_INVOKED

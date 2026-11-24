@@ -60,6 +60,7 @@
 #include "ECTBridge\Exports.h"
 #include "ECTBridge\ViewExports.h"
 #include "ECTBridge\EasyCashDocBridge.h"
+#include "ECTBridge\DemoModus.h"
 #else
 #include "ECTIFace\EasyCashDoc.h"
 #endif
@@ -105,6 +106,11 @@ BEGIN_MESSAGE_MAP(CEasyCashApp, CWinAppEx)
 	ON_COMMAND(ID_MAC_PAKET_DOWNLOAD, OnMacPaketDownload)
 	ON_COMMAND(ID_PROGRAMMUPDATE_INSTALLIEREN, OnProgrammUpdateInstallieren)
 	ON_COMMAND(ID_PROGRAMMUPDATE_UEBERSPRINGEN, OnProgrammUpdateUeberspringen)
+#ifdef USE_ECTENGINE
+	ON_COMMAND(ECT_ID_DEMO_UMSCHALTEN, OnDemoUmschalten)
+	ON_COMMAND(ECT_ID_DEMO_STARTEN_DIREKT, OnDemoStartenDirekt)
+	ON_COMMAND(ECT_ID_DEMO_BEENDEN_DIREKT, OnDemoBeendenDirekt)
+#endif
 END_MESSAGE_MAP()
 
 /////////////////////////////////////////////////////////////////////////////
@@ -363,6 +369,20 @@ BOOL CEasyCashApp::InitInstance()
 
 	AfxEnableControlContainer();
 
+#ifdef USE_ECTENGINE
+	// Demo-Modus (/demo, ECTBridge/DemoModus.h): eigener Registry-Zweig, BEVOR
+	// irgendetwas aus dem Profil gelesen wird. Die Altdaten-Uebernahme unten
+	// (C:\Windows\easyct.ini) entfaellt dabei ganz -- sie schreibt in die
+	// echte Registry und loescht die alte Datei.
+	BOOL bDemo = ECT_DemoParameterVorhanden();
+	if (bDemo)
+	{
+		ECT_DemoModusEinschalten();		// vor LoadFrame: das Ribbon fragt beim Aufbau nach
+		SetRegistryKey("Thomas Mielke Softwareentwicklung");
+		WechsleInsDemoProfil();
+	}
+	else
+#endif
 	// alten Ini-Kram ausmisten (C:\Windows\Easyct.ini) und in die Registry damit!
 	{
 		CString Windowsverzeichnis, csKey;
@@ -596,6 +616,32 @@ BOOL CEasyCashApp::InitInstance()
 	// Parse command line for standard shell commands, DDE, file open
 	CCommandLineInfo cmdInfo;
 
+#ifdef USE_ECTENGINE
+	if (bDemo)
+	{
+		// Demo-Modus: frisches Datenverzeichnis unter %TEMP% mit der easyct.ini
+		// aus der Ressource; das Demo-Dokument entsteht per FileNew ohne Dialog
+		// (CEasyCashDocBridge::OnNewDocument). Kommandozeilen-Dateien,
+		// Mandanten und LetzteDatei spielen keine Rolle.
+		char szDemoVerz[MAX_PATH], szFehler[1000];
+		if (!ECT_DemoVorbereiten(szDemoVerz, sizeof(szDemoVerz), szFehler, sizeof(szFehler)))
+		{
+			AfxMessageBox((CString)"Der Demo-Modus konnte nicht gestartet werden:\r\n\r\n" + szFehler, MB_ICONSTOP);
+			return FALSE;
+		}
+		WriteProfileString("Allgemein", "Datenverzeichnis", szDemoVerz);	// landet im Demo-Profil
+		SetMandant(-1);
+		char szIniFileName[MAX_PATH + 20];
+		sprintf_s(szIniFileName, sizeof(szIniFileName), "%s\\easyct.ini", szDemoVerz);
+		SetIniFileName(szIniFileName);
+		cmdInfo.m_nShellCommand = CCommandLineInfo::FileNew;
+		csInitalStatusText.Format("Demo-Modus mit Beispieldaten %d: Gespeichert wird nichts, Ihre eigenen Daten bleiben unberührt. "
+			"Beenden über Optionen --> Demo beenden.", ECT_DemoJahr());
+		pMainFrame->SetTitle(pMainFrame->GetTitle() + " [Demo-Modus]");
+	}
+	else
+#endif
+	{	// (Klammer fuer den Demo-Zweig oben)
 	if (!strncmp(m_lpCmdLine, "/P=", 3) && !strchr(m_lpCmdLine, ' '))	// nur /P-Option mit Pluginnamen angegeben?
 	{
 		m_csStartupPlugin = m_lpCmdLine + 3;							// Startup-Plugin setzen und
@@ -742,6 +788,7 @@ BOOL CEasyCashApp::InitInstance()
 		strcat(szIniFileName, "\\easyct.ini");
 		SetIniFileName(szIniFileName);
 	}
+	}	// (Ende der Klammer fuer den Demo-Zweig)
 
 #include <iostream>
 #include <ctime>
@@ -832,6 +879,13 @@ BOOL CEasyCashApp::InitInstance()
 	pMainFrame->UpdateWindow();
 	if (!csInitalStatusText.IsEmpty()) pMainFrame->SetStatus(csInitalStatusText);
 
+#ifdef USE_ECTENGINE
+	// Demo-Modus: keine Update-Abfrage und kein Tipp des Tages (stoeren
+	// beim Ausprobieren und auf Screenshots)
+	if (bDemo)
+		return TRUE;
+#endif
+
 	// neue Programmversion auf easyct.de? (Thread, meldet sich per Nachricht beim Hauptfenster)
 	ProgrammUpdatePruefungStarten(pMainFrame->GetSafeHwnd());
 
@@ -840,6 +894,78 @@ BOOL CEasyCashApp::InitInstance()
 
 	return TRUE;
 }
+
+#ifdef USE_ECTENGINE
+// ----------------------------------------------------------
+// Demo-Modus (ECTBridge/DemoModus.h)
+// ----------------------------------------------------------
+
+// Laesst das Programm im eigenen Registry-Zweig "<Profil> Demo" laufen:
+// Mandanten, MRU, Datenverzeichnis, Fenster- und Ribbon-Zustand der echten
+// Installation bleiben unsichtbar und unberuehrt. Der Zweig wird vorher
+// geleert (jeder Demo-Start beginnt frisch) und in ExitInstance geloescht.
+// Nur der Registrierschluessel wird LESEND aus dem echten Profil uebernommen.
+void CEasyCashApp::WechsleInsDemoProfil()
+{
+	CString csRegKey = GetProfileString("Allgemein", "RegKey", "");
+
+	m_csDemoProfil = CString(m_pszProfileName) + " Demo";
+	CString csPfad = CString("Software\\") + m_pszRegistryKey + "\\" + m_csDemoProfil;
+	::RegDeleteTree(HKEY_CURRENT_USER, csPfad);
+
+	free((void*)m_pszProfileName);
+	m_pszProfileName = _tcsdup(m_csDemoProfil);
+
+	if (!csRegKey.IsEmpty())
+		WriteProfileString("Allgemein", "RegKey", csRegKey);
+
+	static char szDsa[300];
+	sprintf_s(szDsa, sizeof(szDsa), "SOFTWARE\\%s\\%s\\DSA", m_pszRegistryKey, (LPCSTR)m_csDemoProfil);
+	DSASetRegKey(szDsa);
+}
+
+// Ribbon Optionen --> Programm --> Demo / Demo beenden
+void CEasyCashApp::OnDemoUmschalten()
+{
+	if (ECT_IstDemoModus())
+	{
+		if (AfxMessageBox("Demo-Modus beenden und EasyCash&Tax normal neu starten? "
+				"(Die Beispieldaten werden nicht gespeichert.)", MB_YESNO | MB_ICONQUESTION) == IDYES)
+			NeustartNachBeenden(FALSE);
+	}
+	else if (AfxMessageBox("Programm wirklich im Demo-Modus mit Beispieldaten neu starten? "
+				"(Eventuell vorhandene Nutzerdaten bleiben erhalten.)", MB_YESNO | MB_ICONQUESTION) == IDYES)
+		NeustartNachBeenden(TRUE);
+}
+
+// Startoptionen-Dialog: der Knopf selbst ist die Bestaetigung
+void CEasyCashApp::OnDemoStartenDirekt()
+{
+	if (!ECT_IstDemoModus())
+		NeustartNachBeenden(TRUE);
+}
+
+// "Im Demo-Modus ist diese Funktion nicht erlaubt. Demo-Modus beenden?" --> Ja
+void CEasyCashApp::OnDemoBeendenDirekt()
+{
+	if (ECT_IstDemoModus())
+		NeustartNachBeenden(FALSE);
+}
+
+// Beendet regulaer (mit den ueblichen Speichern-Rueckfragen der echten
+// Daten); erst wenn das Hauptfenster wirklich zu ist, startet ExitInstance
+// die neue Instanz. Bricht der Nutzer eine Rueckfrage ab, bleibt alles, wie
+// es ist.
+void CEasyCashApp::NeustartNachBeenden(BOOL bDemo)
+{
+	m_nNeustart = bDemo ? 1 : 2;
+	CWnd* pMain = m_pMainWnd;
+	if (pMain && ::IsWindow(pMain->GetSafeHwnd()))
+		pMain->SendMessage(WM_CLOSE);
+	if (m_pMainWnd && ::IsWindow(m_pMainWnd->GetSafeHwnd()))
+		m_nNeustart = 0;	// Beenden abgebrochen
+}
+#endif
 
 void CEasyCashApp::ParseCommandLine(CCommandLineInfo& rCmdInfo)
 {
@@ -873,6 +999,22 @@ int CEasyCashApp::ExitInstance()
 	// wurde fuer ein Programm-Update beendet? Dann jetzt das Setup starten (braucht noch COM)
 	ProgrammUpdateSetupNachProgrammende();
 
+#ifdef USE_ECTENGINE
+	// Demo-Modus: Temp-Datenverzeichnis entfernen (den Registry-Zweig erst am
+	// Ende, CWinApp::ExitInstance schreibt noch die MRU-Liste ins Profil)
+	if (ECT_IstDemoModus())
+		ECT_DemoAufraeumen();
+
+	// Neustart mit bzw. ohne /demo (Demo-Knopf, Startoptionen, "Demo-Modus beenden?");
+	// vor CoUninitialize, ShellExecute braucht COM
+	if (m_nNeustart)
+	{
+		char szExe[MAX_PATH];
+		if (GetModuleFileName(NULL, szExe, MAX_PATH))
+			::ShellExecute(NULL, "open", szExe, m_nNeustart == 1 ? "/demo" : NULL, NULL, SW_SHOWNORMAL);
+	}
+#endif
+
 	CoUninitialize();  // kann bei AfxOleInit() weggelassen werden: wird dann automatisch erledigt. AfxOleInit() führte aber zu heap corruptions
 
 #if defined(NDEBUG)
@@ -880,7 +1022,16 @@ int CEasyCashApp::ExitInstance()
 	if (m_bCrashReportingAktiv) crUninstall();
 #endif
 
+#ifdef USE_ECTENGINE
+	int nErgebnis = CWinAppEx::ExitInstance();
+	// Demo-Modus: eigenen Registry-Zweig entfernen -- erst jetzt, nachdem die
+	// Basisklasse ihre letzten Profil-Eintraege geschrieben hat
+	if (!m_csDemoProfil.IsEmpty() && m_pszRegistryKey)
+		::RegDeleteTree(HKEY_CURRENT_USER, CString("Software\\") + m_pszRegistryKey + "\\" + m_csDemoProfil);
+	return nErgebnis;
+#else
 	return CWinAppEx::ExitInstance();
+#endif
 }
 
 void CEasyCashApp::RegistrierungsinformationenSichern(char *DateinameParam)

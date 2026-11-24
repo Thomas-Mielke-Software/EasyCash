@@ -59,6 +59,10 @@ public:
     virtual BOOL OnNewDocument() override;
     virtual BOOL OnOpenDocument(LPCTSTR lpszPathName) override;
 
+    // Demo-Modus (DemoModus.h): nie speichern, beim Schliessen nicht fragen
+    virtual BOOL OnSaveDocument(LPCTSTR lpszPathName) override;
+    virtual BOOL SaveModified() override;
+
     // ──────────────────────────────────────────────
     // Synchronisierung: Native ↔ Managed
     // ──────────────────────────────────────────────

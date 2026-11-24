@@ -4,6 +4,7 @@
 #include "stdafx.h"
 #include "resource.h"
 #include "Startoptionen.h"
+#include "DemoModus.h"
 
 
 // CStartoptionen dialog : implementation
@@ -65,6 +66,7 @@ BEGIN_MESSAGE_MAP(CStartoptionen, CDialog)
 	ON_BN_CLICKED(IDC_LEER2, &CStartoptionen::OnBnClickedLeer)
 	ON_BN_CLICKED(IDC_OHNE2, &CStartoptionen::OnBnClickedOhne)
 	ON_BN_CLICKED(IDC_EXIT2, &CStartoptionen::OnBnClickedExit)
+	ON_BN_CLICKED(IDC_DEMO, &CStartoptionen::OnBnClickedDemo)
 END_MESSAGE_MAP()
 
 
@@ -122,8 +124,12 @@ BOOL CStartoptionen::OnInitDialog()
 
 			m_ToolTip.Activate(TRUE);			
 		} 
-		*/     
+		*/
 	}
+
+	// Im Demo-Modus selbst ergibt "in den Demo-Modus wechseln" keinen Sinn
+	if (ECT_IstDemoModus() && GetDlgItem(IDC_DEMO))
+		GetDlgItem(IDC_DEMO)->ShowWindow(SW_HIDE);
 
 	return TRUE;
 }
@@ -151,4 +157,10 @@ void CStartoptionen::OnBnClickedOhne()
 void CStartoptionen::OnBnClickedExit()
 {
 	CDialog::EndDialog(4);
+}
+
+// Programm im Demo-Modus mit Beispieldaten neu starten (siehe DemoModus.h)
+void CStartoptionen::OnBnClickedDemo()
+{
+	CDialog::EndDialog(5);
 }

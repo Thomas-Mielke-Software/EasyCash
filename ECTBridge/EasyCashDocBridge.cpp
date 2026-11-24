@@ -13,6 +13,7 @@
 #include "EngineHost.h"
 #include "Marshalling.h"
 #include "BuchungConverter.h"
+#include "DemoModus.h"
 
 #using "ECTEngine.dll"
 
@@ -87,6 +88,17 @@ CEasyCashDocBridge::~CEasyCashDocBridge()
 
 void CEasyCashDocBridge::Serialize(CArchive& ar)
 {
+    if (ar.IsStoring() && ECT_IstDemoModus())
+    {
+        // Letzte Verteidigungslinie: alle Speicherwege sind im Demo-Modus
+        // schon vorher gesperrt (DoSave, OnSaveDocument, Wiederherstellungs-
+        // datei). Kommt trotzdem etwas hier an, wird nichts geschrieben --
+        // MFC speichert ueber eine Spiegeldatei, die Zieldatei bleibt dann
+        // unangetastet.
+        TRACE0("Demo-Modus: Serialize(Speichern) abgewiesen\n");
+        AfxThrowNotSupportedException();
+    }
+
     if (ar.IsStoring())
     {
         // VOR dem Speichern: Managed → Native synchronisieren,
@@ -114,6 +126,31 @@ void CEasyCashDocBridge::Serialize(CArchive& ar)
 
 BOOL CEasyCashDocBridge::OnNewDocument()
 {
+    if (ECT_IstDemoModus())
+    {
+        // Demo-Modus: ohne "Neu"-Dialog direkt aus den Beispieldaten
+        // (CEasyCashDoc::OnNewDocument wuerde den Buchungsjahr-Dialog zeigen
+        // und in die ini schreiben). Die Dokumentvorlage laesst genau EIN
+        // neues Dokument zu, siehe CMyMultiDocTemplate::OpenDocumentFile.
+        if (!CDocument::OnNewDocument())
+            return FALSE;
+        if (!ECT_DemoDokumentFuellen(this))
+            return FALSE;
+
+        // Pfad im Demo-Verzeichnis (dort wird nie gespeichert; er bestimmt
+        // nur den Fenstertitel und das Jahr in Hinweisen der Plugins)
+        char szPfad[600];
+        GetIniFileName(szPfad, sizeof(szPfad));
+        char* cp = strrchr(szPfad, '\\');
+        if (cp) sprintf_s(cp + 1, sizeof(szPfad) - (cp + 1 - szPfad), "Jahr%04d.eca", nJahr);
+        SetPathName(szPfad, FALSE);   // Titelleiste: siehe CEasyCashApp::InitInstance
+        CDocument::SetModifiedFlag(FALSE);
+
+        ::CIterateExtensionDLLs("ECTE_OpenDocument", (void *)this);
+        TRACE("CEasyCashDocBridge::OnNewDocument -- Demo-Dokument, Jahr %d\n", nJahr);
+        return TRUE;
+    }
+
     if (!CEasyCashDoc::OnNewDocument())
         return FALSE;
 
@@ -130,6 +167,26 @@ BOOL CEasyCashDocBridge::OnOpenDocument(LPCTSTR lpszPathName)
     // das wiederum SyncNativeToManaged() aufruft.
     // Also brauchen wir hier keinen zusätzlichen Sync.
     return CEasyCashDoc::OnOpenDocument(lpszPathName);
+}
+
+BOOL CEasyCashDocBridge::OnSaveDocument(LPCTSTR lpszPathName)
+{
+    if (ECT_IstDemoModus())
+    {
+        // auch Plugins (EasyCTX) speichern nicht -- still, die Bedienwege
+        // fragen schon vorher "Demo-Modus beenden?"
+        TRACE0("Demo-Modus: OnSaveDocument abgewiesen\n");
+        return FALSE;
+    }
+    return CEasyCashDoc::OnSaveDocument(lpszPathName);
+}
+
+BOOL CEasyCashDocBridge::SaveModified()
+{
+    // Beispieldaten werden nie gespeichert -- also auch nicht danach fragen
+    if (ECT_IstDemoModus())
+        return TRUE;
+    return CEasyCashDoc::SaveModified();
 }
 
 // ══════════════════════════════════════════════════════════

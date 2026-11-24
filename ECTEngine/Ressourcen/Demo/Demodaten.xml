@@ -1,0 +1,708 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ECTBuchungsdatei Format="1">
+  <Dokument Jahr="2025" Waehrung="EUR" AfaGenauigkeit="Monatsgenau" Buchungszaehler="147" BelegnrEinnahmen="1" BelegnrAusgaben="1" BelegnrBank="1" BelegnrKasse="1" EcaVersion="13" BackupIntervallTage="7" BackupTermin="2025-12-31">
+    <Erweiterung Ns="Elster" Schluessel="UST-Zahlbetrag-2025-41">91,33</Erweiterung>
+    <Erweiterung Ns="Elster" Schluessel="UST-Zahlbetrag-2025-42">302,53</Erweiterung>
+    <Erweiterung Ns="Elster" Schluessel="UST-Zahlbetrag-2025-43">240,15</Erweiterung>
+    <Erweiterung Ns="Elster" Schluessel="UST-Zahlbetrag-2025-44">515,03</Erweiterung>
+  </Dokument>
+  <Dauerbuchungen>
+    <Dauerbuchung Art="Ausgabe" Brutto="450.00" MwSt="0" Intervall="Monatlich" Von="2023-01-01" Bis="2037-12-31" Tag="1" AusgefuehrtBis="2025-12-31" Konto="Raumkosten Atelier" Betrieb="Illustration" Bestandskonto="Girokonto">
+      <Beschreibung>Atelier-Miete $M/$J</Beschreibung>
+    </Dauerbuchung>
+    <Dauerbuchung Art="Ausgabe" Brutto="7.90" MwSt="0" Intervall="Monatlich" Von="2023-01-01" Bis="2037-12-31" Tag="30" AusgefuehrtBis="2025-12-31" Konto="Kontoführung und sonstige Kosten" Betrieb="Illustration" Bestandskonto="Girokonto">
+      <Beschreibung>Kontoführung Girokonto $M/$J</Beschreibung>
+    </Dauerbuchung>
+    <Dauerbuchung Art="Ausgabe" Brutto="11.90" MwSt="19" Intervall="Monatlich" Von="2023-01-01" Bis="2037-12-31" Tag="5" AusgefuehrtBis="2025-12-31" Konto="Software und EDV" Betrieb="Illustration" Bestandskonto="Girokonto">
+      <Beschreibung>Cloud-Speicher und Website $M/$J</Beschreibung>
+    </Dauerbuchung>
+    <Dauerbuchung Art="Ausgabe" Brutto="186.40" MwSt="0" Intervall="Jaehrlich" Von="2023-01-01" Bis="2037-12-31" Tag="15" AusgefuehrtBis="2025-12-31" Konto="Versicherungen und Beiträge" Betrieb="Illustration" Bestandskonto="Girokonto">
+      <Beschreibung>Berufshaftpflicht $J</Beschreibung>
+    </Dauerbuchung>
+  </Dauerbuchungen>
+  <Buchungen>
+    <Buchung Id="02a7d448-d0f5-fd37-0d68-bb8e0f9778c8" Art="Ausgabe" Datum="2025-01-01" Brutto="450.00" MwSt="0" Konto="Raumkosten Atelier" Betrieb="Illustration" Bestandskonto="Girokonto">
+      <Beschreibung>Atelier-Miete 01/2025</Beschreibung>
+    </Buchung>
+    <Buchung Id="010fd0b1-5bba-f661-aea5-23074f678ceb" Art="Einnahme" Datum="2025-01-02" Brutto="100.00" MwSt="0" Konto="/Privateinlagen" Betrieb="Druckladen" Bestandskonto="Kasse">
+      <Beschreibung>Wechselgeld für die Kasse</Beschreibung>
+    </Buchung>
+    <Buchung Id="313fc721-7c82-f06c-7997-62643d67fbf3" Art="Ausgabe" Datum="2025-01-03" Brutto="8.99" MwSt="0" Konto="/Privatentnahmen" Betrieb="Illustration" Bestandskonto="Girokonto">
+      <Beschreibung>Telefon und Internet 01/2025 (Privatanteil 20 %)</Beschreibung>
+      <Erweiterung Ns="EasyCash" Schluessel="Buchungsgruppe">c7b26fa4-d339-2bc0-00ad-01b1761f25a4</Erweiterung>
+      <Erweiterung Ns="EasyCash" Schluessel="BuchungsgruppeRolle">1</Erweiterung>
+      <Erweiterung Ns="EasyCash" Schluessel="BuchungsgruppeVorlage">14</Erweiterung>
+    </Buchung>
+    <Buchung Id="742f7825-8d31-77f0-0076-de6d33e82bbe" Art="Ausgabe" Datum="2025-01-03" Brutto="35.96" MwSt="19" Konto="Telefon und Internet" Betrieb="Illustration" Bestandskonto="Girokonto">
+      <Beschreibung>Telefon und Internet 01/2025</Beschreibung>
+      <Erweiterung Ns="EasyCash" Schluessel="Buchungsgruppe">c7b26fa4-d339-2bc0-00ad-01b1761f25a4</Erweiterung>
+      <Erweiterung Ns="EasyCash" Schluessel="BuchungsgruppeRolle">0</Erweiterung>
+      <Erweiterung Ns="EasyCash" Schluessel="BuchungsgruppeVorlage">14</Erweiterung>
+      <Erweiterung Ns="EasyCash" Schluessel="VorlageEingabeBetrag">44.95</Erweiterung>
+      <Erweiterung Ns="EasyCash" Schluessel="VorlageFeld_privat">20</Erweiterung>
+      <Erweiterung Ns="EasyCash" Schluessel="VorlageId">907da25bc311762469c194a4f5b25d73</Erweiterung>
+      <Erweiterung Ns="EasyCash" Schluessel="VorlageName">Telefon mit Privatanteil</Erweiterung>
+    </Buchung>
+    <Buchung Id="129c8e25-e8da-2431-9994-fe6e57fd606c" Art="Ausgabe" Datum="2025-01-05" Brutto="11.90" MwSt="19" Konto="Software und EDV" Betrieb="Illustration" Bestandskonto="Girokonto">
+      <Beschreibung>Cloud-Speicher und Website 01/2025</Beschreibung>
+    </Buchung>
+    <Buchung Id="50d8385e-07f1-2f01-2356-7781342f3f6a" Art="Ausgabe" Datum="2025-01-08" Brutto="150.37" MwSt="0" Konto="/Verrechnung von VSt gemäß §13b" Beleg="E-101" Betrieb="Illustration" Bestandskonto="Girokonto">
+      <Beschreibung>Adobe Creative Cloud, Jahresabo (Adobe Ireland) (Vorsteuer §13b)</Beschreibung>
+      <Erweiterung Ns="EasyCash" Schluessel="Buchungsgruppe">1dd33f47-1f6f-ef9e-c145-36d9181fc8f4</Erweiterung>
+      <Erweiterung Ns="EasyCash" Schluessel="BuchungsgruppeRolle">2</Erweiterung>
+      <Erweiterung Ns="EasyCash" Schluessel="BuchungsgruppeVorlage">10</Erweiterung>
+    </Buchung>
+    <Buchung Id="b2954ccf-2850-3995-0165-153bcecc21b3" Art="Einnahme" Datum="2025-01-08" Brutto="150.37" MwSt="0" Konto="/Verrechnung von USt gemäß §13b Abs. 1" Beleg="E-101" Betrieb="Illustration" Bestandskonto="Girokonto">
+      <Beschreibung>Adobe Creative Cloud, Jahresabo (Adobe Ireland) (USt §13b)</Beschreibung>
+      <Erweiterung Ns="EasyCash" Schluessel="Buchungsgruppe">1dd33f47-1f6f-ef9e-c145-36d9181fc8f4</Erweiterung>
+      <Erweiterung Ns="EasyCash" Schluessel="BuchungsgruppeRolle">1</Erweiterung>
+      <Erweiterung Ns="EasyCash" Schluessel="BuchungsgruppeVorlage">10</Erweiterung>
+    </Buchung>
+    <Buchung Id="f7a464d7-3a40-5206-cc65-5950ebc8ab76" Art="Ausgabe" Datum="2025-01-08" Brutto="791.40" MwSt="0" Konto="Bezogene Leistungen aus dem EU-Ausland" Beleg="E-101" Betrieb="Illustration" Bestandskonto="Girokonto">
+      <Beschreibung>Adobe Creative Cloud, Jahresabo (Adobe Ireland)</Beschreibung>
+      <Erweiterung Ns="EasyCash" Schluessel="Buchungsgruppe">1dd33f47-1f6f-ef9e-c145-36d9181fc8f4</Erweiterung>
+      <Erweiterung Ns="EasyCash" Schluessel="BuchungsgruppeRolle">0</Erweiterung>
+      <Erweiterung Ns="EasyCash" Schluessel="BuchungsgruppeVorlage">10</Erweiterung>
+      <Erweiterung Ns="EasyCash" Schluessel="VorlageId">a64ec25d0039b81f645d3fb9771b773f</Erweiterung>
+      <Erweiterung Ns="EasyCash" Schluessel="VorlageName">Reverse Charge EU-Eingangsrechnung</Erweiterung>
+    </Buchung>
+    <Buchung Id="6f067a17-0643-a19d-bb21-92591f1ea3e5" Art="Ausgabe" Datum="2025-01-10" Brutto="386.20" MwSt="0" Konto="Umsatzsteuer-Vorauszahlungen" Betrieb="Illustration" Bestandskonto="Girokonto">
+      <Beschreibung>USt-Vorauszahlung 4. Quartal 2024</Beschreibung>
+    </Buchung>
+    <Buchung Id="799c420e-4382-849d-7f28-2ad53db748ff" Art="Einnahme" Datum="2025-01-14" Brutto="2140.00" MwSt="7" Konto="Honorare Illustration" Beleg="R-01" Betrieb="Illustration" Bestandskonto="Girokonto">
+      <Beschreibung>Kinderbuch "Der kleine Leuchtturm", 1. Rate -- Verlag Wellenreiter</Beschreibung>
+    </Buchung>
+    <Buchung Id="cb62c397-07ce-c89a-6ac1-7a255fceb762" Art="Ausgabe" Datum="2025-01-22" Brutto="142.80" MwSt="19" Konto="Arbeitsmittel und Fachliteratur" Beleg="E-102" Betrieb="Illustration" Bestandskonto="Girokonto">
+      <Beschreibung>Aquarellfarben und Pinsel -- Künstlerbedarf Farbtopf</Beschreibung>
+    </Buchung>
+    <Buchung Id="32618660-d497-405f-e093-3418157f5872" Art="Einnahme" Datum="2025-01-28" Brutto="214.60" MwSt="19" Konto="Verkauf Kunstdrucke und Karten" Beleg="S-01" Betrieb="Druckladen" Bestandskonto="PayPal">
+      <Beschreibung>Shop-Verkäufe Januar (Kunstdrucke und Karten)</Beschreibung>
+    </Buchung>
+    <Buchung Id="c38e8acd-59b1-b6d3-e09f-eb422e1e63e9" Art="Ausgabe" Datum="2025-01-30" Brutto="7.90" MwSt="0" Konto="Kontoführung und sonstige Kosten" Betrieb="Illustration" Bestandskonto="Girokonto">
+      <Beschreibung>Kontoführung Girokonto 01/2025</Beschreibung>
+    </Buchung>
+    <Buchung Id="55bc1a2c-4467-3d55-5fc0-ceea2028bf2a" Art="Ausgabe" Datum="2025-02-01" Brutto="450.00" MwSt="0" Konto="Raumkosten Atelier" Betrieb="Illustration" Bestandskonto="Girokonto">
+      <Beschreibung>Atelier-Miete 02/2025</Beschreibung>
+    </Buchung>
+    <Buchung Id="80ed702d-b985-f6d5-fcf6-0fcae0a66404" Art="Ausgabe" Datum="2025-02-03" Brutto="35.96" MwSt="19" Konto="Telefon und Internet" Betrieb="Illustration" Bestandskonto="Girokonto">
+      <Beschreibung>Telefon und Internet 02/2025</Beschreibung>
+      <Erweiterung Ns="EasyCash" Schluessel="Buchungsgruppe">369982bb-9ad6-49a3-c1ec-4c59c6af8185</Erweiterung>
+      <Erweiterung Ns="EasyCash" Schluessel="BuchungsgruppeRolle">0</Erweiterung>
+      <Erweiterung Ns="EasyCash" Schluessel="BuchungsgruppeVorlage">14</Erweiterung>
+      <Erweiterung Ns="EasyCash" Schluessel="VorlageEingabeBetrag">44.95</Erweiterung>
+      <Erweiterung Ns="EasyCash" Schluessel="VorlageFeld_privat">20</Erweiterung>
+      <Erweiterung Ns="EasyCash" Schluessel="VorlageId">907da25bc311762469c194a4f5b25d73</Erweiterung>
+      <Erweiterung Ns="EasyCash" Schluessel="VorlageName">Telefon mit Privatanteil</Erweiterung>
+    </Buchung>
+    <Buchung Id="b7b0807f-7d08-6027-b041-c562d9d7026f" Art="Ausgabe" Datum="2025-02-03" Brutto="8.99" MwSt="0" Konto="/Privatentnahmen" Betrieb="Illustration" Bestandskonto="Girokonto">
+      <Beschreibung>Telefon und Internet 02/2025 (Privatanteil 20 %)</Beschreibung>
+      <Erweiterung Ns="EasyCash" Schluessel="Buchungsgruppe">369982bb-9ad6-49a3-c1ec-4c59c6af8185</Erweiterung>
+      <Erweiterung Ns="EasyCash" Schluessel="BuchungsgruppeRolle">1</Erweiterung>
+      <Erweiterung Ns="EasyCash" Schluessel="BuchungsgruppeVorlage">14</Erweiterung>
+    </Buchung>
+    <Buchung Id="df24905c-5772-6929-423a-268ab5f415c3" Art="Ausgabe" Datum="2025-02-05" Brutto="11.90" MwSt="19" Konto="Software und EDV" Betrieb="Illustration" Bestandskonto="Girokonto">
+      <Beschreibung>Cloud-Speicher und Website 02/2025</Beschreibung>
+    </Buchung>
+    <Buchung Id="86d819fa-261a-8fb4-061a-965fda084aa4" Art="Ausgabe" Datum="2025-02-07" Brutto="59.90" MwSt="7" Konto="Arbeitsmittel und Fachliteratur" Beleg="E-103" Betrieb="Illustration" Bestandskonto="Kasse">
+      <Beschreibung>Buchhandlung Seitensprung: Fachbücher und Skizzenbücher (7 %)</Beschreibung>
+      <Erweiterung Ns="EasyCash" Schluessel="Buchungsgruppe">6073eebf-346a-a337-9616-1cabaccf498b</Erweiterung>
+      <Erweiterung Ns="EasyCash" Schluessel="BuchungsgruppeRolle">1</Erweiterung>
+      <Erweiterung Ns="EasyCash" Schluessel="BuchungsgruppeVorlage">15</Erweiterung>
+    </Buchung>
+    <Buchung Id="8e612213-4904-4996-b5a7-6171117dc8d0" Art="Ausgabe" Datum="2025-02-07" Brutto="24.80" MwSt="19" Konto="Arbeitsmittel und Fachliteratur" Beleg="E-103" Betrieb="Illustration" Bestandskonto="Kasse">
+      <Beschreibung>Buchhandlung Seitensprung: Fachbücher und Skizzenbücher</Beschreibung>
+      <Erweiterung Ns="EasyCash" Schluessel="Buchungsgruppe">6073eebf-346a-a337-9616-1cabaccf498b</Erweiterung>
+      <Erweiterung Ns="EasyCash" Schluessel="BuchungsgruppeRolle">0</Erweiterung>
+      <Erweiterung Ns="EasyCash" Schluessel="BuchungsgruppeVorlage">15</Erweiterung>
+      <Erweiterung Ns="EasyCash" Schluessel="VorlageEingabeBetrag">84.70</Erweiterung>
+      <Erweiterung Ns="EasyCash" Schluessel="VorlageFeld_betrag2">59,90</Erweiterung>
+      <Erweiterung Ns="EasyCash" Schluessel="VorlageFeld_satz2">7</Erweiterung>
+      <Erweiterung Ns="EasyCash" Schluessel="VorlageId">af456dc33cc2e5fa8a52afdae9a93cfe</Erweiterung>
+      <Erweiterung Ns="EasyCash" Schluessel="VorlageName">Rechnung mit zwei Steuersätzen</Erweiterung>
+    </Buchung>
+    <Buchung Id="c9529841-7021-e0e9-8413-7787629f15e2" Art="Ausgabe" Datum="2025-02-18" Brutto="89.25" MwSt="19" Konto="Werbung" Beleg="E-104" Betrieb="Illustration" Bestandskonto="Girokonto">
+      <Beschreibung>Flyer und Visitenkarten -- Druckhaus Punkt</Beschreibung>
+    </Buchung>
+    <Buchung Id="1292aa2a-036c-fbff-c51a-b43ccd51d33f" Art="Einnahme" Datum="2025-02-20" Brutto="595.00" MwSt="19" Konto="Honorare Illustration" Beleg="R-02" Betrieb="Illustration" Bestandskonto="Girokonto">
+      <Beschreibung>Editorial-Illustration Stadtmagazin, Februar-Ausgabe</Beschreibung>
+    </Buchung>
+    <Buchung Id="cf534903-b8f9-9813-520a-bfe87f881c3e" Art="Ausgabe" Datum="2025-02-26" Brutto="1249.50" MwSt="19" Konto="AfA auf bewegliche Wirtschaftsgüter" Beleg="E-105" Betrieb="Illustration" Bestandskonto="Girokonto">
+      <Beschreibung>Zeichentisch, höhenverstellbar -- Atelierbedarf Lindgrün</Beschreibung>
+      <AfA Jahre="13" Nr="1" Restwert="1050.00" Degressiv="0" Satz="0" Genauigkeit="EntsprechendEinstellungen" />
+    </Buchung>
+    <Buchung Id="2fae43a6-4b7d-0f30-3355-9acc8a1e4798" Art="Ausgabe" Datum="2025-02-28" Brutto="7.90" MwSt="0" Konto="Kontoführung und sonstige Kosten" Betrieb="Illustration" Bestandskonto="Girokonto">
+      <Beschreibung>Kontoführung Girokonto 02/2025</Beschreibung>
+    </Buchung>
+    <Buchung Id="540299c0-575b-c538-d586-bbe9c86346d7" Art="Einnahme" Datum="2025-02-28" Brutto="168.90" MwSt="19" Konto="Verkauf Kunstdrucke und Karten" Beleg="S-02" Betrieb="Druckladen" Bestandskonto="PayPal">
+      <Beschreibung>Shop-Verkäufe Februar (Kunstdrucke und Karten)</Beschreibung>
+    </Buchung>
+    <Buchung Id="bffee402-735c-d781-8050-7f6c76e21fd7" Art="Ausgabe" Datum="2025-03-01" Brutto="450.00" MwSt="0" Konto="Raumkosten Atelier" Betrieb="Illustration" Bestandskonto="Girokonto">
+      <Beschreibung>Atelier-Miete 03/2025</Beschreibung>
+    </Buchung>
+    <Buchung Id="0955ddb7-efa5-ff62-5d1a-449befb2c39c" Art="Ausgabe" Datum="2025-03-03" Brutto="8.99" MwSt="0" Konto="/Privatentnahmen" Betrieb="Illustration" Bestandskonto="Girokonto">
+      <Beschreibung>Telefon und Internet 03/2025 (Privatanteil 20 %)</Beschreibung>
+      <Erweiterung Ns="EasyCash" Schluessel="Buchungsgruppe">eaf1267a-155b-c936-66fd-b00859c1077d</Erweiterung>
+      <Erweiterung Ns="EasyCash" Schluessel="BuchungsgruppeRolle">1</Erweiterung>
+      <Erweiterung Ns="EasyCash" Schluessel="BuchungsgruppeVorlage">14</Erweiterung>
+    </Buchung>
+    <Buchung Id="c0d0f458-926e-700b-ef60-23f5d2cb478c" Art="Ausgabe" Datum="2025-03-03" Brutto="35.96" MwSt="19" Konto="Telefon und Internet" Betrieb="Illustration" Bestandskonto="Girokonto">
+      <Beschreibung>Telefon und Internet 03/2025</Beschreibung>
+      <Erweiterung Ns="EasyCash" Schluessel="Buchungsgruppe">eaf1267a-155b-c936-66fd-b00859c1077d</Erweiterung>
+      <Erweiterung Ns="EasyCash" Schluessel="BuchungsgruppeRolle">0</Erweiterung>
+      <Erweiterung Ns="EasyCash" Schluessel="BuchungsgruppeVorlage">14</Erweiterung>
+      <Erweiterung Ns="EasyCash" Schluessel="VorlageEingabeBetrag">44.95</Erweiterung>
+      <Erweiterung Ns="EasyCash" Schluessel="VorlageFeld_privat">20</Erweiterung>
+      <Erweiterung Ns="EasyCash" Schluessel="VorlageId">907da25bc311762469c194a4f5b25d73</Erweiterung>
+      <Erweiterung Ns="EasyCash" Schluessel="VorlageName">Telefon mit Privatanteil</Erweiterung>
+    </Buchung>
+    <Buchung Id="c5c460b8-05da-fe26-f288-86ca7f64bb3d" Art="Ausgabe" Datum="2025-03-03" Brutto="478.00" MwSt="19" Konto="Material und Druckkosten" Beleg="E-201" Betrieb="Druckladen" Bestandskonto="Girokonto">
+      <Beschreibung>Giclée-Drucke -- Druckerei Stempel &amp; Söhne</Beschreibung>
+    </Buchung>
+    <Buchung Id="93027089-d10d-135e-998d-c473d5209378" Art="Ausgabe" Datum="2025-03-05" Brutto="11.90" MwSt="19" Konto="Software und EDV" Betrieb="Illustration" Bestandskonto="Girokonto">
+      <Beschreibung>Cloud-Speicher und Website 03/2025</Beschreibung>
+    </Buchung>
+    <Buchung Id="842cf1a0-aec7-80fc-1e95-02a58790dc1b" Art="Ausgabe" Datum="2025-03-11" Brutto="249.00" MwSt="19" Konto="Fortbildung" Beleg="E-106" Betrieb="Illustration" Bestandskonto="Girokonto">
+      <Beschreibung>Online-Kurs Kinderbuch-Illustration</Beschreibung>
+    </Buchung>
+    <Buchung Id="0e6a8378-c54e-98d6-2467-9b4fb6359d7a" Art="Einnahme" Datum="2025-03-12" Brutto="2140.00" MwSt="7" Konto="Honorare Illustration" Beleg="R-03" Betrieb="Illustration" Bestandskonto="Girokonto">
+      <Beschreibung>Kinderbuch "Der kleine Leuchtturm", 2. Rate -- Verlag Wellenreiter</Beschreibung>
+    </Buchung>
+    <Buchung Id="5ece8a8f-8a20-261c-faf5-377fa9393d71" Art="Ausgabe" Datum="2025-03-24" Brutto="93.78" MwSt="0" Konto="Raumkosten Atelier" Beleg="E-107" Betrieb="Druckladen" Bestandskonto="Girokonto">
+      <Beschreibung>Nebenkostenabrechnung Atelier Vorjahr</Beschreibung>
+      <Erweiterung Ns="EasyCash" Schluessel="Buchungsgruppe">42385c6c-b354-7a77-4566-7e16816cc0a7</Erweiterung>
+      <Erweiterung Ns="EasyCash" Schluessel="BuchungsgruppeRolle">1</Erweiterung>
+      <Erweiterung Ns="EasyCash" Schluessel="BuchungsgruppeVorlage">13</Erweiterung>
+    </Buchung>
+    <Buchung Id="ac49d39b-2472-aa7c-705e-f903ed0088c8" Art="Ausgabe" Datum="2025-03-24" Brutto="218.82" MwSt="0" Konto="Raumkosten Atelier" Beleg="E-107" Betrieb="Illustration" Bestandskonto="Girokonto">
+      <Beschreibung>Nebenkostenabrechnung Atelier Vorjahr</Beschreibung>
+      <Erweiterung Ns="EasyCash" Schluessel="Buchungsgruppe">42385c6c-b354-7a77-4566-7e16816cc0a7</Erweiterung>
+      <Erweiterung Ns="EasyCash" Schluessel="BuchungsgruppeRolle">0</Erweiterung>
+      <Erweiterung Ns="EasyCash" Schluessel="BuchungsgruppeVorlage">13</Erweiterung>
+      <Erweiterung Ns="EasyCash" Schluessel="VorlageEingabeBetrag">312.60</Erweiterung>
+      <Erweiterung Ns="EasyCash" Schluessel="VorlageFeld_anteil2">30</Erweiterung>
+      <Erweiterung Ns="EasyCash" Schluessel="VorlageFeld_betrieb2">Druckladen</Erweiterung>
+      <Erweiterung Ns="EasyCash" Schluessel="VorlageId">fd81cd4144f0bd8687923a046e3597fd</Erweiterung>
+      <Erweiterung Ns="EasyCash" Schluessel="VorlageName">Ausgabe auf zwei Betriebe</Erweiterung>
+    </Buchung>
+    <Buchung Id="76959c3b-1586-6ca2-ca13-5060997044cb" Art="Einnahme" Datum="2025-03-28" Brutto="241.30" MwSt="19" Konto="Verkauf Kunstdrucke und Karten" Beleg="S-03" Betrieb="Druckladen" Bestandskonto="PayPal">
+      <Beschreibung>Shop-Verkäufe März (Kunstdrucke und Karten)</Beschreibung>
+    </Buchung>
+    <Buchung Id="d12a7d9a-1188-782b-2330-e816a62815df" Art="Ausgabe" Datum="2025-03-28" Brutto="42.60" MwSt="0" Konto="Porto und Versand" Betrieb="Druckladen" Bestandskonto="Girokonto">
+      <Beschreibung>Porto Shop-Versand 1. Quartal</Beschreibung>
+    </Buchung>
+    <Buchung Id="b83aa14a-51a7-77c9-9dd9-2c89e5efe1c2" Art="Ausgabe" Datum="2025-03-30" Brutto="7.90" MwSt="0" Konto="Kontoführung und sonstige Kosten" Betrieb="Illustration" Bestandskonto="Girokonto">
+      <Beschreibung>Kontoführung Girokonto 03/2025</Beschreibung>
+    </Buchung>
+    <Buchung Id="e161b451-f50b-9794-dc84-c3f315041d9b" Art="Ausgabe" Datum="2025-03-30" Brutto="21.84" MwSt="0" Konto="Kontoführung und sonstige Kosten" Betrieb="Druckladen" Bestandskonto="PayPal">
+      <Beschreibung>PayPal-Gebühren 1. Quartal</Beschreibung>
+    </Buchung>
+    <Buchung Id="8a21db70-f781-b9e7-6eac-9c41d84b0681" Art="Ausgabe" Datum="2025-04-01" Brutto="450.00" MwSt="0" Konto="Raumkosten Atelier" Betrieb="Illustration" Bestandskonto="Girokonto">
+      <Beschreibung>Atelier-Miete 04/2025</Beschreibung>
+    </Buchung>
+    <Buchung Id="a3be94f1-c47f-591c-c826-a88bbb6d2309" Art="Einnahme" Datum="2025-04-02" Brutto="520.00" MwSt="0" Konto="/Umbuchung zwischen Bestandskonten" Betrieb="Druckladen" Bestandskonto="Girokonto">
+      <Beschreibung>Auszahlung PayPal-Guthaben</Beschreibung>
+      <Erweiterung Ns="EasyCash" Schluessel="Buchungsgruppe">cea77f84-d62c-60fa-e689-68f692f305b8</Erweiterung>
+      <Erweiterung Ns="EasyCash" Schluessel="BuchungsgruppeRolle">1</Erweiterung>
+      <Erweiterung Ns="EasyCash" Schluessel="BuchungsgruppeVorlage">12</Erweiterung>
+    </Buchung>
+    <Buchung Id="b1691f36-7745-fbab-5463-ef6e3659a6eb" Art="Ausgabe" Datum="2025-04-02" Brutto="520.00" MwSt="0" Konto="/Umbuchung zwischen Bestandskonten" Betrieb="Druckladen" Bestandskonto="PayPal">
+      <Beschreibung>Auszahlung PayPal-Guthaben</Beschreibung>
+      <Erweiterung Ns="EasyCash" Schluessel="Buchungsgruppe">cea77f84-d62c-60fa-e689-68f692f305b8</Erweiterung>
+      <Erweiterung Ns="EasyCash" Schluessel="BuchungsgruppeRolle">0</Erweiterung>
+      <Erweiterung Ns="EasyCash" Schluessel="BuchungsgruppeVorlage">12</Erweiterung>
+      <Erweiterung Ns="EasyCash" Schluessel="VorlageFeld_zielkonto">Girokonto</Erweiterung>
+      <Erweiterung Ns="EasyCash" Schluessel="VorlageId">862b84fac6a082eb0b1de78b417e746f</Erweiterung>
+      <Erweiterung Ns="EasyCash" Schluessel="VorlageName">Umbuchung zwischen Bestandskonten</Erweiterung>
+    </Buchung>
+    <Buchung Id="2042bb35-4403-fce4-aac7-e8a0236a6878" Art="Ausgabe" Datum="2025-04-03" Brutto="8.99" MwSt="0" Konto="/Privatentnahmen" Betrieb="Illustration" Bestandskonto="Girokonto">
+      <Beschreibung>Telefon und Internet 04/2025 (Privatanteil 20 %)</Beschreibung>
+      <Erweiterung Ns="EasyCash" Schluessel="Buchungsgruppe">47f77a49-a469-cb65-3690-a70bfb0b17e1</Erweiterung>
+      <Erweiterung Ns="EasyCash" Schluessel="BuchungsgruppeRolle">1</Erweiterung>
+      <Erweiterung Ns="EasyCash" Schluessel="BuchungsgruppeVorlage">14</Erweiterung>
+    </Buchung>
+    <Buchung Id="5044ba4e-24af-840a-717d-0374afdee6ef" Art="Ausgabe" Datum="2025-04-03" Brutto="35.96" MwSt="19" Konto="Telefon und Internet" Betrieb="Illustration" Bestandskonto="Girokonto">
+      <Beschreibung>Telefon und Internet 04/2025</Beschreibung>
+      <Erweiterung Ns="EasyCash" Schluessel="Buchungsgruppe">47f77a49-a469-cb65-3690-a70bfb0b17e1</Erweiterung>
+      <Erweiterung Ns="EasyCash" Schluessel="BuchungsgruppeRolle">0</Erweiterung>
+      <Erweiterung Ns="EasyCash" Schluessel="BuchungsgruppeVorlage">14</Erweiterung>
+      <Erweiterung Ns="EasyCash" Schluessel="VorlageEingabeBetrag">44.95</Erweiterung>
+      <Erweiterung Ns="EasyCash" Schluessel="VorlageFeld_privat">20</Erweiterung>
+      <Erweiterung Ns="EasyCash" Schluessel="VorlageId">907da25bc311762469c194a4f5b25d73</Erweiterung>
+      <Erweiterung Ns="EasyCash" Schluessel="VorlageName">Telefon mit Privatanteil</Erweiterung>
+    </Buchung>
+    <Buchung Id="671e318b-9fb7-909d-b32d-7b24ed8f6b0b" Art="Einnahme" Datum="2025-04-03" Brutto="1428.00" MwSt="19" Konto="Honorare Illustration" Beleg="R-04" Betrieb="Illustration" Bestandskonto="Girokonto">
+      <Beschreibung>Logo und Geschäftsausstattung Bäckerei Krume</Beschreibung>
+    </Buchung>
+    <Buchung Id="40ab90cc-57c5-3a80-37d3-dbb04b11b5bd" Art="Ausgabe" Datum="2025-04-05" Brutto="11.90" MwSt="19" Konto="Software und EDV" Betrieb="Illustration" Bestandskonto="Girokonto">
+      <Beschreibung>Cloud-Speicher und Website 04/2025</Beschreibung>
+    </Buchung>
+    <Buchung Id="4ca6efa5-3c96-2097-d0fb-6142cf45f334" Art="Ausgabe" Datum="2025-04-10" Brutto="91.33" MwSt="0" Konto="Umsatzsteuer-Vorauszahlungen" Betrieb="Illustration" Bestandskonto="Girokonto">
+      <Beschreibung>USt-Vorauszahlung 1. Quartal 2025</Beschreibung>
+    </Buchung>
+    <Buchung Id="3206aa7e-e7dc-1b58-9618-b4c3e3af8869" Art="Ausgabe" Datum="2025-04-15" Brutto="595.00" MwSt="19" Konto="Steuerberatung" Beleg="E-108" Betrieb="Illustration" Bestandskonto="Girokonto">
+      <Beschreibung>Steuerberatung Jahresabschluss 2024 -- Kanzlei Zahlenwerk</Beschreibung>
+    </Buchung>
+    <Buchung Id="2b48d32b-64ce-d4bc-088c-7e72f89cb9a1" Art="Ausgabe" Datum="2025-04-22" Brutto="74.90" MwSt="19" Konto="Material und Druckkosten" Beleg="E-204" Betrieb="Druckladen" Bestandskonto="PayPal">
+      <Beschreibung>Versandkartons und Seidenpapier -- Packwerk</Beschreibung>
+    </Buchung>
+    <Buchung Id="8f98a34a-de7b-5073-6b84-04eb6624308d" Art="Einnahme" Datum="2025-04-28" Brutto="1800.00" MwSt="0" Konto="Leistungen an EU-Unternehmen" Beleg="R-05" Betrieb="Illustration" Bestandskonto="Girokonto">
+      <Beschreibung>Kampagnen-Illustrationen -- Agentur Feinstrich, Wien</Beschreibung>
+      <Erweiterung Ns="EasyCash" Schluessel="BuchungsgruppeVorlage">17</Erweiterung>
+      <Erweiterung Ns="EasyCash" Schluessel="VorlageId">c78dd5e042b1848c96493ac53b54d34b</Erweiterung>
+      <Erweiterung Ns="EasyCash" Schluessel="VorlageName">Reverse Charge EU-Ausgangsrechnung</Erweiterung>
+    </Buchung>
+    <Buchung Id="e60a5c4c-f8ef-8d38-2b4c-270d49c2079f" Art="Einnahme" Datum="2025-04-28" Brutto="312.00" MwSt="19" Konto="Verkauf Kunstdrucke und Karten" Beleg="S-04" Betrieb="Druckladen" Bestandskonto="PayPal">
+      <Beschreibung>Shop-Verkäufe April (Kunstdrucke und Karten)</Beschreibung>
+    </Buchung>
+    <Buchung Id="280cd73b-1fff-7e24-3b44-9f29d157d5b3" Art="Ausgabe" Datum="2025-04-30" Brutto="7.90" MwSt="0" Konto="Kontoführung und sonstige Kosten" Betrieb="Illustration" Bestandskonto="Girokonto">
+      <Beschreibung>Kontoführung Girokonto 04/2025</Beschreibung>
+    </Buchung>
+    <Buchung Id="e006907a-4ed6-c952-8a5e-aa82ba4af1d4" Art="Ausgabe" Datum="2025-05-01" Brutto="450.00" MwSt="0" Konto="Raumkosten Atelier" Betrieb="Illustration" Bestandskonto="Girokonto">
+      <Beschreibung>Atelier-Miete 05/2025</Beschreibung>
+    </Buchung>
+    <Buchung Id="46ed8c97-e9c4-49eb-ddbf-dbe4f689143c" Art="Ausgabe" Datum="2025-05-03" Brutto="8.99" MwSt="0" Konto="/Privatentnahmen" Betrieb="Illustration" Bestandskonto="Girokonto">
+      <Beschreibung>Telefon und Internet 05/2025 (Privatanteil 20 %)</Beschreibung>
+      <Erweiterung Ns="EasyCash" Schluessel="Buchungsgruppe">71c07ea8-02ed-45c0-5bf1-67511ac4e732</Erweiterung>
+      <Erweiterung Ns="EasyCash" Schluessel="BuchungsgruppeRolle">1</Erweiterung>
+      <Erweiterung Ns="EasyCash" Schluessel="BuchungsgruppeVorlage">14</Erweiterung>
+    </Buchung>
+    <Buchung Id="ad643855-7a28-3444-1400-3cdfe92d1359" Art="Ausgabe" Datum="2025-05-03" Brutto="35.96" MwSt="19" Konto="Telefon und Internet" Betrieb="Illustration" Bestandskonto="Girokonto">
+      <Beschreibung>Telefon und Internet 05/2025</Beschreibung>
+      <Erweiterung Ns="EasyCash" Schluessel="Buchungsgruppe">71c07ea8-02ed-45c0-5bf1-67511ac4e732</Erweiterung>
+      <Erweiterung Ns="EasyCash" Schluessel="BuchungsgruppeRolle">0</Erweiterung>
+      <Erweiterung Ns="EasyCash" Schluessel="BuchungsgruppeVorlage">14</Erweiterung>
+      <Erweiterung Ns="EasyCash" Schluessel="VorlageEingabeBetrag">44.95</Erweiterung>
+      <Erweiterung Ns="EasyCash" Schluessel="VorlageFeld_privat">20</Erweiterung>
+      <Erweiterung Ns="EasyCash" Schluessel="VorlageId">907da25bc311762469c194a4f5b25d73</Erweiterung>
+      <Erweiterung Ns="EasyCash" Schluessel="VorlageName">Telefon mit Privatanteil</Erweiterung>
+    </Buchung>
+    <Buchung Id="18c4b0ae-6650-d385-1657-76ec58efb8e2" Art="Ausgabe" Datum="2025-05-05" Brutto="11.90" MwSt="19" Konto="Software und EDV" Betrieb="Illustration" Bestandskonto="Girokonto">
+      <Beschreibung>Cloud-Speicher und Website 05/2025</Beschreibung>
+    </Buchung>
+    <Buchung Id="592cd4dd-d6a0-3700-3da9-b0f6c461c57c" Art="Ausgabe" Datum="2025-05-05" Brutto="699.00" MwSt="19" Konto="Geringwertige Wirtschaftsgüter" Beleg="E-109" Betrieb="Illustration" Bestandskonto="Girokonto">
+      <Beschreibung>Grafiktablett -- Elektro Pixel</Beschreibung>
+    </Buchung>
+    <Buchung Id="ed1f8a39-0ed0-30aa-07c1-9d8ca8dd56ee" Art="Einnahme" Datum="2025-05-10" Brutto="386.00" MwSt="19" Konto="Verkauf Kunstdrucke und Karten" Beleg="K-01" Betrieb="Druckladen" Bestandskonto="Kasse">
+      <Beschreibung>Kunsthandwerkermarkt Tintenfeld, Barverkauf</Beschreibung>
+    </Buchung>
+    <Buchung Id="084d9513-4a3c-7e3d-2809-0bfd9171ec11" Art="Einnahme" Datum="2025-05-22" Brutto="892.50" MwSt="19" Konto="Honorare Illustration" Beleg="R-06" Betrieb="Illustration" Bestandskonto="Girokonto">
+      <Beschreibung>Plakat Stadtfest Tintenfeld</Beschreibung>
+    </Buchung>
+    <Buchung Id="39793d66-dd96-ab49-c492-939910a8b638" Art="Einnahme" Datum="2025-05-28" Brutto="286.40" MwSt="19" Konto="Verkauf Kunstdrucke und Karten" Beleg="S-05" Betrieb="Druckladen" Bestandskonto="PayPal">
+      <Beschreibung>Shop-Verkäufe Mai (Kunstdrucke und Karten)</Beschreibung>
+    </Buchung>
+    <Buchung Id="7eb402d9-3ef5-29c2-7341-1c8703def661" Art="Ausgabe" Datum="2025-05-30" Brutto="7.90" MwSt="0" Konto="Kontoführung und sonstige Kosten" Betrieb="Illustration" Bestandskonto="Girokonto">
+      <Beschreibung>Kontoführung Girokonto 05/2025</Beschreibung>
+    </Buchung>
+    <Buchung Id="4d407cac-b1e5-b23c-0056-7f1c531dcac6" Art="Ausgabe" Datum="2025-06-01" Brutto="450.00" MwSt="0" Konto="Raumkosten Atelier" Betrieb="Illustration" Bestandskonto="Girokonto">
+      <Beschreibung>Atelier-Miete 06/2025</Beschreibung>
+    </Buchung>
+    <Buchung Id="613903de-035a-9669-f9de-6326cf2349ec" Art="Ausgabe" Datum="2025-06-03" Brutto="96.40" MwSt="19" Konto="Arbeitsmittel und Fachliteratur" Beleg="E-110" Betrieb="Illustration" Bestandskonto="Kasse">
+      <Beschreibung>Papier und Tusche -- Künstlerbedarf Farbtopf</Beschreibung>
+    </Buchung>
+    <Buchung Id="6b2130bb-70e5-677d-9d24-1e0a5b0247ea" Art="Ausgabe" Datum="2025-06-03" Brutto="35.96" MwSt="19" Konto="Telefon und Internet" Betrieb="Illustration" Bestandskonto="Girokonto">
+      <Beschreibung>Telefon und Internet 06/2025</Beschreibung>
+      <Erweiterung Ns="EasyCash" Schluessel="Buchungsgruppe">4f7a8fbf-2a52-a3d0-94f9-5687d3353ce0</Erweiterung>
+      <Erweiterung Ns="EasyCash" Schluessel="BuchungsgruppeRolle">0</Erweiterung>
+      <Erweiterung Ns="EasyCash" Schluessel="BuchungsgruppeVorlage">14</Erweiterung>
+      <Erweiterung Ns="EasyCash" Schluessel="VorlageEingabeBetrag">44.95</Erweiterung>
+      <Erweiterung Ns="EasyCash" Schluessel="VorlageFeld_privat">20</Erweiterung>
+      <Erweiterung Ns="EasyCash" Schluessel="VorlageId">907da25bc311762469c194a4f5b25d73</Erweiterung>
+      <Erweiterung Ns="EasyCash" Schluessel="VorlageName">Telefon mit Privatanteil</Erweiterung>
+    </Buchung>
+    <Buchung Id="896dd6c3-399c-f2e4-cf8c-4f19dd45f951" Art="Ausgabe" Datum="2025-06-03" Brutto="8.99" MwSt="0" Konto="/Privatentnahmen" Betrieb="Illustration" Bestandskonto="Girokonto">
+      <Beschreibung>Telefon und Internet 06/2025 (Privatanteil 20 %)</Beschreibung>
+      <Erweiterung Ns="EasyCash" Schluessel="Buchungsgruppe">4f7a8fbf-2a52-a3d0-94f9-5687d3353ce0</Erweiterung>
+      <Erweiterung Ns="EasyCash" Schluessel="BuchungsgruppeRolle">1</Erweiterung>
+      <Erweiterung Ns="EasyCash" Schluessel="BuchungsgruppeVorlage">14</Erweiterung>
+    </Buchung>
+    <Buchung Id="202da293-888d-8395-3c9f-a0330f8a2a1f" Art="Ausgabe" Datum="2025-06-05" Brutto="11.90" MwSt="19" Konto="Software und EDV" Betrieb="Illustration" Bestandskonto="Girokonto">
+      <Beschreibung>Cloud-Speicher und Website 06/2025</Beschreibung>
+    </Buchung>
+    <Buchung Id="8dd520b9-fe1c-a267-7f01-96e26ce19431" Art="Ausgabe" Datum="2025-06-12" Brutto="180.00" MwSt="0" Konto="Bezogene Leistungen aus dem EU-Ausland" Beleg="E-111" Betrieb="Illustration" Bestandskonto="Girokonto">
+      <Beschreibung>Schriftlizenz -- Letterhuis Type Foundry, Utrecht</Beschreibung>
+      <Erweiterung Ns="EasyCash" Schluessel="Buchungsgruppe">aa619f9a-80d7-2936-0061-85ac5fda31b4</Erweiterung>
+      <Erweiterung Ns="EasyCash" Schluessel="BuchungsgruppeRolle">0</Erweiterung>
+      <Erweiterung Ns="EasyCash" Schluessel="BuchungsgruppeVorlage">10</Erweiterung>
+      <Erweiterung Ns="EasyCash" Schluessel="VorlageId">a64ec25d0039b81f645d3fb9771b773f</Erweiterung>
+      <Erweiterung Ns="EasyCash" Schluessel="VorlageName">Reverse Charge EU-Eingangsrechnung</Erweiterung>
+    </Buchung>
+    <Buchung Id="ba5b7603-02ac-883a-2ac8-8f92db456622" Art="Ausgabe" Datum="2025-06-12" Brutto="34.20" MwSt="0" Konto="/Verrechnung von VSt gemäß §13b" Beleg="E-111" Betrieb="Illustration" Bestandskonto="Girokonto">
+      <Beschreibung>Schriftlizenz -- Letterhuis Type Foundry, Utrecht (Vorsteuer §13b)</Beschreibung>
+      <Erweiterung Ns="EasyCash" Schluessel="Buchungsgruppe">aa619f9a-80d7-2936-0061-85ac5fda31b4</Erweiterung>
+      <Erweiterung Ns="EasyCash" Schluessel="BuchungsgruppeRolle">2</Erweiterung>
+      <Erweiterung Ns="EasyCash" Schluessel="BuchungsgruppeVorlage">10</Erweiterung>
+    </Buchung>
+    <Buchung Id="eaff03b1-884b-c8d1-6b1d-95cfb5ba508d" Art="Einnahme" Datum="2025-06-12" Brutto="34.20" MwSt="0" Konto="/Verrechnung von USt gemäß §13b Abs. 1" Beleg="E-111" Betrieb="Illustration" Bestandskonto="Girokonto">
+      <Beschreibung>Schriftlizenz -- Letterhuis Type Foundry, Utrecht (USt §13b)</Beschreibung>
+      <Erweiterung Ns="EasyCash" Schluessel="Buchungsgruppe">aa619f9a-80d7-2936-0061-85ac5fda31b4</Erweiterung>
+      <Erweiterung Ns="EasyCash" Schluessel="BuchungsgruppeRolle">1</Erweiterung>
+      <Erweiterung Ns="EasyCash" Schluessel="BuchungsgruppeVorlage">10</Erweiterung>
+    </Buchung>
+    <Buchung Id="75e683c4-2371-3059-deb1-33262e27950c" Art="Ausgabe" Datum="2025-06-14" Brutto="3570.00" MwSt="19" Konto="AfA auf bewegliche Wirtschaftsgüter" Beleg="E-17/2024" Betrieb="Druckladen" Bestandskonto="Girokonto">
+      <Beschreibung>Lastenrad für Auslieferungen und Märkte</Beschreibung>
+      <AfA Jahre="7" Nr="2" Restwert="2750.00" Degressiv="0" Satz="0" Genauigkeit="EntsprechendEinstellungen" />
+    </Buchung>
+    <Buchung Id="150dadaa-3298-13a6-55fa-18b5b48dc6d3" Art="Einnahme" Datum="2025-06-16" Brutto="950.00" MwSt="0" Konto="Leistungen in Drittländer" Beleg="R-07" Betrieb="Illustration" Bestandskonto="Girokonto">
+      <Beschreibung>Buchcover -- Verlag Bergsicht, Luzern</Beschreibung>
+    </Buchung>
+    <Buchung Id="4bdd17fc-8959-cd4a-3bec-3cd43f930370" Art="Einnahme" Datum="2025-06-28" Brutto="198.70" MwSt="19" Konto="Verkauf Kunstdrucke und Karten" Beleg="S-06" Betrieb="Druckladen" Bestandskonto="PayPal">
+      <Beschreibung>Shop-Verkäufe Juni (Kunstdrucke und Karten)</Beschreibung>
+    </Buchung>
+    <Buchung Id="57bacc68-67b1-55f8-8749-a2682e17b093" Art="Ausgabe" Datum="2025-06-28" Brutto="51.35" MwSt="0" Konto="Porto und Versand" Betrieb="Druckladen" Bestandskonto="Girokonto">
+      <Beschreibung>Porto Shop-Versand 2. Quartal</Beschreibung>
+    </Buchung>
+    <Buchung Id="6385b1d3-1839-23af-e524-ea8040619dbe" Art="Ausgabe" Datum="2025-06-30" Brutto="7.90" MwSt="0" Konto="Kontoführung und sonstige Kosten" Betrieb="Illustration" Bestandskonto="Girokonto">
+      <Beschreibung>Kontoführung Girokonto 06/2025</Beschreibung>
+    </Buchung>
+    <Buchung Id="aff72325-1b87-4cbf-2372-0aea93376078" Art="Ausgabe" Datum="2025-06-30" Brutto="25.33" MwSt="0" Konto="Kontoführung und sonstige Kosten" Betrieb="Druckladen" Bestandskonto="PayPal">
+      <Beschreibung>PayPal-Gebühren 2. Quartal</Beschreibung>
+    </Buchung>
+    <Buchung Id="07a4c68e-7298-fa7b-1f78-ce8198a3f590" Art="Einnahme" Datum="2025-07-01" Brutto="680.00" MwSt="0" Konto="/Umbuchung zwischen Bestandskonten" Betrieb="Druckladen" Bestandskonto="Girokonto">
+      <Beschreibung>Auszahlung PayPal-Guthaben</Beschreibung>
+      <Erweiterung Ns="EasyCash" Schluessel="Buchungsgruppe">81624d77-8174-4f32-8d8e-a722259039e6</Erweiterung>
+      <Erweiterung Ns="EasyCash" Schluessel="BuchungsgruppeRolle">1</Erweiterung>
+      <Erweiterung Ns="EasyCash" Schluessel="BuchungsgruppeVorlage">12</Erweiterung>
+    </Buchung>
+    <Buchung Id="09c1f314-d730-915b-cdb4-05dffaea5003" Art="Ausgabe" Datum="2025-07-01" Brutto="680.00" MwSt="0" Konto="/Umbuchung zwischen Bestandskonten" Betrieb="Druckladen" Bestandskonto="PayPal">
+      <Beschreibung>Auszahlung PayPal-Guthaben</Beschreibung>
+      <Erweiterung Ns="EasyCash" Schluessel="Buchungsgruppe">81624d77-8174-4f32-8d8e-a722259039e6</Erweiterung>
+      <Erweiterung Ns="EasyCash" Schluessel="BuchungsgruppeRolle">0</Erweiterung>
+      <Erweiterung Ns="EasyCash" Schluessel="BuchungsgruppeVorlage">12</Erweiterung>
+      <Erweiterung Ns="EasyCash" Schluessel="VorlageFeld_zielkonto">Girokonto</Erweiterung>
+      <Erweiterung Ns="EasyCash" Schluessel="VorlageId">862b84fac6a082eb0b1de78b417e746f</Erweiterung>
+      <Erweiterung Ns="EasyCash" Schluessel="VorlageName">Umbuchung zwischen Bestandskonten</Erweiterung>
+    </Buchung>
+    <Buchung Id="925dc99d-b553-d50d-2d1a-8af2976d52a6" Art="Ausgabe" Datum="2025-07-01" Brutto="450.00" MwSt="0" Konto="Raumkosten Atelier" Betrieb="Illustration" Bestandskonto="Girokonto">
+      <Beschreibung>Atelier-Miete 07/2025</Beschreibung>
+    </Buchung>
+    <Buchung Id="ccfcaae6-55a1-ac64-8fed-74315546fcc1" Art="Ausgabe" Datum="2025-07-03" Brutto="8.99" MwSt="0" Konto="/Privatentnahmen" Betrieb="Illustration" Bestandskonto="Girokonto">
+      <Beschreibung>Telefon und Internet 07/2025 (Privatanteil 20 %)</Beschreibung>
+      <Erweiterung Ns="EasyCash" Schluessel="Buchungsgruppe">53d027f5-70b8-208c-f96a-a21b9724ccc9</Erweiterung>
+      <Erweiterung Ns="EasyCash" Schluessel="BuchungsgruppeRolle">1</Erweiterung>
+      <Erweiterung Ns="EasyCash" Schluessel="BuchungsgruppeVorlage">14</Erweiterung>
+    </Buchung>
+    <Buchung Id="f9446008-f3ee-25c5-61c7-7b1f303ebc77" Art="Ausgabe" Datum="2025-07-03" Brutto="35.96" MwSt="19" Konto="Telefon und Internet" Betrieb="Illustration" Bestandskonto="Girokonto">
+      <Beschreibung>Telefon und Internet 07/2025</Beschreibung>
+      <Erweiterung Ns="EasyCash" Schluessel="Buchungsgruppe">53d027f5-70b8-208c-f96a-a21b9724ccc9</Erweiterung>
+      <Erweiterung Ns="EasyCash" Schluessel="BuchungsgruppeRolle">0</Erweiterung>
+      <Erweiterung Ns="EasyCash" Schluessel="BuchungsgruppeVorlage">14</Erweiterung>
+      <Erweiterung Ns="EasyCash" Schluessel="VorlageEingabeBetrag">44.95</Erweiterung>
+      <Erweiterung Ns="EasyCash" Schluessel="VorlageFeld_privat">20</Erweiterung>
+      <Erweiterung Ns="EasyCash" Schluessel="VorlageId">907da25bc311762469c194a4f5b25d73</Erweiterung>
+      <Erweiterung Ns="EasyCash" Schluessel="VorlageName">Telefon mit Privatanteil</Erweiterung>
+    </Buchung>
+    <Buchung Id="df6f7695-cf81-5c28-ed94-e5b9dbd6a1f2" Art="Ausgabe" Datum="2025-07-05" Brutto="11.90" MwSt="19" Konto="Software und EDV" Betrieb="Illustration" Bestandskonto="Girokonto">
+      <Beschreibung>Cloud-Speicher und Website 07/2025</Beschreibung>
+    </Buchung>
+    <Buchung Id="2ae87624-ddec-c30d-a1f0-fcfb5c4dee94" Art="Einnahme" Datum="2025-07-09" Brutto="2140.00" MwSt="7" Konto="Honorare Illustration" Beleg="R-08" Betrieb="Illustration" Bestandskonto="Girokonto">
+      <Beschreibung>Kinderbuch "Der kleine Leuchtturm", 3. Rate -- Verlag Wellenreiter</Beschreibung>
+    </Buchung>
+    <Buchung Id="08644193-6ae8-01ca-4ed1-034aab7d2abb" Art="Ausgabe" Datum="2025-07-10" Brutto="302.53" MwSt="0" Konto="Umsatzsteuer-Vorauszahlungen" Betrieb="Illustration" Bestandskonto="Girokonto">
+      <Beschreibung>USt-Vorauszahlung 2. Quartal 2025</Beschreibung>
+    </Buchung>
+    <Buchung Id="fa7dc8de-2856-bd4c-d4e6-db848cdd16a2" Art="Ausgabe" Datum="2025-07-21" Brutto="357.00" MwSt="19" Konto="Fremdleistungen" Beleg="E-112" Betrieb="Illustration" Bestandskonto="Girokonto">
+      <Beschreibung>Lektorat Begleittext Ausstellung -- Wortwerk</Beschreibung>
+    </Buchung>
+    <Buchung Id="f45a7e08-5da4-acd7-7a03-bda469609341" Art="Einnahme" Datum="2025-07-28" Brutto="176.50" MwSt="19" Konto="Verkauf Kunstdrucke und Karten" Beleg="S-07" Betrieb="Druckladen" Bestandskonto="PayPal">
+      <Beschreibung>Shop-Verkäufe Juli (Kunstdrucke und Karten)</Beschreibung>
+    </Buchung>
+    <Buchung Id="6d834182-d88c-f002-4a50-8b2c6d1fbae7" Art="Ausgabe" Datum="2025-07-30" Brutto="7.90" MwSt="0" Konto="Kontoführung und sonstige Kosten" Betrieb="Illustration" Bestandskonto="Girokonto">
+      <Beschreibung>Kontoführung Girokonto 07/2025</Beschreibung>
+    </Buchung>
+    <Buchung Id="7f753a36-b02f-42be-8a32-8ebc48b8da2f" Art="Ausgabe" Datum="2025-08-01" Brutto="450.00" MwSt="0" Konto="Raumkosten Atelier" Betrieb="Illustration" Bestandskonto="Girokonto">
+      <Beschreibung>Atelier-Miete 08/2025</Beschreibung>
+    </Buchung>
+    <Buchung Id="3e966662-ddaa-d2c8-9433-7ebd0e8e6a1b" Art="Ausgabe" Datum="2025-08-03" Brutto="35.96" MwSt="19" Konto="Telefon und Internet" Betrieb="Illustration" Bestandskonto="Girokonto">
+      <Beschreibung>Telefon und Internet 08/2025</Beschreibung>
+      <Erweiterung Ns="EasyCash" Schluessel="Buchungsgruppe">123a5c83-b944-c354-807d-cabe80da8aaf</Erweiterung>
+      <Erweiterung Ns="EasyCash" Schluessel="BuchungsgruppeRolle">0</Erweiterung>
+      <Erweiterung Ns="EasyCash" Schluessel="BuchungsgruppeVorlage">14</Erweiterung>
+      <Erweiterung Ns="EasyCash" Schluessel="VorlageEingabeBetrag">44.95</Erweiterung>
+      <Erweiterung Ns="EasyCash" Schluessel="VorlageFeld_privat">20</Erweiterung>
+      <Erweiterung Ns="EasyCash" Schluessel="VorlageId">907da25bc311762469c194a4f5b25d73</Erweiterung>
+      <Erweiterung Ns="EasyCash" Schluessel="VorlageName">Telefon mit Privatanteil</Erweiterung>
+    </Buchung>
+    <Buchung Id="453de165-f72b-464b-b5d8-87006d3cc49f" Art="Ausgabe" Datum="2025-08-03" Brutto="8.99" MwSt="0" Konto="/Privatentnahmen" Betrieb="Illustration" Bestandskonto="Girokonto">
+      <Beschreibung>Telefon und Internet 08/2025 (Privatanteil 20 %)</Beschreibung>
+      <Erweiterung Ns="EasyCash" Schluessel="Buchungsgruppe">123a5c83-b944-c354-807d-cabe80da8aaf</Erweiterung>
+      <Erweiterung Ns="EasyCash" Schluessel="BuchungsgruppeRolle">1</Erweiterung>
+      <Erweiterung Ns="EasyCash" Schluessel="BuchungsgruppeVorlage">14</Erweiterung>
+    </Buchung>
+    <Buchung Id="c0c59204-d7e9-c190-54fb-e933a51159bb" Art="Ausgabe" Datum="2025-08-05" Brutto="11.90" MwSt="19" Konto="Software und EDV" Betrieb="Illustration" Bestandskonto="Girokonto">
+      <Beschreibung>Cloud-Speicher und Website 08/2025</Beschreibung>
+    </Buchung>
+    <Buchung Id="386ea48f-aa1d-1ba3-d989-38dfb13b5092" Art="Einnahme" Datum="2025-08-18" Brutto="1712.00" MwSt="7" Konto="Honorare Illustration" Beleg="R-09" Betrieb="Illustration" Bestandskonto="Girokonto">
+      <Beschreibung>Illustrationen Museumsführer -- Stadtmuseum Tintenfeld</Beschreibung>
+    </Buchung>
+    <Buchung Id="262257ca-66d7-d49a-4694-dfa89d8a5e60" Art="Ausgabe" Datum="2025-08-21" Brutto="2.22" MwSt="0" Konto="/Bewirtungskosten (nicht abziehbar)" Beleg="E-113" Betrieb="Illustration" Bestandskonto="Girokonto">
+      <Beschreibung>Bewirtung Projektbesprechung Museumsführer (Dr. Elke Pergament (Stadtmuseum), Franziska Federkiel), Trinkgeld, nicht abziehbarer Anteil</Beschreibung>
+      <Erweiterung Ns="EasyCash" Schluessel="Buchungsgruppe">831ca0d6-8293-0277-0970-4fa6f51db2f3</Erweiterung>
+      <Erweiterung Ns="EasyCash" Schluessel="BuchungsgruppeRolle">3</Erweiterung>
+      <Erweiterung Ns="EasyCash" Schluessel="BuchungsgruppeVorlage">11</Erweiterung>
+    </Buchung>
+    <Buchung Id="7965914a-c5d4-1c2f-a419-a8c1bb231a82" Art="Ausgabe" Datum="2025-08-21" Brutto="59.50" MwSt="19" Konto="Bewirtungskosten (abziehbar)" Beleg="E-113" Betrieb="Illustration" Bestandskonto="Girokonto">
+      <Beschreibung>Bewirtung Projektbesprechung Museumsführer (Dr. Elke Pergament (Stadtmuseum), Franziska Federkiel)</Beschreibung>
+      <Erweiterung Ns="EasyCash" Schluessel="Buchungsgruppe">831ca0d6-8293-0277-0970-4fa6f51db2f3</Erweiterung>
+      <Erweiterung Ns="EasyCash" Schluessel="BuchungsgruppeRolle">0</Erweiterung>
+      <Erweiterung Ns="EasyCash" Schluessel="BuchungsgruppeVorlage">11</Erweiterung>
+      <Erweiterung Ns="EasyCash" Schluessel="VorlageEingabeBetrag">92.40</Erweiterung>
+      <Erweiterung Ns="EasyCash" Schluessel="VorlageEingabeText">Bewirtung</Erweiterung>
+      <Erweiterung Ns="EasyCash" Schluessel="VorlageFeld_anlass">Projektbesprechung Museumsführer</Erweiterung>
+      <Erweiterung Ns="EasyCash" Schluessel="VorlageFeld_personen">Dr. Elke Pergament (Stadtmuseum), Franziska Federkiel</Erweiterung>
+      <Erweiterung Ns="EasyCash" Schluessel="VorlageFeld_trinkgeld">7,40</Erweiterung>
+      <Erweiterung Ns="EasyCash" Schluessel="VorlageId">795e30c0d0aec4a70a121457a50358f4</Erweiterung>
+      <Erweiterung Ns="EasyCash" Schluessel="VorlageName">Bewirtungskosten</Erweiterung>
+    </Buchung>
+    <Buchung Id="dc06dcb2-4b1e-b92a-d4d0-836017ddab41" Art="Ausgabe" Datum="2025-08-21" Brutto="25.50" MwSt="19" Konto="/Bewirtungskosten (nicht abziehbar)" Beleg="E-113" Betrieb="Illustration" Bestandskonto="Girokonto">
+      <Beschreibung>Bewirtung Projektbesprechung Museumsführer (Dr. Elke Pergament (Stadtmuseum), Franziska Federkiel), nicht abziehbarer Anteil</Beschreibung>
+      <Erweiterung Ns="EasyCash" Schluessel="Buchungsgruppe">831ca0d6-8293-0277-0970-4fa6f51db2f3</Erweiterung>
+      <Erweiterung Ns="EasyCash" Schluessel="BuchungsgruppeRolle">1</Erweiterung>
+      <Erweiterung Ns="EasyCash" Schluessel="BuchungsgruppeVorlage">11</Erweiterung>
+    </Buchung>
+    <Buchung Id="f9e3beb3-6e4a-80a6-9b50-1153f432cd5b" Art="Ausgabe" Datum="2025-08-21" Brutto="5.18" MwSt="0" Konto="Bewirtungskosten (abziehbar)" Beleg="E-113" Betrieb="Illustration" Bestandskonto="Girokonto">
+      <Beschreibung>Bewirtung Projektbesprechung Museumsführer (Dr. Elke Pergament (Stadtmuseum), Franziska Federkiel), Trinkgeld</Beschreibung>
+      <Erweiterung Ns="EasyCash" Schluessel="Buchungsgruppe">831ca0d6-8293-0277-0970-4fa6f51db2f3</Erweiterung>
+      <Erweiterung Ns="EasyCash" Schluessel="BuchungsgruppeRolle">2</Erweiterung>
+      <Erweiterung Ns="EasyCash" Schluessel="BuchungsgruppeVorlage">11</Erweiterung>
+    </Buchung>
+    <Buchung Id="8b424472-a48d-5134-e223-3a1a4d5cf27d" Art="Einnahme" Datum="2025-08-28" Brutto="205.90" MwSt="19" Konto="Verkauf Kunstdrucke und Karten" Beleg="S-08" Betrieb="Druckladen" Bestandskonto="PayPal">
+      <Beschreibung>Shop-Verkäufe August (Kunstdrucke und Karten)</Beschreibung>
+    </Buchung>
+    <Buchung Id="2a8ed554-c8d8-1b43-4a91-5b66257a4833" Art="Ausgabe" Datum="2025-08-30" Brutto="7.90" MwSt="0" Konto="Kontoführung und sonstige Kosten" Betrieb="Illustration" Bestandskonto="Girokonto">
+      <Beschreibung>Kontoführung Girokonto 08/2025</Beschreibung>
+    </Buchung>
+    <Buchung Id="0dd5f9d9-58d6-3593-864a-982144dbb907" Art="Ausgabe" Datum="2025-09-01" Brutto="450.00" MwSt="0" Konto="Raumkosten Atelier" Betrieb="Illustration" Bestandskonto="Girokonto">
+      <Beschreibung>Atelier-Miete 09/2025</Beschreibung>
+    </Buchung>
+    <Buchung Id="b19b808c-b29a-62f4-c190-e44d5d5b5e6c" Art="Ausgabe" Datum="2025-09-01" Brutto="612.00" MwSt="19" Konto="Material und Druckkosten" Beleg="E-202" Betrieb="Druckladen" Bestandskonto="Girokonto">
+      <Beschreibung>Giclée-Drucke und Postkarten -- Druckerei Stempel &amp; Söhne</Beschreibung>
+    </Buchung>
+    <Buchung Id="1eec3791-806a-fd53-b784-7ed788cdec5c" Art="Ausgabe" Datum="2025-09-03" Brutto="8.99" MwSt="0" Konto="/Privatentnahmen" Betrieb="Illustration" Bestandskonto="Girokonto">
+      <Beschreibung>Telefon und Internet 09/2025 (Privatanteil 20 %)</Beschreibung>
+      <Erweiterung Ns="EasyCash" Schluessel="Buchungsgruppe">ba48b17d-d24c-deae-b7d8-eb6061241734</Erweiterung>
+      <Erweiterung Ns="EasyCash" Schluessel="BuchungsgruppeRolle">1</Erweiterung>
+      <Erweiterung Ns="EasyCash" Schluessel="BuchungsgruppeVorlage">14</Erweiterung>
+    </Buchung>
+    <Buchung Id="b9cd7a0d-bf8b-e18c-0052-0f458709349b" Art="Ausgabe" Datum="2025-09-03" Brutto="35.96" MwSt="19" Konto="Telefon und Internet" Betrieb="Illustration" Bestandskonto="Girokonto">
+      <Beschreibung>Telefon und Internet 09/2025</Beschreibung>
+      <Erweiterung Ns="EasyCash" Schluessel="Buchungsgruppe">ba48b17d-d24c-deae-b7d8-eb6061241734</Erweiterung>
+      <Erweiterung Ns="EasyCash" Schluessel="BuchungsgruppeRolle">0</Erweiterung>
+      <Erweiterung Ns="EasyCash" Schluessel="BuchungsgruppeVorlage">14</Erweiterung>
+      <Erweiterung Ns="EasyCash" Schluessel="VorlageEingabeBetrag">44.95</Erweiterung>
+      <Erweiterung Ns="EasyCash" Schluessel="VorlageFeld_privat">20</Erweiterung>
+      <Erweiterung Ns="EasyCash" Schluessel="VorlageId">907da25bc311762469c194a4f5b25d73</Erweiterung>
+      <Erweiterung Ns="EasyCash" Schluessel="VorlageName">Telefon mit Privatanteil</Erweiterung>
+    </Buchung>
+    <Buchung Id="437c75da-e3ce-93ac-a03a-239ced784a60" Art="Ausgabe" Datum="2025-09-05" Brutto="11.90" MwSt="19" Konto="Software und EDV" Betrieb="Illustration" Bestandskonto="Girokonto">
+      <Beschreibung>Cloud-Speicher und Website 09/2025</Beschreibung>
+    </Buchung>
+    <Buchung Id="cfb73b56-b599-607b-3db1-3bd814b65161" Art="Ausgabe" Datum="2025-09-09" Brutto="118.90" MwSt="19" Konto="Arbeitsmittel und Fachliteratur" Beleg="E-114" Betrieb="Illustration" Bestandskonto="Kasse">
+      <Beschreibung>Skizzenbücher und Fineliner -- Künstlerbedarf Farbtopf</Beschreibung>
+    </Buchung>
+    <Buchung Id="1c1513bc-6c23-23e7-6055-70dc5f252a42" Art="Einnahme" Datum="2025-09-25" Brutto="595.00" MwSt="19" Konto="Honorare Illustration" Beleg="R-10" Betrieb="Illustration" Bestandskonto="Girokonto">
+      <Beschreibung>Editorial-Illustration Stadtmagazin, Oktober-Ausgabe</Beschreibung>
+    </Buchung>
+    <Buchung Id="2a8d56e9-dfd7-5953-7f5a-9137102a753c" Art="Ausgabe" Datum="2025-09-28" Brutto="47.90" MwSt="0" Konto="Porto und Versand" Betrieb="Druckladen" Bestandskonto="Girokonto">
+      <Beschreibung>Porto Shop-Versand 3. Quartal</Beschreibung>
+    </Buchung>
+    <Buchung Id="908d3dc2-b36f-a3e9-5b21-235f3c445b37" Art="Einnahme" Datum="2025-09-28" Brutto="264.80" MwSt="19" Konto="Verkauf Kunstdrucke und Karten" Beleg="S-09" Betrieb="Druckladen" Bestandskonto="PayPal">
+      <Beschreibung>Shop-Verkäufe September (Kunstdrucke und Karten)</Beschreibung>
+    </Buchung>
+    <Buchung Id="a60a7f8b-e471-7ade-217b-59f053096066" Art="Ausgabe" Datum="2025-09-30" Brutto="7.90" MwSt="0" Konto="Kontoführung und sonstige Kosten" Betrieb="Illustration" Bestandskonto="Girokonto">
+      <Beschreibung>Kontoführung Girokonto 09/2025</Beschreibung>
+    </Buchung>
+    <Buchung Id="c032cb6c-50b1-528c-97f8-02348c79b267" Art="Ausgabe" Datum="2025-09-30" Brutto="20.62" MwSt="0" Konto="Kontoführung und sonstige Kosten" Betrieb="Druckladen" Bestandskonto="PayPal">
+      <Beschreibung>PayPal-Gebühren 3. Quartal</Beschreibung>
+    </Buchung>
+    <Buchung Id="0b763109-991c-cacb-3d7d-c32cb0969873" Art="Ausgabe" Datum="2025-10-01" Brutto="540.00" MwSt="0" Konto="/Umbuchung zwischen Bestandskonten" Betrieb="Druckladen" Bestandskonto="PayPal">
+      <Beschreibung>Auszahlung PayPal-Guthaben</Beschreibung>
+      <Erweiterung Ns="EasyCash" Schluessel="Buchungsgruppe">bccc11bd-6f8d-4612-5af6-b132c340a7ac</Erweiterung>
+      <Erweiterung Ns="EasyCash" Schluessel="BuchungsgruppeRolle">0</Erweiterung>
+      <Erweiterung Ns="EasyCash" Schluessel="BuchungsgruppeVorlage">12</Erweiterung>
+      <Erweiterung Ns="EasyCash" Schluessel="VorlageFeld_zielkonto">Girokonto</Erweiterung>
+      <Erweiterung Ns="EasyCash" Schluessel="VorlageId">862b84fac6a082eb0b1de78b417e746f</Erweiterung>
+      <Erweiterung Ns="EasyCash" Schluessel="VorlageName">Umbuchung zwischen Bestandskonten</Erweiterung>
+    </Buchung>
+    <Buchung Id="90c86171-44c2-9933-22b5-b4d7a35f82a7" Art="Ausgabe" Datum="2025-10-01" Brutto="450.00" MwSt="0" Konto="Raumkosten Atelier" Betrieb="Illustration" Bestandskonto="Girokonto">
+      <Beschreibung>Atelier-Miete 10/2025</Beschreibung>
+    </Buchung>
+    <Buchung Id="b0086d4d-f17d-3228-551e-57cad4ecfed1" Art="Einnahme" Datum="2025-10-01" Brutto="540.00" MwSt="0" Konto="/Umbuchung zwischen Bestandskonten" Betrieb="Druckladen" Bestandskonto="Girokonto">
+      <Beschreibung>Auszahlung PayPal-Guthaben</Beschreibung>
+      <Erweiterung Ns="EasyCash" Schluessel="Buchungsgruppe">bccc11bd-6f8d-4612-5af6-b132c340a7ac</Erweiterung>
+      <Erweiterung Ns="EasyCash" Schluessel="BuchungsgruppeRolle">1</Erweiterung>
+      <Erweiterung Ns="EasyCash" Schluessel="BuchungsgruppeVorlage">12</Erweiterung>
+    </Buchung>
+    <Buchung Id="4a545196-cf70-f414-4a2b-a4adf4758bca" Art="Ausgabe" Datum="2025-10-03" Brutto="35.96" MwSt="19" Konto="Telefon und Internet" Betrieb="Illustration" Bestandskonto="Girokonto">
+      <Beschreibung>Telefon und Internet 10/2025</Beschreibung>
+      <Erweiterung Ns="EasyCash" Schluessel="Buchungsgruppe">92fe6890-f790-25c9-3c59-e3c026160353</Erweiterung>
+      <Erweiterung Ns="EasyCash" Schluessel="BuchungsgruppeRolle">0</Erweiterung>
+      <Erweiterung Ns="EasyCash" Schluessel="BuchungsgruppeVorlage">14</Erweiterung>
+      <Erweiterung Ns="EasyCash" Schluessel="VorlageEingabeBetrag">44.95</Erweiterung>
+      <Erweiterung Ns="EasyCash" Schluessel="VorlageFeld_privat">20</Erweiterung>
+      <Erweiterung Ns="EasyCash" Schluessel="VorlageId">907da25bc311762469c194a4f5b25d73</Erweiterung>
+      <Erweiterung Ns="EasyCash" Schluessel="VorlageName">Telefon mit Privatanteil</Erweiterung>
+    </Buchung>
+    <Buchung Id="9a272315-e590-7ca6-1442-de4c3b7c3a6c" Art="Ausgabe" Datum="2025-10-03" Brutto="8.99" MwSt="0" Konto="/Privatentnahmen" Betrieb="Illustration" Bestandskonto="Girokonto">
+      <Beschreibung>Telefon und Internet 10/2025 (Privatanteil 20 %)</Beschreibung>
+      <Erweiterung Ns="EasyCash" Schluessel="Buchungsgruppe">92fe6890-f790-25c9-3c59-e3c026160353</Erweiterung>
+      <Erweiterung Ns="EasyCash" Schluessel="BuchungsgruppeRolle">1</Erweiterung>
+      <Erweiterung Ns="EasyCash" Schluessel="BuchungsgruppeVorlage">14</Erweiterung>
+    </Buchung>
+    <Buchung Id="340ef0e7-1857-c85b-8844-ba8e10eb060d" Art="Ausgabe" Datum="2025-10-05" Brutto="11.90" MwSt="19" Konto="Software und EDV" Betrieb="Illustration" Bestandskonto="Girokonto">
+      <Beschreibung>Cloud-Speicher und Website 10/2025</Beschreibung>
+    </Buchung>
+    <Buchung Id="5f93a6d5-3163-977c-ef98-5d5d30b686f8" Art="Ausgabe" Datum="2025-10-10" Brutto="240.15" MwSt="0" Konto="Umsatzsteuer-Vorauszahlungen" Betrieb="Illustration" Bestandskonto="Girokonto">
+      <Beschreibung>USt-Vorauszahlung 3. Quartal 2025</Beschreibung>
+    </Buchung>
+    <Buchung Id="2bcce8c3-221c-4fca-5c9c-9ae6a6ccb9d0" Art="Einnahme" Datum="2025-10-14" Brutto="1200.00" MwSt="0" Konto="Leistungen an EU-Unternehmen" Beleg="R-11" Betrieb="Illustration" Bestandskonto="Girokonto">
+      <Beschreibung>Folgeauftrag Kampagne -- Agentur Feinstrich, Wien</Beschreibung>
+      <Erweiterung Ns="EasyCash" Schluessel="BuchungsgruppeVorlage">17</Erweiterung>
+      <Erweiterung Ns="EasyCash" Schluessel="VorlageId">c78dd5e042b1848c96493ac53b54d34b</Erweiterung>
+      <Erweiterung Ns="EasyCash" Schluessel="VorlageName">Reverse Charge EU-Ausgangsrechnung</Erweiterung>
+    </Buchung>
+    <Buchung Id="4fe49e02-0d6e-7ddf-8659-a58fc052a808" Art="Ausgabe" Datum="2025-10-15" Brutto="129.90" MwSt="7" Konto="Reisekosten" Beleg="E-115" Betrieb="Illustration" Bestandskonto="Girokonto">
+      <Beschreibung>Bahnfahrt zur Buchmesse Frankfurt</Beschreibung>
+    </Buchung>
+    <Buchung Id="a1c7c19b-f804-3f81-e70b-ed9fecae7139" Art="Ausgabe" Datum="2025-10-15" Brutto="58.00" MwSt="19" Konto="Reisekosten" Beleg="E-116" Betrieb="Illustration" Bestandskonto="Girokonto">
+      <Beschreibung>Fachbesucher-Ticket Buchmesse</Beschreibung>
+    </Buchung>
+    <Buchung Id="5ff0585b-5d90-eb2e-d7ed-7dc2021bf28c" Art="Ausgabe" Datum="2025-10-17" Brutto="238.00" MwSt="7" Konto="Reisekosten" Beleg="E-117" Betrieb="Illustration" Bestandskonto="Girokonto">
+      <Beschreibung>Hotel Buchmesse, 2 Nächte</Beschreibung>
+    </Buchung>
+    <Buchung Id="86a3d9e1-f68d-b5c2-f2c0-e358bc8fed33" Art="Ausgabe" Datum="2025-10-17" Brutto="56.00" MwSt="0" Konto="Verpflegungsmehraufwand" Betrieb="Illustration">
+      <Beschreibung>Verpflegungsmehraufwand Buchmesse Frankfurt</Beschreibung>
+      <Erweiterung Ns="EasyCash" Schluessel="BuchungsgruppeVorlage">16</Erweiterung>
+      <Erweiterung Ns="EasyCash" Schluessel="VorlageEingabeText">Buchmesse Frankfurt</Erweiterung>
+      <Erweiterung Ns="EasyCash" Schluessel="VorlageFeld_tage24">1</Erweiterung>
+      <Erweiterung Ns="EasyCash" Schluessel="VorlageFeld_tage8">2</Erweiterung>
+      <Erweiterung Ns="EasyCash" Schluessel="VorlageId">21a9792e7fd61e033ddb943ce26db800</Erweiterung>
+      <Erweiterung Ns="EasyCash" Schluessel="VorlageName">Verpflegungsmehraufwand</Erweiterung>
+    </Buchung>
+    <Buchung Id="5cce7f17-608c-3bea-81a8-29f659b0ad7e" Art="Einnahme" Datum="2025-10-28" Brutto="358.20" MwSt="19" Konto="Verkauf Kunstdrucke und Karten" Beleg="S-10" Betrieb="Druckladen" Bestandskonto="PayPal">
+      <Beschreibung>Shop-Verkäufe Oktober (Kunstdrucke und Karten)</Beschreibung>
+    </Buchung>
+    <Buchung Id="4c6dd3a6-1de4-a9b1-0c97-496c489355bc" Art="Ausgabe" Datum="2025-10-30" Brutto="7.90" MwSt="0" Konto="Kontoführung und sonstige Kosten" Betrieb="Illustration" Bestandskonto="Girokonto">
+      <Beschreibung>Kontoführung Girokonto 10/2025</Beschreibung>
+    </Buchung>
+    <Buchung Id="2eba3a6b-6d0e-7b6c-5cd2-f084eeee0c7f" Art="Ausgabe" Datum="2025-11-01" Brutto="450.00" MwSt="0" Konto="Raumkosten Atelier" Betrieb="Illustration" Bestandskonto="Girokonto">
+      <Beschreibung>Atelier-Miete 11/2025</Beschreibung>
+    </Buchung>
+    <Buchung Id="069a393d-8bcc-ce6c-e44c-9470595deda2" Art="Ausgabe" Datum="2025-11-03" Brutto="890.00" MwSt="19" Konto="Material und Druckkosten" Beleg="E-203" Betrieb="Druckladen" Bestandskonto="Girokonto">
+      <Beschreibung>Weihnachtskarten und Kalender -- Druckerei Stempel &amp; Söhne</Beschreibung>
+    </Buchung>
+    <Buchung Id="847b3565-8466-d543-b740-6e02f85e0311" Art="Ausgabe" Datum="2025-11-03" Brutto="35.96" MwSt="19" Konto="Telefon und Internet" Betrieb="Illustration" Bestandskonto="Girokonto">
+      <Beschreibung>Telefon und Internet 11/2025</Beschreibung>
+      <Erweiterung Ns="EasyCash" Schluessel="Buchungsgruppe">cfeb0987-b9bf-c099-90dc-968e2f16d7cf</Erweiterung>
+      <Erweiterung Ns="EasyCash" Schluessel="BuchungsgruppeRolle">0</Erweiterung>
+      <Erweiterung Ns="EasyCash" Schluessel="BuchungsgruppeVorlage">14</Erweiterung>
+      <Erweiterung Ns="EasyCash" Schluessel="VorlageEingabeBetrag">44.95</Erweiterung>
+      <Erweiterung Ns="EasyCash" Schluessel="VorlageFeld_privat">20</Erweiterung>
+      <Erweiterung Ns="EasyCash" Schluessel="VorlageId">907da25bc311762469c194a4f5b25d73</Erweiterung>
+      <Erweiterung Ns="EasyCash" Schluessel="VorlageName">Telefon mit Privatanteil</Erweiterung>
+    </Buchung>
+    <Buchung Id="9cd3649b-22db-81c9-387e-5cd20bf1505f" Art="Ausgabe" Datum="2025-11-03" Brutto="8.99" MwSt="0" Konto="/Privatentnahmen" Betrieb="Illustration" Bestandskonto="Girokonto">
+      <Beschreibung>Telefon und Internet 11/2025 (Privatanteil 20 %)</Beschreibung>
+      <Erweiterung Ns="EasyCash" Schluessel="Buchungsgruppe">cfeb0987-b9bf-c099-90dc-968e2f16d7cf</Erweiterung>
+      <Erweiterung Ns="EasyCash" Schluessel="BuchungsgruppeRolle">1</Erweiterung>
+      <Erweiterung Ns="EasyCash" Schluessel="BuchungsgruppeVorlage">14</Erweiterung>
+    </Buchung>
+    <Buchung Id="4132043b-ee59-5c7b-f781-eaca16f484d2" Art="Ausgabe" Datum="2025-11-05" Brutto="11.90" MwSt="19" Konto="Software und EDV" Betrieb="Illustration" Bestandskonto="Girokonto">
+      <Beschreibung>Cloud-Speicher und Website 11/2025</Beschreibung>
+    </Buchung>
+    <Buchung Id="c73d6bc0-2dea-2920-e957-0eba333c3ddb" Art="Einnahme" Datum="2025-11-06" Brutto="714.00" MwSt="19" Konto="Honorare Illustration" Beleg="R-12" Betrieb="Illustration" Bestandskonto="Girokonto">
+      <Beschreibung>Weihnachtskarten-Motiv Gärtnerei Grünspan</Beschreibung>
+    </Buchung>
+    <Buchung Id="11348e3a-5753-ca50-343a-23fce261b969" Art="Ausgabe" Datum="2025-11-10" Brutto="180.00" MwSt="19" Konto="Kontoführung und sonstige Kosten" Beleg="E-205" Betrieb="Druckladen" Bestandskonto="Girokonto">
+      <Beschreibung>Standgebühr Weihnachtsmarkt</Beschreibung>
+    </Buchung>
+    <Buchung Id="108c877a-cc08-f33c-de92-334ecd8bac71" Art="Einnahme" Datum="2025-11-28" Brutto="512.60" MwSt="19" Konto="Verkauf Kunstdrucke und Karten" Beleg="S-11" Betrieb="Druckladen" Bestandskonto="PayPal">
+      <Beschreibung>Shop-Verkäufe November (Kunstdrucke und Karten)</Beschreibung>
+    </Buchung>
+    <Buchung Id="214365b8-3ab5-ee03-c1ff-ea12ee90ba94" Art="Ausgabe" Datum="2025-11-30" Brutto="7.90" MwSt="0" Konto="Kontoführung und sonstige Kosten" Betrieb="Illustration" Bestandskonto="Girokonto">
+      <Beschreibung>Kontoführung Girokonto 11/2025</Beschreibung>
+    </Buchung>
+    <Buchung Id="a0d60dc5-e692-64e4-ba2b-61c6f6e384d8" Art="Ausgabe" Datum="2025-12-01" Brutto="450.00" MwSt="0" Konto="Raumkosten Atelier" Betrieb="Illustration" Bestandskonto="Girokonto">
+      <Beschreibung>Atelier-Miete 12/2025</Beschreibung>
+    </Buchung>
+    <Buchung Id="80c3e606-0035-366f-cb23-f8bbf41d0ea3" Art="Ausgabe" Datum="2025-12-03" Brutto="35.96" MwSt="19" Konto="Telefon und Internet" Betrieb="Illustration" Bestandskonto="Girokonto">
+      <Beschreibung>Telefon und Internet 12/2025</Beschreibung>
+      <Erweiterung Ns="EasyCash" Schluessel="Buchungsgruppe">773e3f03-486d-38f2-fcd6-626b7dab848b</Erweiterung>
+      <Erweiterung Ns="EasyCash" Schluessel="BuchungsgruppeRolle">0</Erweiterung>
+      <Erweiterung Ns="EasyCash" Schluessel="BuchungsgruppeVorlage">14</Erweiterung>
+      <Erweiterung Ns="EasyCash" Schluessel="VorlageEingabeBetrag">44.95</Erweiterung>
+      <Erweiterung Ns="EasyCash" Schluessel="VorlageFeld_privat">20</Erweiterung>
+      <Erweiterung Ns="EasyCash" Schluessel="VorlageId">907da25bc311762469c194a4f5b25d73</Erweiterung>
+      <Erweiterung Ns="EasyCash" Schluessel="VorlageName">Telefon mit Privatanteil</Erweiterung>
+    </Buchung>
+    <Buchung Id="c22457ee-3de7-4275-42c4-4794edbd7d8b" Art="Ausgabe" Datum="2025-12-03" Brutto="8.99" MwSt="0" Konto="/Privatentnahmen" Betrieb="Illustration" Bestandskonto="Girokonto">
+      <Beschreibung>Telefon und Internet 12/2025 (Privatanteil 20 %)</Beschreibung>
+      <Erweiterung Ns="EasyCash" Schluessel="Buchungsgruppe">773e3f03-486d-38f2-fcd6-626b7dab848b</Erweiterung>
+      <Erweiterung Ns="EasyCash" Schluessel="BuchungsgruppeRolle">1</Erweiterung>
+      <Erweiterung Ns="EasyCash" Schluessel="BuchungsgruppeVorlage">14</Erweiterung>
+    </Buchung>
+    <Buchung Id="74cbdce3-46f4-456a-f594-3a647e74537b" Art="Ausgabe" Datum="2025-12-05" Brutto="11.90" MwSt="19" Konto="Software und EDV" Betrieb="Illustration" Bestandskonto="Girokonto">
+      <Beschreibung>Cloud-Speicher und Website 12/2025</Beschreibung>
+    </Buchung>
+    <Buchung Id="b52dcd73-0b34-95c9-2f38-57218a46a6b7" Art="Einnahme" Datum="2025-12-06" Brutto="742.50" MwSt="19" Konto="Verkauf Kunstdrucke und Karten" Beleg="K-02" Betrieb="Druckladen" Bestandskonto="Kasse">
+      <Beschreibung>Weihnachtsmarkt Tintenfeld, 1. Wochenende</Beschreibung>
+    </Buchung>
+    <Buchung Id="98520806-26cd-1ce8-96ba-07917df5254e" Art="Einnahme" Datum="2025-12-10" Brutto="1070.00" MwSt="7" Konto="Honorare Illustration" Beleg="R-13" Betrieb="Illustration" Bestandskonto="Girokonto">
+      <Beschreibung>Kinderbuch "Der kleine Leuchtturm", Schlussrate -- Verlag Wellenreiter</Beschreibung>
+    </Buchung>
+    <Buchung Id="bc5e510b-cb64-994b-7dae-7f58820e248a" Art="Einnahme" Datum="2025-12-13" Brutto="598.00" MwSt="19" Konto="Verkauf Kunstdrucke und Karten" Beleg="K-03" Betrieb="Druckladen" Bestandskonto="Kasse">
+      <Beschreibung>Weihnachtsmarkt Tintenfeld, 2. Wochenende</Beschreibung>
+    </Buchung>
+    <Buchung Id="432a69e1-e993-5b07-adca-bee97aae5f90" Art="Ausgabe" Datum="2025-12-15" Brutto="186.40" MwSt="0" Konto="Versicherungen und Beiträge" Betrieb="Illustration" Bestandskonto="Girokonto">
+      <Beschreibung>Berufshaftpflicht 2025</Beschreibung>
+    </Buchung>
+    <Buchung Id="a6668e69-87fc-240c-10ea-cf8d543b99da" Art="Einnahme" Datum="2025-12-18" Brutto="595.00" MwSt="19" Konto="Honorare Illustration" Beleg="R-14" Betrieb="Illustration" Bestandskonto="Girokonto">
+      <Beschreibung>Editorial-Illustration Stadtmagazin, Januar-Ausgabe</Beschreibung>
+    </Buchung>
+    <Buchung Id="4e5c0d91-3d3e-a4fe-cbaa-4cc9d075965d" Art="Ausgabe" Datum="2025-12-20" Brutto="1200.00" MwSt="0" Konto="/Umbuchung zwischen Bestandskonten" Betrieb="Druckladen" Bestandskonto="Kasse">
+      <Beschreibung>Bareinzahlung Markterlöse</Beschreibung>
+      <Erweiterung Ns="EasyCash" Schluessel="Buchungsgruppe">063e5717-2562-d254-4759-ae3a9e22dd29</Erweiterung>
+      <Erweiterung Ns="EasyCash" Schluessel="BuchungsgruppeRolle">0</Erweiterung>
+      <Erweiterung Ns="EasyCash" Schluessel="BuchungsgruppeVorlage">12</Erweiterung>
+      <Erweiterung Ns="EasyCash" Schluessel="VorlageFeld_zielkonto">Girokonto</Erweiterung>
+      <Erweiterung Ns="EasyCash" Schluessel="VorlageId">862b84fac6a082eb0b1de78b417e746f</Erweiterung>
+      <Erweiterung Ns="EasyCash" Schluessel="VorlageName">Umbuchung zwischen Bestandskonten</Erweiterung>
+    </Buchung>
+    <Buchung Id="77048624-ba15-bd91-2c77-7a3f075981c3" Art="Einnahme" Datum="2025-12-20" Brutto="1200.00" MwSt="0" Konto="/Umbuchung zwischen Bestandskonten" Betrieb="Druckladen" Bestandskonto="Girokonto">
+      <Beschreibung>Bareinzahlung Markterlöse</Beschreibung>
+      <Erweiterung Ns="EasyCash" Schluessel="Buchungsgruppe">063e5717-2562-d254-4759-ae3a9e22dd29</Erweiterung>
+      <Erweiterung Ns="EasyCash" Schluessel="BuchungsgruppeRolle">1</Erweiterung>
+      <Erweiterung Ns="EasyCash" Schluessel="BuchungsgruppeVorlage">12</Erweiterung>
+    </Buchung>
+    <Buchung Id="032aa07a-fb2c-da03-8541-72775a8aea8b" Art="Ausgabe" Datum="2025-12-22" Brutto="1500.00" MwSt="0" Konto="/Privatentnahmen" Betrieb="Illustration" Bestandskonto="Girokonto">
+      <Beschreibung>Privatentnahme</Beschreibung>
+    </Buchung>
+    <Buchung Id="0bc70ccd-e1b8-0590-90bf-4c4ddcf3a26d" Art="Einnahme" Datum="2025-12-28" Brutto="689.30" MwSt="19" Konto="Verkauf Kunstdrucke und Karten" Beleg="S-12" Betrieb="Druckladen" Bestandskonto="PayPal">
+      <Beschreibung>Shop-Verkäufe Dezember (Kunstdrucke und Karten)</Beschreibung>
+    </Buchung>
+    <Buchung Id="768befcb-05b8-bc9e-0663-42f869fd6883" Art="Ausgabe" Datum="2025-12-28" Brutto="96.15" MwSt="0" Konto="Porto und Versand" Betrieb="Druckladen" Bestandskonto="Girokonto">
+      <Beschreibung>Porto Shop-Versand 4. Quartal</Beschreibung>
+    </Buchung>
+    <Buchung Id="5cecc07e-3324-539c-0a92-73de7655ac65" Art="Ausgabe" Datum="2025-12-30" Brutto="7.90" MwSt="0" Konto="Kontoführung und sonstige Kosten" Betrieb="Illustration" Bestandskonto="Girokonto">
+      <Beschreibung>Kontoführung Girokonto 12/2025</Beschreibung>
+    </Buchung>
+    <Buchung Id="67105561-862c-396e-0a7a-2f5a76c7f89f" Art="Einnahme" Datum="2025-12-30" Brutto="1350.00" MwSt="0" Konto="/Umbuchung zwischen Bestandskonten" Betrieb="Druckladen" Bestandskonto="Girokonto">
+      <Beschreibung>Auszahlung PayPal-Guthaben</Beschreibung>
+      <Erweiterung Ns="EasyCash" Schluessel="Buchungsgruppe">68ac1343-c4a9-481b-a959-b85d659dc49d</Erweiterung>
+      <Erweiterung Ns="EasyCash" Schluessel="BuchungsgruppeRolle">1</Erweiterung>
+      <Erweiterung Ns="EasyCash" Schluessel="BuchungsgruppeVorlage">12</Erweiterung>
+    </Buchung>
+    <Buchung Id="6e4584cd-236e-cf1c-d584-940a3657cb88" Art="Ausgabe" Datum="2025-12-30" Brutto="1350.00" MwSt="0" Konto="/Umbuchung zwischen Bestandskonten" Betrieb="Druckladen" Bestandskonto="PayPal">
+      <Beschreibung>Auszahlung PayPal-Guthaben</Beschreibung>
+      <Erweiterung Ns="EasyCash" Schluessel="Buchungsgruppe">68ac1343-c4a9-481b-a959-b85d659dc49d</Erweiterung>
+      <Erweiterung Ns="EasyCash" Schluessel="BuchungsgruppeRolle">0</Erweiterung>
+      <Erweiterung Ns="EasyCash" Schluessel="BuchungsgruppeVorlage">12</Erweiterung>
+      <Erweiterung Ns="EasyCash" Schluessel="VorlageFeld_zielkonto">Girokonto</Erweiterung>
+      <Erweiterung Ns="EasyCash" Schluessel="VorlageId">862b84fac6a082eb0b1de78b417e746f</Erweiterung>
+      <Erweiterung Ns="EasyCash" Schluessel="VorlageName">Umbuchung zwischen Bestandskonten</Erweiterung>
+    </Buchung>
+    <Buchung Id="9ef495b2-131d-11ad-7050-b00dcd7a7ed1" Art="Ausgabe" Datum="2025-12-30" Brutto="52.41" MwSt="0" Konto="Kontoführung und sonstige Kosten" Betrieb="Druckladen" Bestandskonto="PayPal">
+      <Beschreibung>PayPal-Gebühren 4. Quartal</Beschreibung>
+    </Buchung>
+  </Buchungen>
+</ECTBuchungsdatei>

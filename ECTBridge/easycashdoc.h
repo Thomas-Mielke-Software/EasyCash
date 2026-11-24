@@ -42,6 +42,8 @@ public:
 	CMyMultiDocTemplate(UINT nIDResource, CRuntimeClass* pDocClass, CRuntimeClass* pFrameClass, CRuntimeClass* pViewClass);
 	BOOL GetDocString(CString& rString, enum DocStringIndex i) const;
 	CDocTemplate::Confidence MatchDocType(const char* pszPathName, CDocument*& rpDocMatch);
+	virtual CDocument* OpenDocumentFile(LPCTSTR lpszPathName, BOOL bAddToMRU, BOOL bMakeVisible);	// Sperre im Demo-Modus
+	using CMultiDocTemplate::OpenDocumentFile;	// die Zwei-Parameter-Variante bleibt sichtbar
 };
 
 class CEasyCashDoc;

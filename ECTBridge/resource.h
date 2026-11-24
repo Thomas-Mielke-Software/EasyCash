@@ -50,6 +50,7 @@
 #define IDC_ZEIT                        1161
 #define IDC_EXIT                        1161
 #define IDC_LEER2                       1171
+#define IDC_DEMO                        1172
 #define ID_FILE_BACKUP                  32833
 #define ID_FILE_BACKUP_EXTERNAL         32883
 #define ID_FILE_BACKUP_SUBFOLDER        32884

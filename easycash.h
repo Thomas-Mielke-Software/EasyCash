@@ -77,6 +77,17 @@ public:
 
 	BOOL m_bCrashReportingAktiv;
 	void DruckerDevNamesVorbereiten();
+
+#ifdef USE_ECTENGINE
+	// Demo-Modus (ECTBridge/DemoModus.h): Neustart mit bzw. ohne /demo
+	afx_msg void OnDemoUmschalten();
+	afx_msg void OnDemoStartenDirekt();
+	afx_msg void OnDemoBeendenDirekt();
+	void NeustartNachBeenden(BOOL bDemo);
+	void WechsleInsDemoProfil();
+	int m_nNeustart = 0;		// 0 = keiner, 1 = im Demo-Modus, 2 = normal (ExitInstance)
+	CString m_csDemoProfil;		// Registry-Zweig des Demo-Modus (wird beim Beenden geloescht)
+#endif
 };
 
 
