@@ -399,6 +399,79 @@ BOOL CEasyCashDocBridge::EntferneBuchungAusEngine(CBuchung* pNative)
     return TRUE;
 }
 
+BOOL CEasyCashDocBridge::TrageNeueNativeBuchungEin(CBuchung* pNeu, BOOL bEinnahme)
+{
+    if (!pNeu || !m_pEngineHost) return FALSE;
+    auto engine = GetEngine(this);
+
+    // ----------------------------------------------------------
+    // Konsistenzpruefung: native Ketten (ohne pNeu) und Engine muessen
+    // sich exakt entsprechen. Kostet nur Pointer-Walk + Dictionary-
+    // Zugriffe, keine Konvertierung -- im Gegensatz zum vollen Sync,
+    // der jede Buchung samt Strings und Erweiterungen neu baut.
+    // ----------------------------------------------------------
+    // Dictionary statt HashSet: HashSet<> liegt in System.Core.dll.
+    auto offen = gcnew System::Collections::Generic::Dictionary<Buchung^, bool>();
+    for each (Buchung^ b in engine->Buchungen)
+        offen[b] = true;
+    BOOL bKonsistent = (offen->Count == engine->Buchungen->Count);  // keine Doppelten
+    BOOL bNeuGefunden = FALSE;
+
+    for (int iListe = 0; iListe < 2 && bKonsistent; iListe++)
+    {
+        CBuchung* pKopf = (iListe == 0) ? Einnahmen : Ausgaben;
+        Buchungsart art = (iListe == 0) ? Buchungsart::Einnahme : Buchungsart::Ausgabe;
+        for (CBuchung* p = pKopf; p != NULL; p = p->next)
+        {
+            if (p == pNeu)
+            {
+                // Muss in der Kette der angegebenen Art haengen.
+                if ((iListe == 0) != (bEinnahme != FALSE)) { bKonsistent = FALSE; break; }
+                bNeuGefunden = TRUE;
+                continue;
+            }
+            Buchung^ b = m_pEngineHost->Lookup(p);
+            if (b == nullptr || b->Art != art || !offen->Remove(b))
+            {
+                bKonsistent = FALSE;
+                break;
+            }
+        }
+    }
+    // Jede Engine-Buchung muss genau einmal nativ vorgekommen sein,
+    // und pNeu darf der Engine noch nicht bekannt sein.
+    if (bKonsistent && (!bNeuGefunden || offen->Count != 0
+                        || m_pEngineHost->Lookup(pNeu) != nullptr))
+        bKonsistent = FALSE;
+
+    if (!bKonsistent)
+    {
+        TRACE0("TrageNeueNativeBuchungEin: native Ketten und Engine passen nicht "
+               "zusammen -- voller SyncNativeToManaged\n");
+        SyncNativeToManaged();
+        return FALSE;
+    }
+
+    // ----------------------------------------------------------
+    // Inkrementell eintragen. NativeToManaged vergibt bei Bedarf die
+    // Uuid und schreibt sie auch nativ zurueck. Die Buchung landet am
+    // Ende der Engine-Liste -- passend zur nativen Kette, an die das
+    // Plugin ebenfalls hinten anhaengt. Sortiert wird erst ueber
+    // CDokumentCtrl::Sortieren() bzw. den naechsten vollen Sync.
+    // ----------------------------------------------------------
+    Buchung^ bNeu = NativeToManaged(pNeu,
+        bEinnahme ? Buchungsart::Einnahme : Buchungsart::Ausgabe);
+    engine->Buchungen->Add(bNeu);
+    m_pEngineHost->RegisterPointer(pNeu, bNeu);
+    return TRUE;
+}
+
+void CEasyCashDocBridge::SortiereEngine()
+{
+    if (!m_pEngineHost) return;
+    GetEngine(this)->Sort();
+}
+
 // ----------------------------------------------------------
 // Mirror-Helfer fuer CDokumentCtrl (EasyCTX). pDoc wird gegen die
 // Bridge-Liste geprueft statt blind gecastet -- im USE_ECTIFACE-Build
@@ -435,4 +508,26 @@ extern "C" ECTBRIDGE_API void ECT_EntferneNativeBuchungAusEngine(CEasyCashDoc* p
     }
     if (!pBridge->EntferneBuchungAusEngine(pNative))
         TRACE1("ECT_EntferneBuchung: CBuchung* 0x%p nicht in der Engine\n", pNative);
+}
+
+extern "C" ECTBRIDGE_API void ECT_TrageNeueNativeBuchungInEngineEin(CEasyCashDoc* pDoc, CBuchung* pNeu, BOOL bEinnahme)
+{
+    CEasyCashDocBridge* pBridge = FindeBridge(pDoc);
+    if (!pBridge || !pBridge->m_pEngineHost)
+    {
+        TRACE1("ECT_TrageNeueBuchungEin: Doc 0x%p ist keine Bridge -- skip\n", pDoc);
+        return;
+    }
+    pBridge->TrageNeueNativeBuchungEin(pNeu, bEinnahme);
+}
+
+extern "C" ECTBRIDGE_API void ECT_SortiereEngine(CEasyCashDoc* pDoc)
+{
+    CEasyCashDocBridge* pBridge = FindeBridge(pDoc);
+    if (!pBridge)
+    {
+        TRACE1("ECT_SortiereEngine: Doc 0x%p ist keine Bridge -- skip\n", pDoc);
+        return;
+    }
+    pBridge->SortiereEngine();
 }

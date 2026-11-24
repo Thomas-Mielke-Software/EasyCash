@@ -115,9 +115,16 @@ namespace ECTViews.Views
 
         /// <summary>Beim Scrollen blieben Vorlagen-Liste und Notiz-Balloon an
         /// ihrer alten Bildschirmposition stehen (Popups folgen ihrem
-        /// Bezugselement nicht) -- also schliessen.</summary>
+        /// Bezugselement nicht) -- also schliessen.
+        /// ScrollChanged ist ein bubbelndes Routed Event: auch das Rollen
+        /// INNERER Listen kommt hier an -- insbesondere das der Vorlagen-Liste
+        /// selbst (WPF leitet Ereignisse aus dem Popup ueber dessen logischen
+        /// Elternbaum weiter). Ohne die Pruefung auf FelderScroll schloss
+        /// jedes Rollen in der Liste (Mausrad, Bildlaufleiste, Pfeil ab ueber
+        /// den sichtbaren Bereich hinaus) die Liste sofort wieder.</summary>
         private void OnFelderScrollChanged(object sender, ScrollChangedEventArgs e)
         {
+            if (!ReferenceEquals(e.OriginalSource, FelderScroll)) return;
             if (Math.Abs(e.VerticalChange) > 0.5)
                 SchliessePopups();
         }

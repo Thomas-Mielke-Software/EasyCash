@@ -353,7 +353,11 @@ long CDokumentCtrl::NeueEinnahmenbuchungEinfuegen()
 		// den Wiederherstellungs-Save auslöst. Sonst kennt die Engine die Buchung nicht,
 		// das pointer-stabile SyncManagedToNative() wirft sie beim Save als unbekannt
 		// weg und das Plugin hält anschließend einen 0xDDDDDDDD-Pointer in der Hand.
-		static_cast<CEasyCashDocBridge*>(pDoc)->SyncNativeToManaged();
+		// Nur die neue Buchung eintragen statt voller SyncNativeToManaged() -- der war
+		// pro Buchung O(n) und machte den CSV-Import quadratisch langsam. Bei
+		// Inkonsistenz zwischen nativen Ketten und Engine faellt die Bridge selbst
+		// auf den vollen Sync zurueck.
+		ECT_TrageNeueNativeBuchungInEngineEin(pDoc, pNeu, TRUE);
 
 		pDoc->SetModifiedFlag("Neue Einnahmenbuchung wurde eingefügt");
 
@@ -393,7 +397,11 @@ long CDokumentCtrl::NeueAusgabenbuchungEinfuegen()
 		// statt sie zu deleten. Pointer lokal festhalten, weil das Sync die Kette umsortieren
 		// kann (*p würde dann auf einen anderen Nachbarn zeigen).
 		CBuchung* pNeu = *p;
-		static_cast<CEasyCashDocBridge*>(pDoc)->SyncNativeToManaged();
+		// Nur die neue Buchung eintragen statt voller SyncNativeToManaged() -- der war
+		// pro Buchung O(n) und machte den CSV-Import quadratisch langsam. Bei
+		// Inkonsistenz zwischen nativen Ketten und Engine faellt die Bridge selbst
+		// auf den vollen Sync zurueck.
+		ECT_TrageNeueNativeBuchungInEngineEin(pDoc, pNeu, FALSE);
 
 		pDoc->SetModifiedFlag("Neue Ausgabenbuchung wurde eingefügt");
 
@@ -410,6 +418,10 @@ void CDokumentCtrl::Sortieren()
 	if (pDoc && pDoc->IsKindOf(RUNTIME_CLASS(CEasyCashDoc)))
 	{		
 		pDoc->Sort();					// macht Probleme mit undefinierbaren Heap-Corruptions
+		// v4: Der Wiederherstellungs-Save in SetModifiedFlag() baut die nativen Ketten
+		// in Engine-Reihenfolge neu auf -- darum die Engine mitsortieren, sonst ist das
+		// native Sort() wirkungslos.
+		ECT_SortiereEngine(pDoc);
 		pDoc->SetModifiedFlag();
 		//pDoc->UpdateAllViews(NULL);
 	}

@@ -102,6 +102,30 @@ public:
     /// </summary>
     BOOL EntferneBuchungAusEngine(CBuchung* pNative);
 
+    /// <summary>
+    /// Traegt eine frisch nativ angehaengte CBuchung (Plugin-Einfuegen)
+    /// einzeln in Engine + Pointer-Map ein, statt alles per
+    /// SyncNativeToManaged() neu aufzubauen (das war pro Buchung O(n),
+    /// beim CSV-Import also quadratisch).
+    /// Vorher wird geprueft, ob native Ketten und Engine exakt
+    /// zusammenpassen (jede native CBuchung -- ausser pNeu -- hat genau
+    /// eine managed Buchung^ derselben Art, und die Engine hat keine
+    /// weiteren). Passt etwas nicht, z.B. weil nativer Code Buchungen
+    /// ohne Sync angehaengt hat, faellt die Methode auf den vollen
+    /// SyncNativeToManaged() zurueck -- sonst wuerde der naechste
+    /// SyncManagedToNative() die unbekannten Natives loeschen.
+    /// TRUE = inkrementell eingetragen, FALSE = voller Sync.
+    /// </summary>
+    BOOL TrageNeueNativeBuchungEin(CBuchung* pNeu, BOOL bEinnahme);
+
+    /// <summary>
+    /// Sortiert die Engine-Buchungen (Datum, Uuid). Die Reihenfolge der
+    /// nativen Ketten ergibt sich in v4 beim naechsten
+    /// SyncManagedToNative() aus der Engine -- ein rein natives Sort()
+    /// wird dabei ueberschrieben.
+    /// </summary>
+    void SortiereEngine();
+
     // ──────────────────────────────────────────────
     // EngineHost — public, weil die freien /clr-Hilfsfunktionen
     // (siehe unten) darauf zugreifen müssen. Das ist sauberer als
@@ -139,6 +163,17 @@ extern "C" ECTBRIDGE_API void ECT_SpiegleNativeDokumentfelderInEngine(CEasyCashD
 // naechste SyncManagedToNative() die Buchung zurueck und schreibt dabei
 // in den bereits freigegebenen Speicher.
 extern "C" ECTBRIDGE_API void ECT_EntferneNativeBuchungAusEngine(CEasyCashDoc* pDoc, CBuchung* pNative);
+
+// Fuer CDokumentCtrl::NeueEinnahmen-/NeueAusgabenbuchungEinfuegen: die
+// gerade nativ angehaengte CBuchung der Engine bekannt machen, BEVOR
+// SetModifiedFlag() den Wiederherstellungs-Save (mit
+// SyncManagedToNative) ausloest. Inkrementell, mit Konsistenzpruefung
+// und Rueckfall auf den vollen Sync (siehe TrageNeueNativeBuchungEin).
+extern "C" ECTBRIDGE_API void ECT_TrageNeueNativeBuchungInEngineEin(CEasyCashDoc* pDoc, CBuchung* pNeu, BOOL bEinnahme);
+
+// Fuer CDokumentCtrl::Sortieren: Engine-Reihenfolge neu sortieren, damit
+// der folgende Save die nativen Ketten sortiert aufbaut.
+extern "C" ECTBRIDGE_API void ECT_SortiereEngine(CEasyCashDoc* pDoc);
 
 // ══════════════════════════════════════════════════════════
 // Freie Inline-Funktionen für /clr-Code
